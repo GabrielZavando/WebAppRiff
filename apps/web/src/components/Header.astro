@@ -1,0 +1,104 @@
+---
+import type { HeaderProps } from '@/lib/types/header';
+import { isActive } from '@/lib/config/navigation';
+import MenuIcon from '@/components/icons/MenuIcon.astro';
+import CloseIcon from '@/components/icons/CloseIcon.astro';
+
+interface Props extends HeaderProps {}
+
+const { items, activePath, cta } = Astro.props;
+---
+
+<!-- Main site header: logo, desktop navigation, quote CTA and mobile toggle. -->
+<header class="bg-gradient-to-r from-brand-navy to-brand-navy-light text-white">
+  <div class="container mx-auto px-4 h-24 flex items-center justify-between gap-4">
+    <a href="/" aria-label="Ir al inicio" class="shrink-0">
+      <!-- TODO[site-header-scroll-animations]: logo shrinks on scroll in a future change -->
+      <!-- TODO[user]: replace the placeholder with <img src="/logos/riff.svg" alt={logoAlt} width="165" height="80" /> when the real logo is provided -->
+      <div
+        class="w-[165px] h-[80px] flex items-center justify-center bg-white/5 border border-dashed border-white/20 text-white/40 text-xs uppercase tracking-wider"
+      >
+        Logo placeholder
+      </div>
+    </a>
+
+    <nav aria-label="Navegación principal" class="hidden lg:flex items-center gap-1">
+      {
+        items.map((item) => {
+          const active = isActive(item.href, activePath);
+          return (
+            <a
+              href={item.href}
+              aria-current={active ? 'page' : undefined}
+              class={`px-3 py-2 text-sm font-medium uppercase tracking-wide transition-colors relative ${
+                active
+                  ? 'text-white after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-0.5 after:bg-brand-orange'
+                  : 'text-white/80 hover:text-white'
+              }`}
+            >
+              {item.label}
+            </a>
+          );
+        })
+      }
+    </nav>
+
+    <a
+      href={cta.href}
+      class="hidden sm:inline-flex items-center bg-brand-orange hover:bg-orange-600 text-white font-bold uppercase text-sm px-6 py-3 rounded shadow-sm transition-colors whitespace-nowrap"
+    >
+      {cta.label}
+    </a>
+
+    <button
+      type="button"
+      data-menu-toggle
+      aria-controls="mobile-nav"
+      aria-expanded="false"
+      aria-label="Abrir menú"
+      class="lg:hidden p-2 text-white"
+    >
+      <MenuIcon class="h-6 w-6" />
+      <CloseIcon class="h-6 w-6 hidden" />
+    </button>
+  </div>
+
+  <div
+    id="mobile-nav"
+    hidden
+    class="lg:hidden border-t border-white/10 bg-brand-navy-light px-4 py-4"
+  >
+    <nav aria-label="Navegación móvil" class="flex flex-col gap-2">
+      {
+        items.map((item) => (
+          <a
+            href={item.href}
+            aria-current={isActive(item.href, activePath) ? 'page' : undefined}
+            class="px-3 py-2 text-white/90 hover:bg-white/10 rounded"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<script is:inline>
+  // Toggles the mobile navigation panel: swaps aria-expanded, the accessible
+  // label and the visible icon, and shows/hides the panel.
+  document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const expanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!expanded));
+      button.setAttribute('aria-label', expanded ? 'Abrir menú' : 'Cerrar menú');
+
+      const panel = document.getElementById(button.getAttribute('aria-controls') || '');
+      if (panel) {
+        panel.toggleAttribute('hidden');
+      }
+
+      button.querySelectorAll('svg').forEach((icon) => icon.classList.toggle('hidden'));
+    });
+  });
+</script>

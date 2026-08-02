@@ -1,7 +1,10 @@
 ---
 import '@/styles/globals.css';
 import TopHeader from '@/components/TopHeader.astro';
+import Header from '@/components/Header.astro';
 import { getContactInfo } from '@/lib/config/contact';
+import { NAVIGATION_ITEMS, getCtaConfig } from '@/lib/config/navigation';
+import type { HeaderProps } from '@/lib/types/header';
 
 interface Props {
   title: string;
@@ -12,6 +15,13 @@ const { title, description = 'Catálogo digital de productos industriales Riff' 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL('/og-image.png', Astro.site).href;
 const contact = getContactInfo();
+
+const headerProps: HeaderProps = {
+  items: NAVIGATION_ITEMS,
+  activePath: Astro.url.pathname,
+  cta: getCtaConfig(),
+  logoAlt: 'Riff',
+};
 ---
 
 <!DOCTYPE html>
@@ -36,6 +46,7 @@ const contact = getContactInfo();
   </head>
   <body class="min-h-screen flex flex-col">
     <TopHeader contact={contact} />
+    <Header {...headerProps} />
     <slot />
   </body>
 </html>
