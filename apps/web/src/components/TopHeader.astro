@@ -1,0 +1,68 @@
+---
+import type { ContactInfo, SocialNetworkName } from '@/lib/types/top-header';
+import { getSocialLinks } from '@/lib/types/top-header';
+import PhoneIcon from '@/components/icons/PhoneIcon.astro';
+import FacebookIcon from '@/components/icons/FacebookIcon.astro';
+import XIcon from '@/components/icons/XIcon.astro';
+import InstagramIcon from '@/components/icons/InstagramIcon.astro';
+import LinkedInIcon from '@/components/icons/LinkedInIcon.astro';
+
+interface Props {
+  contact: ContactInfo;
+}
+
+const { contact } = Astro.props;
+
+const links = getSocialLinks(contact);
+
+const socialIcons: Record<SocialNetworkName, typeof FacebookIcon> = {
+  Facebook: FacebookIcon,
+  X: XIcon,
+  Instagram: InstagramIcon,
+  LinkedIn: LinkedInIcon,
+};
+
+const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^+\d]/g, '')}` : undefined;
+---
+
+<header
+  class="hidden sm:flex h-9 items-center bg-brand-navy bg-gradient-to-r from-brand-navy to-brand-navy-light text-white text-sm"
+>
+  <div class="container mx-auto px-4 flex items-center justify-between">
+    {
+      contact.phone && (
+        <a
+          href={phoneHref}
+          class="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          aria-label="Llamar a Riff"
+        >
+          <PhoneIcon class="h-3.5 w-3.5" />
+          <span>{contact.phone}</span>
+        </a>
+      )
+    }
+    {
+      links.length > 0 && (
+        <nav aria-label="Redes sociales" class="flex items-center">
+          {links.map((link, index) => {
+            const Icon = socialIcons[link.name];
+            return (
+              <>
+                {index > 0 && <span class="h-4 border-l border-white/20" aria-hidden="true"></span>}
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={link.name}
+                  class="flex h-9 items-center justify-center px-3 hover:bg-white/10 transition-colors"
+                >
+                  <Icon class="h-3.5 w-3.5" />
+                </a>
+              </>
+            );
+          })}
+        </nav>
+      )
+    }
+  </div>
+</header>

@@ -16,6 +16,12 @@ module.exports = {
   ignorePatterns: ['dist/', 'node_modules/', '.astro/', '*.spec.ts'],
   overrides: [
     {
+      files: ['*.d.ts'],
+      rules: {
+        '@typescript-eslint/triple-slash-reference': 'off',
+      },
+    },
+    {
       files: ['*.astro'],
       parser: 'astro-eslint-parser',
       parserOptions: {

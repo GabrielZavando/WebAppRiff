@@ -1,6 +1,12 @@
 /// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
 
+declare module '*.astro' {
+  import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+  const component: AstroComponentFactory;
+  export default component;
+}
+
 declare global {
   interface ImportMetaEnv {
     readonly SITE_URL: string;
