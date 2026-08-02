@@ -1,0 +1,28 @@
+{
+  "name": "riff-catalogo-digital",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Riff Catálogo Digital Headless — Mono-repo con NestJS (BFF), Astro (sitio público SSG) y Angular (panel admin)",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "install:all": "npm ci",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces",
+    "build": "npm run build --workspaces",
+    "dev:backend": "npm run start:dev --workspace=apps/backend",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:admin": "npm run start --workspace=apps/admin",
+    "test:smoke": "npm run test:smoke --workspaces"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "packageManager": "npm@10.9.8",
+  "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "husky": "^9.0.0"
+  }
+}

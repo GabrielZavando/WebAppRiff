@@ -126,7 +126,7 @@ opencode
 ```
 /enrich-us (opcional)
        ↓
-/plan-change → genera .openspec/<ticket>/
+/plan-change → genera openspec/changes/<ticket>/
        ↓
 /apply → implementa tasks (1 por vez, TDD)
        ↓

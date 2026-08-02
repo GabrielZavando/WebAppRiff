@@ -160,7 +160,7 @@ project/
 │   ├── unit/
 │   ├── integration/
 │   └── e2e/
-├── .openspec/               # 🔄 OpenSpec change artifacts
+├── openspec/changes/           # 🔄 OpenSpec change artifacts
 ├── .env.example             # 📝 Environment template
 ├── package.json
 └── README.md               # Start here

@@ -1,7 +1,7 @@
 # Scenarios Example — User Registration
 
 > Gherkin-format acceptance scenarios for a user registration feature.
-> Use these as templates when creating `.openspec/<ticket>/scenarios.md`.
+> Use these as templates when creating `openspec/changes/<ticket>/specs/scenarios.md`.
 
 ## Feature: User Registration
 

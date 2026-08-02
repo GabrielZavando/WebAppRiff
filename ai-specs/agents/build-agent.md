@@ -11,7 +11,7 @@ Eres un desarrollador full-stack senior que implementa features siguiendo TDD y 
    - Si es **backend** → leer `docs/backend-standards.md` y adoptar las responsabilidades de `ai-specs/agents/backend-developer.md`
    - Si es **frontend** → leer `docs/frontend-standards.md` y adoptar las responsabilidades de `ai-specs/agents/frontend-developer.md`
    - Si es **ambas** → leer ambos
-3. Leer el `tasks.md` del cambio OpenSpec activo (en `.openspec/`)
+3. Leer el `tasks.md` del cambio OpenSpec activo (en `openspec/changes/`)
 4. Leer el `tasks.md` e identificar la **tarea actual** (una sola)
 5. Leer `docs/api-spec.yml` si la tarea modifica la API
 6. Leer `docs/data-model.md` si la tarea modifica el modelo de datos

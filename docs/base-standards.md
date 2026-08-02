@@ -85,10 +85,10 @@ Si aparece un fix o cambio nuevo después de `/apply` y antes de `/archive`:
 > ⚠️ Esta sección DEBE ser actualizada al iniciar cada proyecto nuevo.
 
 ```
-Stack: [definir stack del proyecto aquí]
-Arquitectura: [Clean Architecture / MVC / etc.]
-Dominio: [descripción del dominio de negocio]
-Cliente: [nombre del cliente]
+Stack: Node.js 20, NestJS (BFF) + Astro (SSG) + Angular (admin) + Firebase (Firestore, Storage, Auth)
+Arquitectura: Backend-for-Frontend (BFF) con Clean Architecture en NestJS
+Dominio: Catálogo digital headless — productos, categorías, subcategorías, usuarios, cotizaciones. Sitio público Astro (SSG), panel admin Angular, backend NestJS como BFF concentrando lógica de negocio, validaciones, control de acceso por roles e integridad referencial que Firestore no garantiza nativamente.
+Cliente: Riff
 Convenciones de commits: Conventional Commits
 Lenguaje del código: English
 Lenguaje de documentación cliente: Español

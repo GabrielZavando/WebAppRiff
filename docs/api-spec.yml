@@ -1,16 +1,17 @@
 openapi: 3.0.3
 info:
-  title: "[Nombre del Proyecto] API"
+  title: "Riff Catálogo Digital Headless API"
   description: |
-    API del proyecto. Actualizar este archivo con los endpoints reales.
-    Este es el contrato entre frontend y backend — actualizar ANTES de implementar cambios.
+    API del MVP del catálogo digital headless (Fase 1).
+    Contrato entre frontend (Astro sitio público, Angular panel admin) y backend (NestJS BFF).
+    Actualizar ANTES de implementar cambios (SDD).
   version: "1.0.0"
 
 servers:
   - url: http://localhost:3000/api/v1
     description: Desarrollo local
-  - url: https://api.tudominio.cl/v1
-    description: Producción
+  - url: https://api.riff.cl/v1
+    description: Producción (PENDIENTE: definir dominio final)
 
 components:
   securitySchemes:
@@ -18,6 +19,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: "Firebase Auth JWT con Custom Claims (roles: superadmin, admin, editor)"
 
   schemas:
     Error:
@@ -40,8 +42,461 @@ components:
         limit:
           type: integer
 
-security:
-  - bearerAuth: []
+    # === PRODUCTOS ===
+    Producto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "ID de documento Firestore (inmutable, técnico)"
+        idExterno:
+          type: string
+          nullable: true
+          description: "Identificador externo editable para futura vinculación Defontana"
+        sku:
+          type: string
+          description: "Código de producto único"
+        titulo:
+          type: string
+        slug:
+          type: string
+          description: "URL amigable única"
+        descripcionBreve:
+          type: string
+        descripcionLarga:
+          type: string
+          format: html
+        categoriaId:
+          type: string
+        subcategoriaId:
+          type: string
+          nullable: true
+        atributos:
+          type: array
+          items:
+            type: object
+            properties:
+              nombre:
+                type: string
+              valor:
+                type: string
+        precio:
+          type: object
+          properties:
+            valor:
+              type: integer
+              description: "Precio en CLP sin decimales"
+            visible:
+              type: boolean
+        stock:
+          type: object
+          properties:
+            disponible:
+              type: boolean
+            cantidad:
+              type: integer
+              nullable: true
+        galeria:
+          type: array
+          maxItems: 10
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                format: uri
+              storagePath:
+                type: string
+              alt:
+                type: string
+              orden:
+                type: integer
+        fichaTecnica:
+          type: object
+          nullable: true
+          properties:
+            url:
+              type: string
+              format: uri
+            storagePath:
+              type: string
+            nombreArchivo:
+              type: string
+        destacado:
+          type: boolean
+        publicado:
+          type: boolean
+        creadoEn:
+          type: string
+          format: date-time
+        actualizadoEn:
+          type: string
+          format: date-time
+
+    ProductoCreate:
+      type: object
+      required: [sku, titulo, precio]
+      properties:
+        idExterno:
+          type: string
+        sku:
+          type: string
+        titulo:
+          type: string
+        slug:
+          type: string
+        descripcionBreve:
+          type: string
+        descripcionLarga:
+          type: string
+        categoriaId:
+          type: string
+        subcategoriaId:
+          type: string
+        atributos:
+          type: array
+          items:
+            type: object
+            properties:
+              nombre:
+                type: string
+              valor:
+                type: string
+        precio:
+          type: object
+          required: [valor]
+          properties:
+            valor:
+              type: integer
+            visible:
+              type: boolean
+              default: true
+        stock:
+          type: object
+          properties:
+            disponible:
+              type: boolean
+              default: true
+            cantidad:
+              type: integer
+        galeria:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+              storagePath:
+                type: string
+              alt:
+                type: string
+              orden:
+                type: integer
+        fichaTecnica:
+          type: object
+          properties:
+            url:
+              type: string
+            storagePath:
+              type: string
+            nombreArchivo:
+              type: string
+        destacado:
+          type: boolean
+          default: false
+        publicado:
+          type: boolean
+          default: false
+
+    ProductoUpdate:
+      type: object
+      properties:
+        idExterno:
+          type: string
+        sku:
+          type: string
+        titulo:
+          type: string
+        slug:
+          type: string
+        descripcionBreve:
+          type: string
+        descripcionLarga:
+          type: string
+        categoriaId:
+          type: string
+        subcategoriaId:
+          type: string
+        atributos:
+          type: array
+          items:
+            type: object
+            properties:
+              nombre:
+                type: string
+              valor:
+                type: string
+        precio:
+          type: object
+          properties:
+            valor:
+              type: integer
+            visible:
+              type: boolean
+        stock:
+          type: object
+          properties:
+            disponible:
+              type: boolean
+            cantidad:
+              type: integer
+        galeria:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+              storagePath:
+                type: string
+              alt:
+                type: string
+              orden:
+                type: integer
+        fichaTecnica:
+          type: object
+          nullable: true
+          properties:
+            url:
+              type: string
+            storagePath:
+              type: string
+            nombreArchivo:
+              type: string
+        destacado:
+          type: boolean
+        publicado:
+          type: boolean
+
+    ProductoListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Producto'
+        meta:
+          $ref: '#/components/schemas/Pagination'
+
+    # === CATEGORÍAS ===
+    Categoria:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        slug:
+          type: string
+        orden:
+          type: integer
+        activa:
+          type: boolean
+        esDefault:
+          type: boolean
+        creadoEn:
+          type: string
+          format: date-time
+        actualizadoEn:
+          type: string
+          format: date-time
+
+    CategoriaCreate:
+      type: object
+      required: [nombre, slug]
+      properties:
+        nombre:
+          type: string
+        slug:
+          type: string
+        orden:
+          type: integer
+          default: 0
+        activa:
+          type: boolean
+          default: true
+
+    CategoriaUpdate:
+      type: object
+      properties:
+        nombre:
+          type: string
+        slug:
+          type: string
+        orden:
+          type: integer
+        activa:
+          type: boolean
+
+    # === SUBCATEGORÍAS ===
+    Subcategoria:
+      type: object
+      properties:
+        id:
+          type: string
+        categoriaId:
+          type: string
+        nombre:
+          type: string
+        slug:
+          type: string
+        orden:
+          type: integer
+        activa:
+          type: boolean
+        creadoEn:
+          type: string
+          format: date-time
+        actualizadoEn:
+          type: string
+          format: date-time
+
+    SubcategoriaCreate:
+      type: object
+      required: [categoriaId, nombre, slug]
+      properties:
+        categoriaId:
+          type: string
+        nombre:
+          type: string
+        slug:
+          type: string
+        orden:
+          type: integer
+          default: 0
+        activa:
+          type: boolean
+          default: true
+
+    SubcategoriaUpdate:
+      type: object
+      properties:
+        categoriaId:
+          type: string
+        nombre:
+          type: string
+        slug:
+          type: string
+        orden:
+          type: integer
+        activa:
+          type: boolean
+
+    # === USUARIOS ===
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "UID de Firebase Auth"
+        nombre:
+          type: string
+        email:
+          type: string
+        rol:
+          type: string
+          enum: [superadmin, admin, editor]
+        activo:
+          type: boolean
+        creadoPor:
+          type: string
+        creadoEn:
+          type: string
+          format: date-time
+        actualizadoEn:
+          type: string
+          format: date-time
+
+    UsuarioCreate:
+      type: object
+      required: [nombre, email, rol]
+      properties:
+        nombre:
+          type: string
+        email:
+          type: string
+          format: email
+        rol:
+          type: string
+          enum: [admin, editor]
+          description: "Solo superadmin puede crear superadmin; admin solo puede crear editor"
+        password:
+          type: string
+          format: password
+          description: "Contraseña inicial (Firebase Auth la gestiona)"
+
+    UsuarioUpdate:
+      type: object
+      properties:
+        nombre:
+          type: string
+        email:
+          type: string
+        rol:
+          type: string
+          enum: [superadmin, admin, editor]
+          description: "Cambio de rol: solo superadmin puede asignar admin; admin no puede cambiar rol de otros admins"
+        activo:
+          type: boolean
+
+    # === COTIZACIONES ===
+    Cotizacion:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        email:
+          type: string
+        telefono:
+          type: string
+        nombre_empresa:
+          type: string
+        mensaje:
+          type: string
+        estado:
+          type: string
+          enum: [pendiente, atendida]
+        creadoEn:
+          type: string
+          format: date-time
+
+    CotizacionCreate:
+      type: object
+      required: [nombre, email, nombre_empresa, mensaje]
+      properties:
+        nombre:
+          type: string
+        email:
+          type: string
+          format: email
+        telefono:
+          type: string
+        nombre_empresa:
+          type: string
+        mensaje:
+          type: string
+
+    CotizacionUpdate:
+      type: object
+      properties:
+        estado:
+          type: string
+          enum: [pendiente, atendida]
+
+  security:
+    - bearerAuth: []
 
 paths:
   /health:
@@ -60,4 +515,662 @@ paths:
                     type: string
                     example: ok
 
-  # Agregar endpoints reales del proyecto aquí
+  # === PRODUCTOS ===
+  /products:
+    get:
+      summary: Listar productos (con filtros, paginación)
+      security: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: categoriaId
+          in: query
+          schema:
+            type: string
+        - name: subcategoriaId
+          in: query
+          schema:
+            type: string
+        - name: publicado
+          in: query
+          schema:
+            type: boolean
+        - name: destacado
+          in: query
+          schema:
+            type: boolean
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [titulo, precio.valor, creadoEn, actualizadoEn]
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+      responses:
+        "200":
+          description: Lista paginada de productos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductoListResponse'
+        "400":
+          $ref: '#/components/schemas/Error'
+    post:
+      summary: Crear producto
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoCreate'
+      responses:
+        "201":
+          description: Producto creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Producto'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "409":
+          $ref: '#/components/schemas/Error'
+
+  /products/{id}:
+    get:
+      summary: Obtener producto por ID
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Producto'
+        "404":
+          $ref: '#/components/schemas/Error'
+    put:
+      summary: Actualizar producto completo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoUpdate'
+      responses:
+        "200":
+          description: Producto actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Producto'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'
+        "409":
+          $ref: '#/components/schemas/Error'
+    delete:
+      summary: Eliminar producto
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Producto eliminado
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'
+        "409":
+          $ref: '#/components/schemas/Error'
+
+  # === CATEGORÍAS ===
+  /categories:
+    get:
+      summary: Listar categorías
+      security: []
+      parameters:
+        - name: activa
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Lista de categorías
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Categoria'
+        "400":
+          $ref: '#/components/schemas/Error'
+    post:
+      summary: Crear categoría
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaCreate'
+      responses:
+        "201":
+          description: Categoría creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "409":
+          $ref: '#/components/schemas/Error'
+
+  /categories/{id}:
+    get:
+      summary: Obtener categoría por ID
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Categoría encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+        "404":
+          $ref: '#/components/schemas/Error'
+    put:
+      summary: Actualizar categoría
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoriaUpdate'
+      responses:
+        "200":
+          description: Categoría actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categoria'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'
+        "409":
+          $ref: '#/components/schemas/Error'
+    delete:
+      summary: Eliminar categoría (bloqueado si tiene productos o esDefault=true)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Categoría eliminada
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'
+        "409":
+          $ref: '#/components/schemas/Error'
+
+  # === SUBCATEGORÍAS ===
+  /subcategories:
+    get:
+      summary: Listar subcategorías (filtro opcional por categoriaId)
+      security: []
+      parameters:
+        - name: categoriaId
+          in: query
+          schema:
+            type: string
+        - name: activa
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Lista de subcategorías
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Subcategoria'
+        "400":
+          $ref: '#/components/schemas/Error'
+    post:
+      summary: Crear subcategoría
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubcategoriaCreate'
+      responses:
+        "201":
+          description: Subcategoría creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subcategoria'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "409":
+          $ref: '#/components/schemas/Error'
+
+  /subcategories/{id}:
+    get:
+      summary: Obtener subcategoría por ID
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Subcategoría encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subcategoria'
+        "404":
+          $ref: '#/components/schemas/Error'
+    put:
+      summary: Actualizar subcategoría
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubcategoriaUpdate'
+      responses:
+        "200":
+          description: Subcategoría actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subcategoria'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'
+        "409":
+          $ref: '#/components/schemas/Error'
+    delete:
+      summary: Eliminar subcategoría (bloqueado si tiene productos)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Subcategoría eliminada
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'
+        "409":
+          $ref: '#/components/schemas/Error'
+
+  # === USUARIOS (gestión panel admin) ===
+  /users:
+    get:
+      summary: Listar usuarios del panel admin
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Usuario'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+    post:
+      summary: Crear usuario (superadmin: admin/editor; admin: solo editor)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioCreate'
+      responses:
+        "201":
+          description: Usuario creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "409":
+          $ref: '#/components/schemas/Error'
+
+  /users/{id}:
+    get:
+      summary: Obtener usuario por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'
+    put:
+      summary: Actualizar usuario (rol, activo, nombre)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioUpdate'
+      responses:
+        "200":
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'
+        "409":
+          $ref: '#/components/schemas/Error'
+    patch:
+      summary: Actualización parcial (ej. solo estado activo)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioUpdate'
+      responses:
+        "200":
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'
+
+  # === COTIZACIONES ===
+  /quotes:
+    post:
+      summary: Crear cotización (público, sin auth)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CotizacionCreate'
+      responses:
+        "201":
+          description: Cotización creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cotizacion'
+        "400":
+          $ref: '#/components/schemas/Error'
+    get:
+      summary: Listar cotizaciones (admin, con auth)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: estado
+          in: query
+          schema:
+            type: string
+            enum: [pendiente, atendida]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Lista paginada de cotizaciones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cotizacion'
+                  meta:
+                    $ref: '#/components/schemas/Pagination'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+
+  /quotes/{id}:
+    get:
+      summary: Obtener cotización por ID (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Cotización encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cotizacion'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'
+    patch:
+      summary: Actualizar estado de cotización (admin: pendiente <-> atendida)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CotizacionUpdate'
+      responses:
+        "200":
+          description: Cotización actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cotizacion'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'

@@ -50,9 +50,9 @@ Auditoría sistemática de calidad de código en 8 fases. Usar antes de releases
 
 ### Fase 7: OpenSpec Alignment
 
-- El código implementado coincide con los escenarios en `.openspec/<change>/scenarios.md`
-- Los requirements en `.openspec/<change>/requirements.md` están cubiertos
-- Las tareas en `tasks.md` están completadas o actualizadas
+- El código implementado coincide con los escenarios en `openspec/changes/<change>/specs/**/scenarios.md`
+- Los requirements en `openspec/changes/<change>/specs/**/requirements.md` están cubiertos
+- Las tareas en `openspec/changes/<change>/tasks.md` están completadas o actualizadas
 - El contrato en `docs/api-spec.yml` refleja los cambios reales
 - El modelo de datos en `docs/data-model.md` está sincronizado
 
