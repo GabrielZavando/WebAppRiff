@@ -1,0 +1,63 @@
+openapi: 3.0.3
+info:
+  title: "[Nombre del Proyecto] API"
+  description: |
+    API del proyecto. Actualizar este archivo con los endpoints reales.
+    Este es el contrato entre frontend y backend — actualizar ANTES de implementar cambios.
+  version: "1.0.0"
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Desarrollo local
+  - url: https://api.tudominio.cl/v1
+    description: Producción
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        statusCode:
+          type: integer
+
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+security:
+  - bearerAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      security: []
+      responses:
+        "200":
+          description: API operativa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  # Agregar endpoints reales del proyecto aquí
