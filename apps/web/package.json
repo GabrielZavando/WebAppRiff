@@ -8,23 +8,25 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "lint": "eslint \"src/**/*.{ts,astro}\" --fix",
+    "lint": "eslint -c .eslintrc.cjs \"src/**/*.{ts,astro}\" --fix",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:smoke": "playwright test --project=chromium",
     "typecheck": "astro check && tsc --noEmit"
   },
   "dependencies": {
-    "astro": "^4.0.0",
     "@astrojs/tailwind": "^5.0.0",
+    "astro": "^4.0.0",
     "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
     "@types/node": "^20.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "eslint": "^8.56.0",
-    "eslint-plugin-astro": "^1.0.0",
+    "eslint-plugin-astro": "^1.7.0",
+    "eslint-plugin-sonarjs": "^4.2.0",
     "playwright": "^1.40.0",
     "typescript": "^5.3.0",
     "vitest": "^1.0.0"

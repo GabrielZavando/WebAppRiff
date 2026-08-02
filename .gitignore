@@ -5,6 +5,17 @@
 node_modules/
 .npm
 
+# Build outputs
+dist/
+.astro/
+build/
+
+# Test outputs
+coverage/
+test-results/
+playwright-report/
+*.tsbuildinfo
+
 # Entornos
 .env
 .env.local

@@ -1,0 +1,38 @@
+// ESLint config — Astro sites / landing
+export default [
+  {
+    ignores: ['dist/', 'node_modules/', '.astro/', '*.spec.ts'],
+  },
+  {
+    files: ['**/*.{ts,tsx,astro}'],
+    languageOptions: {
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: './tsconfig.json',
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        extraFileExtensions: ['.astro'],
+      },
+    },
+    plugins: {
+      '@typescript-eslint': await import('@typescript-eslint/eslint-plugin'),
+      astro: await import('eslint-plugin-astro'),
+      sonarjs: await import('eslint-plugin-sonarjs'),
+    },
+    rules: {
+      'max-lines': ['warn', { max: 400, skipBlankLines: true, skipComments: true }],
+      'complexity': ['warn', 10],
+      'sonarjs/cognitive-complexity': ['warn', 10],
+    },
+  },
+  {
+    files: ['**/*.astro'],
+    languageOptions: {
+      parser: await import('astro-eslint-parser'),
+      parserOptions: {
+        parser: await import('@typescript-eslint/parser'),
+        extraFileExtensions: ['.astro'],
+      },
+    },
+  },
+];
