@@ -1,0 +1,26 @@
+# Baseline pre-upgrade — Tarea 1.2
+# Inventario de clases Tailwind a migrar con `npx @tailwindcss/upgrade`
+# Generado: 2026-08-03
+
+## Clases que requieren rename en v4
+
+### bg-gradient-*  →  bg-linear-*
+- apps/web/src/components/Header.astro:13     `<header class="bg-gradient-to-r from-brand-navy to-brand-navy-light text-white">`
+- apps/web/src/components/TopHeader.astro:31   `class="hidden sm:flex h-9 items-center bg-brand-navy bg-gradient-to-r from-brand-navy to-brand-navy-light text-white text-sm"`
+- apps/web/src/components/__tests__/TopHeader.test.ts:83  `expect(html).toContain('bg-gradient-to-r from-brand-navy to-brand-navy-light');`  ← test assertion (manual update)
+- apps/web/src/components/__tests__/__snapshots__/TopHeader.test.ts.snap:3  (snapshot — regenerar con --updateSnapshot)
+- apps/web/src/components/__tests__/__snapshots__/Header.test.ts.snap:4  (snapshot — regenerar con --updateSnapshot)
+
+### shadow-sm  →  shadow-xs  (v4 renombra shadow-sm a shadow-xs)
+- apps/web/src/components/Header.astro:48     `... rounded shadow-sm transition-colors whitespace-nowrap"`
+- apps/web/src/components/__tests__/__snapshots__/Header.test.ts.snap:6  (snapshot — regenerar con --updateSnapshot)
+
+## Directivas @tailwind a reemplazar con @import "tailwindcss"
+
+- apps/web/src/styles/globals.css:1  `@tailwind base;`
+- apps/web/src/styles/globals.css:2  `@tailwind components;`
+- apps/web/src/styles/globals.css:3  `@tailwind utilities;`
+
+## Notas
+- shadow-lg: NO se usa (no hay matches en el grep)
+- Los tests de lib (navigation.test.ts, contact.test.ts) NO contienen clases Tailwind → no se ven afectados

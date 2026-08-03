@@ -13,20 +13,12 @@ module.exports = {
     'max-lines': ['warn', { max: 400, skipBlankLines: true, skipComments: true }],
     'complexity': ['warn', 10],
   },
-  ignorePatterns: ['dist/', 'node_modules/', '.astro/', '*.spec.ts'],
+  ignorePatterns: ['dist/', 'node_modules/', '.astro/', '*.spec.ts', '*.astro'],
   overrides: [
     {
       files: ['*.d.ts'],
       rules: {
         '@typescript-eslint/triple-slash-reference': 'off',
-      },
-    },
-    {
-      files: ['*.astro'],
-      parser: 'astro-eslint-parser',
-      parserOptions: {
-        parser: '@typescript-eslint/parser',
-        extraFileExtensions: ['.astro'],
       },
     },
   ],
