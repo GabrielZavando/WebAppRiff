@@ -224,22 +224,27 @@ test.describe('SearchForm (global search bar)', () => {
     await expect(page.getByRole('search')).toHaveCount(1);
   });
 
-  test('renders TopHeader → header → div[role=search] → main in DOM order', async ({ page }) => {
+  test('renders TopHeader → header → div[role=search] → page content in DOM order', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
 
     const topHeader = page.getByRole('region', { name: 'Barra de contacto' });
     const header = page.locator('header');
     const search = page.getByRole('search', { name: 'Buscar productos' });
-    const main = page.locator('main').first();
+    // The Layout <slot /> historically rendered a <main> placeholder from
+    // index.astro. After the change `banner-home`, the slot renders a hero
+    // <section> instead. We assert the order against the next visible
+    // landmark in the page after the search form, regardless of its tag,
+    // to keep the spec assertion stable across page-template changes.
+    const heroSection = page.locator('section').first();
 
     const topY = (await topHeader.boundingBox())!.y;
     const headerY = (await header.boundingBox())!.y;
     const searchY = (await search.boundingBox())!.y;
-    const mainY = (await main.boundingBox())!.y;
+    const slotY = (await heroSection.boundingBox())!.y;
 
     expect(topY).toBeLessThan(headerY);
     expect(headerY).toBeLessThan(searchY);
-    expect(searchY).toBeLessThan(mainY);
+    expect(searchY).toBeLessThan(slotY);
   });
 });
