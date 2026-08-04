@@ -1,20 +1,9 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import HeroBanner from '@/components/HeroBanner.astro';
+import { HERO_BANNER_CONTENT } from '@/lib/config/hero-banner';
 ---
 
 <Layout title="Riff Catálogo Digital">
-  <main class="flex-1 flex items-center justify-center">
-    <div class="text-center">
-      <h1 class="text-4xl md:text-6xl font-bold text-brand-navy mb-4">
-        Riff Catálogo Digital
-      </h1>
-      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-        Sitio público del catálogo de productos industriales. 
-        Construido con Astro + Tailwind CSS.
-      </p>
-      <div class="mt-8 text-sm text-gray-400">
-        <p>Proyecto en desarrollo — Fase A: Bootstrap completado</p>
-      </div>
-    </div>
-  </main>
+  <HeroBanner {...HERO_BANNER_CONTENT} />
 </Layout>

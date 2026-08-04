@@ -1,0 +1,73 @@
+---
+import type { HeroBannerProps } from '@/lib/types/hero-banner';
+import { splitHeadline } from '@/lib/config/hero-banner';
+
+interface Props extends HeroBannerProps {}
+
+const {
+  headline,
+  highlightedWord,
+  subtitle,
+  description,
+  ctas,
+  // `stats` is accepted on the props surface but intentionally not rendered
+  // in this change. It is reserved for the future change `stats-strip`. See
+  // design.md § Decisions / Goals for the rationale.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  stats: _stats,
+} = Astro.props;
+
+// Pure helper extracted to lib/config so the edge cases (word absent, word at
+// start/end, multiple occurrences) are testable without mounting the
+// component (frontend-standards § "Frontmatter sin lógica de negocio no
+// trivial"). `before` + `after` are the text fragments around the single
+// highlighted occurrence; when the word is absent or empty, `after === ""`
+// and we skip rendering the highlighted <span>.
+const [before, after] = splitHeadline(headline, highlightedWord);
+const shouldRenderHighlight = highlightedWord !== '' && before !== headline;
+---
+
+<!--
+  Dumb presentational component. All content (copy, CTAs, hrefs) comes via
+  props spread from `HERO_BANNER_CONTENT` in `lib/config/hero-banner.ts` by
+  `apps/web/src/pages/index.astro`. Single <h1> per page is preserved (this is
+  the only <h1> on the home); the subtitle is an <h2> subordinate to it.
+-->
+<section class="relative bg-gradient-to-br from-brand-navy via-brand-navy-light to-brand-navy overflow-hidden">
+  <!--
+    TODO: replace CSS-only background with real industrial image when the
+    client delivers the asset. For now the gradient + overlay simulate the
+    dark industrial mood referenced in docs/design/components/BannerHome.png
+    without adding an external asset dependency (design.md § Decision 4).
+  -->
+  <div class="absolute inset-0 opacity-30" aria-hidden="true"></div>
+
+  <div class="relative container mx-auto py-16 md:py-24">
+    <h1 class="text-4xl md:text-6xl font-bold text-white">
+      {before}{shouldRenderHighlight && <span class="text-brand-teal">{highlightedWord}</span>}{after}
+    </h1>
+    <h2 class="mt-4 text-xl md:text-2xl font-semibold text-white/90 max-w-3xl">
+      {subtitle}
+    </h2>
+    <p class="mt-6 text-base text-white/80 max-w-2xl">
+      {description}
+    </p>
+    <div class="mt-8 flex flex-col sm:flex-row gap-3">
+      {
+        ctas.map((cta) => (
+          <a
+            href={cta.href}
+            class:list={[
+              'px-8 py-3 font-bold uppercase tracking-wide text-sm rounded transition-colors',
+              cta.variant === 'primary'
+                ? 'bg-brand-teal hover:bg-teal-600 text-white'
+                : 'border-2 border-white text-white hover:bg-white hover:text-brand-navy',
+            ]}
+          >
+            {cta.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
