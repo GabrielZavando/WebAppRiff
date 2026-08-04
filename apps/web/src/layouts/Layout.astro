@@ -2,9 +2,12 @@
 import '@/styles/globals.css';
 import TopHeader from '@/components/TopHeader.astro';
 import Header from '@/components/Header.astro';
+import SearchForm from '@/components/SearchForm.astro';
 import { getContactInfo } from '@/lib/config/contact';
 import { NAVIGATION_ITEMS, getCtaConfig } from '@/lib/config/navigation';
+import { CATEGORY_OPTIONS, getSearchFormConfig } from '@/lib/config/search-form';
 import type { HeaderProps } from '@/lib/types/header';
+import type { SearchFormProps } from '@/lib/types/search-form';
 
 interface Props {
   title: string;
@@ -21,6 +24,17 @@ const headerProps: HeaderProps = {
   activePath: Astro.url.pathname,
   cta: getCtaConfig(),
   logoAlt: 'Riff',
+};
+
+// SearchForm initial state is read from the current URL's query params so the
+// form preserves user input when navigating back from /productos (e.g. via the
+// browser back button or a link). The component itself is dumb: it only
+// consumes these props and renders.
+const searchFormProps: SearchFormProps = {
+  categories: CATEGORY_OPTIONS,
+  config: getSearchFormConfig(),
+  initialQuery: Astro.url.searchParams.get('q') ?? '',
+  initialCategoriaId: Astro.url.searchParams.get('categoriaId') ?? '',
 };
 ---
 
@@ -47,6 +61,7 @@ const headerProps: HeaderProps = {
   <body class="min-h-screen flex flex-col">
     <TopHeader contact={contact} />
     <Header {...headerProps} />
+    <SearchForm {...searchFormProps} />
     <slot />
   </body>
 </html>
