@@ -1,0 +1,88 @@
+---
+import type { PanelHomeProps } from '@/lib/types/panel-home';
+
+interface Props extends PanelHomeProps {}
+
+const { eyebrow, headline, description, cta, stats } = Astro.props;
+---
+
+<!--
+  Dumb presentational component. All content (eyebrow, headline, description,
+  CTA and the 4 stats) comes via props spread from `PANEL_HOME_CONTENT` in
+  `lib/config/panel-home.ts` by `apps/web/src/pages/index.astro`.
+
+  Layout (see design.md § Decisions 2, 4, 11, 12):
+    - Outermost <section> stays full-width but carries the negative margin-top +
+      `relative` + `z-10` so the panel overlaps the HeroBanner above it
+      (~25% over / 75% under, design.md Decision 11).
+    - Inner `<div class="container mx-auto px-4 sm:px-6 lg:px-8">` constrains the
+      visible panel (teal+white) to the same max-width as the SearchForm (token
+      `.container` in globals.css), making the panel "float" over the banner and
+      aligning it with the rest of the site grid (design.md Decision 12).
+    - `grid grid-cols-1 lg:grid-cols-2` main grid stacks on mobile (< 1024px),
+      side-by-side on desktop (>= 1024px).
+    - Left half (bg-brand-teal): eyebrow, <h2> headline, description <p>, CTA <a>.
+    - Right half (bg-white): `grid-cols-2` 2x2 stats, each cell with <p> value
+      (navy bold) and <p> label (uppercase gray) — NO headings.
+
+  Accessibility (see design.md § Decision 6):
+    - The panel headline is a <h2>, NOT a <h1> (the home page has exactly one
+      <h1> and the HeroBanner owns it). No <h3>/<h4> are introduced inside the
+      panel so the document outline stays clean.
+    - The eyebrow is a <span> (decorative, uppercase), NOT a heading.
+    - The stat values/labels are <p> elements, NOT headings.
+-->
+<section class="relative -mt-8 md:-mt-12 lg:-mt-16 z-10">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2">
+      <!--
+        Left half — teal background with copy and the navy CTA. The CTA is
+        navy (not teal) so it contrasts against the panel background (design.md
+        § Decision 5). Description opacity is `text-white/80`; E2E contrast
+        tests may bump it to `text-white/90` or `text-white` to meet WCAG AA
+        Normal on the teal background (see design.md § Decision 10 post-apply
+        update — TODO pending the `design-system-revision` change).
+      -->
+      <div class="bg-brand-teal p-8 md:p-12 lg:p-16">
+        <span class="block text-sm font-bold uppercase tracking-wider text-white/80">
+          {eyebrow}
+        </span>
+        <h2 class="mt-3 text-2xl md:text-3xl lg:text-4xl font-bold text-white">
+          {headline}
+        </h2>
+        <p class="mt-4 text-white/80 max-w-md">
+          {description}
+        </p>
+        <a
+          href={cta.href}
+          class="mt-6 inline-block bg-brand-navy text-white font-bold uppercase text-sm px-6 py-3 rounded hover:bg-brand-navy-light transition-colors"
+        >
+          {cta.label}
+        </a>
+      </div>
+
+      <!--
+        Right half — white background with a 2x2 stats grid. The grid stays
+        at `grid-cols-2` on every viewport (design.md § Decision 3); the stat
+        values are short enough that they don't break at 320px (validated by
+        E2E 4.6).
+      -->
+      <div class="bg-white p-8 md:p-12">
+        <div class="grid grid-cols-2 gap-x-8 gap-y-12">
+          {
+            stats.map((stat) => (
+              <div>
+                <p class="text-3xl md:text-4xl font-bold text-brand-navy">
+                  {stat.value}
+                </p>
+                <p class="mt-2 text-xs md:text-sm uppercase tracking-wide text-gray-600">
+                  {stat.label}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,9 +1,12 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import HeroBanner from '@/components/HeroBanner.astro';
+import PanelHome from '@/components/PanelHome.astro';
 import { HERO_BANNER_CONTENT } from '@/lib/config/hero-banner';
+import { PANEL_HOME_CONTENT } from '@/lib/config/panel-home';
 ---
 
 <Layout title="Riff Catálogo Digital">
   <HeroBanner {...HERO_BANNER_CONTENT} />
+  <PanelHome {...PANEL_HOME_CONTENT} />
 </Layout>
