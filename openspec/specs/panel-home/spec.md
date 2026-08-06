@@ -4,69 +4,51 @@
 TBD - created by archiving change panel-home. Update Purpose after archive.
 ## Requirements
 ### Requirement: PanelHome renders the left half with eyebrow, headline, description and a navy CTA over a teal background
-The `panel-home` SHALL render its left half as a `<div>` (or equivalent) carrying the `bg-brand-teal` class, containing an eyebrow `<span>` (uppercase, not a heading), a headline `<h2>`, a description `<p>` and a single CTA `<a href="/contacto">` styled with `bg-brand-navy text-white`. The eyebrow SHALL NOT be rendered as a heading element (`<h1>`–`<h6>`).
+The `panel-home` SHALL render its left half as a `<div>` (or equivalent) carrying the `bg-primary` class (resolving to `--color-primary` `#41B3C4`), containing an eyebrow `<span>` (uppercase, not a heading), a headline `<h2>`, a description `<p>` and a single CTA `<a href="/contacto">` styled with `bg-secondary text-white` (resolving to navy `#1F2D40`). The eyebrow SHALL NOT be rendered as a heading element (`<h1>`–`<h6>`). The obsolete utilities `bg-brand-teal` and `bg-brand-navy`, and references to `--color-brand-teal` / `--color-brand-navy`, SHALL NOT appear anywhere in the panel.
 
-#### Scenario: Left half uses the brand-teal background token
+#### Scenario: Left half uses primary (not brand-teal)
 - **WHEN** the PanelHome renders
-- **THEN** the left half element carries a class containing `bg-brand-teal`
-- **AND** the left half does NOT carry `bg-white`, `bg-brand-navy` or any other background class that overrides the teal
+- **THEN** the left half `<div>` carries `bg-primary` (computing to `rgb(65, 179, 196)`)
+- **AND** its class string does NOT contain `bg-brand-teal`
 
-#### Scenario: Eyebrow renders as a non-heading uppercase span
-- **WHEN** the PanelHome renders with `eyebrow="DESDE 1979"`
-- **THEN** the left half contains a `<span>` (or `<p>`) element whose visible text equals "DESDE 1979"
-- **AND** the element carries a class expressing uppercase transformation (e.g. `uppercase`)
-- **AND** the element is NOT any of `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, `<h6>`
-
-#### Scenario: Headline renders as an h2 with white text
-- **WHEN** the PanelHome renders with `headline="Más de 40 Años de Liderazgo en la Medición y Control de Fluidos"`
-- **THEN** the left half contains an `<h2>` element whose visible text equals the headline verbatim
-- **AND** the `<h2>` carries a class expressing white text (e.g. `text-white`)
-
-#### Scenario: Description renders as a paragraph with reduced opacity and constrained width
-- **WHEN** the PanelHome renders with `description="Nuestra historia comienza..."`
-- **THEN** the left half contains a `<p>` element whose visible text equals the description verbatim
-- **AND** the `<p>` carries a class expressing reduced opacity relative to the headline (e.g. `text-white/80`, `text-white/90` or `text-white`)
-- **AND** the `<p>` carries a class constraining its max width (e.g. `max-w-md` or `max-w-lg`)
-
-#### Scenario: CTA renders as a navy anchor linking to /contacto
-- **WHEN** the PanelHome renders with `cta={ label: "SOLICITAR ASESORÍA TÉCNICA", href: "/contacto", variant: "primary" }`
-- **THEN** the left half contains an `<a href="/contacto">` element
-- **AND** the `<a>` carries a class containing `bg-brand-navy` and `text-white`
-- **AND** the `<a>` does NOT carry `bg-brand-teal` (the CTA color contrasts with the panel background)
-- **AND** the visible text of the `<a>` equals "SOLICITAR ASESORÍA TÉCNICA"
+#### Scenario: CTA uses secondary (not brand-navy)
+- **WHEN** the PanelHome renders the `/contacto` CTA
+- **THEN** the CTA `<a>` carries `bg-secondary text-white` (computing to `rgb(31, 45, 64)`)
+- **AND** its class string does NOT contain `bg-brand-navy`
 
 ### Requirement: PanelHome renders the right half with a 2×2 grid of four statistics over a white background
-The `panel-home` SHALL render its right half as a `<div>` (or equivalent) carrying the `bg-white` class, containing exactly four stat cells laid out in a `grid-cols-2` grid (2 rows × 2 columns). Each stat cell SHALL render the `value` as a large bold paragraph and the `label` as a small uppercase paragraph below it. The grid SHALL keep `grid-cols-2` across all viewports (mobile and desktop).
+The `panel-home` SHALL render its right half as a `<div>` (or equivalent) carrying the `bg-white` class, containing exactly four stat cells laid out in a `grid-cols-2` grid (2 rows × 2 columns). Each stat cell SHALL render the `value` as a large bold paragraph (with class `text-secondary` instead of the obsolete `text-brand-navy`) and the `label` as a small uppercase paragraph below it. The grid SHALL keep `grid-cols-2` across all viewports (mobile and desktop).
 
-#### Scenario: Right half uses the white background
-- **WHEN** the PanelHome renders
-- **THEN** the right half element carries a class containing `bg-white`
-- **AND** the right half does NOT carry `bg-brand-teal`, `bg-brand-navy` or any other background class
+#### Scenario: Stat value uses secondary (not brand-navy)
+- **WHEN** the PanelHome renders a stat cell
+- **THEN** the value `<p>` carries `text-secondary` (resolving to `#1F2D40`)
+- **AND** its class string does NOT contain `text-brand-navy`
 
-#### Scenario: Four stat cells are rendered
-- **WHEN** the PanelHome renders with `stats` of length `4`
-- **THEN** the right half contains exactly four stat cell elements
-- **AND** each stat cell contains a value element and a label element
+### Requirement: PanelHome meets WCAG AA contrast between white text and the teal background
+The `panel-home` SHALL meet WCAG AA contrast requirements between white text (`#FFFFFF`) and the teal background of the left half (now `--color-primary` `#41B3C4`):
 
-#### Scenario: Stat value renders as a bold navy paragraph
-- **WHEN** the PanelHome renders with `stats[0].value="40+"`
-- **THEN** the first stat cell contains a `<p>` (or equivalent) whose visible text equals "40+"
-- **AND** the element carries a class expressing bold weight (e.g. `font-bold`) and navy text (e.g. `text-brand-navy`)
+- The headline `<h2>` (bold, fontsize ≥ 18pt) SHALL meet WCAG AA Large (contrast ratio ≥ 3:1) against the teal background.
+- The description `<p>` SHALL meet WCAG AA Normal (contrast ratio ≥ 4.5:1) against the teal background. The opacity MAY be adjusted (e.g. `text-white/90` or solid `text-white`) to meet the threshold, OR — if the primary token `#41B3C4` cannot meet AA Normal even with solid white text — the background of the left half SHALL fall back to `--color-primary-darker` (`#227E8E`, ratio ≈ 3.95:1 to white) only when the AA Large fallback is required for text body.
 
-#### Scenario: Stat label renders as a small uppercase gray paragraph
-- **WHEN** the PanelHome renders with `stats[0].label="AÑOS DE EXPERIENCIA EN LA INDUSTRIA"`
-- **THEN** the first stat cell contains a `<p>` (or equivalent) whose visible text equals the label verbatim
-- **AND** the element carries a class expressing uppercase transformation (e.g. `uppercase`) and a gray text color (e.g. `text-gray-600`)
+The `test.skip()` calls in `apps/web/e2e/panel-home.spec.ts` for tasks 4.13 and 4.14 of the archived `panel-home` change SHALL be removed; the corresponding tests SHALL pass with the new tokens.
 
-#### Scenario: Stat cells are laid out in a 2×2 grid on every viewport
-- **WHEN** the PanelHome renders
-- **THEN** the right half contains a grid container with class `grid-cols-2`
-- **AND** the grid container does NOT carry `grid-cols-1` as the only column class (i.e. it does not collapse to a single column on mobile)
+#### Scenario: h2 white text meets WCAG AA Large on teal background
+- **WHEN** the Playwright E2E test 4.13 runs against the rendered PanelHome
+- **THEN** the computed `color` (expected `rgb(255, 255, 255)`) and `background-color` (expected to resolve from `--color-primary` `#41B3C4`) of the `<h2>` are read via `getComputedStyle`
+- **AND** the WCAG contrast ratio between them is ≥ 3.0
+- **AND** the test runs (not `test.skip()`ed)
 
-#### Scenario: Stat cells do not introduce heading elements
-- **WHEN** the PanelHome renders
-- **THEN** NO stat value or label element is rendered as `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>` or `<h6>`
-- **AND** stat values and labels are rendered as `<p>` or `<span>` or `<div>` elements
+#### Scenario: description <p> meets WCAG AA Normal on teal background
+- **WHEN** the Playwright E2E test 4.14 runs against the rendered PanelHome
+- **THEN** the computed `color` and `background-color` of the description `<p>` are read via `getComputedStyle`
+- **AND** the WCAG contrast ratio is ≥ 4.5
+- **OR** if the primary token `#41B3C4` with solid white text does not reach 4.5:1, the left half background is overridden locally to `--color-primary-darker` `#227E8E` and the test passes
+- **AND** the test runs (not `test.skip()`ed)
+
+#### Scenario: panel-home spec file contains no test.skip for 4.13/4.14
+- **WHEN** the source of `apps/web/e2e/panel-home.spec.ts` is inspected
+- **THEN** no `test.skip()` call exists for the tests named "WCAG AA Large contrast: h2 white text on teal background (4.13)" nor "WCAG AA Normal contrast: description <p> on teal; verify and adjust if failing (4.14)"
+- **AND** the tests are defined with a regular `test(...)` call and execute in CI
 
 ### Requirement: PanelHome layout is responsive: stacked on mobile, two columns on desktop
 The `panel-home` SHALL compose its two halves in a responsive grid: on mobile (`< 1024px`) the two halves stack vertically (left teal on top, right white on bottom, each full-width); on desktop (`>= 1024px`) the two halves sit side by side, each occupying 50% of the panel width. The breakpoint SHALL be `lg` (1024px).
@@ -156,4 +138,3 @@ The `apps/web/src/pages/index.astro` SHALL render `<HeroBanner {...HERO_BANNER_C
 - **WHEN** the home page renders
 - **THEN** the rendered HTML keeps the existing order: `<TopHeader />`, then `<header>` (site-header), then the SearchForm `<div role="search">`, then the HeroBanner `<section>`, then the PanelHome `<section>`
 - **AND** the count of `<header>` elements in the document is still exactly one (no new landmark is introduced)
-

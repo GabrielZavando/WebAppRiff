@@ -4,24 +4,17 @@
 TBD - created by archiving change search-form. Update Purpose after archive.
 ## Requirements
 ### Requirement: SearchForm renders a category select with a default option
-The search-form SHALL render a `<select>` populated from the `categories` prop, where the first option is `{ id: "", label: "Todas las categorías" }` and is pre-selected when `initialCategoriaId` is empty.
+The search-form SHALL render a `<select>` populated from the `categories` prop, where the first option is `{ id: "", label: "Todas las categorías" }` and is pre-selected when `initialCategoriaId` is empty. The select border SHALL use the `--color-border` (`#E3E8ED`) token; the selected/focused state SHALL use a primary-color ring via `focus:border-primary` (resolving to `#41B3C4`). Hex literals SHALL NOT appear in `class` attributes.
 
-#### Scenario: Default option renders with empty value
-- **WHEN** the SearchForm renders with default props
-- **THEN** a `<select>` element is rendered with `name="categoriaId"`
-- **AND** its first `<option>` has `value=""` and visible text "Todas las categorías"
-- **AND** that first option carries the `selected` attribute
+#### Scenario: Border uses color-border token
+- **WHEN** the search-form renders its `<select>` in default state
+- **THEN** the select element's border color resolves from the `--color-border` token
+- **AND** no literal `#E3E8ED` appears in `class` attributes of the rendered HTML
 
-#### Scenario: Category options come from the categories prop in order
-- **WHEN** the SearchForm renders with `categories` containing three options plus the default
-- **THEN** the `<select>` renders four `<option>` elements total (default first, then the three in the order provided)
-- **AND** each non-default option carries the `id` as `value` and the `label` as visible text
-
-#### Scenario: Initial category pre-selected when provided
-- **WHEN** the SearchForm renders with `initialCategoriaId="herramientas"`
-- **AND** `categories` contains an option with `id="herramientas"`
-- **THEN** the option with `value="herramientas"` carries the `selected` attribute
-- **AND** the default "Todas las categorías" option does NOT carry `selected`
+#### Scenario: Focus state uses primary token
+- **WHEN** the select receives focus
+- **THEN** its border color resolves from `--color-primary` (`#41B3C4`)
+- **AND** the class string does NOT contain literal `#41B3C4`
 
 ### Requirement: SearchForm renders a labelled search input
 The search-form SHALL render a `<input type="search">` with `name="q"`, the configured placeholder, and a visually associated `<label>`.
@@ -39,13 +32,13 @@ The search-form SHALL render a `<input type="search">` with `name="q"`, the conf
 - **AND** `initialQuery` is reflected verbatim without trimming in the rendered value
 
 ### Requirement: SearchForm renders the submit button
-The search-form SHALL render a `<button type="submit">` labelled with the configured submit text using the `brand-orange` background token.
+The search-form SHALL render a `<button type="submit">` labelled with the configured submit text using the `--color-accent` (`#F26A21`) token via the Tailwind utility `bg-accent` (with a hover state derived from `--color-accent-dark` `#D14E12` or an alpha overlay of the accent color). The obsolete utility `bg-brand-orange` and references to `--color-brand-orange` SHALL NOT appear.
 
-#### Scenario: Submit button rendered
-- **WHEN** the SearchForm renders with default config
-- **THEN** a `<button type="submit">` is rendered inside the `<form>`
-- **AND** its visible text equals the configured submit label (default "BUSCAR")
-- **AND** the button carries a class containing `bg-brand-orange`
+#### Scenario: Submit button uses accent token
+- **WHEN** the search-form renders
+- **THEN** the `<button type="submit">` carries the `bg-accent` class (resolving to `#F26A21`)
+- **AND** its `class` attribute does NOT contain `bg-brand-orange`
+- **AND** the label text is the configured `submitLabel`
 
 ### Requirement: SearchForm is wrapped in a search landmark
 The search-form SHALL be wrapped by a single element with `role="search"` and a non-empty `aria-label`, distinct from the page `<header>` landmark.
@@ -178,4 +171,3 @@ The SearchForm SHALL render below `<Header />` and above the page slot on every 
 - **WHEN** any page renders with the updated Layout
 - **THEN** exactly one `<header>` element exists in the document (from site-header)
 - **AND** the SearchForm does NOT introduce a new `<header>`
-

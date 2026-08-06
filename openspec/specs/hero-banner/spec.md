@@ -4,32 +4,13 @@
 Sección hero del home del sitio público Astro. Componente presentacional (dumb) que renderiza headline + palabra destacada, subtítulo, descripción y dos CTAs (primario teal + secundario outline blanco) sobre un fondo navy generado con CSS placeholder (sin imagen externa). Layout responsivo (mobile stacked, desktop horizontal). Headline único `<h1>` de la home, subtítulo `<h2>` subordinado.
 ## Requirements
 ### Requirement: HeroBanner renders the headline with the highlighted word in a distinct color
-The `hero-banner` SHALL render an `<h1>` whose visible text equals `headline` followed by `highlightedWord`, where `highlightedWord` is wrapped in a `<span>` carrying the `text-brand-teal` class so it visually stands out from the rest of the headline.
+The `hero-banner` SHALL render an `<h1>` whose visible text equals `headline` followed by `highlightedWord`, where `highlightedWord` is wrapped in a `<span>` carrying the `text-primary` class (resolving to `--color-primary` `#41B3C4`) so it visually stands out from the rest of the headline. The obsolete utility `text-brand-teal` and references to `--color-brand-teal` SHALL NOT appear.
 
-#### Scenario: Highlighted word appears in the middle of the headline
-- **WHEN** the HeroBanner renders with `headline="Innovación que Fluye"` and `highlightedWord="Fluye"`
-- **THEN** the rendered `<h1>` contains the literal text "Innovación que " followed by a `<span class="text-brand-teal">Fluye</span>`
-- **AND** the visible concatenated text reads "Innovación que Fluye" (the original single space is preserved, no extra whitespace is introduced by the split)
-
-#### Scenario: Highlighted word appears at the start of the headline
-- **WHEN** the HeroBanner renders with `headline="Fluye con nosotros"` and `highlightedWord="Fluye"`
-- **THEN** the rendered `<h1>` contains a `<span class="text-brand-teal">Fluye</span>` followed by the literal text " con nosotros"
-- **AND** the visible concatenated text reads "Fluye con nosotros"
-
-#### Scenario: Highlighted word appears at the end of the headline
-- **WHEN** the HeroBanner renders with `headline="Innovación que Fluye"` and `highlightedWord="Fluye"`
-- **THEN** the rendered `<h1>` shows the literal "Innovacion que " (trimmed) followed by `<span class="text-brand-teal">Fluye</span>`
-- **AND** the visible concatenated text reads "Innovación que Fluye"
-
-#### Scenario: Highlighted word not present in headline does not break the render
-- **WHEN** the HeroBanner renders with `headline="Bienvenido"` and `highlightedWord="Fluye"`
-- **THEN** the rendered `<h1>` contains the literal text "Bienvenido"
-- **AND** NO `<span class="text-brand-teal">` element is rendered
-
-#### Scenario: Only the first occurrence of the highlighted word is highlighted
-- **WHEN** the HeroBanner renders with `headline="Fluye y vuelve a Fluye"` and `highlightedWord="Fluye"`
-- **THEN** the rendered `<h1>` contains exactly one `<span class="text-brand-teal">Fluye</span>`
-- **AND** the second occurrence of "Fluye" remains plain text without the span
+#### Scenario: Highlighted word uses primary token
+- **WHEN** the HeroBanner renders with headline "Innovación que Fluye" and highlightedWord "Fluye"
+- **THEN** the `<h1>` contains a `<span>` element wrapping "Fluye"
+- **AND** that `<span>` carries the `text-primary` class (resolving to `#41B3C4`)
+- **AND** the rendered HTML does NOT contain the class `text-brand-teal`
 
 ### Requirement: HeroBanner renders subtitle and description in subordinate headings and paragraphs
 The `hero-banner` SHALL render `subtitle` as an `<h2>` directly subordinate to the `<h1>`, with a constrained maximum width, and `description` as a `<p>` with reduced opacity, both inside the same `<section>` as the headline.
@@ -46,41 +27,26 @@ The `hero-banner` SHALL render `subtitle` as an `<h2>` directly subordinate to t
 - **AND** the `<p>` carries a class constraining its max width (e.g. `max-w-2xl`)
 
 ### Requirement: HeroBanner renders two CTA buttons with primary and secondary variants
-The `hero-banner` SHALL render one `<a>` per element of the `ctas` prop, where the element with `variant: 'primary'` carries the `bg-brand-teal` background token and the element with `variant: 'secondary'` carries a white border with no fill, both with uppercase labels.
+The `hero-banner` SHALL render one `<a>` per element of the `ctas` prop, where the element with `variant: 'primary'` carries the `bg-primary` background token (resolving to `#41B3C4`) and the element with `variant: 'secondary'` carries a white border with no fill, both with uppercase labels. The obsolete utilities `bg-brand-teal` and references to `--color-brand-teal` SHALL NOT appear in any CTA.
 
-#### Scenario: Primary CTA renders with teal background
-- **WHEN** the HeroBanner renders with `ctas` containing one element `{ label: "VER SERVICIOS", href: "/servicios", variant: "primary" }`
-- **THEN** the rendered `<a href="/servicios">` carries a class containing `bg-brand-teal`
-- **AND** its visible text equals "VER SERVICIOS"
-- **AND** the text color class is `text-white`
+#### Scenario: Primary CTA uses bg-primary
+- **WHEN** the HeroBanner renders a primary-variant CTA
+- **THEN** the `<a>` element carries `bg-primary` (resolving to `#41B3C4`)
+- **AND** its class string does NOT contain `bg-brand-teal`
 
-#### Scenario: Secondary CTA renders with white border and no fill
-- **WHEN** the HeroBanner renders with `ctas` containing one element `{ label: "ESCRÍBENOS", href: "/contacto", variant: "secondary" }`
-- **THEN** the rendered `<a href="/contacto">` carries a class containing `border-white` (or `border-2 border-white`)
-- **AND** its visible text equals "ESCRÍBENOS"
-- **AND** the element does NOT carry any `bg-brand-teal` or `bg-*` fill class
-
-#### Scenario: CTAs render in the order provided by the prop
-- **WHEN** the HeroBanner renders with `ctas` in order `[primary, secondary]`
-- **THEN** the primary `<a>` appears in the DOM before the secondary `<a>`
-
-#### Scenario: CTA container stacks on mobile and lays out horizontally on `sm:` and up
-- **WHEN** the HeroBanner renders
-- **THEN** the CTAs are wrapped in a single container element
-- **AND** the container carries a layout class that stacks vertically on mobile (`flex-col`) and switches to horizontal on small breakpoints and up (`sm:flex-row`)
+#### Scenario: Secondary CTA keeps white border
+- **WHEN** the HeroBanner renders a secondary-variant CTA
+- **THEN** the `<a>` element has a white border (`border-2 border-white`) with no fill
+- **AND** the CTA is keyboard focusable
 
 ### Requirement: HeroBanner uses a CSS-only placeholder background, no external image
-The `hero-banner` SHALL render its background using Tailwind CSS utilities only (gradients and overlays), without referencing any external image file, URL, or asset, so the build has zero new external dependencies.
+The `hero-banner` SHALL render its background using Tailwind CSS utilities only (gradients and overlays), without referencing any external image file, URL, or asset, so the build has zero new external dependencies. The gradient SHALL use the new tokens `from-secondary via-secondary-light to-secondary` (navy gradient) — the obsolete utilities `from-brand-navy`, `via-brand-navy-light`, `to-brand-navy` SHALL NOT appear.
 
-#### Scenario: Hero section uses gradient utilities for the background
-- **WHEN** the HeroBanner renders
-- **THEN** the outermost `<section>` carries Tailwind classes expressing a gradient background (e.g. `bg-gradient-to-br from-brand-navy via-brand-navy-light to-brand-navy`)
-- **AND** no `<img>`, `<picture>`, or inline `style="background-image: url(...)"` attribute is present referencing an external asset
-
-#### Scenario: Background covers the full hero height with no seams
-- **WHEN** the HeroBanner renders
-- **THEN** the background layer element(s) carry an `absolute inset-0` (or equivalent) class so they fill the entire `<section>` area
-- **AND** the content layer above has `relative` positioning so it sits on top of the background
+#### Scenario: Gradient uses secondary tokens
+- **WHEN** the HeroBanner renders its `<section>` background
+- **THEN** the class string contains `from-secondary`, `via-secondary-light`, and `to-secondary`
+- **AND** no `brand-navy` substring appears in the rendered HTML of the section
+- **AND** no external image URL or asset path is referenced
 
 ### Requirement: HeroBanner layout is responsive across viewports
 The `hero-banner` SHALL scale its typography and spacing based on the viewport: smaller on mobile (< 768px) and larger on desktop (>= 768px), with the CTA container switching between stacked and inline layouts at the `sm` breakpoint.
@@ -156,4 +122,3 @@ The `apps/web/src/pages/index.astro` SHALL render `<HeroBanner {...HERO_BANNER_C
 - **WHEN** the home page renders
 - **THEN** the rendered HTML keeps the existing order: `<TopHeader />`, then `<header>` (from site-header), then the SearchForm `<div role="search">`, then the hero `<section>` from the HeroBanner
 - **AND** the count of `<header>` elements in the document is still exactly one (the SearchForm remains in its own `role="search"` landmark)
-

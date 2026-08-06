@@ -1,8 +1,7 @@
-# site-header Specification
+# site-header Specification — delta for design-system-revision
 
-## Purpose
-Header principal global del sitio público: logo, navegación de 5 items con estado activo por ruta y CTA de cotización; colapsa a hamburguesa en mobile.
-## Requirements
+## MODIFIED Requirements
+
 ### Requirement: Header renders logo link
 The site-header SHALL render a logo link pointing to the home page. The header container SHALL use the `--color-secondary` (navy `#1F2D40`) and `--color-secondary-light` (`#35455E`) tokens via Tailwind utilities `bg-secondary` / a gradient `from-secondary to-secondary-light`; the obsolete utilities `bg-brand-navy`, `from-brand-navy`, `to-brand-navy-light` SHALL NOT appear.
 
@@ -11,15 +10,6 @@ The site-header SHALL render a logo link pointing to the home page. The header c
 - **THEN** the logo link has `href="/"`
 - **AND** the logo link is inside a container with a gradient `from-secondary to-secondary-light`
 - **AND** the rendered HTML contains no `brand-navy` token references
-
-### Requirement: Header renders navigation items in order
-The site-header SHALL render the navigation items from the hardcoded `NAVIGATION_ITEMS` constant in the declared order.
-
-#### Scenario: All five items displayed
-- **WHEN** the Header renders on a desktop viewport (>= 1024px)
-- **THEN** five links are rendered inside a `<nav aria-label="Navegación principal">`
-- **AND** the labels appear in order: Inicio, Nosotros, Servicios, Representaciones, Contacto
-- **AND** each link has the `href` declared in `NAVIGATION_ITEMS`
 
 ### Requirement: Header marks the active item
 The site-header SHALL mark the navigation item matching the current path as active. The active state SHALL visually indicate selection via an underline using the `--color-primary` (`#41B3C4`) token (utility `after:bg-primary`), and inactive items SHALL show `text-white/80` with hover `text-white`. The obsolete utility `after:bg-brand-orange` and references to `--color-brand-orange` SHALL NOT appear.
@@ -54,6 +44,8 @@ The site-header SHALL collapse the desktop navigation into a toggleable hamburge
 - **AND** the `aria-expanded` attribute on the toggle button switches between `"true"` and `"false"`
 - **AND** the `aria-label` switches between "Abrir menú" and "Cerrar menú"
 
+## ADDED Requirements
+
 ### Requirement: Header does not depend on local SVG icon components
 The site-header SHALL obtain its menu and close icons via `astro-icon` (`<Icon>` element) from the Material Symbols Outline set. The files `apps/web/src/components/icons/MenuIcon.astro` and `apps/web/src/components/icons/CloseIcon.astro` SHALL not exist after this change.
 
@@ -66,37 +58,3 @@ The site-header SHALL obtain its menu and close icons via `astro-icon` (`<Icon>`
 - **WHEN** the source of `apps/web/src/components/Header.astro` is inspected
 - **THEN** it contains `import { Icon } from 'astro-icon/components'` (or equivalent Astro import)
 - **AND** it does not import `MenuIcon.astro` or `CloseIcon.astro`
-
-### Requirement: Header accessibility
-The site-header SHALL meet accessibility requirements and ensure a single `<header>` landmark per page.
-
-#### Scenario: Semantic landmarks
-- **WHEN** the page renders the Header and TopHeader together
-- **THEN** exactly one `<header>` element exists in the document
-- **AND** the TopHeader wrapper is a non-landmark element (`<div role="region" aria-label="Barra de contacto">`)
-- **AND** the navigation is wrapped in `<nav aria-label="Navegación principal">`
-
-#### Scenario: Interactive element labels
-- **WHEN** the Header renders
-- **THEN** the logo link has `aria-label="Ir al inicio"`
-- **AND** the mobile toggle has an `aria-label` describing its action
-- **AND** the active nav item has `aria-current="page"`
-
-### Requirement: Navigation configuration is hardcoded
-The navigation items SHALL come from the hardcoded `NAVIGATION_ITEMS` constant, and the CTA SHALL come from `getCtaConfig()` with graceful fallback to defaults.
-
-#### Scenario: CTA config with env vars absent
-- **WHEN** `CTA_LABEL` and `CTA_HREF` environment variables are not set
-- **THEN** `getCtaConfig()` returns `{ label: 'SOLICITAR COTIZACIÓN', href: '/cotizacion' }`
-
-#### Scenario: CTA config with env vars present
-- **WHEN** `CTA_LABEL` and `CTA_HREF` environment variables are set
-- **THEN** `getCtaConfig()` returns their values
-
-### Requirement: CTA destination page exists
-The site SHALL serve the CTA destination page at `/cotizacion`.
-
-#### Scenario: Cotizacion page responds
-- **WHEN** a GET request is made to `/cotizacion`
-- **THEN** the server responds with HTTP 200
-- **AND** the page contains the heading "Solicitar cotización"
