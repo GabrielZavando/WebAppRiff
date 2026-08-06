@@ -2,10 +2,17 @@
 import type { HeaderProps } from '@/lib/types/header';
 import { isActive } from '@/lib/config/navigation';
 import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import logoImage from '@/assets/img/logo-web.webp';
 
 interface Props extends HeaderProps {}
 
-const { items, activePath, cta } = Astro.props;
+const { items, activePath, cta, logoAlt } = Astro.props;
+
+// `logoAlt` is optional in the props contract; the image component requires a
+// non-null alt, so we fall back to the brand name (type contract in
+// lib/types/header.ts).
+const logoAltText = logoAlt ?? 'Riff';
 ---
 
 <!-- Main site header: logo, desktop navigation, quote CTA and mobile toggle. -->
@@ -13,12 +20,13 @@ const { items, activePath, cta } = Astro.props;
   <div class="container mx-auto px-4 h-24 flex items-center justify-between gap-4">
     <a href="/" aria-label="Ir al inicio" class="shrink-0">
       <!-- TODO[site-header-scroll-animations]: logo shrinks on scroll in a future change -->
-      <!-- TODO[user]: replace the placeholder with <img src="/logos/riff.svg" alt={logoAlt} width="165" height="80" /> when the real logo is provided -->
-      <div
-        class="w-[165px] h-[80px] flex items-center justify-center bg-white/5 border border-dashed border-white/20 text-white/40 text-xs uppercase tracking-wider"
-      >
-        Logo placeholder
-      </div>
+      <Image
+        src={logoImage}
+        alt={logoAltText}
+        width={165}
+        height={67}
+        class="h-auto w-[165px]"
+      />
     </a>
 
     <nav aria-label="Navegación principal" class="hidden lg:flex items-center gap-1">
