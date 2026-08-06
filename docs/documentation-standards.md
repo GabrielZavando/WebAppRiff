@@ -31,6 +31,11 @@ Cada servicio o módulo relevante debe tener un README con:
 - Incluir: campos, tipos, relaciones, índices, constraints
 - Mantener sincronizado con migraciones de base de datos
 
+## Design Tokens
+
+- `docs/design/style-guide/README.md` documenta el sistema canónico de design tokens (colores, tipografías, radio, sombras, iconos) y es la referencia operativa para desarrolladores.
+- Los tokens se implementan como `@theme {}` de Tailwind v4 en `apps/web/src/styles/globals.css` y `apps/admin/src/styles/globals.css` (sincronizados manualmente).
+
 ## Comentarios en código
 
 ```typescript

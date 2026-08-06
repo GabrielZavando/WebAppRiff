@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Estilos · Sistema de Diseño</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/montserrat@latest/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/montserrat@latest/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/montserrat@latest/800.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/open-sans@latest/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/open-sans@latest/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/open-sans@latest/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/open-sans@latest/400-italic.css">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --primary:#41B3C4; --primary-dark:#2E9AAD; --primary-darker:#227E8E; --primary-light:#D2EEF2; --primary-100:#EAF7F9;
+  --secondary:#1F2D40; --secondary-dark:#16202E; --secondary-light:#35455E;
+  --accent:#F26A21; --accent-dark:#D14E12; --accent-darker:#B03E0E; --accent-light:#FDE8DC;
+  --text:#1F2D40; --text-2:#5C6675; --muted:#98A1AC; --border:#E3E8ED; --bg:#F6F8FA; --white:#FFFFFF;
+  --success:#25D366; --success-dark:#149A49; --success-light:#E4F8EC;
+  --warning:#F5B01E; --warning-dark:#9A6E08; --warning-light:#FEF4DC;
+  --error:#E0453A; --error-dark:#B93127; --error-light:#FCE9E7;
+  --info:#2D9CDB; --info-dark:#1B74A6; --info-light:#E7F3FB;
+  --shadow-1:0 1px 2px rgba(22,32,46,.06); --shadow-2:0 2px 6px rgba(22,32,46,.08);
+  --shadow-3:0 4px 12px rgba(22,32,46,.10); --shadow-4:0 8px 20px rgba(22,32,46,.12); --shadow-5:0 12px 28px rgba(22,32,46,.14);
+  --font-heading:"Montserrat",sans-serif; --font-body:"Open Sans",sans-serif;
+  --radius:2px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--text);background:var(--bg);font-size:14px;line-height:1.6}
+.container{max-width:1160px;margin:0 auto;padding:0 24px}
+img{max-width:100%;display:block}
+section{padding:60px 0;scroll-margin-top:76px}
+
+/* ============ TOPBAR ============ */
+.topbar{background:var(--white);border-bottom:1px solid var(--border)}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:16px}
+.badge-num{width:46px;height:46px;background:var(--secondary);color:var(--white);font:700 16px var(--font-heading);display:grid;place-items:center;border-radius:var(--radius);flex:none}
+.brand h1{font:700 22px var(--font-heading);letter-spacing:.2px}
+.brand p{font-size:12.5px;color:var(--text-2)}
+.font-cards{display:flex;gap:12px}
+.font-card{border:1px solid var(--border);background:var(--white);padding:10px 22px;text-align:center;border-radius:var(--radius)}
+.font-card strong{display:block;font-size:15px;line-height:1.3}
+.font-card .fm{font-family:var(--font-heading);font-weight:700}
+.font-card .fo{font-family:var(--font-body);font-weight:600}
+.font-card span{font-size:11px;color:var(--text-2)}
+
+/* ============ NAV ============ */
+.nav{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:60}
+.nav .container{display:flex;gap:2px;overflow-x:auto}
+.nav a{font:600 11.5px var(--font-heading);letter-spacing:.9px;text-transform:uppercase;color:var(--text-2);text-decoration:none;padding:15px 14px;border-bottom:3px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s}
+.nav a:hover{color:var(--primary-darker)}
+.nav a.active{color:var(--primary-darker);border-bottom-color:var(--primary)}
+
+/* ============ SECTION HEAD ============ */
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.sec-num{width:34px;height:34px;background:var(--secondary);color:var(--white);font:700 13px var(--font-heading);display:grid;place-items:center;border-radius:var(--radius);flex:none}
+.sec-head h2{font:700 26px var(--font-heading);position:relative;padding-bottom:12px}
+.sec-head h2::after{content:"";position:absolute;left:0;bottom:0;width:48px;height:3px;background:var(--primary)}
+.sec-desc{color:var(--text-2);font-size:13.5px;margin:10px 0 30px;max-width:760px}
+
+.panel{background:var(--white);border:1px solid var(--border);border-radius:4px;padding:28px}
+.row-label{font-size:12px;color:var(--text-2)}
+
+/* ============ 01 TIPOGRAFÍA ============ */
+.type-fonts{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:26px}
+.font-panel{display:flex;gap:22px;align-items:center}
+.aa{font-size:84px;line-height:1;color:var(--secondary)}
+.aa-m{font-family:var(--font-heading);font-weight:700}
+.aa-o{font-family:var(--font-body);font-weight:400}
+.font-meta h3{font:700 17px var(--font-heading);margin-bottom:6px}
+.font-meta p{font-size:12.5px;color:var(--text-2)}
+.font-meta .use-tag{display:inline-block;margin-top:8px;padding:3px 9px;font:600 10.5px var(--font-body);border-radius:var(--radius);background:var(--primary-light);color:var(--primary-darker)}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px}
+.type-demo h1{font:700 44px/1.15 var(--font-heading);margin-bottom:22px}
+.type-demo h2{font:700 34px/1.2 var(--font-heading);margin-bottom:20px}
+.type-demo h3{font:600 28px/1.25 var(--font-heading);margin-bottom:18px}
+.type-demo h4{font:600 22px/1.3 var(--font-heading);margin-bottom:16px}
+.type-demo h5{font:600 18px/1.35 var(--font-heading);margin-bottom:14px}
+.type-demo h6{font:600 16px/1.4 var(--font-heading);margin-bottom:14px}
+.type-demo .h7{font:600 14px var(--font-heading);margin-bottom:12px}
+.type-demo .h8{font:600 12.5px var(--font-heading);margin-bottom:12px}
+.type-demo .h9{font:600 11px var(--font-heading);letter-spacing:.6px;text-transform:uppercase}
+.intro-text{font-size:15px;line-height:1.75;margin-bottom:22px}
+.body-text{font-size:13px;line-height:1.75;color:var(--text-2);margin-bottom:26px}
+.type-quote{font-family:var(--font-body);font-style:italic;font-size:17px;line-height:1.6;text-align:center;margin:30px 0;color:var(--text)}
+.type-quote cite{display:block;margin-top:10px;font-style:normal;font-size:12.5px;color:var(--text-2)}
+.tiny-text{font-size:11px;line-height:1.65;color:var(--text-2)}
+
+/* ============ 02 ENLACES ============ */
+.links-grid{display:grid;grid-template-columns:90px repeat(5,1fr);gap:20px 22px;align-items:start}
+.lg-head{font:600 12px var(--font-body);color:var(--text-2);padding-bottom:6px;border-bottom:1px solid var(--border)}
+.tl{font-family:var(--font-body);font-size:13px;color:var(--primary-dark);text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:color .15s}
+.tl svg{width:14px;height:14px;transition:transform .15s}
+.tl-primary{font-weight:700}
+.tl-secondary{color:var(--text-2)}
+.tl-underline{text-decoration:underline}
+.tl:hover,.tl.st-hover{color:var(--primary-darker)}
+.tl-secondary:hover,.tl-secondary.st-hover{color:var(--primary-dark)}
+.tl:hover svg,.tl.st-hover svg{transform:translateX(3px)}
+.tl:active,.tl.st-active{color:var(--secondary);text-decoration:underline}
+.link-paragraph{margin-top:30px}
+.link-paragraph p{font-size:13px;color:var(--text-2);margin-bottom:14px;max-width:820px}
+
+/* ============ 03 COLORES ============ */
+.color-group{margin-bottom:36px}
+.group-title{font:600 14px var(--font-heading);margin-bottom:2px}
+.group-sub{font-size:12px;color:var(--text-2);margin-bottom:16px}
+.swatches{display:flex;gap:20px;flex-wrap:wrap}
+.swatch{width:92px;text-align:center;cursor:pointer;border:none;background:none;font-family:inherit}
+.sw-dot{width:64px;height:64px;border-radius:50%;margin:0 auto 10px;transition:transform .15s}
+.swatch:hover .sw-dot{transform:scale(1.08)}
+.sw-dot.bordered{border:1px solid var(--border)}
+.sw-hex{font:600 12px var(--font-body);color:var(--text)}
+.sw-role{font-size:10.5px;color:var(--text-2);margin-top:2px;line-height:1.4}
+
+/* ============ 04 ELEVACIÓN ============ */
+.band{background:#E9EDF2;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.sh-layout{display:grid;grid-template-columns:1fr 250px;gap:34px;align-items:start}
+.sh-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.sh-item .row-label{display:block;margin-bottom:10px}
+.sh-card{background:var(--white);height:120px;border-radius:var(--radius)}
+.sh0{border:1px solid var(--border)}
+.sh1{box-shadow:var(--shadow-1)} .sh2{box-shadow:var(--shadow-2)} .sh3{box-shadow:var(--shadow-3)} .sh4{box-shadow:var(--shadow-4)} .sh5{box-shadow:var(--shadow-5)}
+.sh-tip{font-size:12.5px;color:var(--text-2);border-left:3px solid var(--primary);padding-left:14px}
+.sh-tip strong{color:var(--text)}
+
+/* ============ 05 INPUTS ============ */
+.field-grid{display:grid;grid-template-columns:100px repeat(3,1fr);gap:22px 22px;align-items:start}
+.field-grid .row-label{padding-top:28px}
+.field label{display:block;font:600 12px var(--font-body);color:var(--text-2);margin-bottom:6px}
+.control{width:100%;height:40px;border:1px solid var(--border);border-radius:var(--radius);background:var(--white);padding:0 12px;font:400 13.5px var(--font-body);color:var(--text);transition:border-color .15s,box-shadow .15s}
+.control::placeholder{color:var(--muted)}
+.control:focus,.control.st-focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 1px var(--primary)}
+.control[disabled],.control.st-disabled{background:#EDF1F5;color:var(--muted);pointer-events:none}
+.select{position:relative}
+.select select{appearance:none;-webkit-appearance:none;padding-right:32px;color:var(--text)}
+.select select:invalid, .select select.placeholder{color:var(--muted)}
+.select::after{content:"";position:absolute;right:14px;top:50%;width:7px;height:7px;border-right:1.6px solid var(--text-2);border-bottom:1.6px solid var(--text-2);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.with-icon{position:relative}
+.with-icon .control{padding-right:36px}
+.icon-right{position:absolute;right:11px;top:50%;transform:translateY(-50%);display:flex;color:var(--muted);pointer-events:none}
+.icon-right.ok{color:var(--success)} .icon-right.err{color:var(--error)}
+.fd-success .control{border-color:var(--success);box-shadow:0 0 0 1px var(--success)}
+.fd-error .control{border-color:var(--error);box-shadow:0 0 0 1px var(--error)}
+.field-msg{font-size:11px;margin-top:6px}
+.field-msg.err{color:var(--error)}
+textarea.control{min-height:96px;padding:10px 12px;resize:vertical;height:auto}
+.sel-panel{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:30px}
+.sel-panel h4{font:600 13px var(--font-heading);margin-bottom:16px}
+.ck{display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:14px;cursor:pointer;position:relative;color:var(--text)}
+.ck input{position:absolute;opacity:0;width:0;height:0}
+.ck .box{width:18px;height:18px;border:1.5px solid var(--muted);border-radius:var(--radius);background:var(--white);display:grid;place-items:center;flex:none;transition:background .15s,border-color .15s}
+.ck .box svg{width:11px;height:11px;stroke:var(--white);stroke-width:2.4;fill:none;opacity:0}
+.ck input:checked + .box{background:var(--primary);border-color:var(--primary)}
+.ck input:checked + .box svg{opacity:1}
+.ck input:disabled + .box{background:#EDF1F5;border-color:var(--border)}
+.ck input:disabled ~ .ck-lbl{color:var(--muted)}
+.rd .box{border-radius:50%}
+.rd .box i{width:8px;height:8px;border-radius:50%;background:var(--white);opacity:0;transition:opacity .15s}
+.rd input:checked + .box{background:var(--primary);border-color:var(--primary)}
+.rd input:checked + .box i{opacity:1}
+
+/* ============ 06 BOTONES ============ */
+.btn-grid{display:grid;grid-template-columns:100px repeat(5,max-content);gap:18px 22px;align-items:center;justify-content:start}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 12px var(--font-heading);letter-spacing:.9px;text-transform:uppercase;height:42px;padding:0 24px;border-radius:var(--radius);border:1px solid transparent;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.btn svg{width:14px;height:14px}
+.btn-sm{height:32px;padding:0 15px;font-size:10.5px}
+.btn-primary{background:var(--secondary);color:var(--white)}
+.btn-primary:hover,.btn-primary.st-hover{background:var(--secondary-light)}
+.btn-primary:active,.btn-primary.st-active{background:var(--secondary-dark)}
+.btn-secondary{background:var(--primary);color:var(--white)}
+.btn-secondary:hover,.btn-secondary.st-hover{background:var(--primary-dark)}
+.btn-secondary:active,.btn-secondary.st-active{background:var(--primary-darker)}
+.btn-accent{background:var(--accent);color:var(--white)}
+.btn-accent:hover,.btn-accent.st-hover{background:var(--accent-dark)}
+.btn-accent:active,.btn-accent.st-active{background:var(--accent-darker)}
+.btn-outline{background:var(--white);border-color:var(--border);color:var(--text)}
+.btn-outline:hover,.btn-outline.st-hover{border-color:var(--primary);color:var(--primary-darker);background:var(--primary-100)}
+.btn-outline:active,.btn-outline.st-active{background:var(--primary-light);border-color:var(--primary)}
+.btn[disabled],.btn.st-disabled{background:#E7EBEF;border-color:#E7EBEF;color:var(--muted);pointer-events:none}
+.btn-outline[disabled],.btn-outline.st-disabled{background:#EDF1F5}
+.btn-extras{display:flex;gap:34px;margin-top:34px;align-items:flex-start;flex-wrap:wrap}
+.menu{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);width:224px;box-shadow:var(--shadow-2);overflow:hidden}
+.menu-item{display:flex;align-items:center;gap:11px;padding:10px 14px;font-size:12.5px;color:var(--text);cursor:pointer;transition:background .12s}
+.menu-item svg{width:14px;height:14px;color:var(--text-2);flex:none}
+.menu-item:hover{background:var(--bg)}
+.menu-item.hl{background:var(--primary-light)}
+.menu-item + .menu-item{border-top:1px solid var(--bg)}
+.stack{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+
+/* ============ 07 COMPONENTES ============ */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:40px}
+.comp-col h4{font:600 13px var(--font-heading);margin-bottom:18px;color:var(--text-2)}
+.switch{display:flex;align-items:center;gap:12px;margin-bottom:16px;font-size:13px}
+.switch input{position:absolute;opacity:0;width:0;height:0}
+.tg{width:42px;height:22px;border-radius:11px;background:#C7D1DB;position:relative;flex:none;transition:background .2s;cursor:pointer;display:inline-block}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--white);transition:left .2s}
+.switch input:checked + .tg{background:var(--primary)}
+.switch input:checked + .tg::after{left:23px}
+.switch input:disabled + .tg{opacity:.45;cursor:not-allowed}
+.switch input:disabled ~ .sw-lbl{color:var(--muted)}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:10px}
+.tag{display:inline-flex;align-items:center;padding:5px 11px;font:600 11px var(--font-body);letter-spacing:.3px;border-radius:var(--radius)}
+.tag-success{background:var(--success-light);color:var(--success-dark)}
+.tag-error{background:var(--error-light);color:var(--error-dark)}
+.tag-warning{background:var(--warning-light);color:var(--warning-dark)}
+.tag-info{background:var(--info-light);color:var(--info-dark)}
+.tag-primary{background:var(--primary-light);color:var(--primary-darker)}
+.tag-accent{background:var(--accent-light);color:var(--accent-darker)}
+.pr-item{margin-bottom:20px}
+.pr-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text-2);margin-bottom:7px}
+.pr{height:8px;background:var(--border);border-radius:var(--radius);overflow:hidden}
+.pr i{display:block;height:100%}
+.pr-primary i{background:var(--primary)} .pr-accent i{background:var(--accent)} .pr-secondary i{background:var(--secondary)}
+
+/* ============ 08 APLICACIÓN ============ */
+.app-grid{display:grid;grid-template-columns:380px 1fr;gap:34px;align-items:center}
+.app-img{border:1px solid var(--border);border-radius:4px;overflow:hidden;background:var(--white)}
+.app-notes li{font-size:13px;color:var(--text-2);margin-bottom:10px;list-style:none;padding-left:22px;position:relative}
+.app-notes li::before{content:"";position:absolute;left:0;top:6px;width:10px;height:10px;background:var(--primary);border-radius:var(--radius)}
+
+/* ============ FOOTER / TOAST ============ */
+footer{background:var(--secondary);color:var(--white);padding:30px 0;margin-top:20px}
+.foot-inner{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+.foot-inner strong{font:700 15px var(--font-heading)}
+.foot-inner strong em{color:var(--primary);font-style:normal}
+.foot-inner span{font-size:12px;color:var(--muted)}
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,12px);background:var(--secondary);color:var(--white);padding:10px 20px;font:600 12px var(--font-body);border-radius:var(--radius);border-left:3px solid var(--primary);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:980px){
+  .type-fonts,.type-grid,.links-grid,.field-grid,.sh-layout,.comp-grid,.app-grid{grid-template-columns:1fr}
+  .sh-grid{grid-template-columns:repeat(3,1fr)}
+  .btn-grid{grid-template-columns:100px repeat(3,max-content)}
+  .links-grid{gap:14px}
+}
+@media(max-width:640px){
+  .sh-grid{grid-template-columns:repeat(2,1fr)}
+  .btn-grid{grid-template-columns:1fr 1fr}
+  .sel-panel{grid-template-columns:1fr}
+  .aa{font-size:60px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="container topbar-inner">
+    <div class="brand">
+      <span class="badge-num">06</span>
+      <div>
+        <h1>Guía de Estilos</h1>
+        <p>UI Kit · Sistema de diseño — medición de fluidos y tratamiento de agua</p>
+      </div>
+    </div>
+    <div class="font-cards">
+      <div class="font-card"><strong class="fm">Aa Zz</strong><span>Montserrat</span></div>
+      <div class="font-card"><strong class="fo">Aa Zz</strong><span>Open Sans</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="container">
+    <a href="#tipografia" class="active">Tipografía</a>
+    <a href="#enlaces">Enlaces</a>
+    <a href="#colores">Colores</a>
+    <a href="#elevacion">Elevación</a>
+    <a href="#inputs">Inputs</a>
+    <a href="#botones">Botones</a>
+    <a href="#componentes">Componentes</a>
+    <a href="#aplicacion">Aplicación</a>
+  </div>
+</nav>
+
+<main>
+<!-- 01 TIPOGRAFÍA -->
+<section id="tipografia">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Tipografía</h2></div>
+    <p class="sec-desc">Montserrat jerarquiza títulos y botones; Open Sans se usa para párrafos, etiquetas y controles. Clic en cualquier muestra de color de la guía copia su HEX.</p>
+
+    <div class="type-fonts">
+      <div class="panel font-panel">
+        <div class="aa aa-m">Aa</div>
+        <div class="font-meta">
+          <h3>Montserrat</h3>
+          <p>Familia sans geométrica de alto contraste, usada en titulares, números de estadística y botones.</p>
+          <span class="use-tag">Títulos · 600 / 700 / 800</span>
+        </div>
+      </div>
+      <div class="panel font-panel">
+        <div class="aa aa-o">Aa</div>
+        <div class="font-meta">
+          <h3>Open Sans</h3>
+          <p>Familia sans humanista de excelente legibilidad, usada en cuerpo de texto, labels y enlaces.</p>
+          <span class="use-tag">Párrafos · 400 / 600 / 700</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel type-grid">
+      <div class="type-demo">
+        <h1>Heading Level 1</h1>
+        <h2>Heading Level 2</h2>
+        <h3>Heading Level 3</h3>
+        <h4>Heading Level 4</h4>
+        <h5>Heading Level 5</h5>
+        <h6>Heading Level 6</h6>
+        <p class="h7">Heading Level 7</p>
+        <p class="h8">Heading Level 8</p>
+        <p class="h9">Heading Level 9</p>
+      </div>
+      <div>
+        <p class="intro-text">Este es un texto de introducción. Tiene un tamaño fijo y un alto de línea personalizado para experimentar con él. La experiencia, tecnología y control en medición de fluidos definen nuestra propuesta de valor.</p>
+        <p class="body-text">Desarrollamos soluciones para la medición, control y tratamiento de agua, integrando equipos, soporte técnico y ejecución en terreno. Más de 40 años de experiencia y 30.000 equipos instalados respaldan nuestra trayectoria en la industria.</p>
+        <blockquote class="type-quote">La tipografía es el arte de dotar al lenguaje humano de una forma visual duradera.<cite>— Robert Bringhurst</cite></blockquote>
+        <p class="tiny-text">Texto auxiliar a tamaño reducido: notas al pie, avisos legales, metadatos y leyendas de tablas. Mantener siempre un alto de línea cómodo y un contraste suficiente sobre fondos claros para preservar la legibilidad en pantallas de terreno.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 ENLACES -->
+<section id="enlaces">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Enlaces de texto</h2></div>
+    <p class="sec-desc">El teal es el color de navegación y estados activos. Los estados hover y active se muestran forzados en las filas inferiores.</p>
+    <div class="panel">
+      <div class="links-grid">
+        <span></span>
+        <span class="lg-head">Primario</span>
+        <span class="lg-head">Secundario</span>
+        <span class="lg-head">Subrayado</span>
+        <span class="lg-head">Con icono</span>
+        <span class="lg-head">Con icono / forma</span>
+
+        <span class="row-label">Default</span>
+        <a class="tl tl-primary" href="javascript:void(0)">Text Link bold default</a>
+        <a class="tl tl-secondary" href="javascript:void(0)">Text Link default</a>
+        <a class="tl tl-underline" href="javascript:void(0)">Text Link underline default</a>
+        <a class="tl" href="javascript:void(0)">Siguiente <svg viewBox="0 0 16 16"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></a>
+        <a class="tl" href="javascript:void(0)">Text Link <svg viewBox="0 0 16 16"><path d="M5 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></a>
+
+        <span class="row-label">Hover</span>
+        <a class="tl tl-primary st-hover" href="javascript:void(0)">Text Link bold default</a>
+        <a class="tl tl-secondary st-hover" href="javascript:void(0)">Text Link default</a>
+        <a class="tl tl-underline st-hover" href="javascript:void(0)">Text Link underline default</a>
+        <a class="tl st-hover" href="javascript:void(0)">Siguiente <svg viewBox="0 0 16 16"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></a>
+        <a class="tl st-hover" href="javascript:void(0)">Text Link <svg viewBox="0 0 16 16"><path d="M5 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></a>
+
+        <span class="row-label">Activo</span>
+        <a class="tl tl-primary st-active" href="javascript:void(0)">Text Link bold default</a>
+        <a class="tl tl-secondary st-active" href="javascript:void(0)">Text Link default</a>
+        <a class="tl tl-underline st-active" href="javascript:void(0)">Text Link underline default</a>
+        <a class="tl st-active" href="javascript:void(0)">Siguiente <svg viewBox="0 0 16 16"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></a>
+        <a class="tl st-active" href="javascript:void(0)">Text Link <svg viewBox="0 0 16 16"><path d="M5 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></a>
+      </div>
+
+      <div class="link-paragraph">
+        <p>Nam porttitor blandit accumsan. <a class="tl tl-underline" href="javascript:void(0)">Text Link underline default</a> dui. In malesuada enim in dolor euismod, id commodo mi consectetur.</p>
+        <p>Nam porttitor blandit accumsan. <a class="tl" href="javascript:void(0)">Text Link default</a> dui. In malesuada enim in dolor euismod, id commodo mi consectetur.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 COLORES -->
+<section id="colores">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Colores</h2></div>
+    <p class="sec-desc">Paleta de marca extraída del sitio. Clic en cualquier muestra copia el código HEX al portapapeles.</p>
+
+    <div class="color-group">
+      <h4 class="group-title">Colores de marca</h4>
+      <p class="group-sub">Base, primario (navegación) y acento (CTA principal).</p>
+      <div class="swatches">
+        <button class="swatch" data-hex="#1F2D40"><span class="sw-dot" style="background:#1F2D40"></span><span class="sw-hex">#1F2D40</span><span class="sw-role">Base · Navy</span></button>
+        <button class="swatch" data-hex="#41B3C4"><span class="sw-dot" style="background:#41B3C4"></span><span class="sw-hex">#41B3C4</span><span class="sw-role">Primario · Teal</span></button>
+        <button class="swatch" data-hex="#F26A21"><span class="sw-dot" style="background:#F26A21"></span><span class="sw-hex">#F26A21</span><span class="sw-role">Acento · CTA</span></button>
+      </div>
+    </div>
+
+    <div class="color-group">
+      <h4 class="group-title">Complementarios (fondos)</h4>
+      <p class="group-sub">Superficies y fondos de sección.</p>
+      <div class="swatches">
+        <button class="swatch" data-hex="#F6F8FA"><span class="sw-dot bordered" style="background:#F6F8FA"></span><span class="sw-hex">#F6F8FA</span><span class="sw-role">Fondo claro</span></button>
+        <button class="swatch" data-hex="#FFFFFF"><span class="sw-dot bordered" style="background:#FFFFFF"></span><span class="sw-hex">#FFFFFF</span><span class="sw-role">Superficie</span></button>
+        <button class="swatch" data-hex="#D2EEF2"><span class="sw-dot" style="background:#D2EEF2"></span><span class="sw-hex">#D2EEF2</span><span class="sw-role">Teal light</span></button>
+        <button class="swatch" data-hex="#FDE8DC"><span class="sw-dot" style="background:#FDE8DC"></span><span class="sw-hex">#FDE8DC</span><span class="sw-role">Acento light</span></button>
+      </div>
+    </div>
+
+    <div class="color-group">
+      <h4 class="group-title">Complementarios (texto e iconos)</h4>
+      <p class="group-sub">Jerarquía de contenido sobre fondos claros.</p>
+      <div class="swatches">
+        <button class="swatch" data-hex="#2E9AAD"><span class="sw-dot" style="background:#2E9AAD"></span><span class="sw-hex">#2E9AAD</span><span class="sw-role">Activo</span></button>
+        <button class="swatch" data-hex="#1F2D40"><span class="sw-dot" style="background:#1F2D40"></span><span class="sw-hex">#1F2D40</span><span class="sw-role">Primario</span></button>
+        <button class="swatch" data-hex="#5C6675"><span class="sw-dot" style="background:#5C6675"></span><span class="sw-hex">#5C6675</span><span class="sw-role">Secundario</span></button>
+        <button class="swatch" data-hex="#98A1AC"><span class="sw-dot" style="background:#98A1AC"></span><span class="sw-hex">#98A1AC</span><span class="sw-role">Terciario</span></button>
+      </div>
+    </div>
+
+    <div class="color-group" style="margin-bottom:0">
+      <h4 class="group-title">Estado</h4>
+      <p class="group-sub">Para componentes que requieren un estado diferenciado.</p>
+      <div class="swatches">
+        <button class="swatch" data-hex="#25D366"><span class="sw-dot" style="background:#25D366"></span><span class="sw-hex">#25D366</span><span class="sw-role">Éxito · Completado</span></button>
+        <button class="swatch" data-hex="#F5B01E"><span class="sw-dot" style="background:#F5B01E"></span><span class="sw-hex">#F5B01E</span><span class="sw-role">Advertencia · En curso</span></button>
+        <button class="swatch" data-hex="#2D9CDB"><span class="sw-dot" style="background:#2D9CDB"></span><span class="sw-hex">#2D9CDB</span><span class="sw-role">Atención · Info</span></button>
+        <button class="swatch" data-hex="#E0453A"><span class="sw-dot" style="background:#E0453A"></span><span class="sw-hex">#E0453A</span><span class="sw-role">Error · Crítico</span></button>
+        <button class="swatch" data-hex="#41B3C4"><span class="sw-dot" style="background:#41B3C4"></span><span class="sw-hex">#41B3C4</span><span class="sw-role">Pendiente · En espera</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 ELEVACIÓN -->
+<section id="elevacion" class="band">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Elevación y sombras</h2></div>
+    <p class="sec-desc">El lenguaje visual es flat: las superficies se separan con bordes de 1px y color sólido. Las sombras se reservan para capas flotantes.</p>
+    <div class="sh-layout">
+      <div class="sh-grid">
+        <div class="sh-item"><span class="row-label">Sombra 0</span><div class="sh-card sh0"></div></div>
+        <div class="sh-item"><span class="row-label">Sombra 1</span><div class="sh-card sh1"></div></div>
+        <div class="sh-item"><span class="row-label">Sombra 2</span><div class="sh-card sh2"></div></div>
+        <div class="sh-item"><span class="row-label">Sombra 3</span><div class="sh-card sh3"></div></div>
+        <div class="sh-item"><span class="row-label">Sombra 4</span><div class="sh-card sh4"></div></div>
+        <div class="sh-item"><span class="row-label">Sombra 5</span><div class="sh-card sh5"></div></div>
+      </div>
+      <p class="sh-tip"><strong>Tip:</strong> en flat design prioriza bordes 1px (<button class="swatch" data-hex="#E3E8ED" style="display:inline;font:600 12px var(--font-body);color:var(--primary-darker);background:none;border:none;cursor:pointer">#E3E8ED</button>) y colores sólidos. Usa sombras 2–3 solo en dropdowns, menús y modales; sombras 4–5 para overlays fijos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 INPUTS -->
+<section id="inputs">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">05</span><h2>Inputs y dropdowns</h2></div>
+    <p class="sec-desc">Controles de formulario con borde 1px y radio de 2px. El estado activo usa el teal primario; éxito y error usan los tokens semánticos.</p>
+    <div class="panel">
+      <div class="field-grid">
+        <span class="row-label">Default</span>
+        <div class="field"><label>Etiqueta</label><input class="control" type="text" placeholder="Valor de entrada"></div>
+        <div class="field"><label>Etiqueta</label><div class="select"><select class="control"><option selected disabled>Seleccionar opción</option><option>Opción A</option><option>Opción B</option></select></div></div>
+        <div class="field"><label>Etiqueta</label><div class="with-icon"><input class="control" type="text" placeholder="DD – MM – AAAA"><span class="icon-right"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg></span></div></div>
+
+        <span class="row-label">Activo</span>
+        <div class="field"><label>Etiqueta</label><input class="control st-focus" type="text" value="Valor de entrada"></div>
+        <div class="field"><label>Etiqueta</label><div class="select"><select class="control st-focus"><option selected disabled>Seleccionar opción</option><option>Opción A</option></select></div></div>
+        <div class="field"><label>Etiqueta</label><div class="with-icon"><input class="control st-focus" type="text" placeholder="DD – MM – AAAA"><span class="icon-right"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg></span></div></div>
+
+        <span class="row-label">Deshabilitado</span>
+        <div class="field"><label>Etiqueta</label><input class="control" type="text" placeholder="Valor de entrada" disabled></div>
+        <div class="field"><label>Etiqueta</label><div class="select"><select class="control" disabled><option selected disabled>Seleccionar opción</option></select></div></div>
+        <div class="field"><label>Etiqueta</label><input class="control" type="text" value="12 – 05 – 2025" disabled></div>
+
+        <span class="row-label">Éxito</span>
+        <div class="field fd-success"><label>Etiqueta</label><div class="with-icon"><input class="control" type="text" value="Valor de entrada"><span class="icon-right ok"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.2 3.2L13 5"/></svg></span></div></div>
+        <div class="field" style="grid-column:span 2">
+          <label class="ck"><input type="checkbox" checked><span class="box"><svg viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 5"/></svg></span><span class="ck-lbl">Checkbox Label</span></label>
+          <label class="ck rd"><input type="radio" name="rd1" checked><span class="box"><i></i></span><span class="ck-lbl">Radio Label</span></label>
+        </div>
+
+        <span class="row-label">Error</span>
+        <div class="field fd-error"><label>Etiqueta</label><div class="with-icon"><input class="control" type="text" placeholder="Valor de entrada"><span class="icon-right err"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4v5M8 11.5v.5"/></svg></span></div><p class="field-msg err">Algo salió mal, por favor revisa tu nombre.</p></div>
+        <div class="field" style="grid-column:span 2">
+          <label class="ck"><input type="checkbox"><span class="box"><svg viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 5"/></svg></span><span class="ck-lbl">Checkbox Label</span></label>
+          <label class="ck"><input type="checkbox" disabled><span class="box"><svg viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 5"/></svg></span><span class="ck-lbl">Checkbox Label</span></label>
+          <label class="ck rd"><input type="radio" name="rd2"><span class="box"><i></i></span><span class="ck-lbl">Radio Label</span></label>
+          <label class="ck rd"><input type="radio" name="rd2" disabled><span class="box"><i></i></span><span class="ck-lbl">Radio Label</span></label>
+        </div>
+      </div>
+
+      <div class="field-grid" style="margin-top:30px;grid-template-columns:100px repeat(3,1fr)">
+        <span class="row-label">Textarea</span>
+        <div class="field"><label>Input textarea</label><textarea class="control" placeholder="Contenido del área de texto"></textarea></div>
+        <div class="field"><label>Input textarea</label><textarea class="control st-focus" placeholder="Contenido del área de texto"></textarea></div>
+        <div class="field"><label>Input textarea</label><textarea class="control" placeholder="Contenido (deshabilitado)" disabled></textarea></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 BOTONES -->
+<section id="botones">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Botones</h2></div>
+    <p class="sec-desc">Montserrat 600 en mayúsculas con letter-spacing. Primario navy para acciones de contenido, teal para acciones de sistema y naranja para el CTA de cotización.</p>
+    <div class="panel">
+      <div class="btn-grid">
+        <span></span>
+        <span class="lg-head">Primario</span><span class="lg-head">Secundario</span><span class="lg-head">Acento</span><span class="lg-head">Outline</span><span class="lg-head">Con icono</span>
+
+        <span class="row-label">Default</span>
+        <button class="btn btn-primary">Button Label</button>
+        <button class="btn btn-secondary">Button Label</button>
+        <button class="btn btn-accent">Cotizar</button>
+        <button class="btn btn-outline">Acción <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg></button>
+        <button class="btn btn-outline">Filtros <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M4.5 8h7M6.5 12h3"/></svg></button>
+
+        <span class="row-label">Hover</span>
+        <button class="btn btn-primary st-hover">Button Label</button>
+        <button class="btn btn-secondary st-hover">Button Label</button>
+        <button class="btn btn-accent st-hover">Cotizar</button>
+        <button class="btn btn-outline st-hover">Acción <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg></button>
+        <button class="btn btn-outline st-hover">Filtros <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M4.5 8h7M6.5 12h3"/></svg></button>
+
+        <span class="row-label">Activo</span>
+        <button class="btn btn-primary st-active">Button Label</button>
+        <button class="btn btn-secondary st-active">Button Label</button>
+        <button class="btn btn-accent st-active">Cotizar</button>
+        <button class="btn btn-outline st-active">Acción <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg></button>
+        <button class="btn btn-outline st-active">Filtros <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M4.5 8h7M6.5 12h3"/></svg></button>
+
+        <span class="row-label">Deshabilitado</span>
+        <button class="btn btn-primary" disabled>Button Label</button>
+        <button class="btn btn-secondary" disabled>Button Label</button>
+        <button class="btn btn-accent" disabled>Cotizar</button>
+        <button class="btn btn-outline" disabled>Acción</button>
+        <button class="btn btn-outline" disabled>Filtros</button>
+      </div>
+
+      <div class="btn-extras">
+        <div class="menu">
+          <div class="menu-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M11 5V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2"/></svg>Duplicar</div>
+          <div class="menu-item hl"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/></svg>Eliminar</div>
+          <div class="menu-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 4h10M3 8h10M3 12h6"/></svg>Cambiar estado</div>
+          <div class="menu-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="11" height="11" rx="1"/><path d="M5.5 8l2 2 3.5-4"/></svg>Marcar como pagado</div>
+          <div class="menu-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 2l1.8 3.8 4.2.5-3.1 2.9.8 4.1L8 11.3l-3.7 2 .8-4.1L2 6.3l4.2-.5z"/></svg>Marcar como original</div>
+          <div class="menu-item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 2"/></svg>En proceso</div>
+        </div>
+        <div class="stack">
+          <button class="btn btn-outline btn-sm">Button Label</button>
+          <button class="btn btn-secondary btn-sm">Button Label</button>
+          <button class="btn btn-primary btn-sm">Button Label</button>
+          <button class="btn btn-accent btn-sm">Cotizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 COMPONENTES -->
+<section id="componentes">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">07</span><h2>Toggles, tags y progreso</h2></div>
+    <p class="sec-desc">Componentes de estado con tokens semánticos y tintes claros, manteniendo el lenguaje plano sin gradientes.</p>
+    <div class="panel comp-grid">
+      <div class="comp-col">
+        <h4>Toggles</h4>
+        <label class="switch"><input type="checkbox" checked><span class="tg"></span><span class="sw-lbl">Activado</span></label>
+        <label class="switch"><input type="checkbox"><span class="tg"></span><span class="sw-lbl">Desactivado</span></label>
+        <label class="switch"><input type="checkbox" checked disabled><span class="tg"></span><span class="sw-lbl">Deshabilitado (on)</span></label>
+        <label class="switch"><input type="checkbox" disabled><span class="tg"></span><span class="sw-lbl">Deshabilitado (off)</span></label>
+      </div>
+      <div class="comp-col">
+        <h4>Tags</h4>
+        <div class="tags-wrap">
+          <span class="tag tag-success">Completado</span>
+          <span class="tag tag-warning">En curso</span>
+          <span class="tag tag-info">Atención</span>
+          <span class="tag tag-error">Crítico</span>
+          <span class="tag tag-primary">En espera</span>
+          <span class="tag tag-accent">Cotización</span>
+        </div>
+      </div>
+      <div class="comp-col">
+        <h4>Barra de progreso</h4>
+        <div class="pr-item"><div class="pr-meta"><span>Instalación de equipos</span><span>60%</span></div><div class="pr pr-primary"><i style="width:60%"></i></div></div>
+        <div class="pr-item"><div class="pr-meta"><span>Puesta en marcha</span><span>35%</span></div><div class="pr pr-accent"><i style="width:35%"></i></div></div>
+        <div class="pr-item"><div class="pr-meta"><span>Medición final</span><span>85%</span></div><div class="pr pr-secondary"><i style="width:85%"></i></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 APLICACIÓN -->
+<section id="aplicacion">
+  <div class="container">
+    <div class="sec-head"><span class="sec-num">08</span><h2>Aplicación de marca</h2></div>
+    <p class="sec-desc">Ejemplo de ilustración flat con la paleta del sistema: superficies sólidas, sin gradientes ni sombras, contorno navy y acentos teal.</p>
+    <div class="panel app-grid">
+      <div class="app-img"><img src="https://image.qwenlm.ai/public_source/869599e4-f263-45f5-89af-d9c73804c310/1f5ad6cec-9d99-4ece-89b5-458d5f7ecb95.png" alt="Ilustración flat de medidor de flujo electromagnético"></div>
+      <ul class="app-notes">
+        <li>Superficies con color sólido y contorno navy <strong>#1F2D40</strong>; nunca gradientes.</li>
+        <li>El teal <strong>#41B3C4</strong> identifica elementos interactivos y datos de flujo.</li>
+        <li>El naranja <strong>#F26A21</strong> se reserva para el CTA “Cotizar” y llamadas de atención.</li>
+        <li>Fondos de sección en <strong>#F6F8FA</strong>; tarjetas y paneles en <strong>#FFFFFF</strong> con borde 1px.</li>
+        <li>Radios de 2px en componentes; círculos solo en swatches, radios y toggles.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="container foot-inner">
+    <strong>Innovación que <em>Fluye</em> · Sistema de Diseño</strong>
+    <span>Montserrat + Open Sans · Paleta Teal / Navy / Naranja · Flat Design — <span id="year"></span></span>
+  </div>
+</footer>
+
+<div id="toast" role="status">HEX copiado</div>
+
+<script>
+(function(){
+  "use strict";
+  /* Año dinámico */
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  /* Copiar HEX */
+  var toastEl = document.getElementById("toast");
+  var toastTimer = null;
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 1600);
+  }
+  function copyText(value){
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(value);
+    }
+    return new Promise(function(resolve, reject){
+      var ta = document.createElement("textarea");
+      ta.value = value;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); resolve(); } catch (err) { reject(err); }
+      document.body.removeChild(ta);
+    });
+  }
+  var swatches = document.querySelectorAll("[data-hex]");
+  for (var i = 0; i < swatches.length; i++) {
+    swatches[i].addEventListener("click", function(){
+      var hex = this.getAttribute("data-hex");
+      copyText(hex).then(function(){ showToast(hex + " copiado al portapapeles"); });
+    });
+  }
+
+  /* Scrollspy de navegación */
+  var navLinks = document.querySelectorAll("#nav a");
+  var sections = [];
+  navLinks.forEach(function(link){
+    var target = document.querySelector(link.getAttribute("href"));
+    if (target) sections.push({ link: link, sec: target });
+  });
+  function onScroll(){
+    var pos = window.scrollY + 120;
+    var current = sections[0];
+    sections.forEach(function(item){
+      if (item.sec.offsetTop <= pos) current = item;
+    });
+    navLinks.forEach(function(l){ l.classList.remove("active"); });
+    if (current) current.link.classList.add("active");
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>
