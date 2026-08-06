@@ -35,7 +35,7 @@
 ## Performance (común)
 
 - Lazy loading de rutas y componentes pesados
-- Imágenes optimizadas con formatos modernos (WebP, AVIF) — Astro Image / Angular Image
+- Imágenes optimizadas con formatos modernos (WebP, AVIF) — en Astro vía `astro:assets` built-in (`<Image>`/`<Picture>` con servicio `sharp`; **no** usar el deprecado `@astrojs/image`); en Angular vía `NgOptimizedImage`
 - No bloquear el main thread con cálculos síncronos pesados
 - Bundle size monitoreado en CI
 
@@ -78,6 +78,14 @@
 - El sitio público se genera en build-time (SSG). El fetching de datos del catálogo ocurre en `getStaticPaths` y/o en el frontmatter de páginas/layout via funciones de `lib/api/` que llaman al backend NestJS (`/api/v1/...`).
 - Las actualizaciones de contenido disparan un nuevo build (manual desde panel admin o webhook automático).
 - SEO y Core Web Vitals son prioritarios: meta tags, structured data, imágenes optimizadas, fuentes optimizadas.
+
+### Imágenes del sitio (convención `image-assets`)
+
+- **Ubicación**: toda imagen optimizable del sitio vive en `apps/web/src/assets/img/` y se consume en `.astro` vía `import` con el alias `@` (`@/assets/img/...`), renderizada con `<Image>`/`<Picture>` de `astro:assets`.
+- **Pipeline**: `astro:assets` built-in con servicio `sharp` (declarado como dependencia de `apps/web`). **Prohibido** instalar `@astrojs/image` (deprecado). Para el `<Picture>` del hero se pasan `formats={['avif', 'webp']}` y `fallbackFormat="jpg"` explícitos (el default de Astro 7 es solo `['webp']` con fallback `png`).
+- **Above-the-fold**: el hero se sirve con `loading="eager"`; imágenes bajo el fold con `loading="lazy"`.
+- **Excepción 1:1**: la imagen Open Graph/Twitter (`og-image.png`, PNG 1200×630) se sirve desde `apps/web/public/` porque las redes sociales exigen URL pública absoluta, estable y formato PNG. **No** se añaden otros binarios de imagen a `public/`.
+- **Iconos**: no son assets de imagen — se consumen exclusivamente vía `astro-icon` (`<Icon name="material-symbols:..." />` para UI, `<Icon name="logos:..." />` para marcas); no guardar iconos en `src/assets/img/`.
 
 ## Stack específico del proyecto
 
