@@ -1,11 +1,7 @@
 ---
 import type { ContactInfo, SocialNetworkName } from '@/lib/types/top-header';
 import { getSocialLinks } from '@/lib/types/top-header';
-import PhoneIcon from '@/components/icons/PhoneIcon.astro';
-import FacebookIcon from '@/components/icons/FacebookIcon.astro';
-import XIcon from '@/components/icons/XIcon.astro';
-import InstagramIcon from '@/components/icons/InstagramIcon.astro';
-import LinkedInIcon from '@/components/icons/LinkedInIcon.astro';
+import { Icon } from 'astro-icon/components';
 
 interface Props {
   contact: ContactInfo;
@@ -15,11 +11,11 @@ const { contact } = Astro.props;
 
 const links = getSocialLinks(contact);
 
-const socialIcons: Record<SocialNetworkName, typeof FacebookIcon> = {
-  Facebook: FacebookIcon,
-  X: XIcon,
-  Instagram: InstagramIcon,
-  LinkedIn: LinkedInIcon,
+const socialIconMap: Record<SocialNetworkName, string> = {
+  Facebook: 'logos:facebook',
+  X: 'logos:twitter',
+  Instagram: 'logos:instagram',
+  LinkedIn: 'logos:linkedin',
 };
 
 const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^+\d]/g, '')}` : undefined;
@@ -28,7 +24,7 @@ const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^+\d]/g, '')}` 
 <div
   role="region"
   aria-label="Barra de contacto"
-  class="hidden sm:flex h-9 items-center bg-brand-navy bg-linear-to-r from-brand-navy to-brand-navy-light text-white text-sm"
+  class="hidden sm:flex h-9 items-center bg-secondary bg-linear-to-r from-secondary to-secondary-light text-white text-sm"
 >
   <div class="container mx-auto px-4 flex items-center justify-between">
     {
@@ -38,7 +34,7 @@ const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^+\d]/g, '')}` 
           class="flex items-center gap-2 hover:opacity-80 transition-opacity"
           aria-label="Llamar a Riff"
         >
-          <PhoneIcon class="h-3.5 w-3.5" />
+          <Icon name="material-symbols:contact-phone-outline" class="h-3.5 w-3.5" />
           <span>{contact.phone}</span>
         </a>
       )
@@ -47,7 +43,7 @@ const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^+\d]/g, '')}` 
       links.length > 0 && (
         <nav aria-label="Redes sociales" class="flex items-center">
           {links.map((link, index) => {
-            const Icon = socialIcons[link.name];
+            const iconName = socialIconMap[link.name];
             return (
               <>
                 {index > 0 && <span class="h-4 border-l border-white/20" aria-hidden="true"></span>}
@@ -58,7 +54,7 @@ const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^+\d]/g, '')}` 
                   aria-label={link.name}
                   class="flex h-9 items-center justify-center px-3 hover:bg-white/10 transition-colors"
                 >
-                  <Icon class="h-3.5 w-3.5" />
+                  <Icon name={iconName} class="h-3.5 w-3.5" />
                 </a>
               </>
             );

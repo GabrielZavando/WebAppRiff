@@ -51,7 +51,7 @@ describe('Header', () => {
 
     const nosotroItem = nav.match(/<a[^>]*href="\/nosotros"[^>]*>/)?.[0] ?? '';
     expect(nosotroItem).toContain('aria-current="page"');
-    expect(nosotroItem).toContain('after:bg-brand-orange');
+    expect(nosotroItem).toContain('after:bg-primary');
   });
 
   it('marks Inicio active only at the root path', async () => {
@@ -69,7 +69,7 @@ describe('Header', () => {
 
     expect(html).toContain('SOLICITAR COTIZACIÓN');
     expect(html).toContain('href="/cotizacion"');
-    expect(html).toContain('bg-brand-orange');
+    expect(html).toContain('bg-accent');
     expect(html).toContain('font-bold');
     expect(html).toContain('uppercase');
   });

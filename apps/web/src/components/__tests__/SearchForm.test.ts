@@ -161,11 +161,11 @@ describe('SearchForm — search input', () => {
 });
 
 describe('SearchForm — submit button', () => {
-  it('renders a <button type="submit"> with label "BUSCAR" using bg-brand-orange', async () => {
+  it('renders a <button type="submit"> with label "BUSCAR" using bg-accent', async () => {
     const html = await render();
     const button = getButton(html);
     expect(button).toContain('type="submit"');
-    expect(button).toContain('bg-brand-orange');
+    expect(button).toContain('bg-accent');
     expect(button).toContain('>BUSCAR<');
   });
 });
@@ -204,6 +204,38 @@ describe('SearchForm — responsive layout classes', () => {
     const html = await render();
     expect(html).toContain('w-full');
     expect(html).toContain('md:flex-1');
+  });
+});
+
+describe('SearchForm — token-based border & focus (task 8.21)', () => {
+  it('the <select> uses the border-border token (--color-border) and NOT border-gray-300', async () => {
+    const html = await render();
+    const select = getSelect(html);
+    expect(select).toContain('border-border');
+    expect(select).not.toContain('border-gray-300');
+  });
+
+  it('the <input> uses the border-border token (--color-border) and NOT border-gray-300', async () => {
+    const html = await render();
+    const input = getInput(html);
+    expect(input).toContain('border-border');
+    expect(input).not.toContain('border-gray-300');
+  });
+
+  it('the <select> focus state uses focus:border-primary (--color-primary) and NOT focus:ring-accent', async () => {
+    const html = await render();
+    const select = getSelect(html);
+    expect(select).toContain('focus:border-primary');
+    expect(select).not.toContain('focus:ring-accent');
+    expect(select).not.toContain('focus:ring-2');
+  });
+
+  it('the <input> focus state uses focus:border-primary (--color-primary) and NOT focus:ring-accent', async () => {
+    const html = await render();
+    const input = getInput(html);
+    expect(input).toContain('focus:border-primary');
+    expect(input).not.toContain('focus:ring-accent');
+    expect(input).not.toContain('focus:ring-2');
   });
 });
 

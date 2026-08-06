@@ -33,10 +33,11 @@ export interface PanelStat {
  * A call-to-action rendered as an `<a>` inside the left half of the panel.
  *
  * The `variant` controls the visual treatment: `primary` uses the
- * `brand-navy` background token (filled solid, contrasts with the teal
- * background of the left half); `secondary` is reserved for future use and
- * not consumed by `PanelHome.astro` in this change (the panel only renders
- * one CTA). See design.md § Decision 5 for the navy-on-teal rationale.
+ * `--color-secondary` (navy `#1F2D40`) background token (filled solid,
+ * contrasts with the primary teal background of the left half); `secondary`
+ * is reserved for future use and not consumed by `PanelHome.astro` in this
+ * change (the panel only renders one CTA). See design.md § Decision 5 for the
+ * navy-on-teal rationale.
  */
 export interface PanelCta {
   /** Visible label, e.g. "SOLICITAR ASESORÍA TÉCNICA". */

@@ -57,13 +57,13 @@ describe('PanelHome — structure & outermost section (tasks 2.2, 2.3, 2.4)', ()
 });
 
 describe('PanelHome — left half (tasks 2.5, 2.6, 2.7, 2.8, 2.9)', () => {
-  it('renders a left half with bg-brand-teal and WITHOUT bg-white (task 2.5)', async () => {
+  it('renders a left half with bg-primary and WITHOUT bg-white (task 2.5)', async () => {
     const html = await render();
-    // Find the div that carries bg-brand-teal
-    const tealDivMatch = html.match(/<div[^>]*class="[^"]*bg-brand-teal[^"]*"[^>]*>/);
-    if (!tealDivMatch) throw new Error('bg-brand-teal half not found');
+    // Find the div that carries bg-primary
+    const tealDivMatch = html.match(/<div[^>]*class="[^"]*bg-primary[^"]*"[^>]*>/);
+    if (!tealDivMatch) throw new Error('bg-primary half not found');
     const tealDiv = tealDivMatch[0];
-    expect(tealDiv).toContain('bg-brand-teal');
+    expect(tealDiv).toContain('bg-primary');
     expect(tealDiv).not.toContain('bg-white');
   });
 
@@ -118,16 +118,16 @@ describe('PanelHome — left half (tasks 2.5, 2.6, 2.7, 2.8, 2.9)', () => {
     expect(hasMaxWidth).toBe(true);
   });
 
-  it('renders the CTA as <a href="/contacto"> with bg-brand-navy, text-white and WITHOUT bg-brand-teal (task 2.9)', async () => {
+  it('renders the CTA as <a href="/contacto"> with bg-secondary, text-white and WITHOUT bg-primary (task 2.9)', async () => {
     const html = await render();
     const aMatch = html.match(/<a\s[^>]*>[\s\S]*?<\/a>/);
     if (!aMatch) throw new Error('CTA <a> not found');
     const a = aMatch[0];
     expect(a).toContain('href="/contacto"');
     expect(a).toContain('SOLICITAR ASESORÍA TÉCNICA');
-    expect(a).toContain('bg-brand-navy');
+    expect(a).toContain('bg-secondary');
     expect(a).toContain('text-white');
-    expect(a).not.toContain('bg-brand-teal');
+    expect(a).not.toContain('bg-primary');
   });
 });
 
@@ -162,19 +162,19 @@ describe('PanelHome — right half (tasks 2.10, 2.11, 2.12)', () => {
 });
 
 describe('PanelHome — stat cells (tasks 2.13, 2.14, 2.15, 2.16, 2.18)', () => {
-  it('each stat value is rendered as a <p> (or non-heading) with font-bold and text-brand-navy (task 2.13)', async () => {
+  it('each stat value is rendered as a <p> (or non-heading) with font-bold and text-secondary (task 2.13)', async () => {
     const html = await render();
     const values = ['40+', '30.000+', '5+', '9+'];
     for (const v of values) {
       // Escape regex special chars (notably `+` and `.`) so "40+" and
       // "30.000+" match literally rather than as quantifiers.
       const escaped = v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      // Accept either class order (font-bold before text-brand-navy or
+      // Accept either class order (font-bold before text-secondary or
       // reversed); the design only constrains that BOTH are present on the
       // <p> wrapping the value.
       const valueP = html.match(
         new RegExp(
-          `<p[^>]*class="[^"]*(font-bold[^"]*text-brand-navy|text-brand-navy[^"]*font-bold)[^"]*"[^>]*>${escaped}<\\/p>`,
+          `<p[^>]*class="[^"]*(font-bold[^"]*text-secondary|text-secondary[^"]*font-bold)[^"]*"[^>]*>${escaped}<\\/p>`,
         ),
       );
       if (!valueP) {

@@ -21,7 +21,7 @@ const { eyebrow, headline, description, cta, stats } = Astro.props;
       aligning it with the rest of the site grid (design.md Decision 12).
     - `grid grid-cols-1 lg:grid-cols-2` main grid stacks on mobile (< 1024px),
       side-by-side on desktop (>= 1024px).
-    - Left half (bg-brand-teal): eyebrow, <h2> headline, description <p>, CTA <a>.
+    - Left half (bg-primary): eyebrow, <h2> headline, description <p>, CTA <a>.
     - Right half (bg-white): `grid-cols-2` 2x2 stats, each cell with <p> value
       (navy bold) and <p> label (uppercase gray) — NO headings.
 
@@ -43,7 +43,7 @@ const { eyebrow, headline, description, cta, stats } = Astro.props;
         Normal on the teal background (see design.md § Decision 10 post-apply
         update — TODO pending the `design-system-revision` change).
       -->
-      <div class="bg-brand-teal p-8 md:p-12 lg:p-16">
+      <div class="bg-primary p-8 md:p-12 lg:p-16">
         <span class="block text-sm font-bold uppercase tracking-wider text-white/80">
           {eyebrow}
         </span>
@@ -55,7 +55,7 @@ const { eyebrow, headline, description, cta, stats } = Astro.props;
         </p>
         <a
           href={cta.href}
-          class="mt-6 inline-block bg-brand-navy text-white font-bold uppercase text-sm px-6 py-3 rounded hover:bg-brand-navy-light transition-colors"
+          class="mt-6 inline-block bg-secondary text-white font-bold uppercase text-sm px-6 py-3 rounded hover:bg-secondary-light transition-colors"
         >
           {cta.label}
         </a>
@@ -72,7 +72,7 @@ const { eyebrow, headline, description, cta, stats } = Astro.props;
           {
             stats.map((stat) => (
               <div>
-                <p class="text-3xl md:text-4xl font-bold text-brand-navy">
+                <p class="text-3xl md:text-4xl font-bold text-secondary">
                   {stat.value}
                 </p>
                 <p class="mt-2 text-xs md:text-sm uppercase tracking-wide text-gray-600">

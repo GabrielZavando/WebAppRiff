@@ -1,8 +1,7 @@
 ---
 import type { HeaderProps } from '@/lib/types/header';
 import { isActive } from '@/lib/config/navigation';
-import MenuIcon from '@/components/icons/MenuIcon.astro';
-import CloseIcon from '@/components/icons/CloseIcon.astro';
+import { Icon } from 'astro-icon/components';
 
 interface Props extends HeaderProps {}
 
@@ -10,7 +9,7 @@ const { items, activePath, cta } = Astro.props;
 ---
 
 <!-- Main site header: logo, desktop navigation, quote CTA and mobile toggle. -->
-<header class="bg-linear-to-r from-brand-navy to-brand-navy-light text-white">
+<header class="bg-linear-to-r from-secondary to-secondary-light text-white">
   <div class="container mx-auto px-4 h-24 flex items-center justify-between gap-4">
     <a href="/" aria-label="Ir al inicio" class="shrink-0">
       <!-- TODO[site-header-scroll-animations]: logo shrinks on scroll in a future change -->
@@ -32,7 +31,7 @@ const { items, activePath, cta } = Astro.props;
               aria-current={active ? 'page' : undefined}
               class={`px-3 py-2 text-sm font-medium uppercase tracking-wide transition-colors relative ${
                 active
-                  ? 'text-white after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-0.5 after:bg-brand-orange'
+                  ? 'text-white after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-0.5 after:bg-primary'
                   : 'text-white/80 hover:text-white'
               }`}
             >
@@ -45,7 +44,7 @@ const { items, activePath, cta } = Astro.props;
 
     <a
       href={cta.href}
-      class="hidden sm:inline-flex items-center bg-brand-orange hover:bg-orange-600 text-white font-bold uppercase text-sm px-6 py-3 rounded shadow-sm transition-colors whitespace-nowrap"
+      class="hidden sm:inline-flex items-center bg-accent hover:bg-accent-dark text-white font-bold uppercase text-sm px-6 py-3 rounded shadow-sm transition-colors whitespace-nowrap"
     >
       {cta.label}
     </a>
@@ -58,15 +57,15 @@ const { items, activePath, cta } = Astro.props;
       aria-label="Abrir menú"
       class="lg:hidden p-2 text-white"
     >
-      <MenuIcon class="h-6 w-6" />
-      <CloseIcon class="h-6 w-6 hidden" />
+      <Icon name="material-symbols:menu-outline" class="h-6 w-6" />
+      <Icon name="material-symbols:close-outline" class="h-6 w-6 hidden" />
     </button>
   </div>
 
   <div
     id="mobile-nav"
     hidden
-    class="lg:hidden border-t border-white/10 bg-brand-navy-light px-4 py-4"
+    class="lg:hidden border-t border-white/10 bg-secondary-light px-4 py-4"
   >
     <nav aria-label="Navegación móvil" class="flex flex-col gap-2">
       {

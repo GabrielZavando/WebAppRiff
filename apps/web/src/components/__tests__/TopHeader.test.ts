@@ -78,9 +78,9 @@ describe('TopHeader', () => {
     const html = await render(fullContact);
 
     // Background and height
-    expect(html).toContain('bg-brand-navy');
+    expect(html).toContain('bg-secondary');
     expect(html).toContain('h-9');
-    expect(html).toContain('bg-linear-to-r from-brand-navy to-brand-navy-light');
+    expect(html).toContain('bg-linear-to-r from-secondary to-secondary-light');
     // Centered container
     expect(html).toContain('container mx-auto px-4');
     // Space between phone (left) and social (right)

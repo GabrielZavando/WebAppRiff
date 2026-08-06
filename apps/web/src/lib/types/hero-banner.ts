@@ -11,15 +11,15 @@
  * A call-to-action rendered as an `<a>` inside the hero.
  *
  * The `variant` controls the visual treatment: `primary` uses the
- * `brand-teal` background token, `secondary` uses a white border with no
- * fill.
+ * `--color-primary` (`#41B3C4`) background token, `secondary` uses a white
+ * border with no fill.
  */
 export interface HeroCta {
   /** Visible label, e.g. "VER SERVICIOS". */
   readonly label: string;
   /** Destination path, e.g. "/servicios". */
   readonly href: string;
-  /** Visual variant: filled teal (primary) or outlined white (secondary). */
+  /** Visual variant: filled primary teal (primary) or outlined white (secondary). */
   readonly variant: 'primary' | 'secondary';
 }
 
@@ -40,9 +40,9 @@ export interface HeroStat {
 
 /** Props accepted by `HeroBanner.astro`. */
 export interface HeroBannerProps {
-  /** Full headline text; the `highlightedWord` substring is rendered in teal. */
+  /** Full headline text; the `highlightedWord` substring is rendered in primary teal. */
   readonly headline: string;
-  /** Substring of `headline` wrapped in a `<span class="text-brand-teal">`. */
+  /** Substring of `headline` wrapped in a `<span class="text-primary">`. */
   readonly highlightedWord: string;
   /** Subtitle rendered as `<h2>` subordinate to the headline `<h1>`. */
   readonly subtitle: string;

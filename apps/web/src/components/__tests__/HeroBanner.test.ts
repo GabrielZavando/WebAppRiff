@@ -74,33 +74,33 @@ describe('HeroBanner — headline with highlighted word', () => {
     // text includes the single space that was already in the headline.
     const compacted = withoutRenderedWhitespace(h1Match[0]);
     expect(compacted).toContain(
-      'Innovación que <span class="text-brand-teal">Fluye</span>',
+      'Innovación que <span class="text-primary">Fluye</span>',
     );
   });
 
-  it('renders a <span class="text-brand-teal">Fluye</span> inside the <h1>', async () => {
+  it('renders a <span class="text-primary">Fluye</span> inside the <h1>', async () => {
     const html = await render();
     const h1Match = html.match(/<h1[\s\S]*?<\/h1>/);
     if (!h1Match) throw new Error('h1 not found');
-    expect(h1Match[0]).toContain('<span class="text-brand-teal">Fluye</span>');
+    expect(h1Match[0]).toContain('<span class="text-primary">Fluye</span>');
   });
 
-  it('does NOT render any <span class="text-brand-teal"> when highlightedWord is not present in headline', async () => {
+  it('does NOT render any <span class="text-primary"> when highlightedWord is not present in headline', async () => {
     const html = await render({ ...baseProps, highlightedWord: 'Inexistente' });
-    expect(html).not.toContain('text-brand-teal');
+    expect(html).not.toContain('text-primary');
     const h1Match = html.match(/<h1[\s\S]*?<\/h1>/);
     if (!h1Match) throw new Error('h1 not found');
     // The full headline text is rendered plain
     expect(h1Match[0]).toContain('Innovación que Fluye');
   });
 
-  it('renders exactly ONE <span class="text-brand-teal"> when highlightedWord appears twice in headline', async () => {
+  it('renders exactly ONE <span class="text-primary"> when highlightedWord appears twice in headline', async () => {
     const html = await render({
       ...baseProps,
       headline: 'Fluye y vuelve a Fluye',
       highlightedWord: 'Fluye',
     });
-    const tealSpanCount = countOccurrences(html, '<span class="text-brand-teal">Fluye</span>');
+    const tealSpanCount = countOccurrences(html, '<span class="text-primary">Fluye</span>');
     expect(tealSpanCount).toBe(1);
   });
 });
@@ -137,20 +137,20 @@ describe('HeroBanner — CTAs', () => {
     expect(aMatches[1]).toContain(baseProps.ctas[1]!.label);
   });
 
-  it('the primary CTA carries bg-brand-teal and text-white classes', async () => {
+  it('the primary CTA carries bg-primary and text-white classes', async () => {
     const html = await render();
     const aMatches = html.match(/<a\s[^>]*>[\s\S]*?<\/a>/g) ?? [];
     const primary = aMatches[0]!;
-    expect(primary).toContain('bg-brand-teal');
+    expect(primary).toContain('bg-primary');
     expect(primary).toContain('text-white');
   });
 
-  it('the secondary CTA carries border-white and NOT bg-brand-teal', async () => {
+  it('the secondary CTA carries border-white and NOT bg-primary', async () => {
     const html = await render();
     const aMatches = html.match(/<a\s[^>]*>[\s\S]*?<\/a>/g) ?? [];
     const secondary = aMatches[1]!;
     expect(secondary).toContain('border-white');
-    expect(secondary).not.toContain('bg-brand-teal');
+    expect(secondary).not.toContain('bg-primary');
   });
 
   it('wraps the two <a> in a flex-col + sm:flex-row container', async () => {
@@ -170,9 +170,9 @@ describe('HeroBanner — CSS-only placeholder background', () => {
     const sectionMatch = html.match(/<section[^>]*>/);
     if (!sectionMatch) throw new Error('section not found');
     expect(sectionMatch[0]).toContain('bg-gradient-to-br');
-    expect(sectionMatch[0]).toContain('from-brand-navy');
-    expect(sectionMatch[0]).toContain('via-brand-navy-light');
-    expect(sectionMatch[0]).toContain('to-brand-navy');
+    expect(sectionMatch[0]).toContain('from-secondary');
+    expect(sectionMatch[0]).toContain('via-secondary-light');
+    expect(sectionMatch[0]).toContain('to-secondary');
   });
 
   it('does NOT reference any external image (<img>, <picture>, or inline background-image url)', async () => {

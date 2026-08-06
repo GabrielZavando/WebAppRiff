@@ -33,7 +33,7 @@ const shouldRenderHighlight = highlightedWord !== '' && before !== headline;
   `apps/web/src/pages/index.astro`. Single <h1> per page is preserved (this is
   the only <h1> on the home); the subtitle is an <h2> subordinate to it.
 -->
-<section class="relative bg-gradient-to-br from-brand-navy via-brand-navy-light to-brand-navy overflow-hidden">
+<section class="relative bg-gradient-to-br from-secondary via-secondary-light to-secondary overflow-hidden">
   <!--
     TODO: replace CSS-only background with real industrial image when the
     client delivers the asset. For now the gradient + overlay simulate the
@@ -44,7 +44,7 @@ const shouldRenderHighlight = highlightedWord !== '' && before !== headline;
 
   <div class="relative container mx-auto py-16 md:py-24">
     <h1 class="text-4xl md:text-6xl font-bold text-white">
-      {before}{shouldRenderHighlight && <span class="text-brand-teal">{highlightedWord}</span>}{after}
+      {before}{shouldRenderHighlight && <span class="text-primary">{highlightedWord}</span>}{after}
     </h1>
     <h2 class="mt-4 text-xl md:text-2xl font-semibold text-white/90 max-w-3xl">
       {subtitle}
@@ -60,8 +60,8 @@ const shouldRenderHighlight = highlightedWord !== '' && before !== headline;
             class:list={[
               'px-8 py-3 font-bold uppercase tracking-wide text-sm rounded transition-colors',
               cta.variant === 'primary'
-                ? 'bg-brand-teal hover:bg-teal-600 text-white'
-                : 'border-2 border-white text-white hover:bg-white hover:text-brand-navy',
+                ? 'bg-primary hover:bg-primary-dark text-white'
+                : 'border-2 border-white text-white hover:bg-white hover:text-secondary',
             ]}
           >
             {cta.label}
