@@ -3,15 +3,6 @@
 ## Purpose
 Header principal global del sitio público: logo, navegación de 5 items con estado activo por ruta y CTA de cotización; colapsa a hamburguesa en mobile.
 ## Requirements
-### Requirement: Header renders logo link
-The site-header SHALL render a logo link pointing to the home page. The header container SHALL use the `--color-secondary` (navy `#1F2D40`) and `--color-secondary-light` (`#35455E`) tokens via Tailwind utilities `bg-secondary` / a gradient `from-secondary to-secondary-light`; the obsolete utilities `bg-brand-navy`, `from-brand-navy`, `to-brand-navy-light` SHALL NOT appear.
-
-#### Scenario: Logo link points to home
-- **WHEN** the site-header renders
-- **THEN** the logo link has `href="/"`
-- **AND** the logo link is inside a container with a gradient `from-secondary to-secondary-light`
-- **AND** the rendered HTML contains no `brand-navy` token references
-
 ### Requirement: Header renders navigation items in order
 The site-header SHALL render the navigation items from the hardcoded `NAVIGATION_ITEMS` constant in the declared order.
 
@@ -79,6 +70,7 @@ The site-header SHALL meet accessibility requirements and ensure a single `<head
 #### Scenario: Interactive element labels
 - **WHEN** the Header renders
 - **THEN** the logo link has `aria-label="Ir al inicio"`
+- **AND** the logo image has a meaningful `alt` (from `logoAlt`)
 - **AND** the mobile toggle has an `aria-label` describing its action
 - **AND** the active nav item has `aria-current="page"`
 
@@ -100,3 +92,20 @@ The site SHALL serve the CTA destination page at `/cotizacion`.
 - **WHEN** a GET request is made to `/cotizacion`
 - **THEN** the server responds with HTTP 200
 - **AND** the page contains the heading "Solicitar cotización"
+
+### Requirement: Header renders logo link with the real logo image
+The site-header SHALL render a logo link pointing to the home page, wrapping the real raster logo imported from `@/assets/img/` (`logo-web.webp`) and rendered with the built-in `astro:assets` `<Image>` component. The `<img>` SHALL carry the `alt` text from the `logoAlt` prop and explicit `width="165"` and `height="67"` attributes (placeholder width preserving the native 600×243 aspect ratio) to avoid layout shift. The placeholder text "Logo placeholder" SHALL no longer appear. The header container SHALL use the `--color-secondary` (navy `#1F2D40`) and `--color-secondary-light` (`#35455E`) tokens via Tailwind utilities `bg-secondary` / a gradient `from-secondary to-secondary-light`; the obsolete utilities `bg-brand-navy`, `from-brand-navy`, `to-brand-navy-light` SHALL NOT appear.
+
+#### Scenario: Logo link points to home
+- **WHEN** the site-header renders
+- **THEN** the logo link has `href="/"` and `aria-label="Ir al inicio"`
+- **AND** the logo link is inside a container with a gradient `from-secondary to-secondary-light`
+- **AND** the rendered HTML contains no `brand-navy` token references
+
+#### Scenario: Logo image is the real raster asset
+- **WHEN** the site-header renders
+- **THEN** the logo link contains an `<img>` element whose `src` resolves to the imported asset from `@/assets/img/` (`logo-web.webp`, 600×243 native)
+- **AND** the `<img>` carries `alt="Riff"` (the `logoAlt` prop value)
+- **AND** the `<img>` carries explicit `width="165"` and `height="67"` attributes (placeholder width preserving the native 2.47:1 aspect ratio)
+- **AND** the rendered HTML does NOT contain "Logo placeholder"
+

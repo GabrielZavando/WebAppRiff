@@ -39,15 +39,6 @@ The `hero-banner` SHALL render one `<a>` per element of the `ctas` prop, where t
 - **THEN** the `<a>` element has a white border (`border-2 border-white`) with no fill
 - **AND** the CTA is keyboard focusable
 
-### Requirement: HeroBanner uses a CSS-only placeholder background, no external image
-The `hero-banner` SHALL render its background using Tailwind CSS utilities only (gradients and overlays), without referencing any external image file, URL, or asset, so the build has zero new external dependencies. The gradient SHALL use the new tokens `from-secondary via-secondary-light to-secondary` (navy gradient) — the obsolete utilities `from-brand-navy`, `via-brand-navy-light`, `to-brand-navy` SHALL NOT appear.
-
-#### Scenario: Gradient uses secondary tokens
-- **WHEN** the HeroBanner renders its `<section>` background
-- **THEN** the class string contains `from-secondary`, `via-secondary-light`, and `to-secondary`
-- **AND** no `brand-navy` substring appears in the rendered HTML of the section
-- **AND** no external image URL or asset path is referenced
-
 ### Requirement: HeroBanner layout is responsive across viewports
 The `hero-banner` SHALL scale its typography and spacing based on the viewport: smaller on mobile (< 768px) and larger on desktop (>= 768px), with the CTA container switching between stacked and inline layouts at the `sm` breakpoint.
 
@@ -66,7 +57,7 @@ The `hero-banner` SHALL scale its typography and spacing based on the viewport: 
 - **THEN** the content wrapper inside the section carries vertical padding that scales responsively (e.g. `py-16` on mobile, `md:py-24` on desktop)
 
 ### Requirement: HeroBanner is keyboard and screen-reader accessible
-The `hero-banner` SHALL use semantic HTML so it is operable with the keyboard and consumable by screen readers without extra ARIA attributes: single `<h1>` for the page, `<h2>` subordinate, and focusable CTAs in DOM order.
+The `hero-banner` SHALL use semantic HTML so it is operable with the keyboard and consumable by screen readers: single `<h1>` for the page, `<h2>` subordinate, focusable CTAs in DOM order, and a background image described via a meaningful `alt` attribute on its `<img>` fallback (the decorative overlay is `aria-hidden`).
 
 #### Scenario: Exactly one h1 on the page
 - **WHEN** the home page renders with the HeroBanner
@@ -79,9 +70,11 @@ The `hero-banner` SHALL use semantic HTML so it is operable with the keyboard an
 - **AND** Tab navigation moves through the CTAs in DOM order
 - **AND** the CTAs do not carry `tabindex="-1"` or `aria-hidden="true"`
 
-#### Scenario: Decorative background has no aria noise
+#### Scenario: Background image is described by alt, overlay is silent
 - **WHEN** the HeroBanner renders
-- **THEN** the background layer element(s) do NOT carry `role="img"`, `aria-label`, or `alt` attributes (the placeholder background is purely decorative)
+- **THEN** the `<img>` fallback of the background picture carries a non-empty `alt` describing the industrial image
+- **AND** the dark overlay `<div>` carries `aria-hidden="true"`
+- **AND** the overlay does NOT carry `role="img"`, `aria-label`, or `alt`
 
 ### Requirement: HeroBanner content is configured via a hardcoded constant
 The `hero-banner` content SHALL come from the `HERO_BANNER_CONTENT` constant in `lib/config/hero-banner.ts`, exported as `Readonly<HeroBannerProps>`, with exactly two CTAs (one primary and one secondary).
@@ -122,3 +115,19 @@ The `apps/web/src/pages/index.astro` SHALL render `<HeroBanner {...HERO_BANNER_C
 - **WHEN** the home page renders
 - **THEN** the rendered HTML keeps the existing order: `<TopHeader />`, then `<header>` (from site-header), then the SearchForm `<div role="search">`, then the hero `<section>` from the HeroBanner
 - **AND** the count of `<header>` elements in the document is still exactly one (the SearchForm remains in its own `role="search"` landmark)
+
+### Requirement: HeroBanner renders the real industrial background image with the Astro Picture component
+The `hero-banner` SHALL render its background using the real industrial image imported from `@/assets/img/` and rendered with the built-in `astro:assets` `<Picture>` component, producing a responsive `srcset` with modern formats (AVIF and WebP) and a fixed `loading="eager"` (the hero is above-the-fold). A dark overlay SHALL sit above the image to preserve the contrast of the white text. The obsolete placeholder `from-secondary via-secondary-light to-secondary` CSS-only gradient SHALL be removed; the obsolete utilities `from-brand-navy`, `via-brand-navy-light`, `to-brand-navy` SHALL NOT appear.
+
+#### Scenario: Picture renders with modern formats and eager loading
+- **WHEN** the HeroBanner renders on a static build
+- **THEN** the rendered HTML contains a `<picture>` element whose `<source>` elements reference `.avif` and `.webp` variants (and a fallback `<img>`)
+- **AND** the `<img>` fallback carries `loading="eager"`
+- **AND** the `<img>` fallback carries the `alt` attribute with a descriptive text for the industrial image
+- **AND** the rendered HTML does NOT contain `from-secondary via-secondary-light to-secondary` nor any `brand-navy` substring
+
+#### Scenario: Decorative overlay is aria-hidden
+- **WHEN** the HeroBanner renders
+- **THEN** the dark overlay `<div>` carries `aria-hidden="true"` (decorative, not exposed to screen readers)
+- **AND** the accessible description of the background comes from the `<img>` `alt`, not from the overlay
+
