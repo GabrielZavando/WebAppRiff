@@ -21,14 +21,14 @@ test.describe('HeroBanner (home hero section)', () => {
     await expect(h1).toContainText('Innovación que');
     await expect(h1).toContainText('Fluye');
 
-    // The <span class="text-brand-teal"> element carries the highlighted word
-    // with the computed teal color (#14B8A6 = rgb(20, 184, 166)).
-    const tealSpan = h1.locator('span.text-brand-teal');
+    // The <span class="text-primary"> element carries the highlighted word
+    // with the computed primary teal color (#41B3C4 = rgb(65, 179, 196)).
+    const tealSpan = h1.locator('span.text-primary');
     await expect(tealSpan).toHaveText('Fluye');
     const color = await tealSpan.evaluate(
       (el) => window.getComputedStyle(el).color,
     );
-    expect(color).toBe('rgb(20, 184, 166)');
+    expect(color).toBe('rgb(65, 179, 196)');
   });
 
   test('renders the subtitle as a visible <h2> (5.2)', async ({ page }) => {
@@ -59,7 +59,7 @@ test.describe('HeroBanner (home hero section)', () => {
     const cta = page.getByRole('link', { name: 'VER SERVICIOS' });
     await expect(cta).toHaveAttribute('href', '/servicios');
     const bg = await cta.evaluate((el) => window.getComputedStyle(el).backgroundColor);
-    expect(bg).toBe('rgb(20, 184, 166)');
+    expect(bg).toBe('rgb(65, 179, 196)');
   });
 
   test('ESCRÍBENOS links to /contacto with white border and no teal bg (5.6)', async ({
@@ -79,7 +79,7 @@ test.describe('HeroBanner (home hero section)', () => {
     expect(styles.borderColor).toBe('rgb(255, 255, 255)');
     expect(parseFloat(styles.borderWidth)).toBeGreaterThanOrEqual(2);
     // No teal fill on the secondary CTA.
-    expect(styles.bg).not.toBe('rgb(20, 184, 166)');
+    expect(styles.bg).not.toBe('rgb(65, 179, 196)');
   });
 
   test('stacks CTAs vertically and full-width on mobile (< 768px) (5.7)', async ({

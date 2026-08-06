@@ -84,18 +84,18 @@ test.describe('SearchForm (global search bar)', () => {
     await expect(input).toHaveAttribute('placeholder', '¿Qué solución está buscando?');
   });
 
-  test('uses the brand-orange background on the BUSCAR button', async ({ page }) => {
+  test('uses the accent background on the BUSCAR button', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
 
     const button = page.getByRole('search', { name: 'Buscar productos' }).getByRole('button', {
       name: 'BUSCAR',
     });
-    // Token is #F97316 in globals.css. We accept an exact match (Tailwind v4
-    // resolves the bg-brand-orange utility to the CSS variable literal).
+    // Token is #F26A21 in globals.css. We accept an exact match (Tailwind v4
+    // resolves the bg-accent utility to the CSS variable literal).
     const bg = await button.evaluate((el) => getComputedStyle(el).backgroundColor);
-    // rgb(249, 115, 22) == #F97316. We accept either format.
-    expect(['rgb(249, 115, 22)', 'rgb(249,115,22)']).toContain(bg);
+    // rgb(242, 106, 33) == #F26A21. We accept either format.
+    expect(['rgb(242, 106, 33)', 'rgb(242,106,33)']).toContain(bg);
   });
 
   test('navigates to /productos?q=...&categoriaId=... when both fields are filled', async ({

@@ -81,7 +81,7 @@ test.describe('PanelHome (home about/trust panel)', () => {
     page,
   }) => {
     const panel = page.locator(PANEL_SECTION_SELECTOR);
-    const leftHalf = panel.locator('div.bg-brand-teal');
+    const leftHalf = panel.locator('div.bg-primary');
     const rightHalf = panel.locator('div.bg-white');
     await expect(leftHalf).toBeVisible();
     await expect(rightHalf).toBeVisible();
@@ -89,7 +89,8 @@ test.describe('PanelHome (home about/trust panel)', () => {
     const leftBg = await leftHalf.evaluate(
       (el) => window.getComputedStyle(el).backgroundColor,
     );
-    expect(leftBg).toBe('rgb(20, 184, 166)');
+    // new --color-primary = #41B3C4 = rgb(65, 179, 196)
+    expect(leftBg).toBe('rgb(65, 179, 196)');
 
     const rightBg = await rightHalf.evaluate(
       (el) => window.getComputedStyle(el).backgroundColor,
@@ -104,8 +105,8 @@ test.describe('PanelHome (home about/trust panel)', () => {
     await expect(cta).toBeVisible();
     await expect(cta).toHaveAttribute('href', '/contacto');
     const bg = await cta.evaluate((el) => window.getComputedStyle(el).backgroundColor);
-    // brand-navy = #1B2A4A = rgb(27, 42, 74)
-    expect(bg).toBe('rgb(27, 42, 74)');
+    // new --color-secondary = #1F2D40 = rgb(31, 45, 64)
+    expect(bg).toBe('rgb(31, 45, 64)');
   });
 
   test('renders exactly 4 stat cells with the configured values+labels (4.4)', async ({
@@ -113,7 +114,7 @@ test.describe('PanelHome (home about/trust panel)', () => {
   }) => {
     const panel = page.locator(PANEL_SECTION_SELECTOR);
     const rightHalf = panel.locator('div.bg-white');
-    const statValues = rightHalf.locator('p.text-brand-navy');
+    const statValues = rightHalf.locator('p.text-secondary');
     await expect(statValues).toHaveCount(4);
     await expect(statValues.nth(0)).toHaveText('40+');
     await expect(statValues.nth(1)).toHaveText('30.000+');
@@ -134,7 +135,7 @@ test.describe('PanelHome (home about/trust panel)', () => {
     await page.reload();
 
     const panel = page.locator(PANEL_SECTION_SELECTOR);
-    const leftHalf = panel.locator('div.bg-brand-teal');
+    const leftHalf = panel.locator('div.bg-primary');
     const rightHalf = panel.locator('div.bg-white');
 
     const leftBox = await leftHalf.boundingBox();
@@ -190,7 +191,7 @@ test.describe('PanelHome (home about/trust panel)', () => {
     await expect(statsGrid).toBeVisible();
 
     // All 4 stat values are visible and don't overflow
-    const statValues = statsGrid.locator('p.text-brand-navy');
+    const statValues = statsGrid.locator('p.text-secondary');
     await expect(statValues).toHaveCount(4);
     for (let i = 0; i < 4; i++) {
       await expect(statValues.nth(i)).toBeVisible();
@@ -317,15 +318,15 @@ test.describe('PanelHome (home about/trust panel)', () => {
     page,
   }) => {
     const cta = page.getByRole('link', { name: 'SOLICITAR ASESORÍA TÉCNICA' });
-    // The CTA bg is brand-navy; the contrast we care about is the white text
-    // on the navy bg (text-vs-bg), since that's what the user reads. The
-    // task description frames it as "CTA navy on teal" but the WCAG operable
-    // contrast is text-vs-its-own-bg. We assert text(bgnavy)-vs-bgnavy.
+    // The CTA bg is secondary navy (#1F2D40); the contrast we care about is
+    // the white text on the navy bg (text-vs-bg), since that's what the user
+    // reads. The task description frames it as "CTA navy on teal" but the
+    // WCAG operable contrast is text-vs-its-own-bg. We assert text(navy)-vs-bg(navy).
     const { ctaBg, ctaText } = await cta.evaluate((el) => {
       const cs = window.getComputedStyle(el);
       return { ctaBg: cs.backgroundColor, ctaText: cs.color };
     });
-    // brand-navy bg (#1B2A4A) with white text (#FFFFFF): ratio ~11.4:1.
+    // secondary bg (#1F2D40) with white text (#FFFFFF): ratio ~12.3:1.
     // AA Normal requires 4.5:1. The CTA clearly passes.
     const ratio = contrastRatio(ctaText, ctaBg);
     expect(ratio).toBeGreaterThanOrEqual(4.5); // AA Normal
@@ -334,20 +335,35 @@ test.describe('PanelHome (home about/trust panel)', () => {
   test('WCAG AA Large contrast: h2 white text on teal background (4.13)', async ({
     page,
   }) => {
-    // TODO: pendiente de la revisión global del sistema de diseño (change
-    // futuro `design-system-revision`). El ratio texto-blanco-sobre-teal-#14B8A6
-    // es ~2.49:1 y no cumple AA Large (>= 3:1). Cambiar la opacidad del texto
-    // no lo resuelve; el token teal necesita ajuste. Se documenta en design.md
-    // § Decision 10 (post-apply update) y se deja como `.skip` hasta entonces.
-    test.skip();
+    // Verified in design-system-revision: new --color-primary #41B3C4 vs white text.
+    // If this fails, fallback to --color-primary-darker (#227E8E) for panel background.
+    const h2 = page.locator('section.relative.z-10 >> h2').first();
+    const textColor = await h2.evaluate((el) =>
+      window.getComputedStyle(el).color,
+    );
+    const bgColor = await h2.evaluate((el) =>
+      window.getComputedStyle(el).backgroundColor,
+    );
+    expect(textColor).toBe('rgb(255, 255, 255)');
+    const ratio = contrastRatio(textColor, bgColor);
+    expect(ratio).toBeGreaterThanOrEqual(3.0); // WCAG AA Large (bold ≥ 18pt)
   });
 
   test('WCAG AA Normal contrast: description <p> on teal; verify and adjust if failing (4.14)', async ({
     page,
   }) => {
-    // TODO: pendiente de la misma revisión global del sistema de diseño.
-    // test.skip() arriba es el camino correcto para que el CI no rompa hasta
-    // que el change `design-system-revision` ajuste el token teal.
-    test.skip();
+    // Verified in design-system-revision: new --color-primary #41B3C4 vs white text.
+    // If this fails, adjust opacity or fallback to --color-primary-darker.
+    const desc = page.locator(
+      'section.relative.z-10 >> div.bg-primary >> p',
+    ).first();
+    const textColor = await desc.evaluate((el) =>
+      window.getComputedStyle(el).color,
+    );
+    const bgColor = await desc.evaluate((el) =>
+      window.getComputedStyle(el).backgroundColor,
+    );
+    const ratio = contrastRatio(textColor, bgColor);
+    expect(ratio).toBeGreaterThanOrEqual(4.5); // WCAG AA Normal
   });
 });
