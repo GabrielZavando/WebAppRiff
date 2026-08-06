@@ -1,0 +1,98 @@
+/* ─────────────────────────────────────────────────────────────────────
+ * Design tokens for Riff Catálogo Digital Headless.
+ * Canonical source: docs/design/style-guide/index.html
+ * Spec: openspec/changes/design-system-revision/specs/design-tokens/spec.md
+ * Sync mirror: apps/admin/src/styles/globals.css MUST declare the same @theme.
+ * ───────────────────────────────────────────────────────────────────── */
+
+/* Self-hosted fonts via @fontsource (no CDN). Montserrat for headings,
+ * Open Sans for body. See spec requirement "Tipografía — familias Montserrat
+ * y Open Sans self-hosted".
+ */
+@import '@fontsource/montserrat/600.css';
+@import '@fontsource/montserrat/700.css';
+@import '@fontsource/montserrat/800.css';
+@import '@fontsource/open-sans/400.css';
+@import '@fontsource/open-sans/600.css';
+@import '@fontsource/open-sans/700.css';
+@import '@fontsource/open-sans/400-italic.css';
+
+@import "tailwindcss";
+
+@theme {
+  /* ── Marca (12 tokens) ── */
+  --color-primary: #41B3C4;
+  --color-primary-dark: #2E9AAD;
+  --color-primary-darker: #227E8E;
+  --color-primary-light: #D2EEF2;
+  --color-primary-100: #EAF7F9;
+
+  --color-secondary: #1F2D40;
+  --color-secondary-dark: #16202E;
+  --color-secondary-light: #35455E;
+
+  --color-accent: #F26A21;
+  --color-accent-dark: #D14E12;
+  --color-accent-darker: #B03E0E;
+  --color-accent-light: #FDE8DC;
+
+  /* ── Neutros (6 tokens) ── */
+  --color-text: #1F2D40;
+  --color-text-2: #5C6675;
+  --color-muted: #98A1AC;
+  --color-border: #E3E8ED;
+  --color-bg: #F6F8FA;
+  --color-white: #FFFFFF;
+
+  /* ── Estado (12 tokens: 4 estados × 3 tonos) ── */
+  --color-success: #25D366;
+  --color-success-dark: #149A49;
+  --color-success-light: #E4F8EC;
+
+  --color-warning: #F5B01E;
+  --color-warning-dark: #9A6E08;
+  --color-warning-light: #FEF4DC;
+
+  --color-error: #E0453A;
+  --color-error-dark: #B93127;
+  --color-error-light: #FCE9E7;
+
+  --color-info: #2D9CDB;
+  --color-info-dark: #1B74A6;
+  --color-info-light: #E7F3FB;
+
+  /* ── Tipografía ── */
+  --font-heading: "Montserrat", sans-serif;
+  --font-body: "Open Sans", sans-serif;
+
+  /* ── Radius ── */
+  --radius: 2px;
+
+  /* ── Sombras (flat design — reserved for floating layers) ── */
+  --shadow-1: 0 1px 2px rgba(22, 32, 46, .06);
+  --shadow-2: 0 2px 6px rgba(22, 32, 46, .08);
+  --shadow-3: 0 4px 12px rgba(22, 32, 46, .10);
+  --shadow-4: 0 8px 20px rgba(22, 32, 46, .12);
+  --shadow-5: 0 12px 28px rgba(22, 32, 46, .14);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased text-text;
+    font-family: var(--font-body);
+  }
+}
+
+@layer utilities {
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
