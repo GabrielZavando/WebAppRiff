@@ -1,6 +1,6 @@
 import { test, expect } from 'playwright/test';
 
-const HERO_SECTION_SELECTOR = 'section.bg-gradient-to-br';
+const HERO_SECTION_SELECTOR = 'section.bg-secondary';
 
 test.describe('HeroBanner (home hero section)', () => {
   test.beforeEach(async ({ page }) => {
@@ -175,6 +175,23 @@ test.describe('HeroBanner (home hero section)', () => {
   }) => {
     const body = await page.locator('body').textContent();
     expect(body).not.toContain('Proyecto en desarrollo');
+  });
+
+  test('renders the real industrial image as a <picture> with AVIF/WebP sources (real-site-images)', async ({
+    page,
+  }) => {
+    const picture = page.locator(`${HERO_SECTION_SELECTOR} picture`);
+    await expect(picture).toBeVisible();
+
+    const sourceTypes = await picture.locator('source').evaluateAll((sources) =>
+      sources.map((s) => s.getAttribute('type')).filter(Boolean),
+    );
+    expect(sourceTypes).toContain('image/avif');
+    expect(sourceTypes).toContain('image/webp');
+
+    const img = picture.locator('img');
+    await expect(img).toHaveAttribute('loading', 'eager');
+    await expect(img).toHaveAttribute('alt', /Instalación industrial Riff/);
   });
 
   test('preserves the DOM order TopHeader -> header -> SearchForm -> hero section (5.15)', async ({

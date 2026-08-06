@@ -164,26 +164,39 @@ describe('HeroBanner — CTAs', () => {
   });
 });
 
-describe('HeroBanner — CSS-only placeholder background', () => {
-  it('renders a <section> with a navy gradient class', async () => {
+describe('HeroBanner — real industrial background image', () => {
+  it('renders a <picture> element with AVIF and WebP <source> variants', async () => {
     const html = await render();
-    const sectionMatch = html.match(/<section[^>]*>/);
-    if (!sectionMatch) throw new Error('section not found');
-    expect(sectionMatch[0]).toContain('bg-gradient-to-br');
-    expect(sectionMatch[0]).toContain('from-secondary');
-    expect(sectionMatch[0]).toContain('via-secondary-light');
-    expect(sectionMatch[0]).toContain('to-secondary');
+    expect(html).toMatch(/<picture[\s\S]*?<\/picture>/);
+    const sourceTypes = [...html.matchAll(/<source[^>]*type="([^"]+)"/g)].map(m => m[1]);
+    expect(sourceTypes).toContain('image/avif');
+    expect(sourceTypes).toContain('image/webp');
   });
 
-  it('does NOT reference any external image (<img>, <picture>, or inline background-image url)', async () => {
+  it('renders an <img> fallback with loading="eager" and a descriptive alt', async () => {
     const html = await render();
-    expect(html).not.toMatch(/<img\s/i);
-    expect(html).not.toMatch(/<picture\s/i);
-    expect(html).not.toMatch(/background-image:\s*url\(/i);
-    expect(html).not.toMatch(/background:\s*url\(/i);
+    const imgMatch = html.match(/<img[^>]*>/);
+    if (!imgMatch) throw new Error('img not found');
+    const img = imgMatch[0];
+    expect(img).toContain('loading="eager"');
+    expect(img).toMatch(/alt="[^"]+"/);
+    expect(img).not.toMatch(/alt=""/);
   });
 
-  it('contains an absolute background layer and a relative content layer', async () => {
+  it('renders a dark overlay that is aria-hidden', async () => {
+    const html = await render();
+    expect(html).toContain('aria-hidden="true"');
+    // The overlay div is decorative and must not expose image semantics
+    expect(html).not.toContain('role="img"');
+  });
+
+  it('does NOT render the CSS-only placeholder gradient classes', async () => {
+    const html = await render();
+    expect(html).not.toContain('from-secondary via-secondary-light to-secondary');
+    expect(html).not.toContain('brand-navy');
+  });
+
+  it('contains an absolute image layer and a relative content layer', async () => {
     const html = await render();
     expect(html).toContain('absolute');
     expect(html).toContain('inset-0');
@@ -218,22 +231,16 @@ describe('HeroBanner — accessibility', () => {
     }
   });
 
-  it('decorative background layers do NOT carry role="img", aria-label, or alt', async () => {
+  it('background image has a meaningful alt and overlay is silent', async () => {
     const html = await render();
-    // The decorative layers are absolutely-positioned <div> elements inside the
-    // section. They should not expose decorative noise to screen readers.
-    expect(html).not.toContain('role="img"');
-    // alt is an <img> attribute; combined with the no-<img> rule this is redundant
-    // but explicit: ensures no accidental alt="" sneaks in.
-    expect(html).not.toMatch(/\salt="/);
-    // The decorative layer must not carry an aria-label
-    // (the section may carry one but the decorative layer must not)
-    const sectionMatch = html.match(/<section[\s\S]*?<\/section>/);
-    if (!sectionMatch) throw new Error('section not found');
-    // Find the absolute decorative layer
-    const decorativeMatch = sectionMatch[0].match(/<div[^>]*class="[^"]*absolute[^"]*"[^>]*>/g) ?? [];
-    for (const d of decorativeMatch) {
+    // The real industrial image is content, described via the <img> alt
+    expect(html).toMatch(/<img[^>]*alt="[^"]+"/);
+    // The dark overlay div is decorative: aria-hidden, no role/label/alt
+    const overlayMatch = html.match(/<div[^>]*aria-hidden="true"[^>]*>/g) ?? [];
+    for (const d of overlayMatch) {
+      expect(d).not.toContain('role="img"');
       expect(d).not.toContain('aria-label');
+      expect(d).not.toContain('alt=');
     }
   });
 });

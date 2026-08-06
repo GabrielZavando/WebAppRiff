@@ -25,13 +25,21 @@ function getDesktopNav(html: string): string {
 }
 
 describe('Header', () => {
-  it('renders the logo as a home link with accessible placeholder', async () => {
+  it('renders the logo as a home link wrapping the real logo image', async () => {
     const html = await render();
 
     expect(html).toContain('<a href="/"');
     expect(html).toContain('aria-label="Ir al inicio"');
-    expect(html).toContain('w-[165px] h-[80px]');
-    expect(html).toContain('Logo placeholder');
+    // The real logo asset is rendered as an <img> inside the logo link. The
+    // regex allows the HTML TODO comment (scroll-animations) to sit between
+    // the <a> and the <img>.
+    expect(html).toMatch(/<a href="\/" aria-label="Ir al inicio"[^>]*>[\s\S]*?<img/);
+    expect(html).toContain('alt="Riff"');
+    expect(html).toContain('width="165"');
+    expect(html).toContain('height="67"');
+    // The placeholder must be gone
+    expect(html).not.toContain('Logo placeholder');
+    expect(html).not.toContain('w-[165px] h-[80px]');
   });
 
   it('renders the five navigation items in order', async () => {

@@ -4,7 +4,7 @@ import { test, expect } from 'playwright/test';
  * E2E tests for the PanelHome component on the home page.
  *
  * Selector strategy: the PanelHome <section> is the second <section> on the
- * page (the first is the HeroBanner with `bg-gradient-to-br`). We target by
+ * page (the first is the HeroBanner with `bg-secondary`). We target by
  * the distinguishing class `-mt-16` (negative margin-top) which is unique to
  * the PanelHome. Tests fall back to `section.relative.z-10` when appropriate.
  */
@@ -201,7 +201,7 @@ test.describe('PanelHome (home about/trust panel)', () => {
   test('overlaps the HeroBanner: panel top is above the hero bottom (4.7)', async ({
     page,
   }) => {
-    const hero = page.locator('section.bg-gradient-to-br').first();
+    const hero = page.locator('section.bg-secondary').first();
     const panel = page.locator(PANEL_SECTION_SELECTOR).first();
 
     const heroBox = await hero.boundingBox();
@@ -231,7 +231,7 @@ test.describe('PanelHome (home about/trust panel)', () => {
       await page.setViewportSize(vp);
       await page.reload();
 
-      const h1 = page.locator('section.bg-gradient-to-br h1').first();
+      const h1 = page.locator('section.bg-secondary h1').first();
       await expect(h1).toBeVisible();
       await expect(h1).toContainText('Innovación que Fluye');
 
@@ -293,7 +293,7 @@ test.describe('PanelHome (home about/trust panel)', () => {
     const phone = page.locator('a[href^="tel:"]').first();
     const header = page.locator('header').first();
     const search = page.getByRole('search', { name: 'Buscar productos' });
-    const hero = page.locator('section.bg-gradient-to-br').first();
+    const hero = page.locator('section.bg-secondary').first();
     const panel = page.locator(PANEL_SECTION_SELECTOR).first();
 
     const phoneBox = await phone.boundingBox();

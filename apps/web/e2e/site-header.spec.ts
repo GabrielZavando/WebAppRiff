@@ -20,6 +20,20 @@ test.describe('Site header (main navigation)', () => {
     await expect(banner.getByRole('link', { name: 'SOLICITAR COTIZACIÓN' })).toBeVisible();
   });
 
+  test('renders the real logo image with accessible alt and dimensions (real-site-images)', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto('/');
+
+    const logoLink = page.getByRole('link', { name: 'Ir al inicio' });
+    const logo = logoLink.locator('img');
+    await expect(logo).toBeVisible();
+    await expect(logo).toHaveAttribute('alt', 'Riff');
+    await expect(logo).toHaveAttribute('width', '165');
+    await expect(logo).toHaveAttribute('height', '67');
+  });
+
   test('exposes a single header landmark on the page', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
