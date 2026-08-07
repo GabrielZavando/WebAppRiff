@@ -49,6 +49,19 @@ The TopHeader component SHALL obtain all its icons via `astro-icon` (`<Icon>` el
 - **THEN** it contains `import { Icon } from 'astro-icon/components'` (or equivalent Astro import)
 - **AND** it does not import any local `*Icon.astro` component
 
+### Requirement: TopHeader supports a transparent mode
+TopHeader SHALL accept an optional boolean prop `transparent` (default `false`). When `true`, the component SHALL render with `bg-transparent` instead of the gradient `bg-secondary bg-linear-to-r from-secondary to-secondary-light` while keeping the same layout, text colors, and social dividers. When `false` (default), the existing gradient navy background SHALL be present.
+
+#### Scenario: Transparent mode removes the gradient
+- **WHEN** TopHeader renders with `transparent: true`
+- **THEN** the outer class contains `bg-transparent`
+- **AND** the outer class does NOT contain `bg-secondary` nor `from-secondary to-secondary-light`
+- **AND** the phone link and social links are still rendered
+
+#### Scenario: Default mode keeps the gradient
+- **WHEN** TopHeader renders without `transparent` (or `transparent: false`)
+- **THEN** the outer class contains `bg-secondary` and `from-secondary to-secondary-light`
+
 ### Requirement: TopHeader is hidden on mobile
 The TopHeader component SHALL be completely hidden on viewports smaller than 640px (Tailwind `sm` breakpoint).
 

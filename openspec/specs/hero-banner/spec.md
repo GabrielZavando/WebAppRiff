@@ -1,19 +1,20 @@
 # hero-banner Specification
 
 ## Purpose
-Sección hero del home del sitio público Astro. Componente presentacional (dumb) que renderiza headline + palabra destacada, subtítulo, descripción y dos CTAs (primario teal + secundario outline blanco) sobre un fondo navy generado con CSS placeholder (sin imagen externa). Layout responsivo (mobile stacked, desktop horizontal). Headline único `<h1>` de la home, subtítulo `<h2>` subordinado.
+Sección hero del home del sitio público Astro. Componente presentacional (dumb) que renderiza headline + palabra destacada, subtítulo, descripción y dos CTAs (primario teal + secundario outline blanco). No incluye imagen de fondo ni overlay: el fondo y la cobertura full-viewport los aporta el shell hero del Layout (capability `home-hero-shell`), que envuelve imagen `bg-secondary/80` detrás de los headers transparentes. Layout responsivo (mobile stacked, desktop horizontal). Headline único `<h1>` de la home, subtítulo `<h2>` subordinado.
 ## Requirements
 ### Requirement: HeroBanner renders the headline with the highlighted word in a distinct color
-The `hero-banner` SHALL render an `<h1>` whose visible text equals `headline` followed by `highlightedWord`, where `highlightedWord` is wrapped in a `<span>` carrying the `text-primary` class (resolving to `--color-primary` `#41B3C4`) so it visually stands out from the rest of the headline. The obsolete utility `text-brand-teal` and references to `--color-brand-teal` SHALL NOT appear.
+The `hero-banner` SHALL render an `<h1>` whose visible text equals `headline` followed by `highlightedWord`, where `highlightedWord` is wrapped in a `<span>` carrying the `text-primary` class (resolving to `--color-primary` `#41B3C4`) so it visually stands out from the rest of the headline. The obsolete utility `text-brand-teal` and references to `--color-brand-teal` SHALL NOT appear. The component SHALL NOT render any background `<picture>`/image or overlay; the application shell provides all backgrounds.
 
 #### Scenario: Highlighted word uses primary token
 - **WHEN** the HeroBanner renders with headline "Innovación que Fluye" and highlightedWord "Fluye"
 - **THEN** the `<h1>` contains a `<span>` element wrapping "Fluye"
 - **AND** that `<span>` carries the `text-primary` class (resolving to `#41B3C4`)
 - **AND** the rendered HTML does NOT contain the class `text-brand-teal`
+- **AND** the rendered HTML does NOT contain a `<picture>` element
 
 ### Requirement: HeroBanner renders subtitle and description in subordinate headings and paragraphs
-The `hero-banner` SHALL render `subtitle` as an `<h2>` directly subordinate to the `<h1>`, with a constrained maximum width, and `description` as a `<p>` with reduced opacity, both inside the same `<section>` as the headline.
+The `hero-banner` SHALL render `subtitle` as an `<h2>` directly subordinate to the `<h1>`, with a constrained maximum width, and `description` as a `<p>` with reduced opacity, both inside the same `<section>` as the headline. Neither SHALL introduce a new background layer.
 
 #### Scenario: Subtitle renders as h2 with constrained width
 - **WHEN** the HeroBanner renders with `subtitle="Experiencia, tecnología y control en medición de fluidos y tratamientos de agua."`
@@ -39,6 +40,10 @@ The `hero-banner` SHALL render one `<a>` per element of the `ctas` prop, where t
 - **THEN** the `<a>` element has a white border (`border-2 border-white`) with no fill
 - **AND** the CTA is keyboard focusable
 
+#### Scenario: CTA container stacks on mobile and rows on sm+
+- **WHEN** the HeroBanner renders
+- **THEN** the CTA container carries `flex-col sm:flex-row`
+
 ### Requirement: HeroBanner layout is responsive across viewports
 The `hero-banner` SHALL scale its typography and spacing based on the viewport: smaller on mobile (< 768px) and larger on desktop (>= 768px), with the CTA container switching between stacked and inline layouts at the `sm` breakpoint.
 
@@ -56,8 +61,16 @@ The `hero-banner` SHALL scale its typography and spacing based on the viewport: 
 - **WHEN** the HeroBanner renders
 - **THEN** the content wrapper inside the section carries vertical padding that scales responsively (e.g. `py-16` on mobile, `md:py-24` on desktop)
 
+### Requirement: HeroBanner has no built-in background image or overlay
+The `hero-banner` SHALL NOT render a `<picture>`, overlay `div` or any image import. Where the home needs a background, the application shell (capability `home-hero-shell`) provides it.
+
+#### Scenario: No picture element rendered
+- **WHEN** the HeroBanner renders
+- **THEN** the rendered HTML does NOT contain a `<picture>` tag
+- **AND** does NOT contain `bg-secondary/60` nor `bg-secondary/80` in any class
+
 ### Requirement: HeroBanner is keyboard and screen-reader accessible
-The `hero-banner` SHALL use semantic HTML so it is operable with the keyboard and consumable by screen readers: single `<h1>` for the page, `<h2>` subordinate, focusable CTAs in DOM order, and a background image described via a meaningful `alt` attribute on its `<img>` fallback (the decorative overlay is `aria-hidden`).
+The `hero-banner` SHALL use semantic HTML so it is operable with the keyboard and consumable by screen readers: single `<h1>` for the page, `<h2>` subordinate, and focusable CTAs in DOM order. Background imagery and its decorative overlay are handled by the application shell (`home-hero-shell`), not by this component.
 
 #### Scenario: Exactly one h1 on the page
 - **WHEN** the home page renders with the HeroBanner
@@ -70,11 +83,10 @@ The `hero-banner` SHALL use semantic HTML so it is operable with the keyboard an
 - **AND** Tab navigation moves through the CTAs in DOM order
 - **AND** the CTAs do not carry `tabindex="-1"` or `aria-hidden="true"`
 
-#### Scenario: Background image is described by alt, overlay is silent
+#### Scenario: No background imagery inside the hero component
 - **WHEN** the HeroBanner renders
-- **THEN** the `<img>` fallback of the background picture carries a non-empty `alt` describing the industrial image
-- **AND** the dark overlay `<div>` carries `aria-hidden="true"`
-- **AND** the overlay does NOT carry `role="img"`, `aria-label`, or `alt`
+- **THEN** the component renders no `<picture>`, no `<img>`, and no overlay `<div>`
+- **AND** no `aria-hidden` overlay element is introduced by the hero section
 
 ### Requirement: HeroBanner content is configured via a hardcoded constant
 The `hero-banner` content SHALL come from the `HERO_BANNER_CONTENT` constant in `lib/config/hero-banner.ts`, exported as `Readonly<HeroBannerProps>`, with exactly two CTAs (one primary and one secondary).
@@ -104,30 +116,12 @@ The `hero-banner` content SHALL come from the `HERO_BANNER_CONTENT` constant in 
 - **THEN** it returns `["", " y vuelve a Fluye"]` so only the first "Fluye" is rendered in the highlighted span
 
 ### Requirement: HeroBanner integrates into the home page replacing the placeholder content
-The `apps/web/src/pages/index.astro` SHALL render `<HeroBanner {...HERO_BANNER_CONTENT} />` inside its `<Layout>` slot, replacing any pre-existing placeholder `<h1>` or `<p>` from the bootstrap phase.
+The home page SHALL render `<HeroBanner {...HERO_BANNER_CONTENT} />` inside its hero shell Layout (see `home-hero-shell`), replacing any pre-existing placeholder `<h1>` or `<p>` from the bootstrap phase.
 
-#### Scenario: Home page renders the HeroBanner instead of the placeholder
+#### Scenario: Home page renders the HeroBanner with headers above
 - **WHEN** a visitor loads `/` (the home page)
 - **THEN** the rendered HTML contains a `<section>` (the hero) wrapping the configured headline, subtitle and CTAs
-- **AND** the legacy placeholder text "Proyecto en desarrollo — Fase A: Bootstrap completado" is NOT present in the document
-
-#### Scenario: HeroBanner renders after the existing header landmarks in the DOM
-- **WHEN** the home page renders
-- **THEN** the rendered HTML keeps the existing order: `<TopHeader />`, then `<header>` (from site-header), then the SearchForm `<div role="search">`, then the hero `<section>` from the HeroBanner
-- **AND** the count of `<header>` elements in the document is still exactly one (the SearchForm remains in its own `role="search"` landmark)
-
-### Requirement: HeroBanner renders the real industrial background image with the Astro Picture component
-The `hero-banner` SHALL render its background using the real industrial image imported from `@/assets/img/` and rendered with the built-in `astro:assets` `<Picture>` component, producing a responsive `srcset` with modern formats (AVIF and WebP) and a fixed `loading="eager"` (the hero is above-the-fold). A dark overlay SHALL sit above the image to preserve the contrast of the white text. The obsolete placeholder `from-secondary via-secondary-light to-secondary` CSS-only gradient SHALL be removed; the obsolete utilities `from-brand-navy`, `via-brand-navy-light`, `to-brand-navy` SHALL NOT appear.
-
-#### Scenario: Picture renders with modern formats and eager loading
-- **WHEN** the HeroBanner renders on a static build
-- **THEN** the rendered HTML contains a `<picture>` element whose `<source>` elements reference `.avif` and `.webp` variants (and a fallback `<img>`)
-- **AND** the `<img>` fallback carries `loading="eager"`
-- **AND** the `<img>` fallback carries the `alt` attribute with a descriptive text for the industrial image
-- **AND** the rendered HTML does NOT contain `from-secondary via-secondary-light to-secondary` nor any `brand-navy` substring
-
-#### Scenario: Decorative overlay is aria-hidden
-- **WHEN** the HeroBanner renders
-- **THEN** the dark overlay `<div>` carries `aria-hidden="true"` (decorative, not exposed to screen readers)
-- **AND** the accessible description of the background comes from the `<img>` `alt`, not from the overlay
+- **AND** the DOM order is: hero shell (with `bg-secondary/80` overlay), `TopHeader`, `<header>` (from site-header), SearchForm `<div role="search">`, then the hero `<h1>` block
+- **AND** exactly one `<header>` element exists in the document
+- **AND** the legacy placeholder text "Proyecto en desarrollo — Fase A: Bootstrap completado" is NOT present
 
