@@ -18,6 +18,11 @@ async function render(contact: ContactInfo): Promise<string> {
   return container.renderToString(TopHeader, { props: { contact } });
 }
 
+async function renderTransparent(contact: ContactInfo): Promise<string> {
+  const container = await AstroContainer.create();
+  return container.renderToString(TopHeader, { props: { contact, transparent: true } });
+}
+
 describe('TopHeader', () => {
   it('renders the primary phone as a clickable tel: link with icon', async () => {
     const html = await render(fullContact);
@@ -100,6 +105,44 @@ describe('TopHeader', () => {
     expect(html).toContain('aria-label="LinkedIn"');
     expect(html).toContain('aria-label="Redes sociales"');
     expect(html).toMatch(/target="_blank"[^>]*rel="noopener noreferrer"/);
+  });
+
+  describe('transparent mode (home hero full-bleed background)', () => {
+    it('removes the brand navy gradient background in transparent mode', async () => {
+      const html = await renderTransparent(fullContact);
+
+      expect(html).not.toContain('bg-secondary');
+      expect(html).not.toContain('bg-linear-to-r from-secondary to-secondary-light');
+      expect(html).toContain('bg-transparent');
+    });
+
+    it('keeps the row height, centering and content layout in transparent mode', async () => {
+      const html = await renderTransparent(fullContact);
+
+      expect(html).toContain('h-9');
+      expect(html).toContain('container mx-auto px-4');
+      expect(html).toContain('justify-between');
+    });
+
+    it('still renders the phone and social links in transparent mode', async () => {
+      // Spec: top-header § "the phone link and social links are still
+      // rendered" — transparency only changes the background classes.
+      const html = await renderTransparent(fullContact);
+
+      expect(html).toContain('href="tel:+56229079067"');
+      expect(html).toContain('aria-label="Facebook"');
+      expect(html).toContain('aria-label="X"');
+      expect(html).toContain('aria-label="Instagram"');
+      expect(html).toContain('aria-label="LinkedIn"');
+      expect(html).toContain('aria-label="Redes sociales"');
+    });
+
+    it('defaults to the solid navy background when transparent is not set', async () => {
+      const html = await render(fullContact);
+
+      expect(html).toContain('bg-secondary');
+      expect(html).toContain('bg-linear-to-r from-secondary to-secondary-light');
+    });
   });
 
   it('matches the snapshot for full contact', async () => {

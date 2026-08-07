@@ -21,6 +21,15 @@ async function render(
   return container.renderToString(SearchForm, { props: { ...props } });
 }
 
+async function renderTransparent(
+  props: SearchFormProps = baseProps,
+): Promise<string> {
+  const container = await AstroContainer.create();
+  return container.renderToString(SearchForm, {
+    props: { ...props, transparent: true },
+  });
+}
+
 function getForm(html: string): string {
   const match = html.match(/<form[\s\S]*?<\/form>/);
   if (!match) throw new Error('Form not found in rendered HTML');
@@ -243,5 +252,51 @@ describe('SearchForm — snapshot', () => {
   it('matches the snapshot for full SearchForm', async () => {
     const html = await render();
     expect(html).toMatchSnapshot();
+  });
+});
+
+describe('SearchForm — transparent mode (home hero full-bleed background)', () => {
+  it('removes the white wrapper background and bottom border in transparent mode', async () => {
+    const html = await renderTransparent();
+    const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
+
+    const wrapperClass = wrapper.match(/class="([^"]*)"/)?.[1] ?? '';
+    expect(wrapperClass).not.toContain('bg-white');
+    expect(wrapperClass).not.toContain('border-gray-200');
+
+    // The <form> sits directly in the container; the white wrapper (outer div)
+    // no longer carries border-b on its own. Controls (select/input) keep
+    // their white fields, so the assertion targets the wrapper/border only.
+    expect(wrapperClass).not.toContain('border-b');
+  });
+
+  it('keeps the form, select, input and submit button in transparent mode', async () => {
+    const html = await renderTransparent();
+
+    expect(html).toContain('role="search"');
+    expect(getForm(html)).toContain('method="get"');
+    expect(getSelect(html)).toContain('name="categoriaId"');
+    expect(getInput(html)).toContain('type="search"');
+    expect(getButton(html)).toContain('>BUSCAR<');
+  });
+
+  it('keeps the select and input fields on a white background in transparent mode', async () => {
+    // Spec: search-form § "The select and input fields keep their white
+    // background for legibility". Only the wrapper loses its fill; the
+    // controls must stay readable over the hero image.
+    const html = await renderTransparent();
+
+    expect(getSelect(html)).toContain('bg-white');
+    expect(getInput(html)).toContain('bg-white');
+    // The submit button keeps bg-accent (not bg-white).
+    expect(getButton(html)).toContain('bg-accent');
+  });
+
+  it('defaults to the white background wrapper when transparent is not set', async () => {
+    const html = await render();
+    const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
+
+    expect(wrapper).toContain('bg-white');
+    expect(html).toContain('border-gray-200');
   });
 });

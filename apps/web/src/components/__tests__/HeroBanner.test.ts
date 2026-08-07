@@ -164,43 +164,40 @@ describe('HeroBanner — CTAs', () => {
   });
 });
 
-describe('HeroBanner — real industrial background image', () => {
-  it('renders a <picture> element with AVIF and WebP <source> variants', async () => {
+describe('HeroBanner — content only (no background shell)', () => {
+  it('does NOT render a <picture> element (background moved to Layout hero shell)', async () => {
     const html = await render();
-    expect(html).toMatch(/<picture[\s\S]*?<\/picture>/);
-    const sourceTypes = [...html.matchAll(/<source[^>]*type="([^"]+)"/g)].map(m => m[1]);
-    expect(sourceTypes).toContain('image/avif');
-    expect(sourceTypes).toContain('image/webp');
+    expect(html).not.toMatch(/<picture[\s\S]*?<\/picture>/);
+    expect(html).not.toContain('banner_home');
   });
 
-  it('renders an <img> fallback with loading="eager" and a descriptive alt', async () => {
+  it('does NOT render the decorative overlay div', async () => {
     const html = await render();
-    const imgMatch = html.match(/<img[^>]*>/);
-    if (!imgMatch) throw new Error('img not found');
-    const img = imgMatch[0];
-    expect(img).toContain('loading="eager"');
-    expect(img).toMatch(/alt="[^"]+"/);
-    expect(img).not.toMatch(/alt=""/);
+    expect(html).not.toContain('bg-secondary/80');
+    expect(html).not.toContain('bg-secondary/60');
+    expect(html).not.toContain('aria-hidden="true"');
   });
 
-  it('renders a dark overlay that is aria-hidden', async () => {
+  it('does NOT force full viewport height (min-h-screen belongs to the Layout shell)', async () => {
     const html = await render();
-    expect(html).toContain('aria-hidden="true"');
-    // The overlay div is decorative and must not expose image semantics
-    expect(html).not.toContain('role="img"');
+    expect(html).not.toContain('min-h-screen');
+    expect(html).not.toContain('md:min-h-screen');
+  });
+
+  it('does NOT center content via md:flex on the section', async () => {
+    const html = await render();
+    const sectionMatch = html.match(/<section[^>]*class="([^"]*)"[^>]*>/);
+    if (!sectionMatch) throw new Error('section not found');
+    const sectionClass = sectionMatch[1]!;
+    expect(sectionClass).not.toContain('md:flex');
+    expect(sectionClass).not.toContain('md:flex-col');
+    expect(sectionClass).not.toContain('md:justify-center');
   });
 
   it('does NOT render the CSS-only placeholder gradient classes', async () => {
     const html = await render();
     expect(html).not.toContain('from-secondary via-secondary-light to-secondary');
     expect(html).not.toContain('brand-navy');
-  });
-
-  it('contains an absolute image layer and a relative content layer', async () => {
-    const html = await render();
-    expect(html).toContain('absolute');
-    expect(html).toContain('inset-0');
-    expect(html).toContain('relative');
   });
 });
 
@@ -228,19 +225,6 @@ describe('HeroBanner — accessibility', () => {
     for (const a of aMatches) {
       expect(a).not.toContain('tabindex="-1"');
       expect(a).not.toContain('aria-hidden="true"');
-    }
-  });
-
-  it('background image has a meaningful alt and overlay is silent', async () => {
-    const html = await render();
-    // The real industrial image is content, described via the <img> alt
-    expect(html).toMatch(/<img[^>]*alt="[^"]+"/);
-    // The dark overlay div is decorative: aria-hidden, no role/label/alt
-    const overlayMatch = html.match(/<div[^>]*aria-hidden="true"[^>]*>/g) ?? [];
-    for (const d of overlayMatch) {
-      expect(d).not.toContain('role="img"');
-      expect(d).not.toContain('aria-label');
-      expect(d).not.toContain('alt=');
     }
   });
 });

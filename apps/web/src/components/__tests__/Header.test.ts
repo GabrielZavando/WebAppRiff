@@ -18,6 +18,11 @@ async function render(props: HeaderProps = baseProps): Promise<string> {
   return container.renderToString(Header, { props: { ...props } });
 }
 
+async function renderTransparent(props: HeaderProps = baseProps): Promise<string> {
+  const container = await AstroContainer.create();
+  return container.renderToString(Header, { props: { ...props, transparent: true } });
+}
+
 function getDesktopNav(html: string): string {
   const match = html.match(/<nav aria-label="Navegación principal"[\s\S]*?<\/nav>/);
   if (!match) throw new Error('Desktop nav not found in rendered HTML');
@@ -118,5 +123,31 @@ describe('Header', () => {
   it('matches the snapshot for full header', async () => {
     const html = await render();
     expect(html).toMatchSnapshot();
+  });
+
+  describe('transparent mode (home hero full-bleed background)', () => {
+    it('removes the brand navy gradient background in transparent mode', async () => {
+      const html = await renderTransparent();
+
+      expect(html).not.toContain('bg-secondary');
+      expect(html).not.toContain('from-secondary');
+      expect(html).not.toContain('to-secondary-light');
+      expect(html).toContain('bg-transparent');
+    });
+
+    it('keeps the logo, nav and CTA visible in transparent mode', async () => {
+      const html = await renderTransparent();
+
+      expect(html).toContain('aria-label="Ir al inicio"');
+      expect(getDesktopNav(html)).toContain('hidden lg:flex');
+      expect(html).toContain('SOLICITAR COTIZACIÓN');
+    });
+
+    it('defaults to the solid navy gradient when transparent is not set', async () => {
+      const html = await render();
+
+      expect(html).toContain('bg-secondary');
+      expect(html).toContain('to-secondary-light');
+    });
   });
 });
