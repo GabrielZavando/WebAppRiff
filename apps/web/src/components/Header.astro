@@ -5,9 +5,13 @@ import { Icon } from 'astro-icon/components';
 import { Image } from 'astro:assets';
 import logoImage from '@/assets/img/logo-web.webp';
 
-interface Props extends HeaderProps {}
+interface Props extends HeaderProps {
+  /** Transparent background on the home hero so the full-bleed image shows
+   * through the shell (default solid navy gradient). */
+  transparent?: boolean;
+}
 
-const { items, activePath, cta, logoAlt } = Astro.props;
+const { items, activePath, cta, logoAlt, transparent = false } = Astro.props;
 
 // `logoAlt` is optional in the props contract; the image component requires a
 // non-null alt, so we fall back to the brand name (type contract in
@@ -16,7 +20,12 @@ const logoAltText = logoAlt ?? 'Riff';
 ---
 
 <!-- Main site header: logo, desktop navigation, quote CTA and mobile toggle. -->
-<header class="bg-linear-to-r from-secondary to-secondary-light text-white">
+<header
+  class:list={[
+    'text-white',
+    transparent ? 'bg-transparent' : 'bg-linear-to-r from-secondary to-secondary-light',
+  ]}
+>
   <div class="container mx-auto px-4 h-24 flex items-center justify-between gap-4">
     <a href="/" aria-label="Ir al inicio" class="shrink-0">
       <!-- TODO[site-header-scroll-animations]: logo shrinks on scroll in a future change -->
@@ -73,7 +82,10 @@ const logoAltText = logoAlt ?? 'Riff';
   <div
     id="mobile-nav"
     hidden
-    class="lg:hidden border-t border-white/10 bg-secondary-light px-4 py-4"
+    class:list={[
+      'lg:hidden border-t border-white/10 px-4 py-4',
+      transparent ? 'bg-transparent' : 'bg-secondary-light',
+    ]}
   >
     <nav aria-label="Navegación móvil" class="flex flex-col gap-2">
       {

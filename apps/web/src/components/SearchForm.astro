@@ -1,9 +1,19 @@
 ---
 import type { SearchFormProps } from '@/lib/types/search-form';
 
-interface Props extends SearchFormProps {}
+interface Props extends SearchFormProps {
+  /** Transparent wrapper on the home hero so the full-bleed image shows
+   * through (default solid white wrapper). Controls keep their white fields. */
+  transparent?: boolean;
+}
 
-const { categories, config, initialQuery = '', initialCategoriaId = '' } = Astro.props;
+const {
+  categories,
+  config,
+  initialQuery = '',
+  initialCategoriaId = '',
+  transparent = false,
+} = Astro.props;
 
 // Stable ids for label↔control association. They are deterministic within the
 // page (only one SearchForm is rendered per Layout) so the `for`/`id` bindings
@@ -30,7 +40,11 @@ function isSelected(categoryId: string): boolean {
   landmark so it doesn't introduce a new <header> landmark (single-header
   rule inherited from the site-header change).
 -->
-<div role="search" aria-label="Buscar productos" class="bg-white border-b border-gray-200">
+<div
+  role="search"
+  aria-label="Buscar productos"
+  class:list={transparent ? 'bg-transparent' : 'bg-white border-b border-gray-200'}
+>
   <div class="container mx-auto py-4">
     <form
       method="get"

@@ -5,9 +5,12 @@ import { Icon } from 'astro-icon/components';
 
 interface Props {
   contact: ContactInfo;
+  /** Transparent background on the home hero so the full-bleed image shows
+   * through the shell (default solid navy gradient). */
+  transparent?: boolean;
 }
 
-const { contact } = Astro.props;
+const { contact, transparent = false } = Astro.props;
 
 const links = getSocialLinks(contact);
 
@@ -24,7 +27,12 @@ const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^+\d]/g, '')}` 
 <div
   role="region"
   aria-label="Barra de contacto"
-  class="hidden sm:flex h-9 items-center bg-secondary bg-linear-to-r from-secondary to-secondary-light text-white text-sm"
+  class:list={[
+    'hidden sm:flex h-9 items-center text-white text-sm',
+    transparent
+      ? 'bg-transparent'
+      : 'bg-secondary bg-linear-to-r from-secondary to-secondary-light',
+  ]}
 >
   <div class="container mx-auto px-4 flex items-center justify-between">
     {

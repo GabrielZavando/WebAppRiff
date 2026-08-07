@@ -6,17 +6,26 @@ import SearchForm from '@/components/SearchForm.astro';
 import { getContactInfo } from '@/lib/config/contact';
 import { NAVIGATION_ITEMS, getCtaConfig } from '@/lib/config/navigation';
 import { CATEGORY_OPTIONS, getSearchFormConfig } from '@/lib/config/search-form';
+import { Picture } from 'astro:assets';
+import heroImage from '@/assets/img/banner_home.webp';
 import type { HeaderProps } from '@/lib/types/header';
 import type { SearchFormProps } from '@/lib/types/search-form';
 
 interface Props {
   title: string;
   description?: string;
+  /** Full-viewport hero shell used by the home page: full-bleed background
+   * image + secondary overlay. Header/search-form render transparent so the
+   * image shows through behind them. */
+  hero?: boolean;
 }
 
-const { title, description = 'Catálogo digital de productos industriales Riff' } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const socialImage = new URL('/og-image.png', Astro.site).href;
+const { title, description = 'Catálogo digital de productos industriales Riff', hero = false } = Astro.props;
+// AstroContainer tests have no `site` configured; in real builds the astro
+// config always provides it. The fallback only guards the test environment.
+const site = Astro.site ?? new URL('http://localhost:4321');
+const canonicalURL = new URL(Astro.url.pathname || '/', site);
+const socialImage = new URL('/og-image.png', site).href;
 const contact = getContactInfo();
 
 const headerProps: HeaderProps = {
@@ -58,10 +67,30 @@ const searchFormProps: SearchFormProps = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
   </head>
-  <body class="min-h-screen flex flex-col">
-    <TopHeader contact={contact} />
-    <Header {...headerProps} />
-    <SearchForm {...searchFormProps} />
-    <slot />
+  <body class:list={['min-h-screen flex flex-col', hero && 'overflow-x-hidden']}>
+    {
+      hero && (
+        <>
+          <Picture
+            src={heroImage}
+            formats={['avif', 'webp']}
+            fallbackFormat="jpg"
+            widths={[400, 800, 1200, 1920]}
+            sizes="100vw"
+            loading="eager"
+            alt="Instalación industrial Riff de medición y tratamiento de fluidos"
+            pictureAttributes={{ class: 'absolute inset-0 h-full w-full' }}
+            class="absolute inset-0 h-full w-full object-cover"
+          />
+          <div class="absolute inset-0 bg-secondary/80" aria-hidden="true"></div>
+        </>
+      )
+    }
+    <div class:list={['w-full', hero && 'relative z-10 flex flex-col min-h-screen']}>
+      <TopHeader contact={contact} transparent={hero} />
+      <Header {...headerProps} transparent={hero} />
+      <SearchForm {...searchFormProps} transparent={hero} />
+      <slot />
+    </div>
   </body>
 </html>

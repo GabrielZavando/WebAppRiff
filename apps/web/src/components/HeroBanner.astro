@@ -1,8 +1,6 @@
 ---
 import type { HeroBannerProps } from '@/lib/types/hero-banner';
 import { splitHeadline } from '@/lib/config/hero-banner';
-import { Picture } from 'astro:assets';
-import heroImage from '@/assets/img/banner_home.webp';
 
 interface Props extends HeroBannerProps {}
 
@@ -35,28 +33,8 @@ const shouldRenderHighlight = highlightedWord !== '' && before !== headline;
   `apps/web/src/pages/index.astro`. Single <h1> per page is preserved (this is
   the only <h1> on the home); the subtitle is an <h2> subordinate to it.
 -->
-<section class="relative bg-secondary overflow-hidden">
-  <!--
-    Real industrial background image (banner_home.webp, 1920x1080) rendered
-    with astro:assets <Picture> so the SSG build emits AVIF/WebP variants with
-    a responsive srcset. `loading="eager"` because the hero is above-the-fold;
-    the dark overlay keeps the white text contrast (WCAG AA) on top of the
-    photo, so the image itself is content and gets a descriptive alt.
-  -->
-  <Picture
-    src={heroImage}
-    formats={['avif', 'webp']}
-    fallbackFormat="jpg"
-    widths={[400, 800, 1200, 1920]}
-    sizes="100vw"
-    loading="eager"
-    alt="Instalación industrial Riff de medición y tratamiento de fluidos"
-    pictureAttributes={{ class: 'absolute inset-0 h-full w-full' }}
-    class="h-full w-full object-cover"
-  />
-  <div class="absolute inset-0 bg-secondary/60" aria-hidden="true"></div>
-
-  <div class="relative container mx-auto py-16 md:py-24">
+<section class="relative">
+  <div class="relative container mx-auto py-16 md:py-24 lg:py-32">
     <h1 class="text-4xl md:text-6xl font-bold text-white">
       {before}{shouldRenderHighlight && <span class="text-primary">{highlightedWord}</span>}{after}
     </h1>
