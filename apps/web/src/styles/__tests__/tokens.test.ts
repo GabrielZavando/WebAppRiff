@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 
 /**
  * Verifies that `apps/web/src/styles/globals.css` declares the full canonical
@@ -144,10 +145,10 @@ describe('apps/web/src/styles/globals.css — design tokens (tasks 2.x)', () => 
     });
   });
 
-  describe('Task 2.9 — Radio y sombras', () => {
-    it('declares --radius: 2px', () => {
+  describe('Task 2.9 — Radio y sombras (ui-refactor: radio 0)', () => {
+    it('declares --radius: 0 (flat design estricto, ángulos rectos)', () => {
       const theme = extractThemeBlock(readGlobalsCss());
-      expect(theme).toMatch(/--radius\s*:\s*2px/);
+      expect(theme).toMatch(/--radius\s*:\s*0(px)?\b/);
     });
     it('declares --shadow-1..5 with exact rgba values', () => {
       const theme = extractThemeBlock(readGlobalsCss());
@@ -173,4 +174,46 @@ describe('apps/web/src/styles/globals.css — design tokens (tasks 2.x)', () => 
       });
     }
   });
+});
+
+/**
+ * ui-refactor task 2.1 (RED) — Flat design estricto con radio 0: ningún
+ * componente base aplica la utility Tailwind `rounded` (ni variantes), porque
+ * el token `--radius` es `0` y el flat cleanup remueve todas las esquinas
+ * redondeadas. Source: openspec/changes/ui-refactor/specs/design-tokens/spec.md
+ * (Requirement "Radio y sombras — flat design", scenario "Componentes base no
+ * aplican utilidad rounded").
+ */
+const BASE_COMPONENTS = [
+  'TopHeader.astro',
+  'Header.astro',
+  'SearchForm.astro',
+  'HeroBanner.astro',
+  'PanelHome.astro',
+] as const;
+
+// matches a Tailwind `rounded*` utility token inside a class string, using a
+// leading boundary that tolerates the preceding class (space, quote, backtick,
+// brace). Matches `rounded`, `rounded-sm`, `rounded-md`, `rounded-lg`,
+// `rounded-xl`, `rounded-2xl`, `rounded-full`, `rounded-3xl`, etc., but NOT a
+// non-utility token that merely contains the substring (e.g. a comment). The
+// `class="..."` and `class:list={[...]}` attribute forms are both covered.
+const ROUNDED_REGEX = /(?<=[\s"'`{])rounded(?:-(?:sm|md|lg|xl|2xl|3xl|full|t|b|l|r|tl|tr|bl|br|none))?(?=[\s"'`}])/;
+
+function readComponentSource(name: string): string {
+  const WEB_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
+  const path = join(WEB_ROOT, 'src', 'components', name);
+  return readFileSync(path, 'utf-8');
+}
+
+describe('ui-refactor — base components have no rounded* utility (flat radio 0)', () => {
+  for (const name of BASE_COMPONENTS) {
+    it(`${name} does not apply rounded* (and not rounded-none working state)`, () => {
+      const src = readComponentSource(name);
+      expect(
+        src,
+        `${name} must not apply any rounded* utility — flat design radio 0 (ui-refactor design-tokens spec)`,
+      ).not.toMatch(ROUNDED_REGEX);
+    });
+  }
 });

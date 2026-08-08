@@ -184,17 +184,15 @@ describe('PanelHome — stat cells (tasks 2.13, 2.14, 2.15, 2.16, 2.18)', () => 
     }
   });
 
-  it('each stat label is rendered as a <p> (or non-heading) with uppercase and a gray text color class (task 2.14)', async () => {
+  it('each stat label is rendered as a <p> (or non-heading) with uppercase and text-text-2 (task 2.14)', async () => {
     const html = await render();
     const labels = baseProps.stats.map((s) => s.label);
     for (const label of labels) {
-      // The label is wrapped in a <p> that carries `uppercase` and a gray
-      // text color class (text-gray-600, text-gray-700, text-gray-500, etc.)
       const matches = html.match(
         /<p[^>]*class="[^"]*uppercase[^"]*"[^>]*>[\s\S]*?<\/p>/g,
       ) ?? [];
       const found = matches.some(
-        (p) => p.includes(label) && /text-gray-/.test(p),
+        (p) => p.includes(label) && p.includes('text-text-2'),
       );
       expect(found).toBe(true);
     }

@@ -297,6 +297,19 @@ describe('SearchForm — transparent mode (home hero full-bleed background)', ()
     const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
 
     expect(wrapper).toContain('bg-white');
-    expect(html).toContain('border-gray-200');
+    expect(html).toContain('border-border');
+  });
+
+  it('select, input and button do not use rounded* utility (flat radio 0)', async () => {
+    const html = await render();
+    // helper to check a control doesn't have rounded*
+    function assertNoRounded(controlHtml: string, name: string) {
+      expect(controlHtml, `${name} must not use rounded* (flat radio 0)`).not.toMatch(
+        /(?<=[\s"'`{])rounded(?:-(?:sm|md|lg|xl|2xl|3xl|full|t|b|l|r|tl|tr|bl|br|none))?(?=[\s"'`}])/
+      );
+    }
+    assertNoRounded(getSelect(html), 'select');
+    assertNoRounded(getInput(html), 'input');
+    assertNoRounded(getButton(html), 'button');
   });
 });

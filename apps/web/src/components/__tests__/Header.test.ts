@@ -77,14 +77,33 @@ describe('Header', () => {
     expect(inicioAtSection).not.toContain('aria-current="page"');
   });
 
-  it('renders the CTA with label, href and orange bold styling', async () => {
+  it('renders the CTA with label, href and accent styling (Montserrat 600, flat)', async () => {
     const html = await render();
 
     expect(html).toContain('SOLICITAR COTIZACIÓN');
     expect(html).toContain('href="/cotizacion"');
     expect(html).toContain('bg-accent');
-    expect(html).toContain('font-bold');
+    // ui-refactor: the CTA uses Montserrat 600 (font-heading font-semibold),
+    // not the old Open Sans 700 (font-bold).
+    expect(html).toContain('font-heading');
+    expect(html).toContain('font-semibold');
+    expect(html).not.toContain('font-bold');
     expect(html).toContain('uppercase');
+  });
+
+  it('renders the desktop nav items with Montserrat 600 (font-heading font-semibold)', async () => {
+    const html = await render();
+    const nav = getDesktopNav(html);
+
+    // Every nav item link carries the heading font + 600 weight per the
+    // ui-refactor typographic scale (replacing the old font-medium / Open Sans).
+    const navLinks = [...nav.matchAll(/<a[^>]*class="([^"]*)"[^>]*>[^<]+<\/a>/g)];
+    expect(navLinks.length).toBeGreaterThan(0);
+    for (const m of navLinks) {
+      const cls = m[1] ?? '';
+      expect(cls, `nav item missing font-heading: "${cls}"`).toContain('font-heading');
+      expect(cls, `nav item missing font-semibold: "${cls}"`).toContain('font-semibold');
+    }
   });
 
   it('hides the desktop nav on mobile and exposes a hamburger toggle', async () => {
