@@ -15,10 +15,10 @@ const { contact, transparent = false } = Astro.props;
 const links = getSocialLinks(contact);
 
 const socialIconMap: Record<SocialNetworkName, string> = {
-  Facebook: 'logos:facebook',
-  X: 'logos:twitter',
-  Instagram: 'logos:instagram',
-  LinkedIn: 'logos:linkedin',
+  Facebook: 'lucide:facebook',
+  X: 'lucide:twitter',
+  Instagram: 'lucide:instagram',
+  LinkedIn: 'lucide:linkedin',
 };
 
 const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^+\d]/g, '')}` : undefined;
@@ -42,7 +42,7 @@ const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^+\d]/g, '')}` 
           class="flex items-center gap-2 hover:opacity-80 transition-opacity"
           aria-label="Llamar a Riff"
         >
-          <Icon name="material-symbols:contact-phone-outline" class="h-3.5 w-3.5" />
+          <Icon name="lucide:phone" class="h-3.5 w-3.5" />
           <span>{contact.phone}</span>
         </a>
       )

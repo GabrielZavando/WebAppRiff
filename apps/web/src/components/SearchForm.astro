@@ -43,7 +43,7 @@ function isSelected(categoryId: string): boolean {
 <div
   role="search"
   aria-label="Buscar productos"
-  class:list={transparent ? 'bg-transparent' : 'bg-white border-b border-gray-200'}
+  class:list={transparent ? 'bg-transparent' : 'bg-white border-b border-border'}
 >
   <div class="container mx-auto py-4">
     <form
@@ -57,7 +57,7 @@ function isSelected(categoryId: string): boolean {
         <select
           id={selectId}
           name={config.selectName}
-          class="w-full h-11 rounded border border-border bg-white px-3 text-sm text-gray-700 focus:outline-none focus:border-primary"
+          class="w-full h-11 border border-border bg-white px-3 text-sm text-text-2 focus:outline-none focus:border-primary"
         >
           {
             categories.map((category) => (
@@ -77,13 +77,13 @@ function isSelected(categoryId: string): boolean {
           name={config.inputName}
           placeholder={config.inputPlaceholder}
           value={initialQuery}
-          class="w-full h-11 rounded border border-border bg-white px-3 text-sm text-gray-700 focus:outline-none focus:border-primary"
+          class="w-full h-11 border border-border bg-white px-3 text-sm text-text-2 focus:outline-none focus:border-primary"
         />
       </div>
 
       <button
         type="submit"
-        class="w-full md:w-auto h-11 px-6 rounded bg-accent hover:bg-accent-dark text-white font-bold uppercase text-sm tracking-wide whitespace-nowrap transition-colors"
+        class="w-full md:w-auto h-11 px-6 font-heading font-semibold uppercase text-xs tracking-wide whitespace-nowrap bg-accent hover:bg-accent-dark text-white transition-colors"
       >
         {config.submitLabel}
       </button>
