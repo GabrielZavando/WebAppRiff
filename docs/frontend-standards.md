@@ -85,7 +85,7 @@
 - **Pipeline**: `astro:assets` built-in con servicio `sharp` (declarado como dependencia de `apps/web`). **Prohibido** instalar `@astrojs/image` (deprecado). Para el `<Picture>` del hero se pasan `formats={['avif', 'webp']}` y `fallbackFormat="jpg"` explícitos (el default de Astro 7 es solo `['webp']` con fallback `png`).
 - **Above-the-fold**: el hero se sirve con `loading="eager"`; imágenes bajo el fold con `loading="lazy"`.
 - **Excepción 1:1**: la imagen Open Graph/Twitter (`og-image.png`, PNG 1200×630) se sirve desde `apps/web/public/` porque las redes sociales exigen URL pública absoluta, estable y formato PNG. **No** se añaden otros binarios de imagen a `public/`.
-- **Iconos**: no son assets de imagen — se consumen exclusivamente vía `astro-icon` (`<Icon name="material-symbols:..." />` para UI, `<Icon name="logos:..." />` para marcas); no guardar iconos en `src/assets/img/`.
+- **Iconos**: no son assets de imagen — se consumen exclusivamente vía `astro-icon` (`<Icon name="lucide:..." />`, set único Lucide para UI y marcas sociales); no guardar iconos en `src/assets/img/`.
 
 ## Stack específico del proyecto
 
@@ -122,8 +122,8 @@ El sistema de design tokens del proyecto se declara como entradas `@theme {}` de
 
 Ambos archivos **DEBEN** declarar el mismo conjunto de tokens (mismos nombres y valores). La sincronización es manual (no hay paquete compartido `packages/design-tokens/` en el MVP); un test programático en `apps/admin/src/styles/__tests__/sync.test.ts` valida la paridad y rompe si alguien edita uno sin el otro.
 
-**Fuente canónica:** `docs/design/style-guide/README.md` contiene la tabla completa de tokens (24 colores marca + neutros + estado, 2 tipografías Montserrat/Open Sans self-hosted via `@fontsource`, 1 radio `2px`, 5 sombras) y el catálogo de iconos (Material Symbols Outline para UI, Logos para marcas, MDI para menu/close).
+**Fuente canónica:** `docs/design/style-guide/README.md` contiene la tabla completa de tokens (24 colores marca + neutros + estado, 2 tipografías Montserrat/Open Sans self-hosted via `@fontsource`, radio `0` — flat design estricto, ángulos rectos, 5 sombras) y el catálogo de iconos (Lucide, set único, para UI y marcas sociales).
 
 **Convención de consumo:** usar exclusivamente las utilities Tailwind generadas desde `@theme` (`bg-primary`, `text-secondary`, `border-border`, `font-heading`, `rounded`, `shadow-2`, etc.). **Queda prohibido** usar literales hex (`#XXXXXX`) o los tokens obsoletos `brand-*` en componentes, páginas o configs.
 
-**Iconos:** se consumen vía `astro-icon` + Iconify (`<Icon name="material-symbols:..." />`, `<Icon name="logos:facebook" />`, `<Icon name="mdi:menu" />`). Los iconos SVG inline locales (`.astro` en `components/icons/`) están prohibidos.
+**Iconos:** se consumen vía `astro-icon` + Iconify (`<Icon name="lucide:..." />`, set único Lucide — outline, stroke 2px — para UI y marcas sociales). Los iconos SVG inline locales (`.astro` en `components/icons/`) están prohibidos.
