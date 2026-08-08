@@ -3,9 +3,7 @@
 ## Purpose
 
 Define canónicamente el sistema de design tokens del Catálogo Digital Riff: colores (marca + neutros + estado), tipografías (Montserrat / Open Sans), radio y sombras. Los tokens se declaran como entradas `@theme` de Tailwind v4 en `apps/web/src/styles/globals.css` y `apps/admin/src/styles/globals.css` (sincronizados manualmente), y se consumen vía utilities Tailwind (`bg-primary`, `text-secondary`, `border-border`, `shadow-1`, etc.). Fuente visual canónica: `docs/design/style-guide/index.html`.
-
 ## Requirements
-
 ### Requirement: Marca — paleta de 12 colores
 
 El `globals.css` SHALL declarar en el bloque `@theme {}` los 12 tokens de color de marca extraídos de la guía visual, con nombres y valores exactos:
@@ -114,19 +112,23 @@ El `globals.css` SHALL declarar:
 
 | Token CSS | Valor |
 |---|---|
-| `--radius` | `2px` |
+| `--radius` | `0` |
 | `--shadow-1` | `0 1px 2px rgba(22,32,46,.06)` |
 | `--shadow-2` | `0 2px 6px rgba(22,32,46,.08)` |
 | `--shadow-3` | `0 4px 12px rgba(22,32,46,.10)` |
 | `--shadow-4` | `0 8px 20px rgba(22,32,46,.12)` |
 | `--shadow-5` | `0 12px 28px rgba(22,32,46,.14)` |
 
-El sistema sigue el principio **flat design**: las superficies se separan por defecto con borders 1px y color sólido. Las sombras (`shadow-1..5`) se reservan exclusivamente para capas flotantes (dropdowns, menús, modales, overlays). Los componentes base (Header, TopHeader, HeroBanner, PanelHome, SearchForm) NO aplican shadows en su estado estático.
+El sistema sigue el principio **flat design estricto con ángulos rectos**: el token `--radius` es `0` (radio global cero); los componentes base (Header, TopHeader, HeroBanner, PanelHome, SearchForm) NO aplican ninguna utilidad `rounded`, `rounded-sm`, `rounded-md`, `rounded-lg` ni variantes responsivas. Las superficies se separan por defecto con borders 1px y color sólido. Las sombras (`shadow-1..5`) se reservan exclusivamente para capas flotantes (dropdowns, menús, modales, overlays); los componentes base NO aplican `shadow-*` en su estado estático.
 
-#### Scenario: Radius declarado
+#### Scenario: Radius declarado como 0
 - **WHEN** se parsea `apps/web/src/styles/globals.css`
-- **THEN** contiene `--radius: 2px`
-- **AND** la utilidad `rounded` resuelve a `border-radius: var(--radius)` (2px)
+- **THEN** contiene `--radius: 0` (sin sufijo `px` o con `0px`, ambos aceptados)
+- **AND** el mismo valor `0` se declara en `apps/admin/src/styles/globals.css`
+
+#### Scenario: Componentes base no aplican utilidad rounded
+- **WHEN** se renderiza cualquier componente base (`TopHeader.astro`, `Header.astro`, `SearchForm.astro`, `HeroBanner.astro`, `PanelHome.astro`)
+- **THEN** ninguno aplica una utilidad `rounded*` (`rounded`, `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`, `rounded-2xl`, `rounded-full`, ni variantes `md:rounded*`/`lg:rounded*`) en ningún elemento visible del componente
 
 #### Scenario: 5 niveles de shadow declarados
 - **WHEN** se parsea el bloque `@theme {}` de `apps/web/src/styles/globals.css`
@@ -171,23 +173,6 @@ Existe un test que compara los bloques `@theme {}` de `apps/web/src/styles/globa
 - **WHEN** se elimina un token (p.ej. `--color-primary-dark`) de solo `apps/admin/src/styles/globals.css`
 - **THEN** el test de sincronización SHALL fallar con un mensaje que mencione el token faltante y la app donde falta
 
-### Requirement: Catálogo de iconos Material Symbols Outline
-
-El catálogo de iconos usados en el sistema SHALL estar documentado en `docs/design/style-guide/README.md` con el formato `<nombre-de-referencia>` → `<icono-material-symbols>`. El set único autorizado para UI funcional es `material-symbols` (variant `outline`); los iconos de marca/redes sociales usan el set `logos` (Iconify Logos) porque Material Symbols no incluye glifos de marcas (verificado: `facebook-outline` no existe en `@iconify-json/material-symbols`).
-
-Los iconos mínimos del catálogo SHALL incluir: `phone`, `facebook`, `x`, `instagram`, `linkedin`, `menu`, `close`, `search`, `calendar`, `check`, `warning`, `info`, `error`, `arrow-right`, `copy`, `filters`, `trash`, `more`, `clock`, `star`, `bookmark`.
-
-#### Scenario: Catálogo documentado con nombre Material Symbols
-- **WHEN** se lee `docs/design/style-guide/README.md`
-- **THEN** contiene una tabla o lista con cada icono de referencia mapeado a su nombre completo de icono (`material-symbols:<name>` para UI, `logos:<name>` para marcas/redes sociales)
-- **AND** la tabla incluye al menos los 21 iconos mínimos listados arriba
-
-#### Scenario: Único set de iconos en apps/web
-- **WHEN** se ejecuta un grep en `apps/web/src/` buscando referencias `<Icon name="`
-- **THEN** las referencias de UI usan el prefijo `material-symbols:` como nombre de set
-- **AND** las únicas referencias no-`material-symbols` permitidas son `logos:*` para iconos de marca/redes sociales (facebook, x, instagram, linkedin)
-- **AND** no existen otras familias de iconos (`mdi:`, `lucide:`, `heroicons:`, etc.) referenciadas
-
 ### Requirement: Documentación canónica de tokens
 
 `docs/design/style-guide/README.md` SHALL contener la tabla canónica completa de tokens (colores marca + neutros + estado + tipografías + radio + shadows) con su nombre CSS, valor, utilidad Tailwind equivalente y rol semántico. Esta tabla es la fuente de verdad operativa para desarrolladores (la guía visual HTML sigue siendo el insumo de diseño).
@@ -201,3 +186,29 @@ Los iconos mínimos del catálogo SHALL incluir: `phone`, `facebook`, `x`, `inst
 - **WHEN** se lee `docs/frontend-standards.md`
 - **THEN** contiene una sección "Design Tokens" que apunta a `docs/design/style-guide/README.md`
 - **AND** deja constancia de la convención (two `globals.css` sincronizados manualmente, sin `packages/` por ahora)
+
+### Requirement: Catálogo de iconos Lucide
+
+El catálogo de iconos usados en el sistema SHALL estar documentado en `docs/design/style-guide/README.md` con el formato `<nombre-de-referencia>` → `<icono-lucide>`. El set único autorizado para UI funcional Y para iconos de marca/redes sociales es `lucide` (Iconify Lucide) — outline stroke 2px. NO se usan los sets `material-symbols`, `logos`, `mdi`, `heroicons` ni ningún otro en `apps/web/src/`.
+
+Los iconos mínimos del catálogo SHALL incluir: `phone`, `facebook`, `x` (twitter), `instagram`, `linkedin`, `menu`, `close`, `search`, `calendar`, `check`, `warning`, `info`, `error`, `arrow-right`, `copy`, `filters`, `trash`, `more`, `clock`, `star`, `bookmark`.
+
+Un mapeo de referencia SHALL figurar en el README con las equivalencias usadas por los 5 componentes: `phone` → `lucide:phone`, `menu` → `lucide:menu`, `close` → `lucide:x`, `facebook` → `lucide:facebook`, `x` → `lucide:twitter`, `instagram` → `lucide:instagram`, `linkedin` → `lucide:linkedin`.
+
+#### Scenario: Catálogo documentado con nombre Lucide
+- **WHEN** se lee `docs/design/style-guide/README.md`
+- **THEN** contiene una tabla o lista con cada icono de referencia mapeado a su nombre completo de icono (`lucide:<name>`)
+- **AND** la tabla incluye al menos los 21 iconos mínimos listados arriba
+- **AND** NO menciona `material-symbols:*` ni `logos:*` como sets autorizados (esos sets quedan obsoletos)
+
+#### Scenario: Único set de iconos en apps/web es Lucide
+- **WHEN** se ejecuta un grep en `apps/web/src/` buscando referencias `<Icon name="`
+- **THEN** todas las referencias usan el prefijo `lucide:` como nombre de set
+- **AND** no existen referencias a `material-symbols:`, `logos:`, `mdi:`, `heroicons:` ni otras familias de iconos
+
+#### Scenario: package.json declara @iconify-json/lucide y NO los sets obsoletos
+- **WHEN** se lee `apps/web/package.json`
+- **THEN** declara `@iconify-json/lucide` en `dependencies` o `devDependencies`
+- **AND** NO declara `@iconify-json/material-symbols`
+- **AND** NO declara `@iconify-json/logos`
+
