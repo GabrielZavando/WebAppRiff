@@ -54,46 +54,53 @@ This file documents the canonical design tokens and icon catalog for the Riff Ca
 
 | Token CSS | Valor | Uso |
 |---|---|---|
-| `--radius` | `2px` | Radio global; círculos 50% solo en swatches, radios, toggles |
+| `--radius` | `0` | Radio global; flat design estricto, ángulos rectos (sin esquinas redondeadas) |
 | `--shadow-1` | `0 1px 2px rgba(22,32,46,.06)` | Capas flotantes nivel 1 |
 | `--shadow-2` | `0 2px 6px rgba(22,32,46,.08)` | Dropdowns, menús |
 | `--shadow-3` | `0 4px 12px rgba(22,32,46,.10)` | Modales |
 | `--shadow-4` | `0 8px 20px rgba(22,32,46,.12)` | Overlays fijos |
 | `--shadow-5` | `0 12px 28px rgba(22,32,46,.14)` | Overlays fijos nivel máximo |
 
-> **Flat design principle:** Las superficies se separan por defecto con bordes 1px y color sólido. Las sombras se reservan exclusivamente para capas flotantes (dropdowns, menús, modales, overlays). Los componentes base (Header, TopHeader, HeroBanner, PanelHome, SearchForm) NO aplican shadows en su estado estático.
+> **Flat design principle (radio 0):** Estética flat estricta con ángulos rectos: `--radius: 0` y **prohibido** usar la utility `rounded*` (ninguna variante) en componentes, páginas o configs. Las superficies se separan por defecto con bordes 1px y color sólido. Las sombras se reservan exclusivamente para capas flotantes (dropdowns, menús, modales, overlays). Los componentes base (Header, TopHeader, HeroBanner, PanelHome, SearchForm) NO aplican `shadow*` en su estado estático.
 
 ---
 
 ## Catálogo de Iconos
 
-Set base autorizado: **Material Symbols Outline** (`material-symbols:*`) para iconos de UI funcionales. Para iconos de marca/redes sociales se usan sets específicos:
+Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI funcionales como a iconos de marca/redes sociales (uniformados al set Lucide). Los sets `material-symbols` y `logos` quedan **obsoletos** (prohibidos en código nuevo; ver task 1.1 de `ui-refactor`).
 
-| Referencia | Icono (Iconify name) | Set | Uso |
-|---|---|---|---|
-| `phone` | `material-symbols:contact-phone-outline` | Material Symbols | Teléfono en TopHeader |
-| `facebook` | `logos:facebook` | Logos | Red social Facebook |
-| `x` / `twitter` | `logos:twitter` | Logos | Red social X (Twitter) |
-| `instagram` | `logos:instagram` | Logos | Red social Instagram |
-| `linkedin` | `logos:linkedin` | Logos | Red social LinkedIn |
-| `menu` | `material-symbols:menu-outline` | Material Symbols | Hamburguesa menú móvil |
-| `close` | `material-symbols:close-outline` | Material Symbols | Cerrar menú móvil |
-| `search` | `material-symbols:search` | Material Symbols | Búsqueda |
-| `calendar` | `material-symbols:calendar-month-outline` | Material Symbols | Calendario / fecha |
-| `check` | `material-symbols:check-outline` | Material Symbols | Check / éxito |
-| `warning` | `material-symbols:warning-outline` | Material Symbols | Advertencia |
-| `info` | `material-symbols:info-outline` | Material Symbols | Información |
-| `error` | `material-symbols:error-outline` | Material Symbols | Error |
-| `arrow-right` | `material-symbols:arrow-forward-outline` | Material Symbols | Flecha derecha / siguiente |
-| `copy` | `material-symbols:content-copy-outline` | Material Symbols | Copiar al portapapeles |
-| `filters` | `material-symbols:filter-list-outline` | Material Symbols | Filtros |
-| `trash` | `material-symbols:delete-outline` | Material Symbols | Eliminar |
-| `more` | `material-symbols:more-vert-outline` | Material Symbols | Menú más opciones |
-| `clock` | `material-symbols:schedule-outline` | Material Symbols | Reloj / tiempo |
-| `star` | `material-symbols:star-outline` | Material Symbols | Estrella / favorito |
-| `bookmark` | `material-symbols:bookmark-outline` | Material Symbols | Marcador |
+### Mapeo de los 5 componentes base
 
-> **Nota:** Único set base para UI: `material-symbols` (variant `outline`). Iconos de marca (redes sociales) usan `logos:*`. Los iconos `menu`/`close` del menú móvil también son `material-symbols:*` (las variantes `*-outline` existen como aliases de `menu`/`close` en `@iconify-json/material-symbols`), por lo que no se requiere ningún set auxiliar para UI funcional.
+| Referencia | Icono (Iconify name) | Uso |
+|---|---|---|
+| `phone` | `lucide:phone` | Teléfono en TopHeader |
+| `facebook` | `lucide:facebook` | Red social Facebook |
+| `x` / `twitter` | `lucide:twitter` | Red social X (Twitter) |
+| `instagram` | `lucide:instagram` | Red social Instagram |
+| `linkedin` | `lucide:linkedin` | Red social LinkedIn |
+| `menu` | `lucide:menu` | Hamburguesa menú móvil |
+| `close` | `lucide:x` | Cerrar menú móvil |
+
+### Catálogo completo (21 iconos mínimos)
+
+| Referencia | Icono (Iconify name) | Uso |
+|---|---|---|
+| `search` | `lucide:search` | Búsqueda |
+| `calendar` | `lucide:calendar` | Calendario / fecha |
+| `check` | `lucide:check` | Check / éxito |
+| `warning` | `lucide:triangle-alert` | Advertencia |
+| `info` | `lucide:info` | Información |
+| `error` | `lucide:circle-alert` | Error |
+| `arrow-right` | `lucide:arrow-right` | Flecha derecha / siguiente |
+| `copy` | `lucide:copy` | Copiar al portapapeles |
+| `filters` | `lucide:list-filter` | Filtros |
+| `trash` | `lucide:trash` | Eliminar |
+| `more` | `lucide:ellipsis-vertical` | Menú más opciones |
+| `clock` | `lucide:clock` | Reloj / tiempo |
+| `star` | `lucide:star` | Estrella / favorito |
+| `bookmark` | `lucide:bookmark` | Marcador |
+
+> **Nota:** Único set base: `lucide`. Los alias antiguos de Lucide (`alert-triangle`, `alert-circle`, `more-vertical`, `x-circle`) siguen resolviéndose en `@iconify-json/lucide`, pero se documentan los nombres canónicos actuales (`triangle-alert`, `circle-alert`, `ellipsis-vertical`, `x`).
 
 ---
 
