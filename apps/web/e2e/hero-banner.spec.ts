@@ -1,6 +1,10 @@
 import { test, expect } from 'playwright/test';
 
-const HERO_SECTION_SELECTOR = 'section.bg-secondary';
+// The hero <section> is `<section class="relative">` (the full-bleed overlay
+// change removed `bg-secondary`). On the home page it is the only section with
+// `relative` that does NOT carry `z-10` (PanelHome is `relative z-10`), so
+// `:not(.z-10)` uniquely selects the hero without depending on stale classes.
+const HERO_SECTION_SELECTOR = 'section.relative:not(.z-10)';
 
 test.describe('HeroBanner (home hero section)', () => {
   test.beforeEach(async ({ page }) => {
@@ -180,7 +184,11 @@ test.describe('HeroBanner (home hero section)', () => {
   test('renders the real industrial image as a <picture> with AVIF/WebP sources (real-site-images)', async ({
     page,
   }) => {
-    const picture = page.locator(`${HERO_SECTION_SELECTOR} picture`);
+    // The hero image moved to a body-level full-bleed background in the
+    // `hero-fullbleed-overlay` change (Layout.astro renders <Picture> directly
+    // under <body> when the hero is present), so it is no longer nested inside
+    // the hero <section>. `body > picture` matches exactly the layout picture.
+    const picture = page.locator('body > picture');
     await expect(picture).toBeVisible();
 
     const sourceTypes = await picture.locator('source').evaluateAll((sources) =>

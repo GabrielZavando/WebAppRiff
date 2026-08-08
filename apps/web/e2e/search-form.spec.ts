@@ -220,7 +220,11 @@ test.describe('SearchForm (global search bar)', () => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
 
-    await expect(page.locator('header')).toHaveCount(1);
+    // The site <header> carries role=banner. The Astro 7 Dev Toolbar injects
+    // additional plain <header> elements into the `astro preview` page, so we
+    // assert against the banner role to stay robust (toolbar headers have no
+    // banner role).
+    await expect(page.getByRole('banner')).toHaveCount(1);
     await expect(page.getByRole('search')).toHaveCount(1);
   });
 
@@ -229,7 +233,9 @@ test.describe('SearchForm (global search bar)', () => {
     await page.goto('/');
 
     const topHeader = page.getByRole('region', { name: 'Barra de contacto' });
-    const header = page.locator('header');
+    // Use the banner role instead of `locator('header')` (strict mode): the
+    // Astro Dev Toolbar injects extra <header> elements in `astro preview`.
+    const header = page.getByRole('banner');
     const search = page.getByRole('search', { name: 'Buscar productos' });
     // The Layout <slot /> historically rendered a <main> placeholder from
     // index.astro. After the change `banner-home`, the slot renders a hero
