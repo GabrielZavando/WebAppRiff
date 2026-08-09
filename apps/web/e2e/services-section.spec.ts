@@ -171,16 +171,19 @@ test.describe('ServicesSection (home specialized services)', () => {
     expect(cls).toContain('py-4');
   });
 
-  test('document keeps exactly 1 h1, 2 h2, 3 h3 and 12 h4', async ({ page }) => {
+  test('document keeps exactly 1 h1, 3 h2, 4 h3 and 12 h4', async ({ page }) => {
     // See servicios-section spec scenario "DOM order is preserved": the page
     // outline is now 1/2/2/8 (ServicesSection adds its own <h3> and 4 <h4>).
     // POST-VERIFY UPDATE (destacados-section): the home page renders
     // DestacadosSection right after ServicesSection (its own <h3> + 4 <h4>),
     // so the visible outline is 1/2/3/12. See destacados-section spec scenario
     // "DOM order is preserved: hero → panel → solutions → services → destacados".
+    // POST-APPLY UPDATE (pilares-section): the home page renders PilaresSection
+    // last (its own <h2> + <h3>), so the visible outline is 1/3/4/12. See
+    // pilares-section spec scenario "DOM order is preserved: ... → pilares".
     await expect(page.locator('h1:visible')).toHaveCount(1);
-    await expect(page.locator('h2:visible')).toHaveCount(2);
-    await expect(page.locator('h3:visible')).toHaveCount(3);
+    await expect(page.locator('h2:visible')).toHaveCount(3);
+    await expect(page.locator('h3:visible')).toHaveCount(4);
     await expect(page.locator('h4:visible')).toHaveCount(12);
   });
 
