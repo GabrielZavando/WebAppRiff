@@ -3,13 +3,16 @@ import Layout from '@/layouts/Layout.astro';
 import HeroBanner from '@/components/HeroBanner.astro';
 import PanelHome from '@/components/PanelHome.astro';
 import SolutionSection from '@/components/SolutionSection.astro';
+import ServicesSection from '@/components/ServicesSection.astro';
 import { HERO_BANNER_CONTENT } from '@/lib/config/hero-banner';
 import { PANEL_HOME_CONTENT } from '@/lib/config/panel-home';
 import { SOLUTION_SECTION_CONTENT } from '@/lib/config/solution-section';
+import { SERVICES_SECTION_CONTENT } from '@/lib/config/services-section';
 ---
 
 <Layout title="Riff Catálogo Digital" hero>
   <HeroBanner {...HERO_BANNER_CONTENT} />
   <PanelHome {...PANEL_HOME_CONTENT} />
   <SolutionSection {...SOLUTION_SECTION_CONTENT} />
+  <ServicesSection {...SERVICES_SECTION_CONTENT} />
 </Layout>

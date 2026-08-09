@@ -1,0 +1,110 @@
+---
+import type { ServicesSectionProps } from '@/lib/types/services-section';
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+
+interface Props extends ServicesSectionProps {}
+
+const { headline, description, services, cta } = Astro.props;
+---
+
+<!--
+  Dumb presentational component. All content (headline, description, the 4
+  service cards and the shared CTA block) comes via props spread from
+  `SERVICES_SECTION_CONTENT` in `lib/config/services-section.ts` by
+  `apps/web/src/pages/index.astro`.
+
+  Layout (see design.md § Decisions):
+    - The <section> is a flat dark block (NO negative margin / overlap —
+      independent from PanelHome's overlap behavior): `py-16 md:py-24`
+      vertical air and `bg-secondary-dark` background create a hard color
+      transition from the light `bg-bg` of SolutionSection above
+      (Decision 14). Inner `<div class="container ...">` constrains content
+      to the same max-width as the other sections.
+    - Centered header (Decision 4): `text-center` wrapper holding the <h3>
+      headline and the description <p>. NO eyebrow and NO teal underline —
+      that is the SolutionSection signature, deliberately not reused here.
+    - Card grid `grid-cols-1 md:grid-cols-2` (Decision 7): 1 column on
+      mobile, 2 columns at >= 768px.
+    - Each card is `flex flex-col sm:flex-row` (mobile-first, Decision 7):
+      image stacks on top of content on mobile; from >= 640px the card is
+      horizontal (image `w-2/5` left, content `flex-1` right).
+    - Images render in FULL COLOR — the `grayscale` filter was removed per
+      the client's POST-APPLY UPDATE request (design.md § Decision 8
+      superseded); only lazy-loading remains (Decision 13).
+
+  Semantics & accessibility (spec requirements & solution-section precedent):
+    - The section headline is a <h3>, NOT <h1>/<h2>: the home has exactly
+      one <h1> (HeroBanner) and one <h2> (PanelHome); SolutionSection also
+      uses <h3> for its sibling portfolio section (Decision 3).
+    - Each card title is a <h4> subordinate to the section <h3>.
+    - CTAs (Decisions 9/10): per-card buttons ("Ver detalles", from the
+      service's `ctaLabel` — POST-APPLY UPDATE) and the bottom "Ver todos los
+      servicios" button follow the design-system solid primary pattern
+      (bg-primary / hover:bg-primary-dark / text-white). The arrow icons are
+      decorative and carry `aria-hidden="true"`; the link's accessible name
+      is its visible text.
+    - Images: descriptive `alt` (not the card title), `loading="lazy"`
+      (section is below the initial fold), processed by astro:assets/sharp
+      (Decision 13).
+-->
+
+<section class="py-16 md:py-24 bg-secondary-dark">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header: centered headline + description (no eyebrow, no underline) -->
+    <div class="text-center mb-12">
+      <h3 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white">
+        {headline}
+      </h3>
+      <p class="mt-4 text-base text-muted max-w-2xl mx-auto">
+        {description}
+      </p>
+    </div>
+
+    <!-- Responsive card grid: 1 col mobile, 2 cols md+ -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {
+        services.map((service) => (
+          <article class="flex flex-col sm:flex-row bg-secondary border border-secondary-light overflow-hidden">
+            <Image
+              src={service.image}
+              alt={service.imageAlt}
+              widths={[400, 800]}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              loading="lazy"
+              class="w-full sm:w-2/5 aspect-square object-cover"
+            />
+            <div class="flex-1 p-5 flex flex-col justify-between">
+              <div>
+                <h4 class="text-lg font-heading font-semibold text-primary">
+                  {service.title}
+                </h4>
+                <p class="mt-2 text-sm font-body text-muted">
+                  {service.description}
+                </p>
+              </div>
+              <a
+                href={service.href}
+                class="mt-4 inline-flex items-center gap-1 bg-primary hover:bg-primary-dark text-white font-heading font-semibold uppercase text-xs tracking-wide px-6 py-3 transition-colors self-start"
+              >
+                {service.ctaLabel}
+                <Icon name="lucide:arrow-right" class="h-3 w-3" aria-hidden="true" />
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <!-- Bottom CTA: centered "Ver todos los servicios" -->
+    <div class="mt-12 text-center">
+      <a
+        href={cta.href}
+        class="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-heading font-semibold uppercase text-sm tracking-wide px-8 py-4 transition-colors"
+      >
+        {cta.label}
+        <Icon name="lucide:arrow-right" class="h-4 w-4" aria-hidden="true" />
+      </a>
+    </div>
+  </div>
+</section>
