@@ -165,7 +165,9 @@ test.describe('HeroBanner (home hero section)', () => {
   test('document contains exactly one <h1> (regression SEO on-page) (5.12)', async ({
     page,
   }) => {
-    const h1Count = await page.locator('h1').count();
+    // The Astro Dev Toolbar (injected into `astro preview`) appends hidden
+    // <h1> elements; count only the page's visible content hierarchy.
+    const h1Count = await page.locator('h1:visible').count();
     expect(h1Count).toBe(1);
   });
 

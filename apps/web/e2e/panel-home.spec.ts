@@ -279,7 +279,9 @@ test.describe('PanelHome (home about/trust panel)', () => {
   test('document contains exactly one <h1> and the panel <h2> (4.10)', async ({
     page,
   }) => {
-    const h1Count = await page.locator('h1').count();
+    // The Astro Dev Toolbar (injected into `astro preview`) appends hidden
+    // <h1> elements; count only the page's visible content hierarchy.
+    const h1Count = await page.locator('h1:visible').count();
     expect(h1Count).toBe(1);
 
     const panelH2Count = await page

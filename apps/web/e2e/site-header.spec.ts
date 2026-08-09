@@ -38,7 +38,9 @@ test.describe('Site header (main navigation)', () => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
 
-    await expect(page.locator('header')).toHaveCount(1);
+    // The Astro Dev Toolbar (injected into `astro preview`) can append its own
+    // <header> elements; count only the page's visible content landmarks.
+    await expect(page.locator('header:visible')).toHaveCount(1);
   });
 
   test('collapses the desktop navigation to a hamburger on mobile', async ({ page }) => {
