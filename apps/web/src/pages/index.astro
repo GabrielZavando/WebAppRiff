@@ -5,11 +5,13 @@ import PanelHome from '@/components/PanelHome.astro';
 import SolutionSection from '@/components/SolutionSection.astro';
 import ServicesSection from '@/components/ServicesSection.astro';
 import DestacadosSection from '@/components/DestacadosSection.astro';
+import PilaresSection from '@/components/PilaresSection.astro';
 import { HERO_BANNER_CONTENT } from '@/lib/config/hero-banner';
 import { PANEL_HOME_CONTENT } from '@/lib/config/panel-home';
 import { SOLUTION_SECTION_CONTENT } from '@/lib/config/solution-section';
 import { SERVICES_SECTION_CONTENT } from '@/lib/config/services-section';
 import { DESTACADOS_SECTION_CONTENT } from '@/lib/config/destacados-section';
+import { PILARES_SECTION_CONTENT } from '@/lib/config/pilares-section';
 ---
 
 <Layout title="Riff Catálogo Digital" hero>
@@ -18,4 +20,5 @@ import { DESTACADOS_SECTION_CONTENT } from '@/lib/config/destacados-section';
   <SolutionSection {...SOLUTION_SECTION_CONTENT} />
   <ServicesSection {...SERVICES_SECTION_CONTENT} />
   <DestacadosSection {...DESTACADOS_SECTION_CONTENT} />
+  <PilaresSection {...PILARES_SECTION_CONTENT} />
 </Layout>
