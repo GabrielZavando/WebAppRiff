@@ -169,18 +169,22 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     await expect(link).toHaveCSS('border-radius', '0px');
   });
 
-  test('document keeps exactly 1 h1, 2 h2, 2 h3 and 8 h4 (5.6)', async ({ page }) => {
+  test('document keeps exactly 1 h1, 2 h2, 3 h3 and 12 h4 (5.6)', async ({ page }) => {
     // NOTE: the Astro Dev Toolbar (injected into `astro preview`) appends its
     // own hidden <h1> elements to the DOM. Filter with :visible so we assert
     // on the page's actual visible content hierarchy only.
-    // POST-APPLY UPDATE: the home page now renders ServicesSection next to
+    // POST-APPLY UPDATE: the home page renders ServicesSection next to
     // SolutionSection (sibling section, same <h3> depth), so the visible
     // outline is 1/2/2/8. See services-section spec scenario "DOM order is
     // preserved: hero → panel → solutions → services".
+    // POST-VERIFY UPDATE (destacados-section): the home page now renders
+    // DestacadosSection right after ServicesSection (its own <h3> + 4 <h4>),
+    // so the visible outline is 1/2/3/12. See destacados-section spec scenario
+    // "DOM order is preserved: hero → panel → solutions → services → destacados".
     await expect(page.locator('h1:visible')).toHaveCount(1);
     await expect(page.locator('h2:visible')).toHaveCount(2);
-    await expect(page.locator('h3:visible')).toHaveCount(2);
-    await expect(page.locator('h4:visible')).toHaveCount(8);
+    await expect(page.locator('h3:visible')).toHaveCount(3);
+    await expect(page.locator('h4:visible')).toHaveCount(12);
   });
 
   test('all 4 solution images load without 404 (5.7)', async ({ page }) => {

@@ -171,13 +171,17 @@ test.describe('ServicesSection (home specialized services)', () => {
     expect(cls).toContain('py-4');
   });
 
-  test('document keeps exactly 1 h1, 2 h2, 2 h3 and 8 h4', async ({ page }) => {
-    // See services-section spec scenario "DOM order is preserved": the page
+  test('document keeps exactly 1 h1, 2 h2, 3 h3 and 12 h4', async ({ page }) => {
+    // See servicios-section spec scenario "DOM order is preserved": the page
     // outline is now 1/2/2/8 (ServicesSection adds its own <h3> and 4 <h4>).
+    // POST-VERIFY UPDATE (destacados-section): the home page renders
+    // DestacadosSection right after ServicesSection (its own <h3> + 4 <h4>),
+    // so the visible outline is 1/2/3/12. See destacados-section spec scenario
+    // "DOM order is preserved: hero → panel → solutions → services → destacados".
     await expect(page.locator('h1:visible')).toHaveCount(1);
     await expect(page.locator('h2:visible')).toHaveCount(2);
-    await expect(page.locator('h3:visible')).toHaveCount(2);
-    await expect(page.locator('h4:visible')).toHaveCount(8);
+    await expect(page.locator('h3:visible')).toHaveCount(3);
+    await expect(page.locator('h4:visible')).toHaveCount(12);
   });
 
   test('all 4 service images load without 404', async ({ page }) => {
