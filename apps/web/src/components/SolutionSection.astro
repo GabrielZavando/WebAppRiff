@@ -1,0 +1,93 @@
+---
+import type { SolutionSectionProps } from '@/lib/types/solution-section';
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+
+interface Props extends SolutionSectionProps {}
+
+const { eyebrow, headline, description, solutions } = Astro.props;
+---
+
+<!--
+  Dumb presentational component. All content (eyebrow, headline, description
+  and the 4 solution cards) comes via props spread from
+  `SOLUTION_SECTION_CONTENT` in `lib/config/solution-section.ts` by
+  `apps/web/src/pages/index.astro`.
+
+  Layout (see design.md § Decisions):
+    - The <section> is a flat block (NO negative margin / overlap over the
+      PanelHome — design.md Decision 12): `py-16 md:py-24` vertical air and
+      `bg-bg` background separate the section from the panel above.
+    - Inner `<div class="container mx-auto px-4 sm:px-6 lg:px-8">` constrains
+      content to the same max-width as SearchForm/PanelHome (token `.container`
+      in globals.css).
+    - Header grid `grid-cols-1 lg:grid-cols-2` (Decision 2): left half holds
+      eyebrow + <h3> headline + teal underline; right half holds description.
+    - Card grid `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` (Decision 3):
+      mobile 1 col, tablet >= 640px 2 cols, desktop >= 1024px 4 cols.
+
+  Semantics & accessibility (see design.md § Decisions 6, 7, 8, 9):
+    - The section headline is a <h3>, NOT <h1>/<h2>: the home has exactly one
+      <h1> (HeroBanner) and one <h2> (PanelHome); SolutionSection is a
+      portfolio sub-block of the about section (Decision 9).
+    - Each card title is a <h4> subordinate to the section <h3>; eyebrow is a
+      <span> (decorative, uppercase), NOT a heading.
+    - Icons: badge icon and the "SABER MÁS" arrow are decorative and carry
+      `aria-hidden="true"`; the link's accessible name is the "SABER MÁS" text.
+    - Images: descriptive `alt` (not the card title), `loading="lazy"` (section
+      is below the initial fold), processed by astro:assets/sharp (Decision 6).
+-->
+
+<section class="py-16 md:py-24 bg-bg">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header: eyebrow + headline + teal underline | description -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-12">
+      <div>
+        <span class="block text-xs font-heading font-semibold uppercase tracking-wider text-accent-dark">
+          {eyebrow}
+        </span>
+        <h3 class="mt-2 text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-secondary">
+          {headline}
+        </h3>
+        <div class="h-1 w-16 bg-primary mt-3"></div>
+      </div>
+      <p class="text-base text-text-2 lg:pt-2">{description}</p>
+    </div>
+
+    <!-- Responsive card grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+      {
+        solutions.map((solution) => (
+          <article class="relative bg-white shadow-1 hover:shadow-3 transition-shadow">
+            <div class="absolute top-3 left-3 bg-primary p-2 z-10">
+              <Icon name={`lucide:${solution.icon}`} class="h-5 w-5 text-white" aria-hidden="true" />
+            </div>
+            <Image
+              src={solution.image}
+              alt={solution.imageAlt}
+              widths={[400, 800]}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              loading="lazy"
+              class="w-full aspect-[4/3] object-cover"
+            />
+            <div class="p-5">
+              <h4 class="text-lg font-heading font-semibold text-secondary">
+                {solution.title}
+              </h4>
+              <p class="mt-2 text-sm font-body text-text-2 line-clamp-3">
+                {solution.description}
+              </p>
+              <a
+                href={solution.href}
+                class="mt-4 inline-flex items-center gap-1 bg-primary hover:bg-primary-dark text-white font-heading font-semibold uppercase text-xs tracking-wide px-6 py-3 transition-colors"
+              >
+                SABER MÁS
+                <Icon name="lucide:arrow-right" class="h-3 w-3" aria-hidden="true" />
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
