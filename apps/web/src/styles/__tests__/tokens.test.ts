@@ -41,6 +41,7 @@ const MARCA_TOKENS: ReadonlyArray<readonly [string, string]> = [
   ['--color-primary', '#41B3C4'],
   ['--color-primary-dark', '#2E9AAD'],
   ['--color-primary-darker', '#227E8E'],
+  ['--color-primary-deep', '#006874'],
   ['--color-primary-light', '#D2EEF2'],
   ['--color-primary-100', '#EAF7F9'],
   ['--color-secondary', '#1F2D40'],
@@ -82,7 +83,7 @@ function buildRegExp(name: string, value: string): RegExp {
 }
 
 describe('apps/web/src/styles/globals.css — design tokens (tasks 2.x)', () => {
-  describe('Task 2.1 — Marca (12 tokens)', () => {
+  describe('Task 2.1 — Marca (13 tokens)', () => {
     for (const [name, value] of MARCA_TOKENS) {
       it(`declares ${name}: ${value}`, () => {
         const theme = extractThemeBlock(readGlobalsCss());

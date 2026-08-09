@@ -20,10 +20,11 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── Marca (12 tokens) ── */
+  /* ── Marca (13 tokens) ── */
   --color-primary: #41B3C4;
   --color-primary-dark: #2E9AAD;
   --color-primary-darker: #227E8E;
+  --color-primary-deep: #006874;
   --color-primary-light: #D2EEF2;
   --color-primary-100: #EAF7F9;
 

@@ -6,13 +6,14 @@ This file documents the canonical design tokens and icon catalog for the Riff Ca
 
 ## Design Tokens
 
-### Marca (12 tokens)
+### Marca (13 tokens)
 
 | Token CSS | HEX | Tailwind Utility | Semantic Role |
 |---|---|---|---|
 | `--color-primary` | `#41B3C4` | `bg-primary`, `text-primary`, `border-primary` | Primario · Teal |
 | `--color-primary-dark` | `#2E9AAD` | `-dark` | Primario oscuro |
 | `--color-primary-darker` | `#227E8E` | `-darker` | Primario muy oscuro |
+| `--color-primary-deep` | `#006874` | `-deep` | Teal profundo · fondo de secciones destacadas |
 | `--color-primary-light` | `#D2EEF2` | `-light` | Primario claro |
 | `--color-primary-100` | `#EAF7F9` | `-100` | Primario 100% |
 | `--color-secondary` | `#1F2D40` | `bg-secondary`, `text-secondary`, `from-secondary` | Base · Navy |
