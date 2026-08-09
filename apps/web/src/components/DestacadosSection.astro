@@ -1,0 +1,94 @@
+---
+import type { DestacadosSectionProps } from '@/lib/types/destacados-section';
+import { Image } from 'astro:assets';
+
+interface Props extends DestacadosSectionProps {}
+
+const { headline, ctaText, ctaHref, products } = Astro.props;
+---
+
+<!--
+  Dumb presentational component. All content (headline, header CTA and the
+  4 featured product cards) comes via props spread from
+  `DESTACADOS_SECTION_CONTENT` in `lib/config/destacados-section.ts` by
+  `apps/web/src/pages/index.astro`.
+
+  Layout (see openspec/changes/destacados-section/design.md § Decisions):
+    - The <section> is a flat block (NO negative margin / overlap):
+      `py-16 md:py-24` vertical air and `bg-primary-deep` background (#006874 —
+      POST-APPLY UPDATE: deep teal token added to both globals.css mirrors)
+      form a hard color transition from the light `bg-bg` ServicesSection above
+      (Decision 6).
+    - Inner `<div class="container mx-auto px-4 sm:px-6 lg:px-8">` constrains
+      content to the same max-width as the sibling sections (token `.container`
+      in globals.css).
+    - Header row `flex flex-col sm:flex-row justify-between items-start sm:items-center`
+      (Decision 6): left holds the <h3> headline, right holds the accent CTA;
+      on mobile the CTA stacks below the headline.
+    - Card grid `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` (Decision 6):
+      mobile 1 col, tablet >= 640px 2 cols, desktop >= 1024px 4 cols.
+    - Card layout (Decision 5): white `<article>` (`bg-white shadow-2
+      hover:shadow-4 transition-shadow`) with an image mat (`p-4`,
+      `aspect-square object-contain`) so product shots are not cropped, and a
+      content area with the <h4> + "Cotizar" CTA (Decision 4).
+
+  Semantics & accessibility (see design.md § Decisions 6/7):
+    - The section headline is a <h3>, NOT <h1>/<h2>: the home has exactly one
+      <h1> (HeroBanner) and one <h2> (PanelHome); DestacadosSection is a
+      sibling portfolio sub-block like SolutionSection/ServicesSection.
+    - Each card title is a <h4> subordinate to the section <h3>.
+    - Images: descriptive `alt` (not the card title), `loading="lazy"`
+      (section is below the initial fold), processed by astro:assets/sharp.
+    - No icons in this section (mockup has none; keeps icon-catalog test
+      unaffected).
+    - NO prices rendered anywhere (design.md Decision 3: the client specified
+      the section shows no prices).
+-->
+
+<section class="py-16 md:py-24 bg-primary-deep">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header row: headline left, accent CTA right (stacks on mobile) -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12">
+      <h3 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white">
+        {headline}
+      </h3>
+      <a
+        href={ctaHref}
+        class="bg-accent hover:bg-accent-dark text-white font-heading font-semibold uppercase text-xs tracking-wide px-6 py-3 transition-colors"
+      >
+        {ctaText}
+      </a>
+    </div>
+
+    <!-- Responsive card grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+      {
+        products.map((product) => (
+          <article class="bg-white shadow-2 hover:shadow-4 transition-shadow">
+            <div class="p-4">
+              <Image
+                src={product.imagen}
+                alt={product.imagenAlt}
+                widths={[300, 600]}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                loading="lazy"
+                class="w-full aspect-square object-contain"
+              />
+            </div>
+            <div class="p-5">
+              <h4 class="text-base font-heading font-semibold text-secondary line-clamp-3 min-h-[4.5rem]">
+                {product.titulo}
+              </h4>
+              <a
+                href={`/productos/${product.slug}`}
+                class="mt-4 block text-center border-2 border-primary text-primary hover:bg-primary hover:text-white font-heading font-semibold uppercase text-xs tracking-wide px-4 py-3 transition-colors"
+              >
+                Cotizar
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
