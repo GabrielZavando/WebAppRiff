@@ -169,14 +169,18 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     await expect(link).toHaveCSS('border-radius', '0px');
   });
 
-  test('document keeps exactly 1 h1, 2 h2, 1 h3 and 4 h4 (5.6)', async ({ page }) => {
+  test('document keeps exactly 1 h1, 2 h2, 2 h3 and 8 h4 (5.6)', async ({ page }) => {
     // NOTE: the Astro Dev Toolbar (injected into `astro preview`) appends its
     // own hidden <h1> elements to the DOM. Filter with :visible so we assert
     // on the page's actual visible content hierarchy only.
+    // POST-APPLY UPDATE: the home page now renders ServicesSection next to
+    // SolutionSection (sibling section, same <h3> depth), so the visible
+    // outline is 1/2/2/8. See services-section spec scenario "DOM order is
+    // preserved: hero → panel → solutions → services".
     await expect(page.locator('h1:visible')).toHaveCount(1);
     await expect(page.locator('h2:visible')).toHaveCount(2);
-    await expect(page.locator('h3:visible')).toHaveCount(1);
-    await expect(page.locator('h4:visible')).toHaveCount(4);
+    await expect(page.locator('h3:visible')).toHaveCount(2);
+    await expect(page.locator('h4:visible')).toHaveCount(8);
   });
 
   test('all 4 solution images load without 404 (5.7)', async ({ page }) => {
@@ -193,7 +197,7 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     }
   });
 
-  test('preserves DOM order TopHeader -> header -> search -> hero -> panel -> solutions (5.8)', async ({
+  test('preserves DOM order TopHeader -> header -> search -> hero -> panel -> solutions -> services (5.8)', async ({
     page,
   }) => {
     const phone = page.locator('a[href^="tel:"]').first();
@@ -202,6 +206,7 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     const hero = page.locator('section.relative:not(.z-10)').first();
     const panel = page.locator('section.relative.z-10').first();
     const solutions = page.locator(SECTION_SELECTOR).first();
+    const services = page.locator('section.bg-secondary-dark').first();
 
     const phoneBox = await phone.boundingBox();
     const headerBox = await header.boundingBox();
@@ -209,6 +214,7 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     const heroBox = await hero.boundingBox();
     const panelBox = await panel.boundingBox();
     const solutionsBox = await solutions.boundingBox();
+    const servicesBox = await services.boundingBox();
 
     expect(phoneBox).toBeTruthy();
     expect(headerBox).toBeTruthy();
@@ -216,12 +222,14 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     expect(heroBox).toBeTruthy();
     expect(panelBox).toBeTruthy();
     expect(solutionsBox).toBeTruthy();
+    expect(servicesBox).toBeTruthy();
 
     expect(phoneBox!.y).toBeLessThan(headerBox!.y);
     expect(headerBox!.y).toBeLessThan(searchBox!.y);
     expect(searchBox!.y).toBeLessThan(heroBox!.y);
     expect(heroBox!.y).toBeLessThan(panelBox!.y);
     expect(panelBox!.y).toBeLessThan(solutionsBox!.y);
+    expect(solutionsBox!.y).toBeLessThan(servicesBox!.y);
   });
 
   test('WCAG AA Normal: h4 navy text on white card background (5.9)', async ({
