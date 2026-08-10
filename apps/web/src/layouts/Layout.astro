@@ -3,9 +3,11 @@ import '@/styles/globals.css';
 import TopHeader from '@/components/TopHeader.astro';
 import Header from '@/components/Header.astro';
 import SearchForm from '@/components/SearchForm.astro';
+import Footer from '@/components/Footer.astro';
 import { getContactInfo } from '@/lib/config/contact';
 import { NAVIGATION_ITEMS, getCtaConfig } from '@/lib/config/navigation';
 import { CATEGORY_OPTIONS, getSearchFormConfig } from '@/lib/config/search-form';
+import { SITE_FOOTER_CONTENT } from '@/lib/config/footer';
 import { Picture } from 'astro:assets';
 import heroImage from '@/assets/img/banner_home.webp';
 import type { HeaderProps } from '@/lib/types/header';
@@ -91,6 +93,7 @@ const searchFormProps: SearchFormProps = {
       <Header {...headerProps} transparent={hero} />
       <SearchForm {...searchFormProps} transparent={hero} />
       <slot />
+      <Footer {...SITE_FOOTER_CONTENT} />
     </div>
   </body>
 </html>

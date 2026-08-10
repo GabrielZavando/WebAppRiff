@@ -1,0 +1,166 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import logoImage from '@/assets/img/logo-web.webp';
+import type { SiteFooterProps } from '@/lib/types/footer';
+import { SITE_FOOTER_CONTENT, FOOTER_COPYRIGHT, FOOTER_LOCATION } from '@/lib/config/footer';
+import type { SocialNetworkName } from '@/lib/types/top-header';
+
+interface Props extends SiteFooterProps {}
+
+const { logoAlt, tagline, socialLinks, columns, schedule, scheduleNote } = Astro.props;
+
+// Same Lucide icon map and accessibility pattern as TopHeader.astro — the
+// site has a single social presence across chrome (design.md § Decision 4).
+const socialIconMap: Record<SocialNetworkName, string> = {
+  Facebook: 'lucide:facebook',
+  X: 'lucide:twitter',
+  Instagram: 'lucide:instagram',
+  LinkedIn: 'lucide:linkedin',
+};
+
+const logoAltText = logoAlt || 'Riff';
+---
+
+<!--
+  Global public-site footer (shared chrome, rendered by Layout.astro after
+  the page slot — design.md § Decision 1).
+
+  Layout (see design.md § Decisions 2, 3, 5, 6, 7, 8, 10):
+    - Outermost <footer> spans the full viewport with the dark navy token
+      `bg-secondary-dark`; content lives in the canonical `.container`.
+    - Main zone: responsive grid `grid-cols-1 md:grid-cols-2 lg:grid-cols-4`
+      (brand | SERVICIOS | EMPRESA | HORARIO TÉCNICO).
+    - Brand column: logo image (same `logo-web.webp` as Header.astro, lazy —
+      below the fold), tagline (muted), social icons filtered to configured
+      URLs (design.md § Decision 4).
+    - Link columns: titles are <p> labels (NOT headings — the footer must
+      not alter the per-page heading outline; design.md § Decision 2) with
+      placeholder `href="#"` anchors (client decision, design.md §
+      Decision 5).
+    - Schedule column: <dl> rows (day range → hours; design.md § Decision
+      10) plus the 24/7 note with a decorative clock icon.
+    - Bottom bar: divider `border-t border-white/10`, copyright + location
+      (fixed legal copy from config constants, design.md § D11), and the
+      square teal scroll-to-top <button> wired by the inline script below
+      (design.md § Decision 6).
+    - Strict flat design: no `rounded*`, no `shadow*` (static chrome never
+      floats).
+
+  Accessibility:
+    - `<footer>` is a landmark; column titles are labels, not headings.
+    - Social anchors carry `aria-label`, `target="_blank"` and
+      `rel="noopener noreferrer"` (same as TopHeader).
+    - Decorative icons are `aria-hidden="true"`.
+    - The scroll-to-top button is a real <button> with an accessible label
+      describing the action it performs.
+-->
+
+<footer class="bg-secondary-dark text-white">
+  <div class="container py-16 md:py-24">
+    <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
+      <!-- Brand column -->
+      <div>
+        <a href="/" aria-label="Ir al inicio" class="inline-block">
+          <Image
+            src={logoImage}
+            alt={logoAltText}
+            width={165}
+            height={67}
+            loading="lazy"
+            class="h-auto w-[165px]"
+          />
+        </a>
+        <p class="mt-4 font-body text-sm text-muted">{tagline}</p>
+        {
+          socialLinks.length > 0 && (
+            <nav aria-label="Redes sociales" class="mt-6 flex items-center gap-1">
+              {socialLinks.map((link) => (
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={link.name}
+                  class="flex h-10 w-10 items-center justify-center text-white/80 hover:bg-primary hover:text-white transition-colors"
+                >
+                  <Icon name={socialIconMap[link.name]} class="h-4 w-4" />
+                </a>
+              ))}
+            </nav>
+          )
+        }
+      </div>
+
+      <!-- Link columns (SERVICIOS, EMPRESA) -->
+      {
+        columns.map((column) => (
+          <div>
+            <p class="font-heading text-sm font-bold uppercase tracking-wider text-primary">
+              {column.title}
+            </p>
+            <ul class="mt-5 space-y-3">
+              {column.links.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="font-body text-sm text-white/80 hover:text-white transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+
+      <!-- Schedule column -->
+      <div>
+        <p class="font-heading text-sm font-bold uppercase tracking-wider text-primary">
+          HORARIO TÉCNICO
+        </p>
+        <dl class="mt-5 space-y-3">
+          {schedule.map((entry) => (
+            <div class="flex items-baseline justify-between gap-4">
+              <dt class="font-body text-sm font-semibold text-white">{entry.days}</dt>
+              <dd class="font-body text-sm text-muted">{entry.hours}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="mt-6 flex items-center gap-2 font-body text-sm font-semibold text-primary">
+          <Icon name="lucide:clock" class="h-4 w-4" aria-hidden="true" />
+          {scheduleNote}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10" aria-hidden="true"></div>
+
+  <div class="container flex flex-col items-center justify-between gap-4 py-6 sm:flex-row">
+    <span class="font-body text-xs uppercase tracking-wide text-muted">{FOOTER_COPYRIGHT}</span>
+    <div class="flex items-center gap-4">
+      <span class="font-body text-xs uppercase tracking-wide text-muted">{FOOTER_LOCATION}</span>
+      <button
+        type="button"
+        data-scroll-top
+        aria-label="Volver arriba"
+        class="flex h-10 w-10 items-center justify-center bg-primary text-white transition-colors hover:bg-primary-dark"
+      >
+        <Icon name="lucide:arrow-up" class="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+</footer>
+
+<script is:inline>
+  // Smooth-scrolls to the top when the footer's scroll-to-top button is
+  // clicked (design.md § Decision 6). `behavior: 'smooth'` is a progressive
+  // enhancement: browsers honoring `prefers-reduced-motion` ignore it and
+  // jump instantly, so no matchMedia override is needed.
+  document.querySelectorAll('[data-scroll-top]').forEach((button) => {
+    button.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+</script>
