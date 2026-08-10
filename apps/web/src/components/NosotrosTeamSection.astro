@@ -1,0 +1,146 @@
+---
+import { Image } from 'astro:assets';
+import type { NosotrosTeamSectionProps } from '@/lib/types/nosotros-team-section';
+import { getTeamMemberRoleLabel } from '@/lib/config/nosotros-team-section';
+
+interface Props extends NosotrosTeamSectionProps {}
+
+const { headline, subtitle, members } = Astro.props;
+---
+
+<!--
+  Dumb presentational component. All content (copy + members) comes via props
+  spread from `NOSOTROS_TEAM_SECTION_CONTENT` in
+  `lib/config/nosotros-team-section.ts` by `apps/web/src/pages/index.astro`.
+
+  Layout (see design.md § Decisions 1, 3, 5, 6, 7):
+    - Outermost <section> carries the `bg-bg` light background token and a
+      centered header: <h2> (headline) + <p> (subtitle). Exactly ONE <h2> on
+      the home below HeroBanner's <h1> — member names are <span>s, NOT
+      headings (design.md § Decision 3).
+    - `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3` stacks on mobile and
+      splits into 3 columns on desktop (mockup NosotrosSection.png).
+    - Each card is an <article class="relative overflow-hidden group"> whose
+      height comes from `aspect-[380/502]` (matches the client photos).
+    - Photo: astro:assets <Image> absolute inset-0 object-cover, lazy
+      (below the fold), `will-change-transform` + Tailwind transition
+      utilities; the 3D zoom lives in the scoped <style> because Tailwind v4
+      has no scale3d utility (design.md § Decision 5). POST-APPLY FIX #1:
+      the photo is `grayscale` (B&W) at rest and flips to
+      `group-hover:grayscale-0` (color) on hover.
+    - Overlay: absolute inset-0 LINEAR GRADIENT (`bg-linear-to-b`) — light at
+      the top (`from-secondary/40`) so the person's face stays visible,
+      with a POSITIONED third stop at 67% of the card height
+      (`via-secondary/75 via-[67%]`) that makes the BOTTOM THIRD a clearly
+      darker band (`to-secondary/95`) so the name/role text stays legible
+      (POST-APPLY FIX #4, client feedback: "el tercio bajo más oscuro").
+      The gradient STOP VALUES are STATIC and hand-edited by the client
+      directly on this class list; the hover effect NEVER touches the
+      gradient — the whole overlay fades via `transition-opacity` from
+      `opacity-100` (rest) to `group-hover:opacity-60`, which is smooth in
+      every browser (gradient stop animation via
+      `transition-[background-image]` was removed because browsers do not
+      reliably interpolate gradients → abrupt change reported by the
+      client).
+    - Cards: `lg:translate-y-8` on the CENTER card (index 1) only — desktop
+      composition the client asked for ("la imagen del centro, en
+      escritorio, debe estar ligeramente más abajo"). A translate (not a
+      margin) keeps the grid flow untouched and applies at `lg` only.
+    - Name: white Montserrat bold <span>; role: uppercase Montserrat
+      semibold in the primary teal token via getTeamMemberRoleLabel().
+    - `eyebrow` is part of the props contract but NOT rendered — the mockup
+      and the header spec (title + subtitle) don't use it (task 3.1
+      resolution, design.md § Decision 3).
+
+  Accessibility:
+    - The <h2> is the only heading; names/roles are <span>s (card labels).
+    - Photos are lazy with descriptive alt text (NOT the member name
+      verbatim — frontend-standards § "Imágenes del sitio").
+    - prefers-reduced-motion disables the 3D zoom and all transitions
+      (transform + filter + gradient) while keeping the hover state itself
+      (color photo + lighter overlay) as instant, non-animated feedback.
+-->
+
+<section class="bg-bg py-16 md:py-24">
+  <div class="container">
+    <div class="mx-auto max-w-2xl text-center">
+      <h2
+        class="font-heading text-3xl font-bold text-secondary md:text-4xl"
+      >
+        {headline}
+      </h2>
+      <p class="mt-4 font-body text-base text-text-2 md:text-lg">
+        {subtitle}
+      </p>
+    </div>
+
+    <div
+      class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+    >
+      {
+        members.map((member, index) => (
+          <article
+            class={`group relative aspect-[380/502] overflow-hidden bg-secondary${index === 1 ? ' lg:translate-y-8' : ''}`}
+          >
+            <Image
+              src={member.image}
+              alt={member.imageAlt}
+              class="team-card-image absolute inset-0 h-full w-full object-cover grayscale transition-[filter,transform] duration-300 ease-out will-change-transform group-hover:grayscale-0"
+              loading="lazy"
+            />
+            <div
+              class="team-card-overlay absolute inset-0 bg-linear-to-b from-secondary/40 via-secondary/75 via-[67%] to-secondary/95 opacity-100 transition-opacity duration-300 ease-out group-hover:opacity-60"
+            >
+            </div>
+            <div
+              class="absolute inset-0 z-10 flex flex-col justify-end p-6"
+            >
+              <span class="font-heading text-xl font-bold text-white">
+                {member.name}
+              </span>
+              <span
+                class="mt-1 font-heading text-xs font-semibold uppercase tracking-wider text-primary"
+              >
+                {getTeamMemberRoleLabel(member.role)}
+              </span>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+    scale3d zoom (design.md § Decision 5): Tailwind v4 has no 3-axis scale
+    utility, so the transform is defined here with a component-scoped class.
+    `scale3d(x, y, 1)` promotes the photo to its own GPU composition layer,
+    avoiding main-thread repaints during the hover transition.
+
+    POST-APPLY FIX #1/#2 (client feedback): the photo is grayscale at rest
+    and turns color on hover; the overlay is a persistent linear gradient
+    that only fades via opacity on hover (single static gradient, values
+    hand-edited by the client). The grayscale flip, the overlay fade and the
+    center-card desktop offset are driven by Tailwind classes; only the 3D
+    zoom and the reduced-motion kills need this block.
+  */
+  .team-card-image {
+    transform: scale3d(1, 1, 1);
+  }
+
+  .group:hover .team-card-image {
+    transform: scale3d(1.05, 1.05, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .team-card-image {
+      transform: none;
+      transition: none;
+    }
+
+    .team-card-overlay {
+      transition: none;
+    }
+  }
+</style>
