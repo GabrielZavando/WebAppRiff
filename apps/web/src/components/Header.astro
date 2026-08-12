@@ -19,26 +19,35 @@ const { items, activePath, cta, logoAlt, transparent = false } = Astro.props;
 const logoAltText = logoAlt ?? 'Riff';
 ---
 
-<!-- Main site header: logo, desktop navigation, quote CTA and mobile toggle. -->
+<!-- Main site header: logo (2x with overflow), right-aligned desktop nav with
+     CTA as the last item, and a fullscreen mobile overlay with slide animation. -->
 <header
+  data-menu-open="false"
   class:list={[
     'text-white',
     transparent ? 'bg-transparent' : 'bg-linear-to-r from-secondary to-secondary-light',
   ]}
 >
   <div class="container mx-auto px-4 h-24 flex items-center justify-between gap-4">
-    <a href="/" aria-label="Ir al inicio" class="shrink-0">
+    <!-- Logo: rendered at 2x (330x134), overflow-visible so the header
+         container (h-24) does not grow -- the logo may visually extend
+         beyond the header height without displacing sibling elements. -->
+    <a href="/" aria-label="Ir al inicio" class="shrink-0 h-24 overflow-visible">
       <!-- TODO[site-header-scroll-animations]: logo shrinks on scroll in a future change -->
       <Image
         src={logoImage}
         alt={logoAltText}
-        width={165}
-        height={67}
-        class="h-auto w-[165px]"
+        width={330}
+        height={134}
+        class="block h-auto w-[330px]"
       />
     </a>
 
-    <nav aria-label="Navegación principal" class="hidden lg:flex items-center gap-1">
+    <!-- Desktop nav: right-aligned (ml-auto), includes the CTA as the last item.
+         The CTA keeps its bg-accent styling; only the old standalone visibility
+         utility (hidden sm:inline-flex) is removed since the nav's own
+         responsive classes now control visibility. -->
+    <nav aria-label="Navegación principal" class="hidden lg:flex items-center gap-1 ml-auto">
       {
         items.map((item) => {
           const active = isActive(item.href, activePath);
@@ -46,77 +55,124 @@ const logoAltText = logoAlt ?? 'Riff';
             <a
               href={item.href}
               aria-current={active ? 'page' : undefined}
-              class={`px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wide transition-colors relative ${
+              class:list={[
+                'px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wide transition-colors relative',
                 active
-                  ? 'text-white after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-0.5 after:bg-primary'
-                  : 'text-white/80 hover:text-white'
-              }`}
+                  ? 'text-white after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-[3px] after:bg-primary'
+                  : 'text-white/80 hover:text-white',
+              ]}
             >
               {item.label}
             </a>
           );
         })
       }
+      <!-- CTA as the last nav item: styles unchanged (bg-accent), now inside the <nav>. -->
+      <a
+        href={cta.href}
+        class="inline-flex items-center bg-accent hover:bg-accent-dark text-white font-heading font-semibold uppercase text-xs tracking-wide px-6 py-3 transition-colors whitespace-nowrap"
+      >
+        {cta.label}
+      </a>
     </nav>
 
-    <a
-      href={cta.href}
-      class="hidden sm:inline-flex items-center bg-accent hover:bg-accent-dark text-white font-heading font-semibold uppercase text-xs tracking-wide px-6 py-3 transition-colors whitespace-nowrap"
-    >
-      {cta.label}
-    </a>
-
+    <!-- Mobile toggle: fixed so it is always visible above the fullscreen
+         overlay (z-50 > overlay z-40). Icon color adapts via CSS driven by
+         data-menu-open on <header>: white on navy header (closed), secondary
+         on white overlay (open). -->
     <button
       type="button"
       data-menu-toggle
       aria-controls="mobile-nav"
       aria-expanded="false"
       aria-label="Abrir menú"
-      class="lg:hidden p-2 text-white"
+      class="fixed top-6 right-6 z-50 lg:hidden p-2 transition-colors duration-200"
     >
       <Icon name="lucide:menu" class="h-6 w-6" />
       <Icon name="lucide:x" class="h-6 w-6 hidden" />
     </button>
   </div>
 
+  <!-- Mobile menu: fullscreen overlay (100vw x 100vh) with white background.
+       Slides in from the right via CSS transform driven by data-menu-open on
+       the <header>. Shows only the menu items + CTA. -->
   <div
     id="mobile-nav"
-    hidden
-    class:list={[
-      'lg:hidden border-t border-white/10 px-4 py-4',
-      transparent ? 'bg-transparent' : 'bg-secondary-light',
-    ]}
+    class="fixed inset-0 bg-white z-40 lg:hidden flex flex-col items-center justify-center gap-8 transition-transform duration-300 ease-in-out"
   >
-    <nav aria-label="Navegación móvil" class="flex flex-col gap-2">
+    <nav aria-label="Navegación móvil" class="flex flex-col items-center justify-center gap-6">
       {
-        items.map((item) => (
-          <a
-            href={item.href}
-            aria-current={isActive(item.href, activePath) ? 'page' : undefined}
-            class="px-3 py-2 font-heading font-semibold text-white/90 hover:bg-white/10"
-          >
-            {item.label}
-          </a>
-        ))
+        items.map((item) => {
+          const active = isActive(item.href, activePath);
+          return (
+            <a
+              href={item.href}
+              aria-current={active ? 'page' : undefined}
+              class:list={[
+                'font-heading font-semibold text-base transition-colors relative',
+                active
+                  ? 'text-primary after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-[3px] after:bg-primary'
+                  : 'text-secondary hover:text-primary',
+              ]}
+            >
+              {item.label}
+            </a>
+          );
+        })
       }
+      <!-- CTA as the last mobile nav item: same bg-accent styling. -->
+      <a
+        href={cta.href}
+        class="inline-flex items-center bg-accent hover:bg-accent-dark text-white font-heading font-semibold uppercase text-xs tracking-wide px-6 py-3 transition-colors whitespace-nowrap"
+      >
+        {cta.label}
+      </a>
     </nav>
   </div>
 </header>
 
+<!-- CSS state rules: data-menu-open attribute drives the overlay slide
+     transform and the toggle button color. Scoped via is:inline (no global
+     side effects). -->
+<style is:inline>
+  header[data-menu-open="false"] #mobile-nav {
+    transform: translateX(100%);
+    pointer-events: none;
+  }
+  header[data-menu-open="true"] #mobile-nav {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  /* Toggle button: white on navy header (closed) -> secondary on white overlay (open) */
+  header[data-menu-open="false"] [data-menu-toggle] {
+    color: var(--color-white);
+  }
+  header[data-menu-open="true"] [data-menu-toggle] {
+    color: var(--color-secondary);
+    background-color: var(--color-white);
+  }
+</style>
+
 <script is:inline>
-  // Toggles the mobile navigation panel: swaps aria-expanded, the accessible
-  // label and the visible icon, and shows/hides the panel.
+  // Toggles the mobile navigation overlay:
+  // - aria-expanded/aria-label on the toggle button (accessibility)
+  // - data-menu-open on the header element (drives CSS: panel slide, button color)
+  // - body scroll lock (prevents scroll-through on fullscreen overlay)
   document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
     button.addEventListener('click', () => {
-      const expanded = button.getAttribute('aria-expanded') === 'true';
-      button.setAttribute('aria-expanded', String(!expanded));
-      button.setAttribute('aria-label', expanded ? 'Abrir menú' : 'Cerrar menú');
+      const isOpen = button.getAttribute('aria-expanded') === 'true';
+      const newState = !isOpen;
 
-      const panel = document.getElementById(button.getAttribute('aria-controls') || '');
-      if (panel) {
-        panel.toggleAttribute('hidden');
+      button.setAttribute('aria-expanded', String(newState));
+      button.setAttribute('aria-label', newState ? 'Cerrar menú' : 'Abrir menú');
+
+      const header = button.closest('header');
+      if (header) {
+        header.setAttribute('data-menu-open', String(newState));
+        document.body.style.overflow = newState ? 'hidden' : '';
       }
 
+      // Swap hamburger <-> X icon
       button.querySelectorAll('svg').forEach((icon) => icon.classList.toggle('hidden'));
     });
   });
