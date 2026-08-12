@@ -28,7 +28,7 @@ export interface SearchFormConfig {
   readonly action: string;
   /** Submit button text (default: "BUSCAR"). */
   readonly submitLabel: string;
-  /** Search input placeholder (default: "¿Qué solución está buscando?"). */
+  /** Search input placeholder (default: "¿Qué productos estás buscando?"). */
   readonly inputPlaceholder: string;
   /** `name` attribute of the search `<input>` (default: "q"). */
   readonly inputName: string;

@@ -22,7 +22,7 @@ export const CATEGORY_OPTIONS: readonly CategoryOption[] = [
 export const SEARCH_FORM_DEFAULTS: Readonly<SearchFormConfig> = {
   action: '/productos',
   submitLabel: 'BUSCAR',
-  inputPlaceholder: '¿Qué solución está buscando?',
+  inputPlaceholder: '¿Qué productos estás buscando?',
   inputName: 'q',
   selectName: 'categoriaId',
 };
