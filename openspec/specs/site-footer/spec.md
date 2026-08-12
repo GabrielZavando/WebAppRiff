@@ -52,27 +52,19 @@ The `site-footer` SHALL render a grid of four columns inside the canonical conta
 
 ### Requirement: Brand column shows logo image, tagline and social icons
 
-The `site-footer` SHALL render a brand column as the first grid cell containing: the existing header logo image (`logo-web.webp`) via `astro:assets` `<Image>` with a descriptive `alt` attribute (falling back to "Riff" when not provided) and `loading="lazy"`; the brand tagline paragraph styled with the muted text token; and the configured social links rendered as Lucide icons (`lucide:facebook`, `lucide:twitter`, `lucide:instagram`, `lucide:linkedin`) with `aria-label` per network, `target="_blank"` and `rel="noopener noreferrer"`. Only social networks with a configured URL SHALL render.
-
-#### Scenario: Logo image renders via astro assets with lazy loading
-
-- **WHEN** the footer renders
-- **THEN** the brand column contains an `<img>` element rendered via `astro:assets` from `logo-web.webp`
-- **AND** the image declares `loading="lazy"`
-- **AND** the image carries a non-empty `alt` attribute
-
-#### Scenario: Tagline renders with the muted color token
-
-- **WHEN** the footer renders with the default content
-- **THEN** the brand column contains a paragraph with the text "Innovación tecnológica en la gestión de fluidos desde 1979."
-- **AND** the paragraph carries a muted text color class (e.g. `text-muted`)
+The `site-footer` SHALL render a brand column as the first grid cell containing: the existing header logo image (`logo-web.webp`) via `astro:assets` `<Image>` with a descriptive `alt` attribute (falling back to "Riff" when not provided) and `loading="lazy"`; the brand tagline paragraph styled with the muted text token; and the configured social links rendered via `astro-icon`. Facebook, Instagram and LinkedIn SHALL use `lucide:facebook`, `lucide:instagram`, `lucide:linkedin`. **Exception**: X SHALL use `simple-icons:x` (the official current X brand logo) — the sole documented exception to the "set único Lucide" rule (Lucide does not provide the current X brand mark; `lucide:x` is a close icon). This exception applies to `site-footer` identically as in `top-header` for cross-component consistency (design.md § Decision 4). Only social networks with a configured URL SHALL render.
 
 #### Scenario: Only configured social links render
-
 - **WHEN** the footer renders with two of the four social URLs configured
 - **THEN** the brand column contains exactly two social anchor elements
-- **AND** each rendered social anchor carries a Lucide icon and an `aria-label` matching the network name
+- **AND** each rendered social anchor carries an `aria-label` matching the network name
 - **AND** each rendered social anchor declares `target="_blank"` and `rel="noopener noreferrer"`
+
+#### Scenario: Footer X icon uses simple-icons:x (regression)
+- **WHEN** the footer renders with the X social URL configured
+- **THEN** the X anchor contains `<Icon name="simple-icons:x">`
+- **AND** no `lucide:twitter` reference appears for the X social link
+- **AND** the X icon name matches TopHeader exactly (`simple-icons:x`)
 
 ### Requirement: Link columns render headings and placeholder links
 
@@ -185,4 +177,12 @@ The component SHALL use only the project's design tokens: `bg-secondary-dark` fo
 
 - **WHEN** the component source is inspected
 - **THEN** it does not reference any obsolete `bg-brand-*`, `text-brand-*` or `border-brand-*` class
+
+### Requirement: Footer social icon map stays in sync with TopHeader
+The Footer SHALL use the same `socialIconMap` mapping as TopHeader (single social presence across chrome, design.md § Decision 4), with the documented `simple-icons:x` exception for X.
+
+#### Scenario: X icon consistency between Header and Footer chrome
+- **WHEN** both TopHeader and Footer have the X social URL configured
+- **THEN** both render `<Icon name="simple-icons:x">` for X
+- **AND** neither renders `lucide:twitter` for X
 

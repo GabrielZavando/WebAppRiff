@@ -1,17 +1,8 @@
-# top-header Specification
+# top-header — Delta Specification
 
-## Purpose
-TBD - created by archiving change top-header. Update Purpose after archive.
-## Requirements
-### Requirement: TopHeader renders phone number
-The TopHeader component SHALL render the primary phone number from configuration as a clickable `tel:` link. The phone icon SHALL be rendered via `astro-icon` (`<Icon name="lucide:phone" />`) — the set único autorizado es **Lucide** (outline stroke 2px); el set `material-symbols` y el icono `material-symbols:contact-phone-outline` quedan obsoletos. El per-network `PhoneIcon.astro` component SHALL no longer exist in `apps/web/src/components/icons/`.
+Changes for change `topheader-click-to-call-x-icon`.
 
-#### Scenario: Phone number displayed
-- **WHEN** the component renders with PRIMARY_PHONE="+56 2 29079067"
-- **THEN** the phone number is visible in the left section of the header
-- **AND** the phone number is wrapped in an `<a>` tag with `href="tel:+56229079067"`
-- **AND** the link contains an `<Icon name="lucide:phone">` element (no inline `<svg>`)
-- **AND** the formatted number text follows the icon
+## MODIFIED Requirements
 
 ### Requirement: TopHeader renders social media links
 The TopHeader component SHALL render up to 4 social media links (Facebook, X, Instagram, LinkedIn) only when their corresponding URLs are configured. Each social link icon SHALL be rendered via `astro-icon` using a `<Icon>` element. Facebook, Instagram and LinkedIn icons SHALL use the `lucide:` prefix (the set único autorizado). **Exception**: the X (Twitter) social link icon SHALL use `simple-icons:x` (the official current X brand logo), because Lucide does not provide the current X brand mark and `lucide:x` is a close icon (not the brand); this is the **only** documented exception to the "set único Lucide" rule (see `docs/design/style-guide/README.md`). Los sets `logos` (Iconify Logos) quedan obsoletos. El per-network `.astro` SVG icon components (FacebookIcon, XIcon, InstagramIcon, LinkedInIcon) SHALL no longer exist in `apps/web/src/components/icons/`.
@@ -50,64 +41,7 @@ The TopHeader component SHALL obtain all its icons via `astro-icon` (`<Icon>` el
 - **AND** it does not import any local `*Icon.astro` component
 - **AND** all `<Icon name="...">` references use either the `lucide:` prefix or the `simple-icons:x` exception for X
 
-### Requirement: TopHeader supports a transparent mode
-TopHeader SHALL accept an optional boolean prop `transparent` (default `false`). When `true`, the component SHALL render with `bg-transparent` instead of the gradient `bg-secondary bg-linear-to-r from-secondary to-secondary-light` while keeping the same layout, text colors, and social dividers. When `false` (default), the existing gradient navy background SHALL be present.
-
-#### Scenario: Transparent mode removes the gradient
-- **WHEN** TopHeader renders with `transparent: true`
-- **THEN** the outer class contains `bg-transparent`
-- **AND** the outer class does NOT contain `bg-secondary` nor `from-secondary to-secondary-light`
-- **AND** the phone link and social links are still rendered
-
-#### Scenario: Default mode keeps the gradient
-- **WHEN** TopHeader renders without `transparent` (or `transparent: false`)
-- **THEN** the outer class contains `bg-secondary` and `from-secondary to-secondary-light`
-
-### Requirement: TopHeader is hidden on mobile
-The TopHeader component SHALL be completely hidden on viewports smaller than 640px (Tailwind `sm` breakpoint).
-
-#### Scenario: Hidden on mobile viewport
-- **WHEN** viewport width is <640px
-- **THEN** the component has `display: none` (via `hidden sm:flex`)
-- **AND** no part of the header is visible or takes up layout space
-
-#### Scenario: Visible on desktop viewport
-- **WHEN** viewport width is >=640px
-- **THEN** the component is displayed as flex container
-- **AND** phone and social links are visible
-
-### Requirement: TopHeader uses brand colors and layout
-The TopHeader component SHALL use the `--color-secondary` (navy `#1F2D40`) and `--color-secondary-light` (`#35455E`) tokens via Tailwind utilities `bg-secondary`, `from-secondary`, `to-secondary-light`. The component SHALL NOT use the obsolete tokens `--color-brand-navy`, `--color-brand-navy-light`, nor the utilities `bg-brand-navy`, `from-brand-navy`, `to-brand-navy-light`.
-
-#### Scenario: TopHeader uses navy tokens (no brand-navy)
-- **WHEN** the TopHeader renders
-- **THEN** the outer container applies `bg-secondary` (resolving to `#1F2D40`) and a gradient `from-secondary to-secondary-light`
-- **AND** no class in the rendered HTML contains the substring `brand-navy`
-
-### Requirement: TopHeader accessibility
-The TopHeader component SHALL meet accessibility requirements for links and navigation.
-
-#### Scenario: Social links have proper attributes
-- **WHEN** social links are rendered
-- **THEN** each link has `aria-label` with network name (e.g., "Facebook", "X", "Instagram", "LinkedIn")
-- **AND** each link has `target="_blank"`
-- **AND** each link has `rel="noopener noreferrer"`
-
-#### Scenario: Navigation landmark
-- **WHEN** social links are rendered
-- **THEN** they are wrapped in a `<nav>` element with `aria-label="Redes sociales"`
-
-### Requirement: Configuration reads from environment variables
-The contact configuration SHALL read all values from `import.meta.env` with graceful fallback to empty strings.
-
-#### Scenario: All env vars present
-- **WHEN** PRIMARY_PHONE, SOCIAL_FACEBOOK_URL, SOCIAL_X_URL, SOCIAL_INSTAGRAM_URL, SOCIAL_LINKEDIN_URL are set
-- **THEN** `getContactInfo()` returns object with all values
-
-#### Scenario: Missing env vars
-- **WHEN** some environment variables are not defined
-- **THEN** `getContactInfo()` returns empty strings for missing values
-- **AND** no error is thrown
+## ADDED Requirements
 
 ### Requirement: TopHeader normalizes phone number to E.164 tel: format (regression)
 The `phoneHref` computation in TopHeader SHALL normalize the configured phone number to E.164 format by stripping all characters except digits and the leading `+` before constructing the `tel:` link. This is a regression test guarding the existing behavior.
@@ -151,4 +85,3 @@ The TopHeader component SHALL use the smallest practical vertical height that st
 #### Scenario: Content still renders fully at reduced height
 - **WHEN** TopHeader renders with full contact (phone + 4 socials)
 - **THEN** both the phone link and all social anchors are fully visible and not clipped vertically
-
