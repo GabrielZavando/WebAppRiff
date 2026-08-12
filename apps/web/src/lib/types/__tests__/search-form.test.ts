@@ -16,7 +16,7 @@ describe('search-form.ts types', () => {
     const config: SearchFormConfig = {
       action: '/productos',
       submitLabel: 'BUSCAR',
-      inputPlaceholder: '¿Qué solución está buscando?',
+      inputPlaceholder: '¿Qué productos estás buscando?',
       inputName: 'q',
       selectName: 'categoriaId',
     };
@@ -31,7 +31,7 @@ describe('search-form.ts types', () => {
       config: {
         action: '/productos',
         submitLabel: 'BUSCAR',
-        inputPlaceholder: '¿Qué solución está buscando?',
+        inputPlaceholder: '¿Qué productos estás buscando?',
         inputName: 'q',
         selectName: 'categoriaId',
       },
@@ -50,7 +50,7 @@ describe('search-form.ts types', () => {
       config: {
         action: '/productos',
         submitLabel: 'BUSCAR',
-        inputPlaceholder: '¿Qué solución está buscando?',
+        inputPlaceholder: '¿Qué productos estás buscando?',
         inputName: 'q',
         selectName: 'categoriaId',
       },

@@ -81,21 +81,98 @@ test.describe('SearchForm (global search bar)', () => {
     await page.goto('/');
 
     const input = page.getByRole('search', { name: 'Buscar productos' }).getByRole('searchbox');
-    await expect(input).toHaveAttribute('placeholder', '¿Qué solución está buscando?');
+    await expect(input).toHaveAttribute('placeholder', '¿Qué productos estás buscando?');
   });
 
-  test('uses the accent background on the BUSCAR button', async ({ page }) => {
+  test('uses the primary background (#41B3C4) on the BUSCAR button', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
 
     const button = page.getByRole('search', { name: 'Buscar productos' }).getByRole('button', {
       name: 'BUSCAR',
     });
-    // Token is #F26A21 in globals.css. We accept an exact match (Tailwind v4
-    // resolves the bg-accent utility to the CSS variable literal).
+    // Token is #41B3C4 (--color-primary) in globals.css. We accept either RGB format.
     const bg = await button.evaluate((el) => getComputedStyle(el).backgroundColor);
-    // rgb(242, 106, 33) == #F26A21. We accept either format.
-    expect(['rgb(242, 106, 33)', 'rgb(242,106,33)']).toContain(bg);
+    // rgb(65, 179, 196) == #41B3C4.
+    expect(['rgb(65, 179, 196)', 'rgb(65,179,196)']).toContain(bg);
+  });
+
+  test('renders a search icon inside the BUSCAR button', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto('/');
+
+    const button = page.getByRole('search', { name: 'Buscar productos' }).getByRole('button', {
+      name: 'BUSCAR',
+    });
+    // The search icon (lucide:search) renders as an inline <svg> inside the button.
+    const svgCount = await button.locator('svg').count();
+    expect(svgCount).toBeGreaterThanOrEqual(1);
+    // The button's accessible name must remain "BUSCAR" (icon is aria-hidden).
+    await expect(button).toHaveAccessibleName('BUSCAR');
+  });
+
+  test('constrains the form container to max-width 860px and centers it', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto('/');
+
+    const search = page.getByRole('search', { name: 'Buscar productos' });
+    const form = search.locator('form');
+    // The inner container (direct parent of <form>) must carry max-w-[860px].
+    const container = form.locator('xpath=..');
+    const containerClass = await container.getAttribute('class') ?? '';
+    expect(containerClass).toContain('max-w-[860px]');
+    expect(containerClass).toContain('mx-auto');
+    expect(containerClass).not.toContain('container');
+  });
+
+  test('separates desktop controls by 1px (gap-px)', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto('/');
+
+    const search = page.getByRole('search', { name: 'Buscar productos' });
+    const form = search.locator('form');
+    const formClass = await form.getAttribute('class') ?? '';
+    expect(formClass).toContain('gap-3');
+    expect(formClass).toContain('md:gap-px');
+    expect(formClass).not.toContain('md:gap-3');
+
+    // Visual assertion: on desktop, the 1px gap means the right edge of the
+    // select and the left edge of the input differ by ≤ 2px (1px gap + 1px
+    // border tolerance). Similarly for input→button.
+    const selectBox = await search.getByRole('combobox').boundingBox();
+    const inputBox = await search.getByRole('searchbox').boundingBox();
+    const buttonBox = await search.getByRole('button', { name: 'BUSCAR' }).boundingBox();
+    expect(selectBox).toBeTruthy();
+    expect(inputBox).toBeTruthy();
+    expect(buttonBox).toBeTruthy();
+    const selectRight = selectBox!.x + selectBox!.width;
+    expect(Math.abs(selectRight - inputBox!.x)).toBeLessThanOrEqual(2);
+    const inputRight = inputBox!.x + inputBox!.width;
+    expect(Math.abs(inputRight - buttonBox!.x)).toBeLessThanOrEqual(2);
+  });
+
+  test('uses flex layout and wider padding on the BUSCAR button', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto('/');
+
+    const button = page.getByRole('search', { name: 'Buscar productos' }).getByRole('button', {
+      name: 'BUSCAR',
+    });
+    const buttonClass = await button.getAttribute('class') ?? '';
+    expect(buttonClass).toContain('flex');
+    expect(buttonClass).toContain('items-center');
+    expect(buttonClass).toContain('justify-center');
+    expect(buttonClass).toContain('gap-2');
+    expect(buttonClass).toContain('px-8');
+    expect(buttonClass).not.toContain('px-6');
+  });
+
+  test('uses the updated product-focused placeholder in the search input', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto('/');
+
+    const input = page.getByRole('search', { name: 'Buscar productos' }).getByRole('searchbox');
+    await expect(input).toHaveAttribute('placeholder', '¿Qué productos estás buscando?');
   });
 
   test('navigates to /productos?q=...&categoriaId=... when both fields are filled', async ({

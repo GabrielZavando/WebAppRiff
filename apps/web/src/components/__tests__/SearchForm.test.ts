@@ -144,7 +144,7 @@ describe('SearchForm — search input', () => {
     const input = getInput(html);
     expect(input).toContain('type="search"');
     expect(input).toContain('name="q"');
-    expect(input).toContain('placeholder="¿Qué solución está buscando?"');
+    expect(input).toContain('placeholder="¿Qué productos estás buscando?"');
   });
 
   it('has a <label for="<input-id>"> with non-empty text', async () => {
@@ -170,12 +170,81 @@ describe('SearchForm — search input', () => {
 });
 
 describe('SearchForm — submit button', () => {
-  it('renders a <button type="submit"> with label "BUSCAR" using bg-accent', async () => {
+  it('renders a <button type="submit"> with label "BUSCAR" using bg-primary', async () => {
     const html = await render();
     const button = getButton(html);
     expect(button).toContain('type="submit"');
-    expect(button).toContain('bg-accent');
-    expect(button).toContain('>BUSCAR<');
+    expect(button).toContain('bg-primary');
+    expect(button).toContain('hover:bg-primary-dark');
+    expect(button).not.toContain('bg-accent');
+    expect(button).toContain('BUSCAR');
+  });
+
+  it('uses flex layout for icon+text alignment with wider padding', async () => {
+    const html = await render();
+    const button = getButton(html);
+    expect(button).toContain('flex');
+    expect(button).toContain('items-center');
+    expect(button).toContain('justify-center');
+    expect(button).toContain('gap-2');
+    expect(button).toContain('px-8');
+    expect(button).not.toContain('px-6');
+  });
+});
+
+describe('SearchForm — submit button search icon', () => {
+  it('renders a lucide:search icon inside the button before the label', async () => {
+    const html = await render();
+    const button = getButton(html);
+    // The Icon component renders as an inline <svg> in SSR.
+    expect(button).toContain('<svg');
+    // The icon is decorative (aria-hidden) — the button's accessible name is "BUSCAR".
+    expect(button).toContain('aria-hidden="true"');
+  });
+
+  it('places the icon before the BUSCAR text label', async () => {
+    const html = await render();
+    const button = getButton(html);
+    const svgIndex = button.indexOf('<svg');
+    // Search for "BUSCAR" AFTER the SVG closes so the HTML comment
+    // mentioning "BUSCAR" doesn't produce a false match.
+    const svgEnd = button.indexOf('</svg>');
+    const textIndex = button.indexOf('BUSCAR', svgEnd);
+    expect(svgIndex).toBeGreaterThan(-1);
+    expect(textIndex).toBeGreaterThan(-1);
+    expect(svgIndex).toBeLessThan(textIndex);
+  });
+});
+
+describe('SearchForm — component max-width & centering', () => {
+  it('constrains the form container to max-w-[860px] centered and removes the container utility', async () => {
+    const html = await render();
+    // The inner div is the direct parent of <form>; it carries the max-width + centering.
+    const formMatch = html.match(/<form[\s\S]*?<\/form>/);
+    expect(formMatch).toBeTruthy();
+    // Find the parent div of the form (directly wrapping it).
+    const formHtml = formMatch![0] ?? '';
+    const formStart = html.indexOf(formHtml);
+    const beforeForm = html.slice(0, formStart);
+    const divMatches = beforeForm.matchAll(/<div[^>]*>/g);
+    const divsBeforeForm = [...divMatches].map((m) => m[0] ?? '');
+    // The closest preceding div is the container. It should have max-w-[860px] and NOT
+    // the `container` utility (which would impose max-w-7xl = 1280px with padding).
+    const containerDiv = divsBeforeForm[divsBeforeForm.length - 1] ?? '';
+    expect(containerDiv).toContain('max-w-[860px]');
+    expect(containerDiv).toContain('mx-auto');
+    expect(containerDiv).not.toContain('container');
+    expect(containerDiv).not.toMatch(/px-[468]/);
+  });
+});
+
+describe('SearchForm — desktop gap (1px between controls)', () => {
+  it('uses gap-3 for mobile and md:gap-px for desktop (replacing md:gap-3)', async () => {
+    const html = await render();
+    const form = getForm(html);
+    expect(form).toContain('gap-3');
+    expect(form).toContain('md:gap-px');
+    expect(form).not.toContain('md:gap-3');
   });
 });
 
@@ -277,7 +346,7 @@ describe('SearchForm — transparent mode (home hero full-bleed background)', ()
     expect(getForm(html)).toContain('method="get"');
     expect(getSelect(html)).toContain('name="categoriaId"');
     expect(getInput(html)).toContain('type="search"');
-    expect(getButton(html)).toContain('>BUSCAR<');
+    expect(getButton(html)).toContain('BUSCAR');
   });
 
   it('keeps the select and input fields on a white background in transparent mode', async () => {
@@ -288,8 +357,9 @@ describe('SearchForm — transparent mode (home hero full-bleed background)', ()
 
     expect(getSelect(html)).toContain('bg-white');
     expect(getInput(html)).toContain('bg-white');
-    // The submit button keeps bg-accent (not bg-white).
-    expect(getButton(html)).toContain('bg-accent');
+    // The submit button keeps bg-primary (not bg-white, not bg-accent).
+    expect(getButton(html)).toContain('bg-primary');
+    expect(getButton(html)).not.toContain('bg-accent');
   });
 
   it('defaults to the white background wrapper when transparent is not set', async () => {
