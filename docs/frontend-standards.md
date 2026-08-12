@@ -85,7 +85,7 @@
 - **Pipeline**: `astro:assets` built-in con servicio `sharp` (declarado como dependencia de `apps/web`). **Prohibido** instalar `@astrojs/image` (deprecado). Para el `<Picture>` del hero se pasan `formats={['avif', 'webp']}` y `fallbackFormat="jpg"` explícitos (el default de Astro 7 es solo `['webp']` con fallback `png`).
 - **Above-the-fold**: el hero se sirve con `loading="eager"`; imágenes bajo el fold con `loading="lazy"`.
 - **Excepción 1:1**: la imagen Open Graph/Twitter (`og-image.png`, PNG 1200×630) se sirve desde `apps/web/public/` porque las redes sociales exigen URL pública absoluta, estable y formato PNG. **No** se añaden otros binarios de imagen a `public/`.
-- **Iconos**: no son assets de imagen — se consumen exclusivamente vía `astro-icon` (`<Icon name="lucide:..." />`, set único Lucide para UI y marcas sociales); no guardar iconos en `src/assets/img/`.
+- **Iconos**: no son assets de imagen — se consumen exclusivamente vía `astro-icon` (`<Icon name="lucide:..." />`, set único Lucide para UI y marcas sociales). **Excepción única**: el logo oficial de X (Twitter) se consume vía `simple-icons:x`, ya que Lucide no provee el logo actual de X — documentado en `docs/design/style-guide/README.md`. No guardar iconos en `src/assets/img/`.
 
 ## Stack específico del proyecto
 
@@ -126,4 +126,4 @@ Ambos archivos **DEBEN** declarar el mismo conjunto de tokens (mismos nombres y 
 
 **Convención de consumo:** usar exclusivamente las utilities Tailwind generadas desde `@theme` (`bg-primary`, `text-secondary`, `border-border`, `font-heading`, `rounded`, `shadow-2`, etc.). **Queda prohibido** usar literales hex (`#XXXXXX`) o los tokens obsoletos `brand-*` en componentes, páginas o configs.
 
-**Iconos:** se consumen vía `astro-icon` + Iconify (`<Icon name="lucide:..." />`, set único Lucide — outline, stroke 2px — para UI y marcas sociales). Los iconos SVG inline locales (`.astro` en `components/icons/`) están prohibidos.
+**Iconos:** se consumen vía `astro-icon` + Iconify (`<Icon name="lucide:..." />`, set único Lucide — outline, stroke 2px — para UI y marcas sociales). Los iconos SVG inline locales (`.astro` en `components/icons/`) están prohibidos. **Excepción única documentada**: el logo oficial de X (Twitter) usa `simple-icons:x` (Lucide no provee el logo actual de X; el `lucide:x` es un icono de cerrar, no la marca). Ver catálogo canónico en `docs/design/style-guide/README.md`.

@@ -68,7 +68,7 @@ This file documents the canonical design tokens and icon catalog for the Riff Ca
 
 ## Catálogo de Iconos
 
-Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI funcionales como a iconos de marca/redes sociales (uniformados al set Lucide). Los sets `material-symbols` y `logos` quedan **obsoletos** (prohibidos en código nuevo; ver task 1.1 de `ui-refactor`).
+Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI funcionales como a iconos de marca/redes sociales (uniformados al set Lucide). Los sets `material-symbols`, `logos` y `simple-icons` quedan **obsoletos** (prohibidos en código nuevo), **excepto** `simple-icons:x` que es la única excepción documentada — utilizada para el logo de marca oficial de X, ya que Lucide no provee el logo actual de X (el `lucide:x` existente es el icono de cerrar, no la marca).
 
 ### Mapeo de los 5 componentes base
 
@@ -76,7 +76,7 @@ Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI func
 |---|---|---|
 | `phone` | `lucide:phone` | Teléfono en TopHeader |
 | `facebook` | `lucide:facebook` | Red social Facebook |
-| `x` / `twitter` | `lucide:twitter` | Red social X (Twitter) |
+| `x` | `simple-icons:x` | Red social X (logo oficial) — excepción al set único Lucide |
 | `instagram` | `lucide:instagram` | Red social Instagram |
 | `linkedin` | `lucide:linkedin` | Red social LinkedIn |
 | `menu` | `lucide:menu` | Hamburguesa menú móvil |
