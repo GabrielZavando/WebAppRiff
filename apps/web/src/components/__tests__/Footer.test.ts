@@ -116,6 +116,22 @@ describe('Footer — brand column (logo + tagline + social)', () => {
   });
 });
 
+describe('Footer — X social icon uses official X brand logo (topheader-click-to-call-x-icon)', () => {
+  it('renders the X social link with simple-icons:x (not lucide:twitter) when configured', async () => {
+    const props: SiteFooterProps = {
+      ...SITE_FOOTER_CONTENT,
+      socialLinks: [{ name: 'X', href: 'https://x.com/riff' }],
+    };
+    const html = await render(props);
+
+    // The X anchor holds an <svg> whose data-icon is the brand logo name.
+    const xAnchor = html.match(/aria-label="X"[^]*?<\/a>/);
+    expect(xAnchor).not.toBeNull();
+    expect(xAnchor![0]).toContain('data-icon="simple-icons:x"');
+    expect(xAnchor![0]).not.toContain('data-icon="lucide:twitter"');
+  });
+});
+
 describe('Footer — SERVICIOS & EMPRESA link columns', () => {
   it('renders the SERVICIOS label as a <p> with primary/heading/uppercase classes', async () => {
     const html = await render();

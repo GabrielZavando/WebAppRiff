@@ -79,12 +79,18 @@ describe('TopHeader', () => {
     expect(html).toContain('sm:flex');
   });
 
-  it('applies brand navy background, h-9 height and full layout styling', async () => {
+  it('applies brand navy background, compact h-8 height and full layout styling', async () => {
     const html = await render(fullContact);
 
-    // Background and height
+    // Root region div (outermost) uses h-8 for a compact footprint.
+    const regionMatch = html.match(/<div role="region"[^>]*class="([^"]*)"/);
+    expect(regionMatch).not.toBeNull();
+    const rootClasses = regionMatch![1];
+    expect(rootClasses).toContain('h-8');
+    expect(rootClasses).not.toContain('h-9');
+
+    // Background
     expect(html).toContain('bg-secondary');
-    expect(html).toContain('h-9');
     expect(html).toContain('bg-linear-to-r from-secondary to-secondary-light');
     // Centered container
     expect(html).toContain('container mx-auto px-4');
@@ -149,5 +155,57 @@ describe('TopHeader', () => {
     const html = await render(fullContact);
 
     expect(html).toMatchSnapshot();
+  });
+
+  // --- Change topheader-click-to-call-x-icon ---
+
+  it('renders the X social link with the official X brand logo (simple-icons:x), not lucide:twitter', async () => {
+    const html = await render(fullContact);
+
+    // The X anchor holds an <svg> whose data-icon is the brand logo name.
+    const xAnchor = html.match(/aria-label="X"[^]*?<\/a>/);
+    expect(xAnchor).not.toBeNull();
+    expect(xAnchor![0]).toContain('data-icon="simple-icons:x"');
+    expect(xAnchor![0]).not.toContain('data-icon="lucide:twitter"');
+    expect(html).not.toContain('data-icon="lucide:twitter"');
+  });
+
+  it('normalizes a phone number with spaces/separators to an E.164 tel: link (click-to-call regression)', async () => {
+    const html = await render({
+      phone: '+56 2 2907 9067',
+      social: { facebook: '', x: '', instagram: '', linkedin: '' },
+    });
+
+    // tel: href is E.164 (digits + single leading +), no spaces
+    expect(html).toContain('href="tel:+56229079067"');
+    // displayed text preserves the user-facing formatted number
+    expect(html).toContain('+56 2 2907 9067');
+  });
+
+  // --- Compact TopHeader vertical footprint (topheader-click-to-call-x-icon) ---
+
+  it('uses compact h-8 height (not h-9) to minimize vertical footprint', async () => {
+    const html = await render(fullContact);
+
+    // Root container (outermost region div) uses h-8 (32px) for a smaller
+    // footprint. The inner social icon cells still use h-9 — that is expected
+    // and out of scope for this change; we assert on the ROOT element only.
+    const regionMatch = html.match(/<div role="region"[^>]*class="([^"]*)"/);
+    expect(regionMatch).not.toBeNull();
+    const rootClasses = regionMatch![1];
+    expect(rootClasses).toContain('h-8');
+    expect(rootClasses).not.toContain('h-9');
+  });
+
+  it('has no root-level vertical margin/padding creating a gap before the Header', async () => {
+    const html = await render(fullContact);
+
+    // The root region div must NOT carry mt/mb/py/space-y that would separate
+    // it from the Header that follows in Layout.astro.
+    // Match only class attributes on the outer-most region div.
+    const regionMatch = html.match(/<div role="region"[^>]*class="([^"]*)"/);
+    expect(regionMatch).not.toBeNull();
+    const rootClasses = regionMatch![1];
+    expect(rootClasses).not.toMatch(/\b(mt-[0-9]|mb-[0-9]|py-[0-9]|space-y-[0-9])\b/);
   });
 });
