@@ -24,6 +24,8 @@ type PackageJson = {
 const REQUIRED_DEPS = [
   'astro-icon',
   '@iconify-json/lucide',
+  // Documented sole exception to the single-Lucide set rule (X brand logo).
+  '@iconify-json/simple-icons',
   '@fontsource/montserrat',
   '@fontsource/open-sans',
 ] as const;
@@ -71,12 +73,16 @@ describe('apps/web/package.json — obsolete icon sets removed (ui-refactor task
     });
   }
 
-  it('declares exactly one @iconify-json/* package (lucide)', () => {
+  it('declares only the authorized @iconify-json/* packages (lucide + simple-icons:X exception)', () => {
     const pkg = readPackageJson();
     const iconifyDecls = [
       ...Object.keys(pkg.dependencies ?? {}),
       ...Object.keys(pkg.devDependencies ?? {}),
     ].filter((name) => name.startsWith('@iconify-json/'));
-    expect(iconifyDecls).toEqual(['@iconify-json/lucide']);
+    // `simple-icons` is the sole documented exception to the single-Lucide
+    // set rule: Lucide lacks the current X brand logo (see
+    // docs/design/style-guide/README.md). See
+    // openspec/changes/topheader-click-to-call-x-icon.
+    expect(iconifyDecls).toEqual(['@iconify-json/lucide', '@iconify-json/simple-icons']);
   });
 });

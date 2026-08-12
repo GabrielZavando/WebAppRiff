@@ -11,7 +11,9 @@ import { join } from 'node:path';
  * - `docs/design/style-guide/README.md` debe documentar la tabla Lucide con
  *   las referencias usadas por los 5 componentes base y NO mencionar
  *   `material-symbols:`/`logos:` como sets autorizados.
- * - Ningún componente base declara un prefijo de icono distinto de `lucide:`.
+ * - Ningún componente base declara un prefijo de icono distinto de `lucide:`,
+ *   **excepto** `simple-icons:x` para el logo de marca de X (Twitter), la única
+ *   excepción documentada (Lucide no provee el logo actual de X).
  */
 
 const REPO_ROOT = fileURLToPath(new URL('../../../../..', import.meta.url));
@@ -41,10 +43,15 @@ const LUCIDE_REFS = [
   'lucide:menu',
   'lucide:x',
   'lucide:facebook',
-  'lucide:twitter',
   'lucide:instagram',
   'lucide:linkedin',
-];
+] as const;
+
+// The sole documented exception to the unique-Lucide set rule: the X (Twitter)
+// brand logo is not available in Lucide, so `simple-icons:x` is authorized
+// (see docs/design/style-guide/README.md). See
+// openspec/changes/topheader-click-to-call-x-icon.
+const EXCEPTION_REFS = ['simple-icons:x'] as const;
 
 // Any reference to the obsolete icon sets must be gone from both the
 // canonical docs and the base component sources.
@@ -54,9 +61,13 @@ describe('ui-refactor — catálogo de iconos: set único Lucide (task 6.2)', ()
   describe('docs/design/style-guide/README.md documenta el set Lucide', () => {
     const readme = readStyleGuideReadme();
 
-    it('menciona las referencias lucide:* de los 5 componentes', () => {
+    it('menciona las referencias lucide:* de los 5 componentes y la excepción simple-icons:x', () => {
       for (const ref of LUCIDE_REFS) {
         expect(readme, `README debe documentar ${ref}`).toContain(ref);
+      }
+      // La excepción documentada para el logo de X.
+      for (const ref of EXCEPTION_REFS) {
+        expect(readme, `README debe documentar la excepción ${ref}`).toContain(ref);
       }
     });
 
@@ -65,7 +76,7 @@ describe('ui-refactor — catálogo de iconos: set único Lucide (task 6.2)', ()
     });
   });
 
-  describe('componentes base usan exclusivamente el prefijo lucide:', () => {
+  describe('componentes base usan exclusivamente el prefijo lucide: (con excepción simple-icons:x)', () => {
     for (const name of BASE_COMPONENTS) {
       it(`${name} no referencia material-symbols: ni logos:`, () => {
         const src = readComponentSource(name);
@@ -75,7 +86,7 @@ describe('ui-refactor — catálogo de iconos: set único Lucide (task 6.2)', ()
         ).not.toMatch(OBSOLETE_PREFIXES);
       });
 
-      it(`${name} solo usa <Icon name="lucide:*"> o mapeos con valores lucide:*`, () => {
+      it(`${name} usa <Icon name="lucide:*"> en etiquetas literales (excluye mapeos dinámicos)`, () => {
         const src = readComponentSource(name);
         const iconTags = src.match(/<\s*Icon\b[^>]*>/g) ?? [];
         for (const tag of iconTags) {
@@ -86,6 +97,21 @@ describe('ui-refactor — catálogo de iconos: set único Lucide (task 6.2)', ()
             );
           }
         }
+      });
+    }
+
+    // The sole documented exception: the X social icon must use simple-icons:x
+    // in both TopHeader and Footer (cross-component consistency, design.md § D4).
+    const EXCEPTION_COMPONENTS = ['TopHeader.astro', 'Footer.astro'];
+    for (const name of EXCEPTION_COMPONENTS) {
+      it(`${name} mapea X a simple-icons:x (logo oficial X)`, () => {
+        const src = readComponentSource(name);
+        expect(src, `${name} must map X to simple-icons:x`).toContain(
+          "X: 'simple-icons:x'",
+        );
+        expect(src, `${name} must not use lucide:twitter for X`).not.toContain(
+          "X: 'lucide:twitter'",
+        );
       });
     }
   });
