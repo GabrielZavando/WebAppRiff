@@ -1,20 +1,56 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Header > matches the snapshot for full header 1`] = `
-"<!-- Main site header: logo, desktop navigation, quote CTA and mobile toggle. --><header class="text-white bg-linear-to-r from-secondary to-secondary-light"><div class="container mx-auto px-4 h-24 flex items-center justify-between gap-4"><a href="/" aria-label="Ir al inicio" class="shrink-0"><!-- TODO[site-header-scroll-animations]: logo shrinks on scroll in a future change --><img src="/_image?href=%2F%40fs%2Fhome%2Fgabriel%2FClientes%2FRiff%2FWebApp%2Fapps%2Fweb%2Fsrc%2Fassets%2Fimg%2Flogo-web.webp%3ForigWidth%3D600%26origHeight%3D243%26origFormat%3Dwebp&amp;w=165&amp;h=67&amp;f=webp" data-image-component="true" alt="Riff" loading="lazy" decoding="async" width="165" height="67" class="h-auto w-[165px]"></a><nav aria-label="Navegación principal" class="hidden lg:flex items-center gap-1"><a href="/" aria-current="page" class="px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wide transition-colors relative text-white after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-0.5 after:bg-primary">Inicio</a><a href="/nosotros" class="px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wide transition-colors relative text-white/80 hover:text-white">Nosotros</a><a href="/servicios" class="px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wide transition-colors relative text-white/80 hover:text-white">Servicios</a><a href="/representaciones" class="px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wide transition-colors relative text-white/80 hover:text-white">Representaciones</a><a href="/contacto" class="px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wide transition-colors relative text-white/80 hover:text-white">Contacto</a></nav><a href="/cotizacion" class="hidden sm:inline-flex items-center bg-accent hover:bg-accent-dark text-white font-heading font-semibold uppercase text-xs tracking-wide px-6 py-3 transition-colors whitespace-nowrap">SOLICITAR COTIZACIÓN</a><button type="button" data-menu-toggle aria-controls="mobile-nav" aria-expanded="false" aria-label="Abrir menú" class="lg:hidden p-2 text-white"><svg width="1em" height="1em" class="h-6 w-6" data-icon="lucide:menu"><symbol id="ai:lucide:menu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5h16M4 12h16M4 19h16"/></symbol><use href="#ai:lucide:menu"></use></svg><svg width="1em" height="1em" class="h-6 w-6 hidden" data-icon="lucide:x"><symbol id="ai:lucide:x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6L6 18M6 6l12 12"/></symbol><use href="#ai:lucide:x"></use></svg></button></div><div id="mobile-nav" hidden class="lg:hidden border-t border-white/10 px-4 py-4 bg-secondary-light"><nav aria-label="Navegación móvil" class="flex flex-col gap-2"><a href="/" aria-current="page" class="px-3 py-2 font-heading font-semibold text-white/90 hover:bg-white/10">Inicio</a><a href="/nosotros" class="px-3 py-2 font-heading font-semibold text-white/90 hover:bg-white/10">Nosotros</a><a href="/servicios" class="px-3 py-2 font-heading font-semibold text-white/90 hover:bg-white/10">Servicios</a><a href="/representaciones" class="px-3 py-2 font-heading font-semibold text-white/90 hover:bg-white/10">Representaciones</a><a href="/contacto" class="px-3 py-2 font-heading font-semibold text-white/90 hover:bg-white/10">Contacto</a></nav></div></header><script>
-  // Toggles the mobile navigation panel: swaps aria-expanded, the accessible
-  // label and the visible icon, and shows/hides the panel.
+"<!-- Main site header: logo (2x with overflow), right-aligned desktop nav with
+     CTA as the last item, and a fullscreen mobile overlay with slide animation. --><header data-menu-open="false" class="text-white bg-linear-to-r from-secondary to-secondary-light"><div class="container mx-auto px-4 h-24 flex items-center justify-between gap-4"><!-- Logo: rendered at 2x (330x134), overflow-visible so the header
+         container (h-24) does not grow -- the logo may visually extend
+         beyond the header height without displacing sibling elements. --><a href="/" aria-label="Ir al inicio" class="shrink-0 h-24 overflow-visible"><!-- TODO[site-header-scroll-animations]: logo shrinks on scroll in a future change --><img src="/_image?href=%2F%40fs%2Fhome%2Fgabriel%2FClientes%2FRiff%2FWebApp%2Fapps%2Fweb%2Fsrc%2Fassets%2Fimg%2Flogo-web.webp%3ForigWidth%3D600%26origHeight%3D243%26origFormat%3Dwebp&amp;w=330&amp;h=134&amp;f=webp" data-image-component="true" alt="Riff" loading="lazy" decoding="async" width="330" height="134" class="block h-auto w-[330px]"></a><!-- Desktop nav: right-aligned (ml-auto), includes the CTA as the last item.
+         The CTA keeps its bg-accent styling; only the old standalone visibility
+         utility (hidden sm:inline-flex) is removed since the nav's own
+         responsive classes now control visibility. --><nav aria-label="Navegación principal" class="hidden lg:flex items-center gap-1 ml-auto"><a href="/" aria-current="page" class="px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wide transition-colors relative text-white after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-[3px] after:bg-primary">Inicio</a><a href="/productos" class="px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wide transition-colors relative text-white/80 hover:text-white">Productos</a><a href="/servicios" class="px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wide transition-colors relative text-white/80 hover:text-white">Servicios</a><a href="/marcas" class="px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wide transition-colors relative text-white/80 hover:text-white">Marcas</a><a href="/contacto" class="px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wide transition-colors relative text-white/80 hover:text-white">Contacto</a><!-- CTA as the last nav item: styles unchanged (bg-accent), now inside the <nav>. --><a href="/cotizacion" class="inline-flex items-center bg-accent hover:bg-accent-dark text-white font-heading font-semibold uppercase text-xs tracking-wide px-6 py-3 transition-colors whitespace-nowrap">SOLICITAR COTIZACIÓN</a></nav><!-- Mobile toggle: fixed so it is always visible above the fullscreen
+         overlay (z-50 > overlay z-40). Icon color adapts via CSS driven by
+         data-menu-open on <header>: white on navy header (closed), secondary
+         on white overlay (open). --><button type="button" data-menu-toggle aria-controls="mobile-nav" aria-expanded="false" aria-label="Abrir menú" class="fixed top-6 right-6 z-50 lg:hidden p-2 transition-colors duration-200"><svg width="1em" height="1em" class="h-6 w-6" data-icon="lucide:menu"><symbol id="ai:lucide:menu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5h16M4 12h16M4 19h16"/></symbol><use href="#ai:lucide:menu"></use></svg><svg width="1em" height="1em" class="h-6 w-6 hidden" data-icon="lucide:x"><symbol id="ai:lucide:x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6L6 18M6 6l12 12"/></symbol><use href="#ai:lucide:x"></use></svg></button></div><!-- Mobile menu: fullscreen overlay (100vw x 100vh) with white background.
+       Slides in from the right via CSS transform driven by data-menu-open on
+       the <header>. Shows only the menu items + CTA. --><div id="mobile-nav" class="fixed inset-0 bg-white z-40 lg:hidden flex flex-col items-center justify-center gap-8 transition-transform duration-300 ease-in-out"><nav aria-label="Navegación móvil" class="flex flex-col items-center justify-center gap-6"><a href="/" aria-current="page" class="font-heading font-semibold text-base transition-colors relative text-primary after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-[3px] after:bg-primary">Inicio</a><a href="/productos" class="font-heading font-semibold text-base transition-colors relative text-secondary hover:text-primary">Productos</a><a href="/servicios" class="font-heading font-semibold text-base transition-colors relative text-secondary hover:text-primary">Servicios</a><a href="/marcas" class="font-heading font-semibold text-base transition-colors relative text-secondary hover:text-primary">Marcas</a><a href="/contacto" class="font-heading font-semibold text-base transition-colors relative text-secondary hover:text-primary">Contacto</a><!-- CTA as the last mobile nav item: same bg-accent styling. --><a href="/cotizacion" class="inline-flex items-center bg-accent hover:bg-accent-dark text-white font-heading font-semibold uppercase text-xs tracking-wide px-6 py-3 transition-colors whitespace-nowrap">SOLICITAR COTIZACIÓN</a></nav></div></header><!-- CSS state rules: data-menu-open attribute drives the overlay slide
+     transform and the toggle button color. Scoped via is:inline (no global
+     side effects). --><style>
+  header[data-menu-open="false"] #mobile-nav {
+    transform: translateX(100%);
+    pointer-events: none;
+  }
+  header[data-menu-open="true"] #mobile-nav {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  /* Toggle button: white on navy header (closed) -> secondary on white overlay (open) */
+  header[data-menu-open="false"] [data-menu-toggle] {
+    color: var(--color-white);
+  }
+  header[data-menu-open="true"] [data-menu-toggle] {
+    color: var(--color-secondary);
+    background-color: var(--color-white);
+  }
+</style><script>
+  // Toggles the mobile navigation overlay:
+  // - aria-expanded/aria-label on the toggle button (accessibility)
+  // - data-menu-open on the header element (drives CSS: panel slide, button color)
+  // - body scroll lock (prevents scroll-through on fullscreen overlay)
   document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
     button.addEventListener('click', () => {
-      const expanded = button.getAttribute('aria-expanded') === 'true';
-      button.setAttribute('aria-expanded', String(!expanded));
-      button.setAttribute('aria-label', expanded ? 'Abrir menú' : 'Cerrar menú');
+      const isOpen = button.getAttribute('aria-expanded') === 'true';
+      const newState = !isOpen;
 
-      const panel = document.getElementById(button.getAttribute('aria-controls') || '');
-      if (panel) {
-        panel.toggleAttribute('hidden');
+      button.setAttribute('aria-expanded', String(newState));
+      button.setAttribute('aria-label', newState ? 'Cerrar menú' : 'Abrir menú');
+
+      const header = button.closest('header');
+      if (header) {
+        header.setAttribute('data-menu-open', String(newState));
+        document.body.style.overflow = newState ? 'hidden' : '';
       }
 
+      // Swap hamburger <-> X icon
       button.querySelectorAll('svg').forEach((icon) => icon.classList.toggle('hidden'));
     });
   });

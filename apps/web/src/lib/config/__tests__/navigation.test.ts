@@ -17,9 +17,9 @@ describe('NAVIGATION_ITEMS', () => {
   it('contains the 5 menu items in the declared order', () => {
     expect(NAVIGATION_ITEMS.map(item => item.label)).toEqual([
       'Inicio',
-      'Nosotros',
+      'Productos',
       'Servicios',
-      'Representaciones',
+      'Marcas',
       'Contacto',
     ]);
   });
@@ -27,9 +27,9 @@ describe('NAVIGATION_ITEMS', () => {
   it('declares the expected hrefs', () => {
     expect(NAVIGATION_ITEMS.map(item => item.href)).toEqual([
       '/',
-      '/nosotros',
+      '/productos',
       '/servicios',
-      '/representaciones',
+      '/marcas',
       '/contacto',
     ]);
   });
@@ -45,15 +45,15 @@ describe('isActive', () => {
   });
 
   it('marks a section active on exact match', () => {
-    expect(isActive('/nosotros', '/nosotros')).toBe(true);
+    expect(isActive('/productos', '/productos')).toBe(true);
   });
 
   it('marks a section active on nested child paths', () => {
-    expect(isActive('/nosotros', '/nosotros/equipo')).toBe(true);
+    expect(isActive('/productos', '/productos/categoria')).toBe(true);
   });
 
   it('does not match a partial prefix', () => {
-    expect(isActive('/nosotros', '/nosotr')).toBe(false);
+    expect(isActive('/productos', '/producto')).toBe(false);
   });
 });
 

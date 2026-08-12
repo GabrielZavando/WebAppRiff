@@ -10,7 +10,12 @@ async function renderHeroLayout(): Promise<string> {
       hero: true,
     },
   });
-  return html.replace(/<!--[\s\S]*?-->/g, '');
+  // Strip HTML comments and <style>/<script> blocks so `<header>` text inside
+  // component inline comments does not produce false-positive landmark counts.
+  return html
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<style[\s\S]*?<\/style>/g, '')
+    .replace(/<script[\s\S]*?<\/script>/g, '');
 }
 
 async function renderDefaultLayout(): Promise<string> {
@@ -18,7 +23,10 @@ async function renderDefaultLayout(): Promise<string> {
   const html = await container.renderToString(Layout, {
     props: { title: 'Riff Catálogo Digital' },
   });
-  return html.replace(/<!--[\s\S]*?-->/g, '');
+  return html
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<style[\s\S]*?<\/style>/g, '')
+    .replace(/<script[\s\S]*?<\/script>/g, '');
 }
 
 describe('Layout — hero shell (home full-viewport background)', () => {
