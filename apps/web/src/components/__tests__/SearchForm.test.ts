@@ -389,3 +389,11 @@ describe('SearchForm — transparent mode (home hero full-bleed background)', ()
     assertNoRounded(getButton(html), 'button');
   });
 });
+
+describe('SearchForm — compact scroll state class (site-header-scroll-animations)', () => {
+  it('adds site-search to the role="search" wrapper', async () => {
+    const html = await render();
+    const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
+    expect(wrapper).toContain('site-search');
+  });
+});

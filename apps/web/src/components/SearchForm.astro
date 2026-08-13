@@ -44,7 +44,7 @@ function isSelected(categoryId: string): boolean {
 <div
   role="search"
   aria-label="Buscar productos"
-  class:list={transparent ? 'bg-transparent' : 'bg-white border-b border-border'}
+  class:list={['site-search', transparent ? 'bg-transparent' : 'bg-white border-b border-border']}
 >
   <!-- Inner container: 760px max-width centered. `px-4` adds horizontal
        breathing room on mobile so the form doesn't touch the screen edges;

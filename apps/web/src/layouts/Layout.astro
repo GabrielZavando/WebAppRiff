@@ -90,10 +90,24 @@ const searchFormProps: SearchFormProps = {
     }
     <div class:list={['w-full', hero && 'relative z-10 flex flex-col min-h-screen']}>
       <TopHeader contact={contact} transparent={hero} />
-      <Header {...headerProps} transparent={hero} />
-      <SearchForm {...searchFormProps} transparent={hero} />
+      {/* Sticky group: Header + SearchForm stay fixed at the top on scroll.
+          TopHeader scrolls away (not part of the sticky group). z-30 keeps the
+          group above page content while staying below the mobile menu
+          overlay (z-40) and toggle (z-50) defined inside Header. */}
+      <div class="sticky top-0 z-30 header-scroll-shell">
+        <Header {...headerProps} transparent={hero} />
+        <SearchForm {...searchFormProps} transparent={hero} />
+      </div>
       <slot />
       <Footer {...SITE_FOOTER_CONTENT} />
     </div>
+
+    <!-- Compact scroll state: toggles `data-scrolled` on <body> on scroll.
+         Imported (not inline) so `initHeaderScrollState` stays tree-shakeable
+         and testable in lib/. -->
+    <script>
+      import { initHeaderScrollState } from '@/lib/scroll/createHeaderScrollState';
+      initHeaderScrollState();
+    </script>
   </body>
 </html>

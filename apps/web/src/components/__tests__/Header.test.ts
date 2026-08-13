@@ -266,6 +266,22 @@ describe('Header', () => {
     expect(html).toMatchSnapshot();
   });
 
+  describe('compact scroll state classes (site-header-scroll-animations)', () => {
+    it('adds site-header to the <header> and site-header__inner to its content container', async () => {
+      const html = await render();
+      const headerTag = html.match(/<header[^>]*>/)?.[0] ?? '';
+      expect(headerTag).toContain('site-header');
+      // The inner content container lifts above the compact navy overlay.
+      expect(html).toMatch(/<div[^>]*class="[^"]*site-header__inner[^"]*"[^>]*>/);
+    });
+
+    it('adds site-logo to the logo image', async () => {
+      const html = await render();
+      const logoImg = html.match(/<img[^>]*alt="Riff"[^>]*>/)?.[0] ?? '';
+      expect(logoImg).toContain('site-logo');
+    });
+  });
+
   describe('transparent mode (home hero full-bleed background)', () => {
     it('removes the brand navy gradient background in transparent mode', async () => {
       const html = await renderTransparent();

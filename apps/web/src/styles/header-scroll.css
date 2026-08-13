@@ -1,0 +1,94 @@
+/* ─────────────────────────────────────────────────────────────────────
+ * Compact scroll state for the site header group (Header + SearchForm).
+ *
+ * Driven by `body[data-scrolled="true"]`, toggled by
+ * `lib/scroll/createHeaderScrollState.ts` on scroll. The color target is the
+ * `--color-secondary` token (#1F2D40) — never a raw hex (frontend-standards).
+ *
+ * Strategy for a smooth, elegant transition:
+ *  - Header: a fading `::after` overlay (navy, opacity 0 → 1) crossfades from
+ *    its starting background (transparent on the hero, navy gradient elsewhere)
+ *    to solid secondary without an abrupt gradient pop.
+ *  - SearchForm: a simple `background-color` transition (white → secondary).
+ *  - Logo: `max-width` transition (300px → 200px desktop, 200px → 150px mobile).
+ *  - Sticky shell: a drop-shadow (`--shadow-4`) appears in the compact state and
+ *    is removed at the top.
+ *  - `prefers-reduced-motion`: transitions disabled.
+ * ───────────────────────────────────────────────────────────────────── */
+
+/* Header root: establishes a stacking context for the overlay without becoming
+ * a containing block for the fixed mobile menu (no transform/filter). */
+.site-header {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Fading navy fill. Painted behind the header content (z-index: -1) but still
+ * inside the header's isolated stacking context, so it covers the header's own
+ * background (gradient/transparent) without covering the content, the mobile
+ * overlay (#mobile-nav, z-40) or the toggle (z-50). `pointer-events: none`
+ * keeps it non-interactive. */
+.site-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-secondary);
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
+  pointer-events: none;
+  z-index: -1;
+}
+
+body[data-scrolled='true'] .site-header::after {
+  opacity: 1;
+}
+
+/* Search bar: white → solid secondary (smooth bg-color transition). */
+.site-search {
+  transition: background-color 300ms ease-in-out;
+}
+
+body[data-scrolled='true'] .site-search {
+  background-color: var(--color-secondary);
+}
+
+/* Logo: shrink on scroll — 300px → 200px (desktop ≥640px), 200px → 150px (mobile). */
+.site-logo {
+  transition: max-width 300ms ease-in-out;
+}
+
+body[data-scrolled='true'] .site-logo {
+  max-width: 150px;
+}
+
+@media (min-width: 640px) {
+  body[data-scrolled='true'] .site-logo {
+    max-width: 200px;
+  }
+}
+
+/* Sticky shell: a drop-shadow gives the fixed Header+Search group elevation and
+ * separation from page content. Only present in the compact state; removed at
+ * the top (scrollTop === 0) so the page reads as flat when not scrolled.
+ * The design-system token `--shadow-4` (alpha 0.12) was too faint to read,
+ * especially against the dark hero image shown beneath the pinned header, so we
+ * use a more pronounced elevation here. No raw hex (frontend-standards): an
+ * rgba built from the brand-dark color. */
+.header-scroll-shell {
+  --scroll-shell-shadow: 0 10px 30px rgba(22, 32, 46, 0.3);
+  transition: box-shadow 300ms ease-in-out;
+}
+
+body[data-scrolled='true'] .header-scroll-shell {
+  box-shadow: var(--scroll-shell-shadow);
+}
+
+/* Accessibility: honor reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  .site-header::after,
+  .site-search,
+  .site-logo,
+  .header-scroll-shell {
+    transition: none;
+  }
+}

@@ -18,6 +18,7 @@
 @import '@fontsource/open-sans/400-italic.css';
 
 @import "tailwindcss";
+@import "./header-scroll.css";
 
 @theme {
   /* ── Marca (13 tokens) ── */
