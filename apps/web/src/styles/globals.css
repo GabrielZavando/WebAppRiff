@@ -76,6 +76,9 @@
   --shadow-3: 0 4px 12px rgba(22, 32, 46, .10);
   --shadow-4: 0 8px 20px rgba(22, 32, 46, .12);
   --shadow-5: 0 12px 28px rgba(22, 32, 46, .14);
+  /* Elevation reused by the compact header shell AND the PanelHome component
+     (documented flat-design exception — see style guide). */
+  --shadow-scroll-shell: 0 10px 30px rgba(22, 32, 46, 0.3);
 }
 
 @layer base {

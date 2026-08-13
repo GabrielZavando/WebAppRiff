@@ -75,12 +75,11 @@ body[data-scrolled='true'] .site-logo {
  * use a more pronounced elevation here. No raw hex (frontend-standards): an
  * rgba built from the brand-dark color. */
 .header-scroll-shell {
-  --scroll-shell-shadow: 0 10px 30px rgba(22, 32, 46, 0.3);
   transition: box-shadow 300ms ease-in-out;
 }
 
 body[data-scrolled='true'] .header-scroll-shell {
-  box-shadow: var(--scroll-shell-shadow);
+  box-shadow: var(--shadow-scroll-shell);
 }
 
 /* Accessibility: honor reduced-motion preference. */

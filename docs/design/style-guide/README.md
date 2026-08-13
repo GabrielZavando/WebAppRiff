@@ -63,6 +63,8 @@ This file documents the canonical design tokens and icon catalog for the Riff Ca
 | `--shadow-5` | `0 12px 28px rgba(22,32,46,.14)` | Overlays fijos nivel máximo |
 
 > **Flat design principle (radio 0):** Estética flat estricta con ángulos rectos: `--radius: 0` y **prohibido** usar la utility `rounded*` (ninguna variante) en componentes, páginas o configs. Las superficies se separan por defecto con bordes 1px y color sólido. Las sombras se reservan exclusivamente para capas flotantes (dropdowns, menús, modales, overlays). Los componentes base (Header, TopHeader, HeroBanner, PanelHome, SearchForm) NO aplican `shadow*` en su estado estático.
+>
+> **Excepción documentada — PanelHome:** el grid principal interno del PanelHome (`<div class="grid grid-cols-1 lg:grid-cols-2">`, que envuelve las mitades teal + blanca) aplica la sombra de elevación `--shadow-scroll-shell` (`0 10px 30px rgba(22, 32, 46, 0.3)`) en estado estático, de forma permanente. Es la única excepción a la regla anterior: el panel se superpone al `HeroBanner` y la sombra lo separa visualmente como una capa flotante sobre el banner (ver change `panel-home-design-enhancements`). El `<section>` outermost NO lleva la sombra (es full-width y produciría una sombra sobre todo el viewport); la sombra va en el grid interno que delimita exactamente el card visible. El resto de componentes base mantiene la prohibición de `shadow*` en estado estático.
 
 ---
 
