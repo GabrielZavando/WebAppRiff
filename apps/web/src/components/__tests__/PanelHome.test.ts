@@ -251,6 +251,71 @@ describe('PanelHome — accessibility (task 2.17)', () => {
   });
 });
 
+describe('PanelHome — elevation, counter hooks & divider (tasks 3-4)', () => {
+  it('the floating card carries panel-home-elevated (box-shadow via --shadow-scroll-shell) and data-panel-card on the main grid', async () => {
+    const html = await render();
+    const cardMatch = html.match(/<div[^>]*data-panel-card[^>]*>/);
+    if (!cardMatch) throw new Error('data-panel-card not found');
+    const card = cardMatch[0];
+    expect(card).toContain('panel-home-elevated');
+    // The shadowed card is the main `grid-cols-1 lg:grid-cols-2` element,
+    // not the container wrapper, so the shadow hugs the teal+white panel.
+    expect(card).toContain('grid-cols-1');
+    expect(card).toContain('lg:grid-cols-2');
+  });
+
+  it('each stat value <p> carries data-stat-value and a data-target matching numericValue', async () => {
+    const html = await render();
+    const expected = baseProps.stats.map((s) => s.numericValue);
+    const targets = Array.from(html.matchAll(/data-target="(\d+)"/g)).map((m) =>
+      Number(m[1]),
+    );
+    expect(targets.length).toBe(expected.length);
+    expect(targets).toEqual(expected);
+    const statValueCount = countOccurrences(html, 'data-stat-value');
+    expect(statValueCount).toBe(expected.length);
+  });
+
+  it('the stats grid is wrapped in a stats-grid-wrap container with a bg-white 2x2 grid using gap-px (TERNION divider)', async () => {
+    const html = await render();
+    // The wrapper exposes the primary colour through the 1px gap so the
+    // divider lines reach edge-to-edge of the white half of the panel.
+    // We assert the wrapper class is present and a scoped CSS rule maps it
+    // to var(--color-primary); the actual `bg-primary` Tailwind utility is
+    // intentionally NOT used on the wrapper so pre-existing E2E locators
+    // like `div.bg-primary` continue to match only the left teal half.
+    const wrapMatch = html.match(
+      /<div[^>]*class="[^"]*relative[^"]*stats-grid-wrap[^"]*"[^>]*>/,
+    );
+    expect(wrapMatch).not.toBeNull();
+    const gridMatch = html.match(
+      /<div[^>]*class="[^"]*grid grid-cols-2 grid-rows-2 gap-px[^"]*"[^>]*>/,
+    );
+    expect(gridMatch).not.toBeNull();
+    // The white half carries no padding of its own (cells do) and is a
+    // flex column so the stats-grid-wrap can stretch to its full height.
+    // We assert the half-level wrapper matches these constraints and the
+    // wrapper itself uses `flex-1` so it fills the white half vertically.
+    const rightHalfOpen = html.indexOf('bg-white flex flex-col');
+    expect(rightHalfOpen).toBeGreaterThanOrEqual(0);
+    const rightHalfTagEnd = html.indexOf('>', rightHalfOpen);
+    const rightHalfOuter = html.slice(rightHalfOpen, rightHalfTagEnd + 1);
+    expect(rightHalfOuter).not.toContain('p-8');
+    expect(rightHalfOuter).not.toContain('p-12');
+    expect(rightHalfOuter).toContain('flex flex-col');
+    const wrapOpen = html.match(
+      /<div[^>]*class="[^"]*relative[^"]*stats-grid-wrap[^"]*flex-1[^"]*"[^>]*>/,
+    );
+    expect(wrapOpen).not.toBeNull();
+    // Each cell carries the padding that used to live on the wrapper.
+    const cellMatches =
+      html.match(
+        /<div[^>]*class="[^"]*bg-white p-8 md:p-12[^"]*"[^>]*>/g,
+      ) ?? [];
+    expect(cellMatches.length).toBe(4);
+  });
+});
+
 describe('PanelHome — snapshot (task 2.19)', () => {
   it('matches the snapshot for base props (task 2.19)', async () => {
     const html = await render();

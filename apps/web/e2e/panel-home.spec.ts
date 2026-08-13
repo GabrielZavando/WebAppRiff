@@ -82,8 +82,12 @@ test.describe('PanelHome (home about/trust panel)', () => {
     page,
   }) => {
     const panel = page.locator(PANEL_SECTION_SELECTOR);
+    // The right half is the `bg-white` wrapper that contains the stats grid.
+    // Since the panel-home-design-enhancements change split the white half
+    // into 4 `bg-white` cells (to form the 1px primary divider), we target
+    // the half-level wrapper via `:has(.stats-grid-wrap)`.
     const leftHalf = panel.locator('div.bg-primary');
-    const rightHalf = panel.locator('div.bg-white');
+    const rightHalf = panel.locator('div.bg-white:has(.stats-grid-wrap)');
     await expect(leftHalf).toBeVisible();
     await expect(rightHalf).toBeVisible();
 
@@ -137,7 +141,10 @@ test.describe('PanelHome (home about/trust panel)', () => {
 
     const panel = page.locator(PANEL_SECTION_SELECTOR);
     const leftHalf = panel.locator('div.bg-primary');
-    const rightHalf = panel.locator('div.bg-white');
+    // See 4.2 for why we target the half-level `bg-white` wrapper instead of
+    // any descendant `bg-white` (the 4 stat cells introduced by
+    // panel-home-design-enhancements also carry `bg-white`).
+    const rightHalf = panel.locator('div.bg-white:has(.stats-grid-wrap)');
 
     const leftBox = await leftHalf.boundingBox();
     const rightBox = await rightHalf.boundingBox();
@@ -368,5 +375,137 @@ test.describe('PanelHome (home about/trust panel)', () => {
     );
     const ratio = contrastRatio(textColor, bgColor);
     expect(ratio).toBeGreaterThanOrEqual(4.5); // WCAG AA Normal
+  });
+
+  test('floating card carries elevation box-shadow (static state, no scroll) (6.1)', async ({
+    page,
+  }) => {
+    const card = page.locator(PANEL_SECTION_SELECTOR).locator('[data-panel-card]');
+    await expect(card).toBeVisible();
+    const boxShadow = await card.evaluate(
+      (el) => window.getComputedStyle(el).boxShadow,
+    );
+    expect(boxShadow).not.toBe('none');
+    // Matches --shadow-scroll-shell: rgba(22, 32, 46, 0.3) 0 10px 30px.
+    expect(boxShadow).toContain('rgba(22, 32, 46, 0.3)');
+    expect(boxShadow).toContain('10px 30px');
+  });
+
+  test('counters count up from 0 to target exactly once when scrolled into view (6.2)', async ({
+    page,
+  }) => {
+    // Use a short viewport so the panel sits well below the fold and the
+    // IntersectionObserver does NOT fire during initial load — making the test
+    // deterministic regardless of how tall the hero banner is at 1280px.
+    await page.setViewportSize({ width: 1280, height: 400 });
+    await page.goto('/');
+
+    const stat = page
+      .locator(PANEL_SECTION_SELECTOR)
+      .locator('[data-stat-value]')
+      .first(); // target = 40 ("40+")
+    // SSR fallback shows the final value because the panel is below the fold.
+    await expect(stat).toHaveText('40+');
+    await expect(stat).not.toHaveAttribute('data-animated', 'true');
+
+    // Scroll into view → the one-shot observer fires and the count-up starts from 0.
+    await stat.scrollIntoViewIfNeeded();
+    // During the count-up the visible text must drop below the final value.
+    await expect(stat).not.toHaveText('40+', { timeout: 800 });
+    // Eventually it reaches the final value and stays there.
+    await expect(stat).toHaveText('40+', { timeout: 3000 });
+    // One-shot: scrolling away and back must NOT restart the animation.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(150);
+    await stat.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(400);
+    await expect(stat).toHaveText('40+');
+  });
+
+  test('decorative cross divider: 2x2 grid with 1px primary gap spanning edge-to-edge of the white half (6.3)', async ({
+    page,
+  }) => {
+    const wrap = page.locator(PANEL_SECTION_SELECTOR).locator('.stats-grid-wrap');
+    const grid = wrap.locator('div.grid').first();
+    const cells = grid.locator('> div');
+    await expect(cells).toHaveCount(4);
+
+    // The wrapper exposes the primary colour through the 1px gap so the
+    // divider lines reach edge-to-edge of the white half.
+    const wrapBg = await wrap.evaluate(
+      (el) => window.getComputedStyle(el).backgroundColor,
+    );
+    expect(wrapBg).toBe('rgb(65, 179, 196)'); // --color-primary
+
+    // The grid uses a 1px gap (both axes).
+    const gap = await grid.evaluate((el) => {
+      const cs = window.getComputedStyle(el);
+      return { col: cs.columnGap, row: cs.rowGap };
+    });
+    expect(gap.col).toBe('1px');
+    expect(gap.row).toBe('1px');
+
+    // Every cell is opaque white so only the gap shows the primary colour.
+    for (let i = 0; i < 4; i++) {
+      const cellBg = await cells.nth(i).evaluate(
+        (el) => window.getComputedStyle(el).backgroundColor,
+      );
+      expect(cellBg).toBe('rgb(255, 255, 255)');
+    }
+
+    // The four cells + gaps tile the wrapper: each row spans the wrapper
+    // height, each column spans the wrapper width (within sub-pixel tolerance).
+    const wrapBox = await wrap.boundingBox();
+    const boxes = await Promise.all(
+      (await cells.all()).map((c) => c.boundingBox()),
+    );
+    expect(wrapBox).toBeTruthy();
+    for (const b of boxes) {
+      expect(b).toBeTruthy();
+    }
+    // Two cells share the wrapper's width (cols 0,2 and 1,3 pair-wise) and
+    // each is roughly half the wrapper width minus the gap.
+    const expectedCol = (wrapBox!.width - 1) / 2;
+    const expectedRow = (wrapBox!.height - 1) / 2;
+    for (const b of boxes) {
+      expect(Math.abs(b!.width - expectedCol)).toBeLessThanOrEqual(1);
+      expect(Math.abs(b!.height - expectedRow)).toBeLessThanOrEqual(1);
+    }
+    // The vertical divider (gap between cols 0,1 and 2,3) spans the full
+    // height: cell 0 starts at the wrapper top and cell 2 ends at the bottom.
+    // Coordinates are absolute (viewport-relative), so subtract the wrapper
+    // origin to compare against the wrapper's own box.
+    const relY = (b: { x: number; y: number }) => ({
+      x: b.x - wrapBox!.x,
+      y: b.y - wrapBox!.y,
+    });
+    const cell0 = relY(boxes[0]!);
+    const cell1 = relY(boxes[1]!);
+    const cell2 = relY(boxes[2]!);
+    expect(cell0.y).toBeLessThanOrEqual(1);
+    expect(cell2.y + boxes[2]!.height).toBeGreaterThanOrEqual(
+      wrapBox!.height - 1,
+    );
+    // The horizontal divider (gap between rows 0,1 and 2,3) spans the full
+    // width: cell 0 starts at the wrapper left and cell 1 ends at the right.
+    expect(cell0.x).toBeLessThanOrEqual(1);
+    expect(cell1.x + boxes[1]!.width).toBeGreaterThanOrEqual(
+      wrapBox!.width - 1,
+    );
+  });
+
+  test('prefers-reduced-motion: counters do NOT animate (stay at SSR final value) (6.4)', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    const stat = page
+      .locator(PANEL_SECTION_SELECTOR)
+      .locator('[data-stat-value]')
+      .first();
+    await stat.scrollIntoViewIfNeeded();
+    // With reduced motion the count-up is skipped; text stays at the SSR final value.
+    await page.waitForTimeout(600);
+    await expect(stat).toHaveText('40+');
   });
 });

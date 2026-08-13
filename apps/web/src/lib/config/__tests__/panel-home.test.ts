@@ -13,6 +13,13 @@ describe('PANEL_HOME_CONTENT', () => {
     expect(last?.value).toBe('9+');
   });
 
+  it('each stat exposes numericValue (40, 30000, 5, 9) for the count-up animation (task 1.4)', () => {
+    const expected = [40, 30000, 5, 9];
+    PANEL_HOME_CONTENT.stats.forEach((stat, i) => {
+      expect(stat.numericValue).toBe(expected[i]);
+    });
+  });
+
   it('cta points to /contacto with label "SOLICITAR ASESORÍA TÉCNICA" and variant primary (task 1.5)', () => {
     expect(PANEL_HOME_CONTENT.cta.href).toBe('/contacto');
     expect(PANEL_HOME_CONTENT.cta.label).toBe('SOLICITAR ASESORÍA TÉCNICA');
