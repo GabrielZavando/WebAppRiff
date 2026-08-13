@@ -217,7 +217,7 @@ describe('SearchForm — submit button search icon', () => {
 });
 
 describe('SearchForm — component max-width & centering', () => {
-  it('constrains the form container to max-w-[860px] centered and removes the container utility', async () => {
+  it('constrains the form container to max-w-[760px] centered and removes the container utility', async () => {
     const html = await render();
     // The inner div is the direct parent of <form>; it carries the max-width + centering.
     const formMatch = html.match(/<form[\s\S]*?<\/form>/);
@@ -228,13 +228,19 @@ describe('SearchForm — component max-width & centering', () => {
     const beforeForm = html.slice(0, formStart);
     const divMatches = beforeForm.matchAll(/<div[^>]*>/g);
     const divsBeforeForm = [...divMatches].map((m) => m[0] ?? '');
-    // The closest preceding div is the container. It should have max-w-[860px] and NOT
+    // The closest preceding div is the container. It should have max-w-[760px] and NOT
     // the `container` utility (which would impose max-w-7xl = 1280px with padding).
     const containerDiv = divsBeforeForm[divsBeforeForm.length - 1] ?? '';
-    expect(containerDiv).toContain('max-w-[860px]');
+    expect(containerDiv).toContain('max-w-[760px]');
     expect(containerDiv).toContain('mx-auto');
     expect(containerDiv).not.toContain('container');
-    expect(containerDiv).not.toMatch(/px-[468]/);
+    // Mobile gets horizontal breathing room (px-4) removed at md (md:px-0) so
+    // the 860px box uses its full width on desktop. Only px-4 is allowed;
+    // px-6/px-8 would eat into the desktop width and are forbidden.
+    expect(containerDiv).toContain('px-4');
+    expect(containerDiv).toContain('md:px-0');
+    expect(containerDiv).not.toContain('px-6');
+    expect(containerDiv).not.toContain('px-8');
   });
 });
 

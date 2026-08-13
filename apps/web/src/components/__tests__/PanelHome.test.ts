@@ -39,14 +39,25 @@ describe('PanelHome — structure & outermost section (tasks 2.2, 2.3, 2.4)', ()
     expect(stripped.startsWith('<section')).toBe(true);
   });
 
-  it('the <section> carries a negative margin-top utility, relative, and z-10 (task 2.3)', async () => {
+  it('the <section> carries -mt-2 md:-mt-2 and an 8px desktop gap lg:mt-2 (panel sits 8px below banner, no overlap), relative, and z-10', async () => {
     const html = await render();
     const sectionMatch = html.match(/<section[^>]*>/);
     if (!sectionMatch) throw new Error('section not found');
     const section = sectionMatch[0];
-    expect(section).toMatch(/-mt-\d+/);
+    expect(section).toContain('-mt-2');
+    expect(section).toContain('md:-mt-2');
+    expect(section).toContain('lg:mt-2');
     expect(section).toContain('relative');
     expect(section).toContain('z-10');
+  });
+
+  it('the left (bg-primary) half uses reduced desktop padding lg:p-12 (not lg:p-16)', async () => {
+    const html = await render();
+    const tealDivMatch = html.match(/<div[^>]*class="[^"]*bg-primary[^"]*"[^>]*>/);
+    if (!tealDivMatch) throw new Error('bg-primary half not found');
+    const tealDiv = tealDivMatch[0];
+    expect(tealDiv).toContain('lg:p-12');
+    expect(tealDiv).not.toContain('lg:p-16');
   });
 
   it('the <section> contains a main grid with grid-cols-1 and lg:grid-cols-2 (task 2.4)', async () => {

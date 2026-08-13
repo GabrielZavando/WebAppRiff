@@ -202,19 +202,29 @@ describe('HeroBanner — content only (no background shell)', () => {
 });
 
 describe('HeroBanner — responsive typography & padding', () => {
-  it('the <h1> has responsive text size (text-4xl base + md:text-6xl)', async () => {
+  it('the <h1> has responsive text size (text-5xl base + md:text-7xl)', async () => {
     const html = await render();
     const h1Match = html.match(/<h1[^>]*>/);
     if (!h1Match) throw new Error('h1 not found');
-    expect(h1Match[0]).toContain('text-4xl');
-    expect(h1Match[0]).toContain('md:text-6xl');
+    expect(h1Match[0]).toContain('text-5xl');
+    expect(h1Match[0]).toContain('md:text-7xl');
   });
 
-  it('the content wrapper has responsive vertical padding (py-16 base + md:py-24)', async () => {
+  it('the content wrapper has asymmetric vertical padding with reduced top on mobile/tablet and larger top on desktop (pt-4 / md:pt-8 / lg:pt-24)', async () => {
     const html = await render();
-    // The content wrapper typically uses the container class with py-16 md:py-24
-    expect(html).toContain('py-16');
-    expect(html).toContain('md:py-24');
+    // The content wrapper uses split pt-*/pb-* padding: reduced top on mobile/tablet
+    // so the title/subtitle/CTAs sit higher in the initial viewport, while a larger
+    // desktop top padding (lg:pt-24) lowers the content within the full-height banner.
+    expect(html).toContain('pt-4');
+    expect(html).toContain('md:pt-8');
+    expect(html).toContain('lg:pt-24');
+    expect(html).toContain('pb-16');
+    expect(html).toContain('md:pb-24');
+    expect(html).toContain('lg:pb-32');
+    // The symmetric py-* utility is retired in favour of the asymmetric split.
+    expect(html).not.toContain('py-16');
+    expect(html).not.toContain('md:py-24');
+    expect(html).not.toContain('lg:py-32');
   });
 });
 

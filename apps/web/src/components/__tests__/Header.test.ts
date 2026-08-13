@@ -46,8 +46,18 @@ describe('Header', () => {
     // Logo rendered at 2x size (330×134, double of 165×67)
     expect(html).toContain('width="330"');
     expect(html).toContain('height="134"');
-    expect(html).toContain('w-[330px]');
-    // The <a> wrapper constrains height to h-24 with overflow-visible so the
+    // Logo uses a responsive max-width: scales proportionally up to 200px on
+    // mobile and 300px from the sm breakpoint upward (replaces fixed w-[330px]).
+    expect(html).toContain('w-full');
+    expect(html).toContain('max-w-[200px]');
+    expect(html).toContain('sm:max-w-[300px]');
+    // Wrapper height is responsive (shorter h-20 on mobile/tablet, h-24 on
+    // desktop) and the logo is height-capped so it cannot grow the header.
+    expect(html).toContain('h-20');
+    expect(html).toContain('lg:h-24');
+    expect(html).toContain('max-h-full');
+    expect(html).toContain('lg:max-h-none');
+    // The <a> wrapper constrains height with overflow-visible so the
     // oversized logo may visually overflow without growing the header container.
     expect(html).toContain('overflow-visible');
     // Placeholder must be gone
