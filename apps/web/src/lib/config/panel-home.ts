@@ -30,9 +30,9 @@ export const PANEL_HOME_CONTENT: Readonly<PanelHomeProps> = {
     variant: 'primary',
   },
   stats: [
-    { value: '40+', label: 'AÑOS DE EXPERIENCIA EN LA INDUSTRIA' },
-    { value: '30.000+', label: 'EQUIPOS Y SOLUCIONES IMPLEMENTADAS' },
-    { value: '5+', label: 'MARCAS GLOBALES REPRESENTADAS' },
-    { value: '9+', label: 'LÍNEAS DE SOLUCIONES INDUSTRIALES' },
+    { value: '40+', label: 'AÑOS DE EXPERIENCIA EN LA INDUSTRIA', numericValue: 40 },
+    { value: '30.000+', label: 'EQUIPOS Y SOLUCIONES IMPLEMENTADAS', numericValue: 30000 },
+    { value: '5+', label: 'MARCAS GLOBALES REPRESENTADAS', numericValue: 5 },
+    { value: '9+', label: 'LÍNEAS DE SOLUCIONES INDUSTRIALES', numericValue: 9 },
   ],
 };

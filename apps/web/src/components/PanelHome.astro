@@ -24,8 +24,17 @@ const { eyebrow, headline, description, cta, stats } = Astro.props;
     - `grid grid-cols-1 lg:grid-cols-2` main grid stacks on mobile (< 1024px),
       side-by-side on desktop (>= 1024px).
     - Left half (bg-primary): eyebrow, <h2> headline, description <p>, CTA <a>.
-    - Right half (bg-white): `grid-cols-2` 2x2 stats, each cell with <p> value
-      (navy bold) and <p> label (uppercase gray) — NO headings.
+    - Right half (bg-white): a flex column (`flex flex-col`) that stretches to
+      the height of the teal half (its sibling in the main grid) via
+      `align-items: stretch` on `grid-cols-1 lg:grid-cols-2`. Inside, a
+      `relative stats-grid-wrap flex-1` fills that height; the 2x2 grid uses
+      `grid-cols-2 grid-rows-2 gap-px h-full w-full` and the wrap carries
+      `background-color: var(--color-primary)` (scoped class) so the 1px gap
+      exposes the primary colour as edge-to-edge divider lines that reach
+      the actual top and bottom of the white half (TERNION). Each cell
+      carries `bg-white p-8 md:p-12 flex flex-col justify-center` and
+      renders a <p> value (navy bold) and <p> label (uppercase gray) — NO
+      headings.
 
   Accessibility (see design.md § Decision 6):
     - The panel headline is a <h2>, NOT a <h1> (the home page has exactly one
@@ -34,9 +43,9 @@ const { eyebrow, headline, description, cta, stats } = Astro.props;
     - The eyebrow is a <span> (decorative, uppercase), NOT a heading.
     - The stat values/labels are <p> elements, NOT headings.
 -->
-<section class="relative -mt-2 md:-mt-2 lg:mt-2 z-10">
+<section class="relative -mt-2 md:-mt-2 lg:mt-2 z-10" data-panel-home>
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 lg:grid-cols-2">
+    <div class="grid grid-cols-1 lg:grid-cols-2 panel-home-elevated" data-panel-card>
       <!--
         Left half — teal background with copy and the navy CTA. The CTA is
         navy (not teal) so it contrasts against the panel background (design.md
@@ -68,23 +77,68 @@ const { eyebrow, headline, description, cta, stats } = Astro.props;
         at `grid-cols-2` on every viewport (design.md § Decision 3); the stat
         values are short enough that they don't break at 320px (validated by
         E2E 4.6).
+
+        Padding lives on the cells, not on the wrapper, so the 1px primary
+        divider lines (formed by `gap-px` + the scoped `bg-primary` colour on
+        the wrap, with `bg-white` cells covering the rest) span edge-to-edge
+        of the white half of the panel. The wrapper uses `flex-1` (and the
+        outer `bg-white` is `flex flex-col`) so it stretches to the full
+        height of the white half — guaranteeing the vertical divider line
+        reaches top and bottom.
       -->
-      <div class="bg-white p-8 md:p-12">
-        <div class="grid grid-cols-2 gap-x-8 gap-y-12">
-          {
-            stats.map((stat) => (
-              <div>
-                <p class="text-3xl md:text-4xl font-heading font-bold text-secondary">
-                  {stat.value}
-                </p>
-                <p class="mt-2 text-xs md:text-sm uppercase tracking-wide text-text-2">
-                  {stat.label}
-                </p>
-              </div>
-            ))
-          }
+      <div class="bg-white flex flex-col">
+        <div class="relative stats-grid-wrap flex-1">
+          <div class="grid grid-cols-2 grid-rows-2 gap-px h-full w-full">
+            {
+              stats.map((stat) => (
+                <div class="bg-white p-8 md:p-12 flex flex-col justify-center">
+                  <p
+                    class="text-3xl md:text-4xl font-heading font-bold text-secondary"
+                    data-stat-value=""
+                    data-target={stat.numericValue}
+                  >
+                    {stat.value}
+                  </p>
+                  <p class="mt-2 text-xs md:text-sm uppercase tracking-wide text-text-2">
+                    {stat.label}
+                  </p>
+                </div>
+              ))
+            }
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  /* Elevation: the teal+white card (the main `grid-cols-1 lg:grid-cols-2`
+     panel) floats over the HeroBanner below it. Documented flat-design
+     exception (see style guide + design.md TERNION). */
+  .panel-home-elevated {
+    box-shadow: var(--shadow-scroll-shell);
+  }
+
+  /* The stats grid wrapper carries the primary colour behind a `gap-px` grid
+     so the 1px gap exposes it as edge-to-edge divider lines between white
+     cells (TERNION). Kept as a scoped class (rather than the `bg-primary`
+     utility) so pre-existing E2E locators like `div.bg-primary` continue to
+     match only the left teal half. */
+  .stats-grid-wrap {
+    background-color: var(--color-primary);
+  }
+</style>
+
+<script>
+  import { initCounterAnimation } from '@/lib/anim/createCounterAnimation';
+
+  // Animate the stat counters once, the first time they scroll into view.
+  const statElements = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-stat-value]'),
+  );
+
+  if (statElements.length > 0) {
+    initCounterAnimation({ elements: statElements });
+  }
+</script>

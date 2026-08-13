@@ -27,6 +27,13 @@ export interface PanelStat {
   readonly value: string;
   /** Short uppercase caption, e.g. "AÑOS DE EXPERIENCIA EN LA INDUSTRIA". */
   readonly label: string;
+  /**
+   * Integer target for the count-up animation (e.g. 40 for "40+", 30000 for
+   * "30.000+"). Kept separate from `value` so the animation can interpolate
+   * numerically without parsing the formatted display string (es-ES thousands
+   * separator + "+" suffix). See design.md Decision 4.
+   */
+  readonly numericValue: number;
 }
 
 /**
