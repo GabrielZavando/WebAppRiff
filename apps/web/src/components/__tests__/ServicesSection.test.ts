@@ -28,11 +28,12 @@ describe('ServicesSection — structure & outermost section', () => {
     expect(sectionMatch[0]).toMatch(/md:py-\d+/);
   });
 
-  it('the <section> carries the dark navy background token bg-secondary-dark', async () => {
+  it('the <section> carries the deep teal background token bg-primary-deep', async () => {
     const html = await render();
     const sectionMatch = html.match(/<section[^>]*>/);
     if (!sectionMatch) throw new Error('section not found');
-    expect(sectionMatch[0]).toContain('bg-secondary-dark');
+    expect(sectionMatch[0]).toContain('bg-primary-deep');
+    expect(sectionMatch[0]).not.toContain('bg-secondary-dark');
   });
 
   it('the <section> contains a canonical container inner div', async () => {
