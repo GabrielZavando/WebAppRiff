@@ -15,9 +15,12 @@ const { headline, ctaText, ctaHref, products } = Astro.props;
 
   Layout (see openspec/changes/destacados-section/design.md § Decisions):
     - The <section> is a flat block (NO negative margin / overlap):
-      `py-16 md:py-24` vertical air and `bg-primary-deep` background (#006874 —
-      POST-APPLY UPDATE: deep teal token added to both globals.css mirrors)
-      form a hard color transition from the light `bg-bg` ServicesSection above
+      `py-16 md:py-24` vertical air and `bg-secondary-dark` background
+      (dark navy — POST-APPLY UPDATE in `site-favicon-and-bg-swap`: token
+      swapped from `bg-primary-deep` to `bg-secondary-dark` so the
+      destacados block becomes the navy anchor of the home, after the
+      teal `bg-primary-deep` of `ServicesSection` above) form a hard color
+      transition from the teal ServicesSection above to this navy block
       (Decision 6).
     - Inner `<div class="container mx-auto px-4 sm:px-6 lg:px-8">` constrains
       content to the same max-width as the sibling sections (token `.container`
@@ -45,7 +48,7 @@ const { headline, ctaText, ctaHref, products } = Astro.props;
       the section shows no prices).
 -->
 
-<section class="py-16 md:py-24 bg-primary-deep">
+<section class="py-16 md:py-24 bg-secondary-dark">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header row: headline left, accent CTA right (stacks on mobile) -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12">

@@ -17,7 +17,11 @@ const { headline, description, services, cta } = Astro.props;
   Layout (see design.md § Decisions):
     - The <section> is a flat dark block (NO negative margin / overlap —
       independent from PanelHome's overlap behavior): `py-16 md:py-24`
-      vertical air and `bg-secondary-dark` background create a hard color
+      vertical air and `bg-primary-deep` background (deep teal — POST-APPLY
+      UPDATE in `site-favicon-and-bg-swap`: token swapped from
+      `bg-secondary-dark` to `bg-primary-deep` so the services block reads
+      as the prominent teal band of the home, before the navy
+      `bg-secondary-dark` of `DestacadosSection` below) create a hard color
       transition from the light `bg-bg` of SolutionSection above
       (Decision 14). Inner `<div class="container ...">` constrains content
       to the same max-width as the other sections.
@@ -49,7 +53,7 @@ const { headline, description, services, cta } = Astro.props;
       (Decision 13).
 -->
 
-<section class="py-16 md:py-24 bg-secondary-dark">
+<section class="py-16 md:py-24 bg-primary-deep">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header: centered headline + description (no eyebrow, no underline) -->
     <div class="text-center mb-12">
