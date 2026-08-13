@@ -223,15 +223,17 @@ The submit button SHALL render a `lucide:search` icon (via `astro-icon` `<Icon>`
 - **WHEN** the search icon renders inside the button
 - **THEN** the `<Icon>` carries class `h-4` and `w-4` (16px × 16px)
 
-### Requirement: SearchForm inner container is constrained to 860px and centered
-The SearchForm SHALL constrain its form content area to a maximum width of 860px and center it horizontally. The inner container div (direct parent of `<form>`) SHALL carry `max-w-[860px]` and `mx-auto` and SHALL NOT carry the `container` utility (which applies `max-w-7xl` = 1280px with horizontal padding). The outer `role="search"` wrapper SHALL retain full viewport width with its background and border.
+### Requirement: SearchForm inner container is constrained to 760px and centered with mobile horizontal padding
+The SearchForm SHALL constrain its form content area to a maximum width of 760px and center it horizontally. The inner container div (direct parent of `<form>`) SHALL carry `max-w-[760px]` and `mx-auto` and SHALL NOT carry the `container` utility (which applies `max-w-7xl` = 1280px with horizontal padding). On mobile viewports, the inner container SHALL carry `px-4` horizontal padding so the form does not touch the screen edges; this padding SHALL be removed from the `md` breakpoint (>= 768px) upward via `md:px-0` so the 760px box uses its full width on desktop. The inner container SHALL NOT carry `px-6` or `px-8` (only `px-4` on mobile is allowed). The outer `role="search"` wrapper SHALL retain full viewport width with its background and border.
 
-#### Scenario: Inner container uses max-w-860px without padding
+#### Scenario: Inner container uses max-w-760px and mobile horizontal padding
 - **WHEN** the SearchForm renders
-- **THEN** the div directly wrapping `<form>` carries `max-w-[860px]`
+- **THEN** the div directly wrapping `<form>` carries `max-w-[760px]`
 - **AND** that div carries `mx-auto` (centered)
 - **AND** that div does NOT contain the `container` utility class (which is `max-w-7xl`)
-- **AND** that div does NOT contain `px-4`, `px-6`, or `px-8` (no horizontal padding)
+- **AND** that div carries `px-4` (16px horizontal padding on mobile)
+- **AND** that div carries `md:px-0` (padding removed from md breakpoint upward)
+- **AND** that div does NOT contain `px-6` or `px-8` (only px-4 on mobile is allowed)
 
 ### Requirement: Desktop controls separated by 1px horizontal gap
 When the three controls (select, input, button) render on the same horizontal row (viewport ≥ 768px, `md:flex-row`), they SHALL be separated by exactly 1px. The `<form>` element SHALL use `md:gap-px` (Tailwind `gap: 1px`) on the desktop breakpoint, while retaining `gap-3` (12px) on mobile for vertical stacking separation.
