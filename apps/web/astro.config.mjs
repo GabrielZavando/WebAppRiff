@@ -9,6 +9,7 @@ import astroIcon from 'astro-icon';
 export default defineConfig({
   site: process.env.SITE_URL || 'http://localhost:4321',
   output: 'static',
+  devToolbar: { enabled: false },
   integrations: [astroIcon()],
   vite: {
     plugins: [tailwindcss()],
