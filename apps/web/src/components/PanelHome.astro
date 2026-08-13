@@ -11,10 +11,12 @@ const { eyebrow, headline, description, cta, stats } = Astro.props;
   CTA and the 4 stats) comes via props spread from `PANEL_HOME_CONTENT` in
   `lib/config/panel-home.ts` by `apps/web/src/pages/index.astro`.
 
-  Layout (see design.md § Decisions 2, 4, 11, 12):
-    - Outermost <section> stays full-width but carries the negative margin-top +
-      `relative` + `z-10` so the panel overlaps the HeroBanner above it
-      (~25% over / 75% under, design.md Decision 11).
+  Layout (see design.md § Decisions 2, 4, 11, 12, 16, 17):
+    - Outermost <section> stays full-width and carries `relative` + `z-10`. On
+      mobile/tablet it uses a small negative margin-top (`-mt-2 md:-mt-2`) so the
+      panel overlaps the HeroBanner above it by 8px; on desktop it uses a positive
+      margin-top (`lg:mt-2`, 8px) so the panel sits 8px BELOW the banner (no
+      overlap) — a positive margin seats the panel lower than a negative one.
     - Inner `<div class="container mx-auto px-4 sm:px-6 lg:px-8">` constrains the
       visible panel (teal+white) to the same max-width as the SearchForm (token
       `.container` in globals.css), making the panel "float" over the banner and
@@ -32,7 +34,7 @@ const { eyebrow, headline, description, cta, stats } = Astro.props;
     - The eyebrow is a <span> (decorative, uppercase), NOT a heading.
     - The stat values/labels are <p> elements, NOT headings.
 -->
-<section class="relative -mt-8 md:-mt-12 lg:-mt-16 z-10">
+<section class="relative -mt-2 md:-mt-2 lg:mt-2 z-10">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 lg:grid-cols-2">
       <!--
@@ -43,7 +45,7 @@ const { eyebrow, headline, description, cta, stats } = Astro.props;
         Normal on the teal background (see design.md § Decision 10 post-apply
         update — TODO pending the `design-system-revision` change).
       -->
-      <div class="bg-primary p-8 md:p-12 lg:p-16">
+      <div class="bg-primary p-8 md:p-12 lg:p-12">
         <span class="block text-xs font-heading font-semibold uppercase tracking-wider text-white/80">
           {eyebrow}
         </span>

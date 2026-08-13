@@ -28,18 +28,25 @@ const logoAltText = logoAlt ?? 'Riff';
     transparent ? 'bg-transparent' : 'bg-linear-to-r from-secondary to-secondary-light',
   ]}
 >
-  <div class="container mx-auto px-4 h-24 flex items-center justify-between gap-4">
+  <div class="container mx-auto px-4 h-20 lg:h-24 flex items-center justify-between gap-4">
     <!-- Logo: rendered at 2x (330x134), overflow-visible so the header
          container (h-24) does not grow -- the logo may visually extend
          beyond the header height without displacing sibling elements. -->
-    <a href="/" aria-label="Ir al inicio" class="shrink-0 h-24 overflow-visible">
+    <a href="/" aria-label="Ir al inicio" class="shrink-0 h-20 lg:h-24 overflow-visible">
       <!-- TODO[site-header-scroll-animations]: logo shrinks on scroll in a future change -->
+      <!-- Logo: responsive max-width so it scales proportionally — 200px cap
+           on mobile, 300px cap from the sm breakpoint upward. `w-full` lets it
+           fill available width up to the cap while the `width`/`height` attrs
+           (330×134) preserve the aspect ratio for CLS. The wrapper is
+           `h-20 lg:h-24 overflow-visible`; `max-h-full` (dropped at `lg:max-h-none`)
+           caps the logo to the header height on small screens so it can never
+           grow the header, restoring the 2× overflow only on desktop. -->
       <Image
         src={logoImage}
         alt={logoAltText}
         width={330}
         height={134}
-        class="block h-auto w-[330px]"
+        class="block h-auto w-full max-w-[200px] sm:max-w-[300px] max-h-full lg:max-h-none"
       />
     </a>
 

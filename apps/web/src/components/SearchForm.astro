@@ -46,7 +46,10 @@ function isSelected(categoryId: string): boolean {
   aria-label="Buscar productos"
   class:list={transparent ? 'bg-transparent' : 'bg-white border-b border-border'}
 >
-  <div class="max-w-[860px] mx-auto py-4">
+  <!-- Inner container: 760px max-width centered. `px-4` adds horizontal
+       breathing room on mobile so the form doesn't touch the screen edges;
+       removed at `md` (md:px-0) so the 760px box uses its full width on desktop. -->
+  <div class="max-w-[760px] mx-auto py-4 px-4 md:px-0">
     <form
       method="get"
       action={config.action}

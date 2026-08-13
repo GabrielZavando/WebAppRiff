@@ -34,8 +34,14 @@ const shouldRenderHighlight = highlightedWord !== '' && before !== headline;
   the only <h1> on the home); the subtitle is an <h2> subordinate to it.
 -->
 <section class="relative">
-  <div class="relative container mx-auto py-16 md:py-24 lg:py-32">
-    <h1 class="text-4xl md:text-6xl font-heading font-bold text-white">
+  <!-- Content wrapper: asymmetric vertical padding. Top padding is reduced on
+     mobile/tablet (pt-4 / md:pt-8) so the title, subtitle and CTAs sit higher
+     and remain visible in the initial viewport; on desktop a larger top padding
+     (lg:pt-24) lowers the content block within the full-height banner per the
+     client's final review. Bottom padding (pb-16 / md:pb-24 / lg:pb-32) is
+     preserved to keep spacing before the overlapping PanelHome. -->
+<div class="relative container mx-auto pt-4 pb-16 md:pt-8 md:pb-24 lg:pt-24 lg:pb-32">
+    <h1 class="text-5xl md:text-7xl font-heading font-bold text-white">
       {before}{shouldRenderHighlight && <span class="text-primary">{highlightedWord}</span>}{after}
     </h1>
     <h2 class="mt-4 text-xl md:text-2xl font-heading font-semibold text-white/90 max-w-3xl">
