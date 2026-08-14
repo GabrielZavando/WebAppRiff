@@ -15,7 +15,11 @@ import { getSocialLinks } from '@/lib/types/top-header';
  * client, 2026-08-10) — see design.md § Decisions 5/10:
  * - SERVICIOS/EMPRESA link columns use placeholder `href="#"` (client
  *   decision): real routes are a future navigation change;
- * - schedule rows are label/value pairs rendered as a `<dl>`.
+ * - SERVICIOS labels updated 2026-08-14 to the real service offering
+ *   (see openspec change `footer-credits-scrollbar` § Decision 3);
+ * - schedule rows are label/value pairs rendered as a `<dl>`, with the
+ *   `scheduleTitle` prop sourced from config ("Horario de Atención") and
+ *   `hours` as an array of split-shift blocks (design.md § Decisions 2/3).
  *
  * The brand logo image (`logo-web.webp`) is deliberately NOT part of this
  * config: the `SiteFooterProps` contract has no image field (spec
@@ -53,10 +57,10 @@ export const SITE_FOOTER_CONTENT: Readonly<SiteFooterProps> = {
     {
       title: 'SERVICIOS',
       links: [
-        { label: 'Instalación de Medidores', href: '#' },
-        { label: 'Control de Agua Caliente', href: '#' },
-        { label: 'Puesta en Marcha Industrial', href: '#' },
-        { label: 'Obras Civiles Hidráulicas', href: '#' },
+        { label: 'Medición en Edificios', href: '#' },
+        { label: 'Medición Industrial', href: '#' },
+        { label: 'Obras y Proyectos', href: '#' },
+        { label: 'Tratamiento de Agua y Desalinización', href: '#' },
       ],
     },
     {
@@ -69,9 +73,16 @@ export const SITE_FOOTER_CONTENT: Readonly<SiteFooterProps> = {
       ],
     },
   ],
+  scheduleTitle: 'Horario de Atención',
   schedule: [
-    { days: 'Lunes a Jueves', hours: '09:00 a 18:00' },
-    { days: 'Viernes', hours: '09:00 a 17:00' },
+    {
+      days: 'Lunes a Jueves',
+      hours: ['9:00 a 13:00 hrs.', '14:00 a 18:00 hrs.'],
+    },
+    {
+      days: 'Viernes',
+      hours: ['9:00 a 13:00 hrs.', '14:00 a 17:00 hrs.'],
+    },
   ],
   scheduleNote: 'Soporte 24/7 disponible',
 };

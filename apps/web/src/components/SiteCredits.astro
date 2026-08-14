@@ -1,0 +1,41 @@
+---
+import type { SiteCreditsProps } from '@/lib/types/site-credits';
+
+interface Props extends SiteCreditsProps {}
+
+const { developerLabel, developerName, developerUrl } = Astro.props;
+---
+
+<!--
+  Developer attribution strip — rendered by `Layout.astro` directly below the
+  global `site-footer` (openspec change `footer-credits-scrollbar`).
+
+  Layout (see design.md § Decision 5):
+    - Outermost element spans the full viewport width (no `container` /
+      `max-w-*` constraint) — it is a thin full-width bar, not content.
+    - Background uses `bg-secondary` (one step above the footer's
+      `bg-secondary-dark` for visual separation).
+    - Small vertical padding (`py-2`) so it reads as a thin strip.
+    - Text is centered, `text-xs` to match the footer bottom bar scale.
+    - Strict flat design: no `rounded*`, no `shadow*` (static chrome).
+
+  The developer-name link:
+    - Never underlined (`no-underline`, no `hover:underline`).
+    - Animated subtly on hover via `transition-colors` +
+      `text-primary` → `hover:text-primary-light` (design tokens only).
+    - Opens externally: `target="_blank"` + `rel="noopener noreferrer"`.
+    - `aria-label` announces the external navigation to assistive tech.
+-->
+
+<div class="bg-secondary text-center py-2">
+  <span class="font-body text-xs text-muted">{developerLabel} </span>
+  <a
+    href={developerUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Gabriel Zavando — sitio web externo (abre en nueva pestaña)"
+    class="font-body text-xs text-primary no-underline transition-colors duration-200 hover:text-primary-light"
+  >
+    {developerName}
+  </a>
+</div>

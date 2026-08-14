@@ -8,7 +8,7 @@ import type { SocialNetworkName } from '@/lib/types/top-header';
 
 interface Props extends SiteFooterProps {}
 
-const { logoAlt, tagline, socialLinks, columns, schedule, scheduleNote } = Astro.props;
+const { logoAlt, tagline, socialLinks, columns, scheduleTitle, schedule, scheduleNote } = Astro.props;
 
 // Same icon map and accessibility pattern as TopHeader.astro — the site has a
 // single social presence across chrome (design.md § Decision 4). The X logo
@@ -32,7 +32,7 @@ const logoAltText = logoAlt || 'Riff';
     - Outermost <footer> spans the full viewport with the dark navy token
       `bg-secondary-dark`; content lives in the canonical `.container`.
     - Main zone: responsive grid `grid-cols-1 md:grid-cols-2 lg:grid-cols-4`
-      (brand | SERVICIOS | EMPRESA | HORARIO TÉCNICO).
+      (brand | SERVICIOS | EMPRESA | schedule column).
     - Brand column: logo image (same `logo-web.webp` as Header.astro, lazy —
       below the fold), tagline (muted), social icons filtered to configured
       URLs (design.md § Decision 4).
@@ -119,13 +119,17 @@ const logoAltText = logoAlt || 'Riff';
       <!-- Schedule column -->
       <div>
         <p class="font-heading text-sm font-bold uppercase tracking-wider text-primary">
-          HORARIO TÉCNICO
+          {scheduleTitle}
         </p>
         <dl class="mt-5 space-y-3">
           {schedule.map((entry) => (
             <div class="flex items-baseline justify-between gap-4">
               <dt class="font-body text-sm font-semibold text-white">{entry.days}</dt>
-              <dd class="font-body text-sm text-muted">{entry.hours}</dd>
+              <div class="space-y-1">
+                {entry.hours.map((h) => (
+                  <dd class="font-body text-sm text-muted">{h}</dd>
+                ))}
+              </div>
             </div>
           ))}
         </dl>

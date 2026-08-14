@@ -31,12 +31,17 @@ export interface FooterColumn {
   readonly links: readonly FooterLink[];
 }
 
-/** A single schedule row in the "HORARIO TÉCNICO" column. */
+/** A single schedule row in the schedule column (default title "Horario de Atención"). */
 export interface FooterScheduleEntry {
   /** Day range label, e.g. "Lunes a Jueves". */
   readonly days: string;
-  /** Hours text, e.g. "09:00 a 18:00". */
-  readonly hours: string;
+  /**
+   * Hour blocks for the day range, in render order. One or more blocks are
+   * allowed so a single day range can represent a split-shift schedule (e.g.
+   * morning + afternoon). Previously a single `string`; widened to an array
+   * in design.md § Decision 3.
+   */
+  readonly hours: readonly string[];
 }
 
 /** Props accepted by `Footer.astro`. */
@@ -53,6 +58,14 @@ export interface SiteFooterProps {
   readonly socialLinks: readonly SocialLink[];
   /** Link columns (SERVICIOS, EMPRESA), in render order. */
   readonly columns: readonly FooterColumn[];
+  /**
+   * Schedule column title, shown with the `uppercase` class. Currently
+   * configured as "Horario de Atención" (renders "HORARIO DE ATENCIÓN").
+   * Promoted to a typed prop so the component has no hardcoded column title,
+   * matching the SERVICIOS/EMPRESA single-source-of-truth contract
+   * (design.md § Decision 2). Previously hardcoded as "HORARIO TÉCNICO".
+   */
+  readonly scheduleTitle: string;
   /** Business hours rows, in render order. */
   readonly schedule: readonly FooterScheduleEntry[];
   /** Support note rendered under the schedule, e.g. "Soporte 24/7 disponible". */

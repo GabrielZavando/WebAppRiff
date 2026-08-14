@@ -4,10 +4,12 @@ import TopHeader from '@/components/TopHeader.astro';
 import Header from '@/components/Header.astro';
 import SearchForm from '@/components/SearchForm.astro';
 import Footer from '@/components/Footer.astro';
+import SiteCredits from '@/components/SiteCredits.astro';
 import { getContactInfo } from '@/lib/config/contact';
 import { NAVIGATION_ITEMS, getCtaConfig } from '@/lib/config/navigation';
 import { CATEGORY_OPTIONS, getSearchFormConfig } from '@/lib/config/search-form';
 import { SITE_FOOTER_CONTENT } from '@/lib/config/footer';
+import { SITE_CREDITS_CONTENT } from '@/lib/config/site-credits';
 import { Picture } from 'astro:assets';
 import heroImage from '@/assets/img/banner_home.webp';
 import type { HeaderProps } from '@/lib/types/header';
@@ -101,6 +103,7 @@ const searchFormProps: SearchFormProps = {
       </div>
       <slot />
       <Footer {...SITE_FOOTER_CONTENT} />
+      <SiteCredits {...SITE_CREDITS_CONTENT} />
     </div>
 
     <!-- Compact scroll state: toggles `data-scrolled` on <body> on scroll.

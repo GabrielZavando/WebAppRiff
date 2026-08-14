@@ -94,6 +94,37 @@
     @apply antialiased text-text;
     font-family: var(--font-body);
   }
+
+  /* Custom scrollbar — brand secondary-dark design token.
+   * Only the thumb + thumb:hover carry a brand color; the track stays
+   * transparent so the thumb reads as a discrete brand accent. Coverage
+   * targets both the standard `scrollbar-color` property (Firefox) and the
+   * `::-webkit-scrollbar*` pseudo-elements (Chromium / Safari). No raw hex
+   * (frontend-standards § "no raw hex outside @theme") — values are consumed
+   * as `var(--color-secondary-dark)` / `var(--color-secondary-light)`.
+   * Radius 0 honors the flat-design convention.
+   */
+  html {
+    scrollbar-color: var(--color-secondary-dark) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-secondary-dark);
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-secondary-light);
+  }
 }
 
 @layer utilities {
