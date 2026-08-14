@@ -46,13 +46,13 @@ describe('SITE_FOOTER_CONTENT', () => {
     ]);
   });
 
-  it('SERVICIOS renders the 4 mockup links', () => {
+  it('SERVICIOS renders the 4 real services', () => {
     const labels = SITE_FOOTER_CONTENT.columns[0]?.links.map((l) => l.label);
     expect(labels).toEqual([
-      'Instalación de Medidores',
-      'Control de Agua Caliente',
-      'Puesta en Marcha Industrial',
-      'Obras Civiles Hidráulicas',
+      'Medición en Edificios',
+      'Medición Industrial',
+      'Obras y Proyectos',
+      'Tratamiento de Agua y Desalinización',
     ]);
   });
 
@@ -75,16 +75,25 @@ describe('SITE_FOOTER_CONTENT', () => {
     }
   });
 
-  it('renders the 2 mockup schedule rows', () => {
+  it('renders the split-shift schedule with multiple hour blocks per day range', () => {
     expect(SITE_FOOTER_CONTENT.schedule).toHaveLength(2);
     expect(SITE_FOOTER_CONTENT.schedule.map((s) => s.days)).toEqual([
       'Lunes a Jueves',
       'Viernes',
     ]);
-    expect(SITE_FOOTER_CONTENT.schedule.map((s) => s.hours)).toEqual([
-      '09:00 a 18:00',
-      '09:00 a 17:00',
+    // Each entry's `hours` is an array of split-shift blocks.
+    expect(SITE_FOOTER_CONTENT.schedule[0]?.hours).toEqual([
+      '9:00 a 13:00 hrs.',
+      '14:00 a 18:00 hrs.',
     ]);
+    expect(SITE_FOOTER_CONTENT.schedule[1]?.hours).toEqual([
+      '9:00 a 13:00 hrs.',
+      '14:00 a 17:00 hrs.',
+    ]);
+  });
+
+  it('exposes the schedule column title "Horario de Atención"', () => {
+    expect(SITE_FOOTER_CONTENT.scheduleTitle).toBe('Horario de Atención');
   });
 
   it('exposes the 24/7 support note', () => {

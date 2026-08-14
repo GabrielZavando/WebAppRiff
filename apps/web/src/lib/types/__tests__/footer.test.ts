@@ -6,6 +6,7 @@ import type {
   SiteFooterProps,
 } from '@/lib/types/footer';
 import type { SocialLink } from '@/lib/types/top-header';
+import { SITE_FOOTER_CONTENT } from '@/lib/config/footer';
 
 /**
  * Type-level tests for the footer type contract.
@@ -62,16 +63,32 @@ describe('footer.ts types', () => {
     }>();
   });
 
-  it('FooterScheduleEntry exposes readonly days and hours', () => {
-    const entry: FooterScheduleEntry = { days: 'Lunes a Jueves', hours: '09:00 a 18:00' };
+  it('FooterScheduleEntry exposes readonly days and an array of hours blocks', () => {
+    // `hours` is `readonly string[]` so a single day range can list one or
+    // more split-shift hour blocks (design.md § Decision 3).
+    const entry: FooterScheduleEntry = {
+      days: 'Lunes a Jueves',
+      hours: ['9:00 a 13:00 hrs.', '14:00 a 18:00 hrs.'],
+    };
 
     expect(entry.days).toBe('Lunes a Jueves');
-    expect(entry.hours).toBe('09:00 a 18:00');
+    expect(entry.hours).toHaveLength(2);
+    expect(entry.hours[0]).toBe('9:00 a 13:00 hrs.');
 
     expectTypeOf<FooterScheduleEntry>().toEqualTypeOf<{
       readonly days: string;
-      readonly hours: string;
+      readonly hours: readonly string[];
     }>();
+  });
+
+  it('FooterScheduleEntry.hours accepts a string[] literal but NOT a single string', () => {
+    // A string[] literal is assignable to the (readonly) hours array.
+    expectTypeOf<string[]>().toMatchTypeOf<FooterScheduleEntry['hours']>();
+
+    // A single string is NOT assignable — the contract requires an array of
+    // hour blocks, removing the previous single-block shape (regression guard
+    // for the widening in design.md § Decision 3).
+    expectTypeOf<string>().not.toMatchTypeOf<FooterScheduleEntry['hours']>();
   });
 
   it('SiteFooterProps exposes the full readonly contract', () => {
@@ -85,7 +102,10 @@ describe('footer.ts types', () => {
           links: [{ label: 'Instalación de Medidores', href: '#' }],
         },
       ],
-      schedule: [{ days: 'Lunes a Jueves', hours: '09:00 a 18:00' }],
+      scheduleTitle: 'Horario de Atención',
+      schedule: [
+        { days: 'Lunes a Jueves', hours: ['9:00 a 13:00 hrs.', '14:00 a 18:00 hrs.'] },
+      ],
       scheduleNote: 'Soporte 24/7 disponible',
     };
 
@@ -93,6 +113,7 @@ describe('footer.ts types', () => {
     expect(props.tagline).toContain('1979');
     expect(props.socialLinks).toHaveLength(1);
     expect(props.columns).toHaveLength(1);
+    expect(props.scheduleTitle).toBe('Horario de Atención');
     expect(props.schedule).toHaveLength(1);
     expect(props.scheduleNote).toContain('24/7');
 
@@ -101,9 +122,24 @@ describe('footer.ts types', () => {
       readonly tagline: string;
       readonly socialLinks: readonly SocialLink[];
       readonly columns: readonly FooterColumn[];
+      readonly scheduleTitle: string;
       readonly schedule: readonly FooterScheduleEntry[];
       readonly scheduleNote: string;
     }>();
+  });
+
+  it('SiteFooterProps.scheduleTitle is a readonly string (config-sourced column title)', () => {
+    // `scheduleTitle` was previously hardcoded inside the component as
+    // "HORARIO TÉCNICO"; promoting it to a typed prop restores the
+    // single-source-of-truth contract shared with the SERVICIOS/EMPRESA
+    // column titles (design.md § Decision 2).
+    expectTypeOf<SiteFooterProps['scheduleTitle']>().toEqualTypeOf<string>();
+  });
+
+  it('SITE_FOOTER_CONTENT is assignable to the updated SiteFooterProps', () => {
+    // The config constant must still satisfy the widened `SiteFooterProps`
+    // after `scheduleTitle` is added and `hours` is widened to string[].
+    expectTypeOf<typeof SITE_FOOTER_CONTENT>().toMatchTypeOf<SiteFooterProps>();
   });
 
   it('socialLinks reuses the SocialLink contract from top-header (design.md Decision 4)', () => {

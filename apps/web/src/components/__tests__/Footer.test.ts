@@ -166,18 +166,45 @@ describe('Footer — SERVICIOS & EMPRESA link columns', () => {
   });
 });
 
-describe('Footer — HORARIO TÉCNICO schedule column', () => {
-  it('renders the schedule as a <dl> with <dt>/<dd> pairs (mockup rows)', async () => {
+describe('Footer — schedule column (Horario de Atención)', () => {
+  it('renders the schedule column title from the scheduleTitle prop (uppercase)', async () => {
+    const html = await render();
+    // The `uppercase` class applies text-transform via CSS, so the HTML text
+    // node is the prop value as-is; the class assertion covers the visual.
+    const pMatch = html.match(/<p[^>]*>Horario de Atención<\/p>/);
+    if (!pMatch) throw new Error('schedule column title <p> not found');
+    expect(pMatch[0]).toContain('text-primary');
+    expect(pMatch[0]).toContain('font-heading');
+    expect(pMatch[0]).toContain('uppercase');
+    // Regression: the old hardcoded literal must NOT appear.
+    expect(html).not.toContain('HORARIO TÉCNICO');
+  });
+
+  it('renders the schedule as a <dl> with <dt> followed by multiple <dd> blocks', async () => {
     const html = await render();
     expect(html).toMatch(/<dl[\s\S]*?<\/dl>/);
-    // dt/dd carry styling classes (design.md D10): dt white semibold, dd muted
-    expect(html).toMatch(/<dt[^>]*>Lunes a Jueves<\/dt>/);
-    expect(html).toMatch(/<dd[^>]*>09:00 a 18:00<\/dd>/);
-    expect(html).toMatch(/<dt[^>]*>Viernes<\/dt>/);
-    expect(html).toMatch(/<dd[^>]*>09:00 a 17:00<\/dd>/);
-    // day label is white + semibold, hours are muted (mockup visual pairing) —
-    // class order in the rendered HTML is font-semibold text-white, so the
-    // assertions are order-independent word-boundary matches.
+
+    // "Lunes a Jueves" <dt> followed by exactly two <dd> with split-shift hours.
+    const lunesBlock = html.match(
+      /<dt[^>]*>Lunes a Jueves<\/dt>([\s\S]*?)(?=<dt|<\/dl)/,
+    );
+    if (!lunesBlock || lunesBlock[1] === undefined) throw new Error('Lunes a Jueves dt block not found');
+    const lunesDds = lunesBlock[1].match(/<dd[^>]*>[^<]*<\/dd>/g) ?? [];
+    expect(lunesDds).toHaveLength(2);
+    expect(lunesDds[0]).toContain('9:00 a 13:00 hrs.');
+    expect(lunesDds[1]).toContain('14:00 a 18:00 hrs.');
+
+    // "Viernes" <dt> followed by exactly two <dd> with split-shift hours.
+    const viernesBlock = html.match(
+      /<dt[^>]*>Viernes<\/dt>([\s\S]*?)(?=<dt|<\/dl)/,
+    );
+    if (!viernesBlock || viernesBlock[1] === undefined) throw new Error('Viernes dt block not found');
+    const viernesDds = viernesBlock[1].match(/<dd[^>]*>[^<]*<\/dd>/g) ?? [];
+    expect(viernesDds).toHaveLength(2);
+    expect(viernesDds[0]).toContain('9:00 a 13:00 hrs.');
+    expect(viernesDds[1]).toContain('14:00 a 17:00 hrs.');
+
+    // dt carries white + semibold, every dd carries muted (design.md D10).
     expect(html).toMatch(/<dt class="[^"]*\btext-white\b[^"]*">/);
     expect(html).toMatch(/<dt class="[^"]*\bfont-semibold\b[^"]*">/);
     expect(html).toMatch(/<dd class="[^"]*\btext-muted\b[^"]*">/);
@@ -266,6 +293,14 @@ describe('Footer — dumb component source', () => {
     expect(source).not.toMatch(/fetch\(/);
     expect(source).not.toMatch(/import\s*.*from\s*['"]@\/lib\/services/);
     expect(source).toMatch(/Astro\.props/);
+  });
+
+  it('has no hardcoded column title — scheduleTitle comes from props', async () => {
+    const source = await getSource();
+    // The previous hardcoded literal must be gone (design.md § Decision 2).
+    expect(source).not.toContain('HORARIO TÉCNICO');
+    // The component must destructure `scheduleTitle` from props.
+    expect(source).toMatch(/scheduleTitle/);
   });
 });
 
