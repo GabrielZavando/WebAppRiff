@@ -547,6 +547,8 @@ paths:
         Liveness/readiness endpoint. Public, not throttled, and not wrapped by the
         standardized response envelope (it returns the raw payload). The unified
         response envelope ({ data, error, meta }) only applies to /api/v1/** routes.
+        This route is excluded from the global `api/v1` prefix (requested as
+        `GET /health`, not `/api/v1/health`).
       security: []
       responses:
         "200":
@@ -562,34 +564,8 @@ paths:
                 uptime: 1234.56
                 firebase: up
 
-  /api/v1/health:
-    get:
-      summary: Health check (versioned, wrapped)
-      description: >
-        Alias of /health under the versioned prefix. Same payload, but routed
-        through the standardized response envelope ({ data, error, meta }).
-      security: []
-      responses:
-        "200":
-          description: API operativa
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Envelope"
-              example:
-                data:
-                  status: ok
-                  version: 0.1.0
-                  timestamp: "2026-08-14T12:00:00.000Z"
-                  uptime: 1234.56
-                  firebase: up
-                error: null
-                meta:
-                  timestamp: "2026-08-14T12:00:00.000Z"
-                  requestId: req_abc123
-
   # === PRODUCTOS ===
-  /products:
+  /api/v1/products:
     get:
       summary: Listar productos (con filtros, paginación)
       security: []
@@ -670,7 +646,7 @@ paths:
         "409":
           $ref: '#/components/schemas/Error'
 
-  /products/{id}:
+  /api/v1/products/{id}:
     get:
       summary: Obtener producto por ID
       security: []
@@ -745,7 +721,7 @@ paths:
           $ref: '#/components/schemas/Error'
 
   # === CATEGORÍAS ===
-  /categories:
+  /api/v1/categories:
     get:
       summary: Listar categorías
       security: []
@@ -794,7 +770,7 @@ paths:
         "409":
           $ref: '#/components/schemas/Error'
 
-  /categories/{id}:
+  /api/v1/categories/{id}:
     get:
       summary: Obtener categoría por ID
       security: []
@@ -869,7 +845,7 @@ paths:
           $ref: '#/components/schemas/Error'
 
   # === SUBCATEGORÍAS ===
-  /subcategories:
+  /api/v1/subcategories:
     get:
       summary: Listar subcategorías (filtro opcional por categoriaId)
       security: []
@@ -922,7 +898,7 @@ paths:
         "409":
           $ref: '#/components/schemas/Error'
 
-  /subcategories/{id}:
+  /api/v1/subcategories/{id}:
     get:
       summary: Obtener subcategoría por ID
       security: []
@@ -997,7 +973,7 @@ paths:
           $ref: '#/components/schemas/Error'
 
   # === USUARIOS (gestión panel admin) ===
-  /users:
+  /api/v1/users:
     get:
       summary: Listar usuarios del panel admin
       security:
@@ -1044,7 +1020,7 @@ paths:
         "409":
           $ref: '#/components/schemas/Error'
 
-  /users/{id}:
+  /api/v1/users/{id}:
     get:
       summary: Obtener usuario por ID
       security:
@@ -1134,7 +1110,7 @@ paths:
           $ref: '#/components/schemas/Error'
 
   # === COTIZACIONES ===
-  /quotes:
+  /api/v1/quotes:
     post:
       summary: Crear cotización (público, sin auth)
       security: []
@@ -1192,7 +1168,7 @@ paths:
         "403":
           $ref: '#/components/schemas/Error'
 
-  /quotes/{id}:
+  /api/v1/quotes/{id}:
     get:
       summary: Obtener cotización por ID (admin)
       security:

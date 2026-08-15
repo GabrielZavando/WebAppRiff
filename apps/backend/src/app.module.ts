@@ -6,6 +6,7 @@ import { FirebaseModule } from './infrastructure/firebase/firebase.module';
 import { FirestoreModule } from './infrastructure/firebase/firestore.module';
 import { CommonModule } from './common/common.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
+import { CategoriasModule } from './categorias/categorias.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UsuariosModule } from './usuarios/usuarios.module';
     FirestoreModule,
     CommonModule,
     UsuariosModule,
+    CategoriasModule,
   ],
   controllers: [AppController],
   providers: [AppService],

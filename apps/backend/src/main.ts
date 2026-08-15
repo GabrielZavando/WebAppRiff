@@ -18,6 +18,7 @@ async function bootstrap(): Promise<void> {
     }),
   );
   app.useGlobalPipes(new ValidationPipe(buildValidationOptions()));
+  app.setGlobalPrefix('api/v1', { exclude: ['health'] });
 
   const port = resolvePort(process.env.PORT);
   await app.listen(port);
