@@ -17,6 +17,7 @@ import {
     { provide: I_CATEGORIA_REPOSITORY, useClass: CategoriaRepository },
     { provide: I_CATEGORIA_INTEGRITY_REPOSITORY, useClass: CategoriaRepository },
   ],
+  exports: [I_CATEGORIA_REPOSITORY, I_CATEGORIA_INTEGRITY_REPOSITORY],
 })
 export class CategoriasModule implements OnModuleInit {
   constructor(private readonly service: CategoriaService) {}

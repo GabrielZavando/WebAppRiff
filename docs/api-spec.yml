@@ -873,7 +873,7 @@ paths:
         "400":
           $ref: '#/components/schemas/Error'
     post:
-      summary: Crear subcategoría
+      summary: Crear subcategoría (solo superadmin|admin; el editor NO puede crear)
       security:
         - bearerAuth: []
       requestBody:
@@ -918,7 +918,7 @@ paths:
         "404":
           $ref: '#/components/schemas/Error'
     put:
-      summary: Actualizar subcategoría
+      summary: Actualizar subcategoría (superadmin|admin|editor; el editor solo edita)
       security:
         - bearerAuth: []
       parameters:
@@ -951,7 +951,7 @@ paths:
         "409":
           $ref: '#/components/schemas/Error'
     delete:
-      summary: Eliminar subcategoría (bloqueado si tiene productos)
+      summary: Eliminar subcategoría (solo superadmin|admin; el editor NO puede borrar; bloqueado si tiene productos)
       security:
         - bearerAuth: []
       parameters:
