@@ -490,7 +490,30 @@ components:
         activo:
           type: boolean
 
-    # === COTIZACIONES ===
+  # === AUTH (perfil del usuario autenticado) ===
+  /api/v1/auth/me:
+    get:
+      summary: Obtener el perfil del usuario autenticado
+      description: >
+        Devuelve el perfil del usuario cuyo token Firebase fue verificado. Protegido
+        solo por FirebaseAuthGuard (cualquier rol autenticado). Útil para que el panel
+        admin conozca el rol tras iniciar sesión. Responde 404 si no existe el documento
+        usuarios/{uid}.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Perfil del usuario autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'
+
+  # === COTIZACIONES ===
     Cotizacion:
       type: object
       properties:

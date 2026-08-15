@@ -48,6 +48,23 @@ El backend usa Firebase Admin SDK (Firestore, Auth, Storage) vía un service acc
 
 Si falta cualquiera de las tres variables, el backend falla rápido (fail-fast) al arrancar con un error descriptivo que nombra la variable ausente — no queda escuchando a medias.
 
+## Bootstrap del primer superadmin
+
+El módulo `usuarios` protege la creación de usuarios por rol, y crear un `superadmin` requiere un `superadmin` ya autenticado (ver `docs/api-spec.yml` y `docs/data-model.md`). Eso crea el problema del huevo y la gallina: **no hay forma de crear el primero desde la API**. Por eso existe un comando CLI operativo, idempotente, que crea el primer `superadmin` directamente (Firebase Auth + custom claim `role` + documento `usuarios/{uid}`), sin necesidad de un actor autenticado.
+
+1. Seteá las variables de entorno `BOOTSTRAP_SUPERADMIN_EMAIL` y `BOOTSTRAP_SUPERADMIN_PASSWORD` (mínimo 6 caracteres) en el `.env` del backend (o en el entorno del deploy). Opcionalmente `BOOTSTRAP_SUPERADMIN_NAME`.
+2. Ejecutá una sola vez (desde `apps/backend`):
+
+   ```bash
+   BOOTSTRAP_SUPERADMIN_EMAIL=admin@riff.cl \
+   BOOTSTRAP_SUPERADMIN_PASSWORD='cambiame123' \
+   npm run bootstrap:superadmin
+   ```
+
+3. El comando es **idempotente**: si ya existe un usuario con ese email, lo devuelve sin crear duplicados. La password no se loguea nunca.
+
+Tras el bootstrap, ese usuario puede iniciar sesión desde el futuro panel admin (Firebase Auth, email/password) y acceder a `/api/v1/auth/me` para conocer su perfil/rol.
+
 ## Comandos clave
 
 ```bash
@@ -68,6 +85,9 @@ npm run typecheck --workspace=@riff/backend
 
 # Build de producción
 npm run build --workspace=@riff/backend
+
+# Bootstrap del primer superadmin (una sola vez; idempotente)
+npm run bootstrap:superadmin --workspace=@riff/backend
 
 # Health check
 curl http://localhost:3000/health   # => {"status":"ok"}
