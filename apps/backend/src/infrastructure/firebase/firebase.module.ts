@@ -1,8 +1,9 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { App, cert, getApp, getApps, initializeApp } from 'firebase-admin/app';
+import { Auth, getAuth } from 'firebase-admin/auth';
 import { buildServiceAccountFromEnv } from './firebase.config';
-import { FIREBASE_APP } from './firebase.tokens';
+import { FIREBASE_APP, FIREBASE_AUTH } from './firebase.tokens';
 
 @Global()
 @Module({
@@ -29,7 +30,12 @@ import { FIREBASE_APP } from './firebase.tokens';
         return getApp();
       },
     },
+    {
+      provide: FIREBASE_AUTH,
+      inject: [FIREBASE_APP],
+      useFactory: (app: App): Auth => getAuth(app),
+    },
   ],
-  exports: [FIREBASE_APP],
+  exports: [FIREBASE_APP, FIREBASE_AUTH],
 })
 export class FirebaseModule {}
