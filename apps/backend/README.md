@@ -6,7 +6,7 @@ Backend NestJS (BFF) del Catálogo Digital Headless Riff. Concentra la lógica d
 
 - Node.js ≥ 22.12.0
 - npm ≥ 10 (package manager del monorepo)
-- (changes posteriores) Proyecto Firebase con Firestore/Storage/Auth habilitados + service account JSON
+- Proyecto Firebase con Firestore/Storage/Auth habilitados + service account JSON
 
 ## Setup
 
@@ -26,8 +26,27 @@ npm run start:dev --workspace=@riff/backend
 | Variable | Descripción | Default |
 |----------|-------------|---------|
 | `PORT` | Puerto en el que escucha la app | `3000` |
+| `FIREBASE_PROJECT_ID` | Project ID del proyecto Firebase (campo `project_id` del service account JSON) | — |
+| `FIREBASE_CLIENT_EMAIL` | Email de la cuenta de servicio (campo `client_email`) | — |
+| `FIREBASE_PRIVATE_KEY` | Private key de la cuenta de servicio (campo `private_key`, **con los `\n` escapados literales**). El backend los normaliza en runtime | — |
 
-> Las variables de Firebase (`FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`), CORS (`ASTRO_SITE_URL`, `ANGULAR_ADMIN_URL`) y Throttler se añaden en los changes `backend-firebase-config` y `backend-commons`.
+> CORS (`ASTRO_SITE_URL`, `ANGULAR_ADMIN_URL`) y Throttler se añaden en el change `backend-commons`.
+
+## Firebase setup
+
+El backend usa Firebase Admin SDK (Firestore, Auth, Storage) vía un service account. Pasos:
+
+1. En Firebase Console, creá (o seleccioná) el proyecto `riff-catalogo`.
+2. Habilitá **Firestore Database** (modo producción) y **Authentication** (proveedor Email/Password + el que requiera el cliente), y **Storage** si se usará para binaries (PDF de fichas técnicas, imágenes).
+3. Ir a **Project Settings → Service accounts → Generate new private key** y descargar el JSON.
+4. Del JSON, mapeá tres campos a las variables de entorno:
+   - `project_id` → `FIREBASE_PROJECT_ID`
+   - `client_email` → `FIREBASE_CLIENT_EMAIL`
+   - `private_key` → `FIREBASE_PRIVATE_KEY`
+5. El `private_key` del JSON trae los saltos de línea escapados como `\n`. Pegalos **exactamente así** (entre comillas simples en `.env` para evitar que el shell los interprete). El backend los convierte a saltos reales antes de pasarlos a `firebase-admin`.
+6. **Nunca commitees** el JSON ni el `.env` con valores reales. Ambos están en `.gitignore`.
+
+Si falta cualquiera de las tres variables, el backend falla rápido (fail-fast) al arrancar con un error descriptivo que nombra la variable ausente — no queda escuchando a medias.
 
 ## Comandos clave
 
