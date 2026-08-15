@@ -29,18 +29,19 @@ The backend-runtime SHALL expose a NestJS bootstrap function in `src/main.ts` th
 - **AND** the application binds to an OS-assigned ephemeral port without falling back to `3000`
 
 ### Requirement: Health endpoint SHALL return ok status without authentication
-The backend-runtime SHALL expose a `GET /health` endpoint at the application root (no `/api/v1` prefix in this change) that returns HTTP `200` with a JSON body `{ "status": "ok" }`, conforming to the contract in `docs/api-spec.yml` (`/health` is marked `security: []`). The endpoint SHALL be implemented in `src/app.controller.ts` and the status string SHALL be produced by `src/app.service.ts`. No request body, query parameters, or headers are required.
+The backend-runtime SHALL expose a `GET /health` endpoint at the application root (no `/api/v1` prefix) that returns HTTP `200` with a JSON body `{ "status": "ok", "version": <string>, "timestamp": <iso string>, "uptime": <number>, "firebase": "up" | "down" }`, conforming to the contract in `docs/api-spec.yml` (`/health` is marked `security: []`). The endpoint SHALL be implemented in `src/app.controller.ts`, the status string and enriched fields SHALL be produced by `src/app.service.ts`, and the `firebase` field SHALL reflect a best-effort Firestore connectivity check with a short timeout (the endpoint stays `200` even when `firebase` is `"down"`). No request body, query parameters, or headers are required.
 
-#### Scenario: GET /health returns 200 with ok status
+#### Scenario: GET /health returns 200 with enriched ok status
 - **WHEN** a `GET /health` request is made to the running application
 - **THEN** the response status code is `200`
 - **AND** the response `Content-Type` is `application/json`
-- **AND** the response body equals `{ "status": "ok" }`
+- **AND** the response body contains `status` equal to `"ok"`
+- **AND** the response body contains `version`, `timestamp`, `uptime`, and `firebase` (`"up"` or `"down"`)
 
 #### Scenario: Health endpoint does not require authentication
 - **WHEN** a `GET /health` request is made with no `Authorization` header
 - **THEN** the response status code is `200`
-- **AND** the response body equals `{ "status": "ok" }`
+- **AND** the response body contains `status` equal to `"ok"`
 
 ### Requirement: TypeScript configuration SHALL enforce strict mode for the backend
 The backend-runtime SHALL include a `tsconfig.json` in `apps/backend` with `strict: true`, `target: "ES2022"`, `experimentalDecorators: true`, `emitDecoratorMetadata: true`, `outDir: "./dist"`, and path alias `@/*` mapped to `src/*`. A separate `tsconfig.build.json` SHALL extend `tsconfig.json` and exclude all `*.spec.ts` and `*.e2e-spec.ts` files so that `nest build` produces a production bundle without tests. The `npm run typecheck` script (`tsc --noEmit`) SHALL pass with exit code `0`.

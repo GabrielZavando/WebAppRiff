@@ -32,6 +32,47 @@ components:
         statusCode:
           type: integer
 
+    Envelope:
+      type: object
+      description: Standardized response wrapper applied to all /api/v1/** routes.
+      properties:
+        data:
+          nullable: true
+        error:
+          nullable: true
+          $ref: "#/components/schemas/Error"
+        meta:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+            requestId:
+              type: string
+              description: Correlation id for tracing (generated per request)
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        version:
+          type: string
+          description: Backend package version (from package.json)
+          example: 0.1.0
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+          format: double
+          description: Seconds elapsed since the process started
+        firebase:
+          type: string
+          enum: [up, down]
+          description: Best-effort Firebase/Firestore reachability probe
+
     Pagination:
       type: object
       properties:
@@ -502,6 +543,31 @@ paths:
   /health:
     get:
       summary: Health check
+      description: >
+        Liveness/readiness endpoint. Public, not throttled, and not wrapped by the
+        standardized response envelope (it returns the raw payload). The unified
+        response envelope ({ data, error, meta }) only applies to /api/v1/** routes.
+      security: []
+      responses:
+        "200":
+          description: API operativa (siempre 200 si el proceso responde)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              example:
+                status: ok
+                version: 0.1.0
+                timestamp: "2026-08-14T12:00:00.000Z"
+                uptime: 1234.56
+                firebase: up
+
+  /api/v1/health:
+    get:
+      summary: Health check (versioned, wrapped)
+      description: >
+        Alias of /health under the versioned prefix. Same payload, but routed
+        through the standardized response envelope ({ data, error, meta }).
       security: []
       responses:
         "200":
@@ -509,11 +575,18 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: ok
+                $ref: "#/components/schemas/Envelope"
+              example:
+                data:
+                  status: ok
+                  version: 0.1.0
+                  timestamp: "2026-08-14T12:00:00.000Z"
+                  uptime: 1234.56
+                  firebase: up
+                error: null
+                meta:
+                  timestamp: "2026-08-14T12:00:00.000Z"
+                  requestId: req_abc123
 
   # === PRODUCTOS ===
   /products:
