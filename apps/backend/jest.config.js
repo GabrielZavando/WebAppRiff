@@ -4,6 +4,7 @@ module.exports = {
   testEnvironment: 'node',
   rootDir: '.',
   roots: ['<rootDir>/src'],
+  setupFiles: ['reflect-metadata'],
   moduleFileExtensions: ['js', 'json', 'ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',

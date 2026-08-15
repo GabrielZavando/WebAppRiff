@@ -8,6 +8,7 @@ import { CommonModule } from './common/common.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import { SubcategoriasModule } from './subcategorias/subcategorias.module';
+import { ProductosModule } from './productos/productos.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SubcategoriasModule } from './subcategorias/subcategorias.module';
     UsuariosModule,
     CategoriasModule,
     SubcategoriasModule,
+    ProductosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

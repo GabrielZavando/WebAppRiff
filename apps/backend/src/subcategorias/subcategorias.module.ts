@@ -18,5 +18,6 @@ import {
     { provide: I_SUBCATEGORIA_REPOSITORY, useClass: SubcategoriaRepository },
     { provide: I_SUBCATEGORIA_INTEGRITY_REPOSITORY, useClass: SubcategoriaRepository },
   ],
+  exports: [I_SUBCATEGORIA_REPOSITORY, I_SUBCATEGORIA_INTEGRITY_REPOSITORY],
 })
 export class SubcategoriasModule {}
