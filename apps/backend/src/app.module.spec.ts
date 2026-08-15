@@ -31,7 +31,10 @@ describe('AppModule', () => {
     mockGetApps.mockReturnValue([]);
     mockCert.mockReturnValue({ projectId: FIREBASE_ENV.FIREBASE_PROJECT_ID });
     mockInitializeApp.mockReturnValue({ name: '[DEFAULT]' });
-    mockGetFirestore.mockReturnValue({ collection: () => undefined });
+    mockGetFirestore.mockReturnValue({
+      collection: () => undefined,
+      listCollections: jest.fn().mockResolvedValue([]),
+    });
     process.env = { ...process.env, ...FIREBASE_ENV };
   });
 
@@ -48,7 +51,9 @@ describe('AppModule', () => {
 
     const controller = moduleRef.get(AppController);
     expect(controller).toBeDefined();
-    expect(controller.getHealth()).toEqual({ status: 'ok' });
+    const health = await controller.getHealth();
+    expect(health.status).toBe('ok');
+    expect(health.firebase).toBe('up');
 
     await moduleRef.close();
   });

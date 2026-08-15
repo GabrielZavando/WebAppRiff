@@ -49,7 +49,7 @@ describe('FirebaseModule', () => {
     mockGetApps.mockReturnValue([]);
 
     const moduleRef = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot({ isGlobal: true }), FirebaseModule],
+      imports: [ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }), FirebaseModule],
     }).compile();
     const app = moduleRef.get<unknown>(FIREBASE_APP);
 
@@ -68,7 +68,7 @@ describe('FirebaseModule', () => {
     mockGetApps.mockReturnValue([fakeApp]);
 
     const moduleRef = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot({ isGlobal: true }), FirebaseModule],
+      imports: [ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }), FirebaseModule],
     }).compile();
     const app = moduleRef.get<unknown>(FIREBASE_APP);
 
@@ -84,7 +84,7 @@ describe('FirebaseModule', () => {
 
     await expect(
       Test.createTestingModule({
-        imports: [ConfigModule.forRoot({ isGlobal: true }), FirebaseModule],
+        imports: [ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }), FirebaseModule],
       }).compile(),
     ).rejects.toThrow(/FIREBASE_PROJECT_ID/);
   });
@@ -102,7 +102,7 @@ describe('FirestoreModule', () => {
     process.env = { ...process.env, ...FIREBASE_ENV };
 
     const moduleRef = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot({ isGlobal: true }), FirebaseModule, FirestoreModule],
+      imports: [ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }), FirebaseModule, FirestoreModule],
     }).compile();
 
     const firestore = moduleRef.get<unknown>(FIRESTORE);
