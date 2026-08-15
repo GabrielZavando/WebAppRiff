@@ -567,20 +567,15 @@ paths:
   # === PRODUCTOS ===
   /api/v1/products:
     get:
-      summary: Listar productos (con filtros, paginación)
+      summary: Listar productos (catálogo público, con filtros)
+      description: >
+        Endpoint público (token opcional). Sin token devuelve solo productos con
+        `publicado: true` (el catálogo público). Con un token válido, un usuario
+        autenticado (cualquier rol) puede ver también los no publicados usando
+        `publicado=false`. Filtros por categoría, subcategoría, destacado,
+        búsqueda de texto y ordenamiento. Sin paginación en esta versión.
       security: []
       parameters:
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 1
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            default: 20
-            maximum: 100
         - name: categoriaId
           in: query
           schema:
@@ -589,11 +584,11 @@ paths:
           in: query
           schema:
             type: string
-        - name: publicado
+        - name: destacado
           in: query
           schema:
             type: boolean
-        - name: destacado
+        - name: publicado
           in: query
           schema:
             type: boolean
@@ -601,19 +596,19 @@ paths:
           in: query
           schema:
             type: string
-        - name: sort
+        - name: sortBy
           in: query
           schema:
             type: string
             enum: [titulo, precio.valor, creadoEn, actualizadoEn]
-        - name: order
+        - name: sortDir
           in: query
           schema:
             type: string
             enum: [asc, desc]
       responses:
         "200":
-          description: Lista paginada de productos
+          description: Lista de productos (envuelta en { data, error, meta })
           content:
             application/json:
               schema:
@@ -621,7 +616,12 @@ paths:
         "400":
           $ref: '#/components/schemas/Error'
     post:
-      summary: Crear producto
+      summary: Crear producto (solo superadmin/admin)
+      description: >
+        Requiere token válido con rol `superadmin` o `admin`. El `slug` es
+        opcional; si se omite se autogenera desde el `titulo`. Valida unicidad
+        global de `sku` y `slug`, existencia de la categoría (por defecto
+        "sin-categoria") y consistencia categoría/subcategoría.
       security:
         - bearerAuth: []
       requestBody:
@@ -645,10 +645,41 @@ paths:
           $ref: '#/components/schemas/Error'
         "409":
           $ref: '#/components/schemas/Error'
+        "422":
+          $ref: '#/components/schemas/Error'
+
+  /api/v1/products/slug/{slug}:
+    get:
+      summary: Obtener producto por slug (catálogo público)
+      description: >
+        Endpoint público (token opcional). Sin token solo devuelve el producto
+        si está publicado; con token válido un usuario autenticado ve también los
+        no publicados. Declarado antes de `/api/v1/products/{id}` para evitar
+        colisión de ruta.
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Producto'
+        "404":
+          $ref: '#/components/schemas/Error'
 
   /api/v1/products/{id}:
     get:
-      summary: Obtener producto por ID
+      summary: Obtener producto por ID (catálogo público)
+      description: >
+        Endpoint público (token opcional). Sin token solo devuelve el producto
+        si está publicado; con token válido un usuario autenticado ve también los
+        no publicados.
       security: []
       parameters:
         - name: id
@@ -666,7 +697,10 @@ paths:
         "404":
           $ref: '#/components/schemas/Error'
     put:
-      summary: Actualizar producto completo
+      summary: Actualizar producto completo (superadmin/admin/editor)
+      description: >
+        Requiere token válido. `editor` puede editar pero no crear ni eliminar.
+        La unicidad de `sku`/`slug` se valida excluyendo el propio producto.
       security:
         - bearerAuth: []
       parameters:
@@ -698,8 +732,50 @@ paths:
           $ref: '#/components/schemas/Error'
         "409":
           $ref: '#/components/schemas/Error'
+        "422":
+          $ref: '#/components/schemas/Error'
+    patch:
+      summary: Actualizar producto parcial (superadmin/admin/editor)
+      description: >
+        Igual que PUT pero con campos opcionales.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoUpdate'
+      responses:
+        "200":
+          description: Producto actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Producto'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "404":
+          $ref: '#/components/schemas/Error'
+        "409":
+          $ref: '#/components/schemas/Error'
+        "422":
+          $ref: '#/components/schemas/Error'
     delete:
-      summary: Eliminar producto
+      summary: Eliminar producto (solo superadmin/admin)
+      description: >
+        Requiere token válido con rol `superadmin` o `admin`. El `editor` no
+        puede eliminar.
       security:
         - bearerAuth: []
       parameters:
@@ -716,8 +792,6 @@ paths:
         "403":
           $ref: '#/components/schemas/Error'
         "404":
-          $ref: '#/components/schemas/Error'
-        "409":
           $ref: '#/components/schemas/Error'
 
   # === CATEGORÍAS ===
