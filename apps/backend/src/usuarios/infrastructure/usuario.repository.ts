@@ -75,10 +75,12 @@ export class UsuarioRepository implements IUsuarioRepository {
     if (input.rol !== undefined) updateData.rol = input.rol;
     if (input.activo !== undefined) updateData.activo = input.activo;
 
+    // set(merge) en lugar de update: tolera que el documento no exista todavía
+    // (p. ej. reparación de bootstrap donde el Auth user existe pero el doc no).
     await this.firestore
       .collection(this.collection)
       .doc(id)
-      .update(updateData);
+      .set(updateData, { merge: true });
 
     if (input.activo !== undefined) {
       await getAuth(this.app).updateUser(id, { disabled: input.activo === false });

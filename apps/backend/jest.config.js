@@ -13,7 +13,7 @@ module.exports = {
   transform: {
     '^.+\\.(t|j)s$': ['ts-jest', { tsconfig: 'tsconfig.json' }],
   },
-  collectCoverageFrom: ['src/**/*.(t|j)s', '!src/main.ts'],
+  collectCoverageFrom: ['src/**/*.(t|j)s', '!src/main.ts', '!src/cli/**'],
   coverageDirectory: './coverage',
   coverageThreshold: {
     global: {
