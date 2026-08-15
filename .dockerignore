@@ -1,0 +1,19 @@
+# Docker context exclusions — monorepo root (context for all app Dockerfiles).
+# Keeps the build context small and prevents secrets/build artifacts from
+# travelling to the Docker daemon.
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+coverage/
+**/coverage/
+.git/
+.env
+.env.*
+!.env.example
+*.local
+*.tsbuildinfo
+**/*.tsbuildinfo
+apps/web/.astro/
+apps/web/test-results/
+apps/admin/.angular/

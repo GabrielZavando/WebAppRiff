@@ -11,6 +11,7 @@
     "start:prod": "node dist/main.js",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "test": "jest",
+    "test:e2e": "jest --config jest-e2e.json",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:smoke": "jest --testPathPattern=smoke",
