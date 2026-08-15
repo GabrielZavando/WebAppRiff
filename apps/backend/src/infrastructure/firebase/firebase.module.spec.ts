@@ -9,6 +9,7 @@ const mockGetApp = jest.fn();
 const mockGetApps = jest.fn();
 const mockCert = jest.fn();
 const mockGetFirestore = jest.fn();
+const mockGetAuth = jest.fn();
 
 jest.mock('firebase-admin/app', () => ({
   initializeApp: (...args: unknown[]) => mockInitializeApp(...args),
@@ -19,6 +20,10 @@ jest.mock('firebase-admin/app', () => ({
 
 jest.mock('firebase-admin/firestore', () => ({
   getFirestore: (...args: unknown[]) => mockGetFirestore(...args),
+}));
+
+jest.mock('firebase-admin/auth', () => ({
+  getAuth: (...args: unknown[]) => mockGetAuth(...args),
 }));
 
 const FIREBASE_ENV = {
@@ -36,6 +41,7 @@ describe('FirebaseModule', () => {
     mockCert.mockReturnValue({ projectId: FIREBASE_ENV.FIREBASE_PROJECT_ID });
     mockInitializeApp.mockReturnValue(fakeApp);
     mockGetApp.mockReturnValue(fakeApp);
+    mockGetAuth.mockReturnValue({ verifyIdToken: jest.fn(), setCustomUserClaims: jest.fn() });
     process.env = { ...process.env, ...FIREBASE_ENV };
   });
 
