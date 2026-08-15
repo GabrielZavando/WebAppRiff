@@ -96,10 +96,16 @@ The backend-runtime SHALL include a multi-stage `Dockerfile` in `apps/backend` w
 - **AND** running the resulting image and issuing `GET /health` to it returns HTTP `200` with body `{ "status": "ok" }`
 
 ### Requirement: Backend SHALL declare a sample environment file listing required variables
-The backend-runtime SHALL include an `apps/backend/.env.example` listing the environment variables that the backend reads at startup in this change. The file SHALL contain at minimum `PORT=3000`. The `.gitignore` SHALL exclude `.env` from version control.
+The backend-runtime SHALL include an `apps/backend/.env.example` listing the environment variables that the backend reads at startup. The file SHALL contain `PORT=3000` and SHALL declare the Firebase credentials `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, and `FIREBASE_PRIVATE_KEY`. The `.gitignore` SHALL exclude `.env` from version control.
 
 #### Scenario: env.example documents the PORT variable
 - **WHEN** the file `apps/backend/.env.example` is read
 - **THEN** it contains a line declaring `PORT=3000`
 - **AND** the file `apps/backend/.gitignore` exists and contains a rule ignoring `.env`
+
+#### Scenario: env.example documents the Firebase credentials
+- **WHEN** the file `apps/backend/.env.example` is read
+- **THEN** it contains `FIREBASE_PROJECT_ID`
+- **AND** it contains `FIREBASE_CLIENT_EMAIL`
+- **AND** it contains `FIREBASE_PRIVATE_KEY`
 
