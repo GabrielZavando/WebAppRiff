@@ -10,6 +10,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main.js",
     "bootstrap:superadmin": "nest build && node dist/cli/bootstrap-superadmin.js",
+    "seed:catalog": "nest build && node dist/cli/seed-catalog.js",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "test": "jest",
     "test:e2e": "jest --config jest-e2e.json",

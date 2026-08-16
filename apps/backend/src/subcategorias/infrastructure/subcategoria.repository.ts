@@ -19,7 +19,7 @@ export class SubcategoriaRepository
   constructor(@Inject(FIRESTORE) private readonly firestore: Firestore) {}
 
   async create(input: SubcategoriaInput): Promise<Subcategoria> {
-    const id = this.firestore.collection(COLLECTION).doc().id;
+    const id = input.id ?? this.firestore.collection(COLLECTION).doc().id;
     const now = new Date();
     const doc: Omit<Subcategoria, 'id'> = {
       categoriaId: input.categoriaId,

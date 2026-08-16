@@ -7,6 +7,8 @@ export type CategoriaInput = {
   slug: string;
   orden: number;
   activa: boolean;
+  id?: string;
+  esDefault?: boolean;
 };
 
 export interface ICategoriaRepository {

@@ -8,6 +8,7 @@ export type SubcategoriaInput = {
   slug: string;
   orden: number;
   activa: boolean;
+  id?: string;
 };
 
 export type SubcategoriaUpdateInput = {

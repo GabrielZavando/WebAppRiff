@@ -104,6 +104,19 @@ describe('SubcategoriaRepository', () => {
         activa: true,
       });
     });
+
+    it('uses the provided id when given (deterministic seed id)', async () => {
+      const result = await repo.create({
+        categoriaId: 'medicion-de-fluidos',
+        nombre: 'Medidores Electromagnéticos',
+        slug: 'medidores-electromagneticos',
+        orden: 1,
+        activa: true,
+        id: 'medicion-de-fluidos--medidores-electromagneticos',
+      });
+      expect(result.id).toBe('medicion-de-fluidos--medidores-electromagneticos');
+      expect(store.has('subcategorias/medicion-de-fluidos--medidores-electromagneticos')).toBe(true);
+    });
   });
 
   describe('findAll', () => {

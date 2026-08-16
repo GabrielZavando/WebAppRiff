@@ -20,14 +20,14 @@ export class CategoriaRepository
   constructor(@Inject(FIRESTORE) private readonly firestore: Firestore) {}
 
   async create(input: CategoriaInput): Promise<Categoria> {
-    const id = this.firestore.collection(COLLECTION).doc().id;
+    const id = input.id ?? this.firestore.collection(COLLECTION).doc().id;
     const now = new Date();
     const doc: Omit<Categoria, 'id'> = {
       nombre: input.nombre,
       slug: input.slug,
       orden: input.orden,
       activa: input.activa,
-      esDefault: false,
+      esDefault: input.esDefault ?? false,
       creadoEn: now,
       actualizadoEn: now,
     };

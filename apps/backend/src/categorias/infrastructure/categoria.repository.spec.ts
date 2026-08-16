@@ -97,6 +97,31 @@ describe('CategoriaRepository', () => {
         esDefault: false,
       });
     });
+
+    it('uses the provided id when given (deterministic seed id)', async () => {
+      const result = await repo.create({
+        nombre: 'Medición de Fluidos',
+        slug: 'medicion-de-fluidos',
+        orden: 1,
+        activa: true,
+        id: 'medicion-de-fluidos',
+      });
+      expect(result.id).toBe('medicion-de-fluidos');
+      expect(store.has('categorias/medicion-de-fluidos')).toBe(true);
+    });
+
+    it('honors esDefault true when provided', async () => {
+      const result = await repo.create({
+        nombre: 'Sin categoría',
+        slug: 'sin-categoria',
+        orden: 0,
+        activa: true,
+        id: 'sin-categoria',
+        esDefault: true,
+      });
+      expect(result.esDefault).toBe(true);
+      expect(store.get('categorias/sin-categoria')?.esDefault).toBe(true);
+    });
   });
 
   describe('findAll', () => {
