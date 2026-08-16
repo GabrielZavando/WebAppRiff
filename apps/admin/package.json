@@ -1,6 +1,6 @@
 {
   "name": "@riff/admin",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Panel de administración Angular - Riff Catálogo Digital",
   "scripts": {

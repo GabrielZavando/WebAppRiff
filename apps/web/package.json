@@ -1,6 +1,6 @@
 {
   "name": "@riff/web",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Sitio público Astro SSG - Riff Catálogo Digital",
   "type": "module",

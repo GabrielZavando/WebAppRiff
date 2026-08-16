@@ -1,6 +1,6 @@
 {
   "name": "riff-catalogo-digital",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Riff Catálogo Digital Headless — Mono-repo con NestJS (BFF), Astro (sitio público SSG) y Angular (panel admin)",
   "workspaces": [
