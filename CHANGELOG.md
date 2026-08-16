@@ -17,9 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `AGENTS.md`: restored the skill trigger table (name + trigger) that was replaced by a pointer to `ai-specs/README.md`. Since `AGENTS.md` is the file auto-loaded via `instructions[]` and `ai-specs/README.md` is not, the pointer left the auto-load matching mechanism with nothing to match against.
 - `check-refs.sh`: added a guard that fails if any `ai-specs/skills/*/` folder is not mentioned in `AGENTS.md`, to catch this class of drift automatically.
 
-## [0.1.0] - 2026-07-16
+## [0.1.0] - 2026-08-16
 
 ### Added
+- **search-form-categories**: `SearchForm` now sources its category list from the backend at build time (`GET /api/v1/categories?activa=true`) with a safe fallback to the default option only when the API is unreachable. The backend emits a `CATEGORIES_WEBHOOK_URL` webhook on category create/update/delete so the static Astro site rebuilds.
 - SDD template: `AGENTS.md`, `opencode.json` y agentes (`plan`, `build`, `reviewer`).
 - Estándares base y por área: `docs/base-standards.md`, `backend-`, `frontend-`, `documentation-`.
 - Skills reutilizables en `ai-specs/skills/` (enrich-us, commit, code-auditing, using-git-worktrees, deploy, onboarding).
