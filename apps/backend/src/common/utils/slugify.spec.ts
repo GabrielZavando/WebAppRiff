@@ -1,4 +1,4 @@
-import { slugify } from './slugify';
+import { slugify } from '@/common/utils/slugify';
 
 describe('slugify', () => {
   it('lowercases and replaces spaces with hyphens', () => {

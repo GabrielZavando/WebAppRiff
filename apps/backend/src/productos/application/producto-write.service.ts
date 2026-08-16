@@ -13,7 +13,7 @@ import {
 } from '../domain/iproducto.repository';
 import { Producto, ProductoInput, ProductoUpdateInput } from '../domain/producto.entity';
 import { ProductoConsistencyService } from './producto-consistency.service';
-import { slugify } from './slugify';
+import { slugify } from '@/common/utils/slugify';
 import { FichaTecnicaDto, GaleriaItemDto } from '../infrastructure/producto-nested.dto';
 import { ProductoCreateDto } from '../infrastructure/producto-create.dto';
 import { ProductoUpdateDto } from '../infrastructure/producto-update.dto';
