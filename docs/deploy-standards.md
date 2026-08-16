@@ -74,6 +74,7 @@
 | `FIREBASE_CLIENT_EMAIL` | Service account email | `firebase-adminsdk@...` |
 | `FIREBASE_PRIVATE_KEY` | Service account private key | `-----BEGIN PRIVATE KEY-----...` |
 | `NESTJS_API_URL` | URL pública del backend | `https://api.riff.cl/v1` |
+| `CATEGORIES_WEBHOOK_URL` | Webhook de Coolify (o similar) disparado por el backend al crear/actualizar/eliminar una categoría, para reconstruir el sitio Astro estático y reflejar la nueva lista de categorías. Si no está definido, el backend no intenta notificar (no-op). | `https://coolify.example.com/api/v1/deploy?token=xxx` |
 | `ASTRO_SITE_URL` | URL pública del sitio Astro | `https://catalogo.riff.cl` |
 | `ANGULAR_ADMIN_URL` | URL pública del panel admin | `https://admin.riff.cl` |
 

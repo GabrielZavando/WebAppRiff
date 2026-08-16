@@ -851,6 +851,12 @@ paths:
           $ref: '#/components/schemas/Error'
     post:
       summary: Crear categoría
+      description: >
+        On success, the backend emits a category-change notification: an HTTP POST
+        to the `CATEGORIES_WEBHOOK_URL` environment variable (when configured), so
+        static front-ends (e.g. the Astro public site) can rebuild and pick up the
+        new category list. The webhook is fire-and-forget and never affects this
+        response — the mutation is confirmed (201) regardless of webhook health.
       security:
         - bearerAuth: []
       requestBody:
@@ -896,6 +902,11 @@ paths:
           $ref: '#/components/schemas/Error'
     put:
       summary: Actualizar categoría
+      description: >
+        On success, the backend emits a category-change notification (HTTP POST to
+        the `CATEGORIES_WEBHOOK_URL` env var when configured) so static front-ends
+        rebuild with the updated category list. Fire-and-forget; never affects the
+        response.
       security:
         - bearerAuth: []
       parameters:
@@ -929,6 +940,12 @@ paths:
           $ref: '#/components/schemas/Error'
     delete:
       summary: Eliminar categoría (bloqueado si tiene productos o esDefault=true)
+      description: >
+        On success, the backend emits a category-change notification (HTTP POST to
+        the `CATEGORIES_WEBHOOK_URL` env var when configured) so static front-ends
+        rebuild without the removed category. Fire-and-forget; never affects the
+        response. Deletion is blocked with 409 if the category has products or is
+        the default category (`esDefault: true`).
       security:
         - bearerAuth: []
       parameters:
