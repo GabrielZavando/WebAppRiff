@@ -11,7 +11,7 @@ servers:
   - url: http://localhost:3000/api/v1
     description: Desarrollo local
   - url: https://api.riff.cl/v1
-    description: Producción (PENDIENTE: definir dominio final)
+    description: "Producción (PENDIENTE: definir dominio final)"
 
 components:
   securitySchemes:
@@ -354,12 +354,16 @@ components:
 
     CategoriaCreate:
       type: object
-      required: [nombre, slug]
+      required: [nombre]
       properties:
         nombre:
           type: string
         slug:
           type: string
+          description: >-
+            URL-friendly identifier. Optional: when omitted it is auto-generated
+            from `nombre` via slugify (lowercase, diacritics removed,
+            non-alphanumeric characters replaced by hyphens).
         orden:
           type: integer
           default: 0
@@ -404,7 +408,7 @@ components:
 
     SubcategoriaCreate:
       type: object
-      required: [categoriaId, nombre, slug]
+      required: [categoriaId, nombre]
       properties:
         categoriaId:
           type: string
@@ -412,6 +416,10 @@ components:
           type: string
         slug:
           type: string
+          description: >-
+            URL-friendly identifier. Optional: when omitted it is auto-generated
+            from `nombre` via slugify (lowercase, diacritics removed,
+            non-alphanumeric characters replaced by hyphens).
         orden:
           type: integer
           default: 0
