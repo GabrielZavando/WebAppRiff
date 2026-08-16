@@ -132,9 +132,8 @@ define los productos como un objeto `productos` keyed por id determinista:
 - `slug` es opcional: si se omite se auto-genera desde `titulo` vía `slugify`.
 - `categoriaId` es opcional y por defecto es `sin-categoria`.
 - `precio.moneda` se **ignora** (el data model fija CLP; no es parte de la entidad).
-- `galeria` se siembra como arreglo vacío. La migración de imágenes desde el
-  hosting anterior (`_imagenesPendientesMigracion` en el seed) es un ticket
-  aparte y no se ejecuta aquí.
+- `galeria` se siembra como arreglo vacío; se puebla posteriormente con
+   `npm run migrate:productos:imagenes` (ver sección siguiente).
 - El seed reutiliza las reglas de dominio: unicidad de `sku`/`slug` y
   consistencia categoría/subcategoría.
 
@@ -163,4 +162,65 @@ colisiona en slug). El producto `prod-069` se siembra con slug
 Total sembrado: 70 documentos (68 publicados + 2 no publicados: `prod-014`,
 `prod-069`). En re-ejecuciones idempotentes el conteo cambia a
 `X created, Y omitted`.
+
+# Migración de Imágenes de Producto
+
+Comando CLI que migra las imágenes de producto desde el hosting WordPress anterior
+hacia Firebase Storage y puebla `galeria` de cada producto, vinculándolas por su
+`id` determinista. Las URLs origen viven en `_imagenesPendientesMigracion` dentro
+de `seed-productos-71.json`.
+
+## Comando
+
+```bash
+# Desde la raíz del workspace backend
+npm run migrate:productos:imagenes
+```
+
+Equivalente a:
+
+```bash
+nest build && node dist/cli/migrate-imagenes.js
+```
+
+## Variables de entorno
+
+| Variable                 | Descripción                                                              | Default                                |
+|--------------------------|--------------------------------------------------------------------------|----------------------------------------|
+| `SEED_FILE_PATH`         | Ruta al JSON de seed de productos (de donde se lee `_imagenesPendientesMigracion`). | `seed-productos-71.json` en la raíz del monorepo. |
+| `MIGRACION_REPORTE_PATH` | Ruta del reporte JSON de salida.                                         | `migracion-imagenes-reporte.json` en `cwd`. |
+
+Requiere las credenciales de Firebase (`FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`,
+`FIREBASE_PRIVATE_KEY`), igual que el backend.
+
+## Qué hace
+
+- Por cada `productoId` en `_imagenesPendientesMigracion`:
+  - Si el documento no existe en Firestore → se omite (p. ej. `prod-054`, excluido del seed).
+  - Si ya tiene `galeria` completa → se omite (idempotencia por completitud).
+  - Si no, descarga cada imagen (con reintentos y backoff), la optimiza con `sharp`
+    a WebP (ancho máx. 800px, calidad 82), la sube a `productos/{id}/{orden}.webp`
+    (pública, cache 1 año) y persiste el arreglo `GaleriaItem[]` vía el repositorio
+    de dominio (`IProductRepository.update`).
+- Es tolerante a fallos: un error de imagen/producto se registra y continúa; los
+  productos con fallos aparecen en `fallidos` del reporte para seguimiento manual.
+- Respeta la invariante del data model de máximo 10 imágenes (trunca y advierte).
+
+## Idempotencia y re-ejecución
+
+Seguro de correr varias veces: omite lo ya migrado completamente y completa los
+productos parciales en corridas siguientes. El reporte `migracion-imagenes-reporte.json`
+detalla `exitosos` / `fallidos` / `omitidos` / `advertencias`.
+
+## Dry-run
+
+```bash
+npm run migrate:productos:imagenes -- --dry-run
+```
+
+No descarga ni escribe: reporta lo que migraría. Útil para validar el mapa antes
+de tocar Storage/Firestore.
+
+> Nota: el comando no altera `docs/api-spec.yml` (no hay cambio de contrato HTTP).
+
 
