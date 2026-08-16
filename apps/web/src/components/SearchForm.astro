@@ -37,9 +37,10 @@ function isSelected(categoryId: string): boolean {
 <!--
   Global search form, dumb presentational component. Receives all data
   through props; the layout (Layout.astro) owns the configuration via
-  CATEGORY_OPTIONS and getSearchFormConfig(). Wrapped in a role="search"
-  landmark so it doesn't introduce a new <header> landmark (single-header
-  rule inherited from the site-header change).
+  getSearchFormCategories() (backend-sourced at build time) and
+  getSearchFormConfig(). Wrapped in a role="search" landmark so it doesn't
+  introduce a new <header> landmark (single-header rule inherited from the
+  site-header change).
 -->
 <div
   role="search"

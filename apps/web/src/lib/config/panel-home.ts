@@ -7,8 +7,9 @@ import type { PanelHomeProps } from '@/lib/types/panel-home';
  * spread it onto `<PanelHome {...PANEL_HOME_CONTENT} />` without the component
  * itself needing to know the marketing copy or the stats figures. Keeping it
  * hardcoded is consistent with `HERO_BANNER_CONTENT` (hero),
- * `NAVIGATION_ITEMS` (site-header) and `CATEGORY_OPTIONS` (search-form): as
- * the site is SSG, any change requires a rebuild anyway.
+ * `NAVIGATION_ITEMS` (site-header) and the search-form categories (sourced
+ * from the backend at build time): as the site is SSG, any change requires a
+ * rebuild anyway.
  *
  * The future change `contentful-from-cms` will replace this with content
  * injected via props without touching the component (same migration path as

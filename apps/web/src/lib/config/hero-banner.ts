@@ -6,8 +6,10 @@ import type { HeroBannerProps } from '@/lib/types/hero-banner';
  * Lives in `lib/config/` so the page (`apps/web/src/pages/index.astro`) can
  * spread it onto `<HeroBanner {...HERO_BANNER_CONTENT} />` without the
  * component itself needing to know the marketing copy. Keeping it hardcoded
- * is consistent with `NAVIGATION_ITEMS` (header) and `CATEGORY_OPTIONS`
- * (search-form): as the site is SSG, any change requires a rebuild anyway.
+ * is consistent with `NAVIGATION_ITEMS` (header) and the search-form
+ * categories (sourced from the backend at build time via
+ * `getSearchFormCategories`): as the site is SSG, any change requires a rebuild
+ * anyway.
  * The future change `contentful-from-cms` will replace this with content
  * injected via props without touching the component.
  */

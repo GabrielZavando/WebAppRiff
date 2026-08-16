@@ -1,24 +1,14 @@
-import type { CategoryOption, SearchFormConfig } from '@/lib/types/search-form';
+import type { SearchFormConfig } from '@/lib/types/search-form';
 
 /**
- * Hardcoded category options for the search form `<select>`.
+ * Default values for the search form configuration.
  *
- * The first option is the implicit "no filter" choice: it has an empty `id`
- * so the canonical search URL omits `categoriaId` when it is selected. The
- * rest are stable placeholder categories of the Riff domain. They will be
- * replaced with the real list coming from Firestore when the change
- * `product-catalog` consumes the API at runtime. Keeping them hardcoded for
- * now is consistent with `NAVIGATION_ITEMS` in `navigation.ts`: any change
- * requires a rebuild anyway because the site is SSG.
+ * The category options for the `<select>` are no longer hardcoded here: they
+ * are sourced at build time from the backend via `lib/api/categories.ts`
+ * (`getSearchFormCategories`), which keeps the list dynamic while the site
+ * remains statically generated (SSG). The "Todas las categorías" default
+ * option and ordering live in that module.
  */
-export const CATEGORY_OPTIONS: readonly CategoryOption[] = [
-  { id: '', label: 'Todas las categorías' },
-  { id: 'herramientas', label: 'Herramientas' },
-  { id: 'seguridad', label: 'Seguridad' },
-  { id: 'electricidad', label: 'Electricidad' },
-];
-
-/** Default values for the search form configuration. */
 export const SEARCH_FORM_DEFAULTS: Readonly<SearchFormConfig> = {
   action: '/productos',
   submitLabel: 'BUSCAR',

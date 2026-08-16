@@ -7,7 +7,8 @@ import Footer from '@/components/Footer.astro';
 import SiteCredits from '@/components/SiteCredits.astro';
 import { getContactInfo } from '@/lib/config/contact';
 import { NAVIGATION_ITEMS, getCtaConfig } from '@/lib/config/navigation';
-import { CATEGORY_OPTIONS, getSearchFormConfig } from '@/lib/config/search-form';
+import { getSearchFormConfig } from '@/lib/config/search-form';
+import { getSearchFormCategories } from '@/lib/api/categories';
 import { SITE_FOOTER_CONTENT } from '@/lib/config/footer';
 import { SITE_CREDITS_CONTENT } from '@/lib/config/site-credits';
 import { Picture } from 'astro:assets';
@@ -44,7 +45,7 @@ const headerProps: HeaderProps = {
 // browser back button or a link). The component itself is dumb: it only
 // consumes these props and renders.
 const searchFormProps: SearchFormProps = {
-  categories: CATEGORY_OPTIONS,
+  categories: await getSearchFormCategories(),
   config: getSearchFormConfig(),
   initialQuery: Astro.url.searchParams.get('q') ?? '',
   initialCategoriaId: Astro.url.searchParams.get('categoriaId') ?? '',

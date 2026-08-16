@@ -12,8 +12,9 @@ import controlImg from '@/assets/img/control-accesorios.webp';
  * spread it onto `<SolutionSection {...SOLUTION_SECTION_CONTENT} />` without
  * the component itself needing to know the marketing copy or the image
  * imports. Keeping it hardcoded is consistent with `HERO_BANNER_CONTENT`,
- * `PANEL_HOME_CONTENT`, `NAVIGATION_ITEMS` and `CATEGORY_OPTIONS`: as the
- * site is SSG, any change requires a rebuild anyway.
+ * `PANEL_HOME_CONTENT`, `NAVIGATION_ITEMS` and the search-form categories
+ * (sourced from the backend at build time): as the site is SSG, any change
+ * requires a rebuild anyway.
  *
  * The images are real-catalog photos delivered by the client (POST-APPLY
  * UPDATE on 2026-08-09): `medicion-fluidos.webp`, `tratamiento-agua.webp`,
