@@ -1,0 +1,2186 @@
+{
+  "_readme": {
+    "descripcion": "Seed de los 71 productos clasificados con confianza ALTA (de 89 totales). Los 18 restantes (Media/Baja) quedan pendientes de confirmación con el cliente.",
+    "coleccion": "productos",
+    "idDocumento": "usar la clave de cada objeto (ej. 'prod-001') como ID del documento en Firestore",
+    "timestamps": "creadoEn y actualizadoEn deben generarse con serverTimestamp() al momento de la escritura",
+    "imagenes": "las URLs originales (hosting anterior) están en el bloque '_imagenesPendientesMigracion', separadas del modelo de producto porque aún no se han migrado a Firebase Storage. El campo 'galeria' de cada producto queda vacío hasta completar esa migración.",
+    "publicadoFalse": "3 productos quedan con publicado=false: 1 requiere crear la subcategoría 'Medidores de Nivel' antes de publicarse, y 2 son el segundo miembro de un par duplicado (ver '_pendientes')."
+  },
+  "productos": {
+    "prod-001": {
+      "idExterno": null,
+      "sku": "SKU-PEND-001",
+      "titulo": "MWN - Medidor Industrial para Agua Fría Limpia - Medidor Tipo Woltman",
+      "slug": "mwn-medidor-industrial-para-agua-fria-limpia-medidor-tipo-woltman",
+      "descripcionBreve": "MWN es un contador de agua de hélice, esfera seca, tipo Waltman con el eje\r\\nhorizontal del rotor, paralelo a los conductos hidráulicos. Los contadores de\r\\nagua MWN se caracterizan por unas soluciones constructivo-tecnológicas\r\\nmodernas, gracias a ellas son sólidos y trabajan bien con los emisores de\r\\nimpulsos y sistemas de lectura a distancia.\r\\n\r\\n– Medidor mecánico para agua limpia,\r\\n– Medidor con emisor de pulso.\r\\n– Diámetro de DN40 a DN250, stock permanente. Consultar por otros diámetros.\r\\n– Presión nominal: PN16\r\\n– Origen: Polonia",
+      "descripcionLarga": "<p>VENTAJAS<br />„ Construcción duradera e infalible, que condiciona los flujos de agua con unas pérdidas de presión bajas y facilidad<br />del montaje en las instalaciones hidráulicas de todo tipo<br />„ Masa del contador bajada<br />„ Mecanismo de medición extraíble y unificado, encaja a unos tamaños del corpus y condiciona una administración<br />óptima de contadores<br />„ En el estándar, el contador de agua está acondicionado a la lectura a distancia en el sistema AMR<br />„ Posibilidad de colocación del contador en las posiciones intermedias, sin influir en los parámetros metrológicos –<br />mayores posibilidades en planeamiento de nuevos racores y modernización de los ya utilizados<br />„ Muy buenas propiedades anticorrosivas y mecánicas de la capa de pintura (pinturas en polco - epóxidas)<br /><br />CARACTERÍSTICAS PARTICULARES DEL CONTADOR DE AGUA<br />„ Resistencia a la actividad del polo magnético exterior, según la EN 14154-3<br />„ Bajo umbral del arranque<br />„ Amplio margen de mediciones<br />„ Facilidad de lectura en cualquier posicionamiento del totalizador, colocado giratoriamente<br />en la protección con tapa<br />„ Posibilidad de verificación electrónica de parámetros metrológicos del contador de agua<br />„ Construcción modular<br />„ Mecanismo de medición extraíble<br />„ Embrague magnético</p><p>FICHA TÉCNICA<br /><a href=\"https://somosriff.cl/wp-content/uploads/2025/05/mwn-ip68-ip65-catalogue_compressed.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a></p>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-mecanicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-002": {
+      "idExterno": null,
+      "sku": "SKU-PEND-002",
+      "titulo": "MWN 130 - Medidor Industrial para Agua Caliente",
+      "slug": "mwn-130-medidor-industrial-para-agua-caliente",
+      "descripcionBreve": "– Medidor mecánico para agua limpia, con emisión de pulsos.\r\\n– Diámetros de 2″ a 4″, stock permanente. Consultar por otros diámetros.\r\\n– Temperatura: hasta 130°C\r\\n– Presión nominal: PN16\r\\n– Origen: Polonia",
+      "descripcionLarga": "FICHA TÉCNICA\\n\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/05/mwn130-nc-catalogue_compressed.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-mecanicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-003": {
+      "idExterno": null,
+      "sku": "SKU-PEND-003",
+      "titulo": "WI - Medidor Industrial para Agua Fría, Agua de Riego y Riles Pre Filtrados",
+      "slug": "wi-medidor-industrial-para-agua-fria-agua-de-riego-y-riles-pre-filtrados",
+      "descripcionBreve": "– Medidor mecánico para agua limpia, agua de riego, aguas riles\r\\n– Medidor de turbina\r\\n– Medidor con emisor de pulso.\r\\n– Diámetros de 2″ a 8″, stock permanente. Consultar por otros diámetros.\r\\n– Presión nominal: PN16\r\\n– Origen: Polonia",
+      "descripcionLarga": "FICHA TÉCNICA\\n\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/03/APATOR-POWOGAZ-WI.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-mecanicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-004": {
+      "idExterno": null,
+      "sku": "APA-JS9-NKH",
+      "titulo": "Medidor JS90 NK",
+      "slug": "medidor-js90-nk",
+      "descripcionBreve": "– Medidor mecánico para agua limpia\r\\n– Diámetros de 1/2″ a 3/4″\r\\n– Temperatura: hasta 90°C\r\\n– Presión nominal: PN16\r\\n– Origen: Polonia",
+      "descripcionLarga": "&lt;div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\"&gt;\r\\n&lt;div class=\"et_pb_text_inner\"&gt;\r\\n\r\\n&lt;strong&gt;ESPECIFICACIONES&lt;/strong&gt;\r\\n\r\\n&lt;/div&gt;\r\\n&lt;/div&gt;\r\\n&lt;div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\"&gt;\r\\n&lt;div class=\"et_pb_module_inner\"&gt;\r\\n\r\\n– Medidor mecánico para agua limpia\r\\n– Diámetros de 1/2″ a 3/4″\r\\n– Temperatura: hasta 90°C\r\\n– Presión nominal: PN16\r\\n– Origen: Polonia\r\\n\r\\n&lt;/div&gt;\r\\n&lt;/div&gt;\r\\n&lt;div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\"&gt;\r\\n&lt;div class=\"et_pb_text_inner\"&gt;FICHA TÉCNICA&lt;/div&gt;\r\\n&lt;/div&gt;\r\\n&lt;div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\"&gt;\r\\n&lt;div class=\"et_pb_text_inner\"&gt;\r\\n\r\\n&lt;a href=\"https://somosriff.cl/wp-content/uploads/2025/02/APATOR-POWOGAZ-JS90-NK.pdf\" target=\"_blank\" rel=\"noopener noreferrer\"&gt;Ficha Técnica 1&lt;/a&gt;\r\\n\r\\n&lt;/div&gt;\r\\n&lt;/div&gt;",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-mecanicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-005": {
+      "idExterno": null,
+      "sku": "SEN-MEI-IND",
+      "titulo": "Medidor MeiStream",
+      "slug": "medidor-meistream",
+      "descripcionBreve": "– Medidor mecánico para agua limpia.\r\\n– Diámetro de DN50 a DN150\r\\n– Temperatura: hasta 70°C\r\\n– Presión nominal: PN16\r\\n– Origen: Alemania",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\n– Medidor mecánico para agua limpia.\r\\n– Diámetro de DN50 a DN150\r\\n– Temperatura: hasta 70°C\r\\n– Presión nominal: PN16\r\\n– Origen: Alemania\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/02/SENSUS-MEISTREAM.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-mecanicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-008": {
+      "idExterno": null,
+      "sku": "RIF-FPC-ULT",
+      "titulo": "Medidor Fullsonic Pro Compact",
+      "slug": "medidor-fullsonic-pro-compact",
+      "descripcionBreve": "MEDIDOR PARA REDES DE ABASTECIMIENTO DE AGUA MODELO FULLSONIC PRO COMPACT MARCA RIFF\r\\n\r\\n– Diámetro DN40 – DN300\r\\n– Pantalla local con visualización de flujo instantáneo\r\\n– Batería de litio integrada\r\\n– Interfaz de comunicación: RS485 / USARTIR / Modbus\r\\n– Almacenamiento de datos: utilizando EEPROM/FLASH\r\\n– Función de transmisión remota GPRS",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMEDIDOR PARA REDES DE ABASTECIMIENTO DE AGUA MODELO FULLSONIC PRO COMPACT MARCA RIFF\r\\n\r\\n– Diámetro DN40 – DN300\r\\n– Pantalla local con visualización de flujo instantáneo\r\\n– Batería de litio integrada\r\\n– Interfaz de comunicación: RS485 / USARTIR / Modbus\r\\n– Almacenamiento de datos: utilizando EEPROM/FLASH\r\\n– Función de transmisión remota GPRS\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\"></div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-ultrasonicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-009": {
+      "idExterno": null,
+      "sku": "SKU-PEND-009",
+      "titulo": "FULLSONIC Canal Abierto - Medidor Ultrasónico de Canal Abierto",
+      "slug": "fullsonic-canal-abierto-medidor-ultrasonico-de-canal-abierto",
+      "descripcionBreve": "MEDIDOR ULTRASÓNICO DE CANAL ABIERTO PARA INSTRUMENTOS SIN CONTACTO FULLSONIC – RIFF\r\\n\r\\n– Para vertederos tipo : Canal de Parshall, vertedero rectangular, vertedero triangular\r\\n– Salida de relé: Límite superior, alarma y control de límite inferior (flujo y nivel instantáneos) Flujo acumulativo, Salida de pulsos\r\\n– Temperatura ambiente: -40- + 70 grados °C\r\\n– Protección: IP67\r\\n– Resolución de nivel de líquido: 1 mm\r\\n– Salida señal Analógica: Salida de corriente de un canal DC4-20mA, corresponde al flujo instantáneo",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nMEDIDOR ULTRASÓNICO DE CANAL ABIERTO PARA INSTRUMENTOS SIN CONTACTO FULLSONIC – RIFF\\n\\n– Para vertederos tipo : Canal de Parshall, vertedero rectangular, vertedero triangular\\n– Salida de relé: Límite superior, alarma y control de límite inferior (flujo y nivel instantáneos) Flujo acumulativo, Salida de pulsos\\n– Temperatura ambiente: -40- + 70 grados °C\\n– Protección: IP67\\n– Resolución de nivel de líquido: 1 mm\\n– Salida señal Analógica: Salida de corriente de un canal DC4-20mA, corresponde al flujo instantáneo\\n\\n</div>\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-ultrasonicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-010": {
+      "idExterno": null,
+      "sku": "RIF-FSW-ULT",
+      "titulo": "Medidor Fullsonic Wall Mounted",
+      "slug": "medidor-fullsonic-wall-mounted",
+      "descripcionBreve": "MEDIDOR ULTRASÓNICO NO INVASIVO FULLSONIC – RIFF\r\\n\r\\n– Linealidad: 0.5%\r\\n– Repetibilidad: 0.2%\r\\n- Precisión: ± 1% de la lectura a tasas&gt; 0.2mps\r\\n- Respuesta: 0-999 segundos.\r\\n- Totalizador: totalizadores de 7 dígitos para acumulación neta y acumulaciones positivas y negativas.\r\\n- Contador parcial y caudal instantáneo\r\\n- Velocidad: ± 64m / s (velocidad resolución 0.001 m / s)\r\\n- Tamaño de la tubería: 15mm-6000mm\r\\n- Materiales de tubería permitidos: Acero",
+      "descripcionLarga": "MEDIDOR ULTRASÓNICO NO INVASIVO FULLSONIC – RIFF\r\\n\r\\n– Linealidad: 0.5%\r\\n– Repetibilidad: 0.2%\r\\n- Precisión: ± 1% de la lectura a tasas&amp;gt; 0.2mps\r\\n- Respuesta: 0-999 segundos.\r\\n- Totalizador: totalizadores de 7 dígitos para acumulación neta y acumulaciones positivas y negativas.\r\\n- Contador parcial y caudal instantáneo\r\\n- Velocidad: ± 64m / s (velocidad resolución 0.001 m / s)\r\\n- Tamaño de la tubería: 15mm-6000mm\r\\n- Materiales de tubería permitidos: Acero",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-ultrasonicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-011": {
+      "idExterno": null,
+      "sku": "SKU-PEND-011",
+      "titulo": "FULLSONIC Portable - Medidor Ultrasónico Portable",
+      "slug": "fullsonic-portable-medidor-ultrasonico-portable",
+      "descripcionBreve": "MEDIDOR ULTRASÓNICO PORTABLE NO INVASIVO FULLSONIC – RIFF\r\\n\r\\n– Medición de alta precisión: Precisión: 1%, linealidad: 0.5%, repetibilidad: 0.2%\r\\n– Amplio rango de medición: DN15 ~ DN6000\r\\n– Batería de gran capacidad: Batería Ni-MH, funciona más de 12 horas\r\\n– Medición no intrusiva: abrazadera en el transductor, sin caída de presión\r\\n– Pantalla LCD con variados resultados como flujo acumulado, velocidad, estado de funcionamiento, etc.\r\\n– Registrador de datos integrado: almacena más de 2000 líneas de datos de medición",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMEDIDOR ULTRASÓNICO PORTABLE NO INVASIVO FULLSONIC – RIFF\r\\n\r\\n– Medición de alta precisión: Precisión: 1%, linealidad: 0.5%, repetibilidad: 0.2%\r\\n– Amplio rango de medición: DN15 ~ DN6000\r\\n– Batería de gran capacidad: Batería Ni-MH, funciona más de 12 horas\r\\n– Medición no intrusiva: abrazadera en el transductor, sin caída de presión\r\\n– Pantalla LCD con variados resultados como flujo acumulado, velocidad, estado de funcionamiento, etc.\r\\n– Registrador de datos integrado: almacena más de 2000 líneas de datos de medición\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nDESCARGAS\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/09/RIFF-ULTRASONICO-PORTABLE.pdf\"><strong>Ver Ficha</strong></a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-ultrasonicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-012": {
+      "idExterno": null,
+      "sku": "SKU-PEND-012",
+      "titulo": "FULLMASS Vortex - Medidor Másico Tipo Vortex",
+      "slug": "fullmass-vortex-medidor-masico-tipo-vortex",
+      "descripcionBreve": "MEDIDOR MÁSICO TIPO VORTEX FULLMAS – RIFF PARA VAPOR, GASES Y LÍQUIDOS\r\\n\r\\n– Tamaño DN15 – DN300\r\\n– Flange DIN, ANSI, JIS estándar seleccionable\r\\n– Cuerpo principal SS304, material SS316 seleccionable\r\\n– Sensor de temperatura integrado al sensor de flujo, reduce el punto de fuga\r\\n– Sensor incorporado a la estructura, proteger mejor el sensor de flujo",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nMEDIDOR MÁSICO TIPO VORTEX FULLMAS – RIFF PARA VAPOR, GASES Y LÍQUIDOS\\n\\n– Tamaño DN15 – DN300\\n– Flange DIN, ANSI, JIS estándar seleccionable\\n– Cuerpo principal SS304, material SS316 seleccionable\\n– Sensor de temperatura integrado al sensor de flujo, reduce el punto de fuga\\n– Sensor incorporado a la estructura, proteger mejor el sensor de flujo\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\nFICHA TÉCNICA\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/02/RIFF-FULLMASS-VORTEX.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\\n\\n</div>\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-masicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-013": {
+      "idExterno": null,
+      "sku": "SKU-PEND-013",
+      "titulo": "FULLMAS Thermal – Medidor Másico Térmico",
+      "slug": "fullmas-thermal-medidor-masico-termico",
+      "descripcionBreve": "Medición del flujo másico o volumétrico del gas.\r\\n\r\\n- Amplio rango: 0.5Nm / s ~ 100Nm / s para gas. El medidor también se puede utilizar para la detección de fugas de gas.\r\\n- Buena resistencia a la vibración y larga vida útil. No hay partes móviles ni sensor de presión en el transductor, ninguna influencia de vibración en la precisión de la medición.\r\\n- Fácil instalación y mantenimiento. Si las condiciones en el sitio son permisibles, el medidor puede lograr una instalación y mantenimiento de acceso directo. (Pedido especial de encargo).\r\\n- Diseño digital, alta precisión y estabilidad.\r\\n- Configuración con interfaz RS485 o HART para realizar la automatización e integración de fábrica.",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nMedición del flujo másico o volumétrico del gas.\\n\\n– Amplio rango: 0.5Nm / s ~ 100Nm / s para gas. El medidor también se puede utilizar para la detección de fugas de gas.\\n– Buena resistencia a la vibración y larga vida útil. No hay partes móviles ni sensor de presión en el transductor, ninguna influencia de vibración en la precisión de la medición.\\n– Fácil instalación y mantenimiento. Si las condiciones en el sitio son permisibles, el medidor puede lograr una instalación y mantenimiento de acceso directo. (Pedido especial de encargo).\\n– Diseño digital, alta precisión y estabilidad.\\n– Configuración con interfaz RS485 o HART para realizar la automatización e integración de fábrica.\\n\\n</div>\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-masicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-014": {
+      "idExterno": null,
+      "sku": "SKU-PEND-014",
+      "titulo": "P-Level - Medidor de Nivel Freático",
+      "slug": "p-level-medidor-de-nivel-freatico",
+      "descripcionBreve": "– Medidor de nivel freático para aplicación de la medida de presión de líquidos\r\\n– Rango de medida: Hasta 200mca\r\\n– Rango: 0.3mts – 200mts.\r\\n– Fluidos: agua, aceite, etc.\r\\n– Material del cuerpo: acero inoxidable ph 17-4\r\\n– Temperatura media: -40 a +80 grados Celsius.\r\\n– Señal de salida: Analógica en corriente.",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\n– Medidor de nivel freático para aplicación de la medida de presión de líquidos\\n– Rango de medida: Hasta 200mca\\n– Rango: 0.3mts – 200mts.\\n– Fluidos: agua, aceite, etc.\\n– Material del cuerpo: acero inoxidable ph 17-4\\n– Temperatura media: -40 a +80 grados Celsius.\\n– Señal de salida: Analógica en corriente.\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\nFICHA TÉCNICA\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/02/RIFF-P-LEVEL.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\\n\\n</div>\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": null,
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": false
+    },
+    "prod-015": {
+      "idExterno": null,
+      "sku": "RIF-FMS-SANI",
+      "titulo": "Flujómetro Sanitario Fullmag",
+      "slug": "flujometro-sanitario-fullmag",
+      "descripcionBreve": "MEDIDOR ELECTROMAGNÉTICO FULLMAG SANITARY - RIFF\r\\nFlujómetro para aplicaciones sanitarias.\r\\nDetalles y ficha técnica en ESPECIFICACIONES.",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nESPECIFICACIONES\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nFULLMAG SANITARY, Flujómetro de tipo electromagnético, medidor de flujo especial para aplicaciones sanitarias, como industria farmaceútica, alimenticia, química, entre otros que requieran terminaciones y conexiones de tipo sanitario. Los flujómetros FULLMAG SANITARY, han sido desarrollados para las aplicaciones mas exigentes.\r\\n\r\\n– Precisión: ± 0.5%, ± 0.2%;\r\\n– Excelente precisión de medición a baja velocidad, podría medir flujos de doble dirección;\r\\n– Tecnología de bobinado de bobinas de precisión hace que el campo magnético sea más uniforme;\r\\n– Electrodos de referencia incorporados, sin necesidad de conectar el anillo de tierra.\r\\n– Excitación de doble frecuencia, y punto cero estable.\r\\n– Función de autodiagnóstico, y operación inteligente.\r\\n– Más información en ficha técnica, desargue en el link aquí abajo.\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/02/RIFF-FULLMAG-SANITARIO.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-electromagneticos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-016": {
+      "idExterno": null,
+      "sku": "SKU-PEND-016",
+      "titulo": "INPRO – Flujómetro de Inserción",
+      "slug": "inpro-flujometro-de-insercion",
+      "descripcionBreve": "MEDIDOR ELECTROMAGNÉTICO FULLMAG INPRO – RIFF\r\\nFlujómetro de inserción, líquidos electroconductivos.\r\\nDetalles y ficha técnica en ESPECIFICACIONES.",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nESPECIFICACIONES\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nFULLMAG INPRO, flujómetro electromagnético de inserción desarrollado por RIFF para una medición precisa de líquidos electroconductivos con mínima intervención en la línea. Este medidor ha sido diseñado para facilitar la instalación en sistemas existentes sin necesidad de cortar completamente la cañería, minimizando así las pausas operativas. Es una solución eficiente y confiable para aplicaciones en agua industrial, riego, procesos productivos y otras áreas donde se requiere una instalación práctica sin comprometer la precisión en la medición.\r\\n\r\\n– Diámetros DN100 a DN3000\r\\n– Exactitud ±1.5% de lectura, velocidad &gt;0.3 m/ s\r\\n– Temperatura: -20°C / 80°C\r\\n– Electrodo: SS316L, Hastelloy C, Hastelloy B, titanio, tantalio, platino-iridio\r\\n– Comunicación: pulso, 4-20mA, RS485 MODBUS estándar, HART, GPRS, PROFIBUS opcional\r\\n– Más información en ficha técnica, desargue en el link aquí abajo.\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/02/RIFF-FULLMAG-INPRO.pdf\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-electromagneticos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-019": {
+      "idExterno": null,
+      "sku": "SKU-PEND-019",
+      "titulo": "JS90 – Medidor Domiciliario para Agua Caliente",
+      "slug": "js90-medidor-domiciliario-para-agua-caliente",
+      "descripcionBreve": "– Medidor mecánico para agua limpia\r\\n– Diámetros de 1/2″ a 3/4″, stock permanente. Consultar por otros diámetros.\r\\n– Temperatura: hasta 90°C\r\\n– Presión nominal: PN16\r\\n– Origen: Polonia",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nESPECIFICACIONES DEL <strong>MEDIDOR DE AGUA CALIENTE</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n<ul>\r\\n \t<li>Medidor para agua caliente mecánico para agua limpia</li>\r\\n \t<li>Diámetros de 1/2″ a 3/4″, stock permanente. Consultar por otros diámetros.</li>\r\\n \t<li>Temperatura: hasta 90°C</li>\r\\n \t<li>Presión nominal: PN16</li>\r\\n \t<li>Origen: Polonia</li>\r\\n</ul>\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/APATOR-POWOGAZ-JS90.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-mecanicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-020": {
+      "idExterno": null,
+      "sku": "SKU-PEND-020",
+      "titulo": "JS130 – Medidor Industrial para Agua Caliente Conexión Hilo",
+      "slug": "js130-medidor-industrial-para-agua-caliente-conexion-hilo",
+      "descripcionBreve": "– Medidor mecánico para agua limpia, con emisión de pulsos.\r\\n– Diámetro DN25 A DN40\r\\n– Temperatura: hasta 130°C\r\\n– Presión nominal: PN16\r\\n– Origen: Polonia",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\n– Medidor mecánico para agua limpia, con emisión de pulsos.\r\\n– Diámetro DN25 A DN40\r\\n– Temperatura: hasta 130°C\r\\n– Presión nominal: PN16\r\\n– Origen: Polonia\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/APATOR-POWOGAZ-JS130.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-mecanicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-021": {
+      "idExterno": null,
+      "sku": "SKU-PEND-021",
+      "titulo": "K24 - Medidor Contador de Litros para Diesel",
+      "slug": "k24-medidor-contador-de-litros-para-diesel",
+      "descripcionBreve": "Medidor contador de litros digital con pantalla de LCD, con sistema de turbina, para instalar en línea, para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 1″\r\\n– Caudal 7 a 120 l/min\r\\n– Caudal instantáneo\r\\n– Caudal total y caudal parcial con vuelta a cero\r\\n– Origen: Italia",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMedidor contador de litros digital con pantalla de LCD, con sistema de turbina, para instalar en línea, para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 1″\r\\n– Caudal 7 a 120 l/min\r\\n– Caudal instantáneo\r\\n– Caudal total y caudal parcial con vuelta a cero\r\\n– Origen: Italia\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/PIUSI-K24-DIESEL.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-022": {
+      "idExterno": null,
+      "sku": "SKU-PEND-022",
+      "titulo": "K24 - Medidor Contador de Litros para Agua",
+      "slug": "k24-medidor-contador-de-litros-para-agua",
+      "descripcionBreve": "Medidor contador de litros digital con pantalla de LCD, con sistema de turbina, para instalar en línea, para agua y Adblue.\r\\n– Conexión hilo 1″\r\\n– Caudal 7 a 120 l/min\r\\n– Caudal instantáneo\r\\n– Caudal total y caudal parcial con vuelta a cero\r\\n– Origen: Italia",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMedidor contador de litros digital con pantalla de LCD, con sistema de turbina, para instalar en línea, para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 1″\r\\n– Caudal 7 a 120 l/min\r\\n– Caudal instantáneo\r\\n– Caudal total y caudal parcial con vuelta a cero\r\\n– Origen: Italia\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/PIUSI-K24-DIESEL.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-023": {
+      "idExterno": null,
+      "sku": "SKU-PEND-023",
+      "titulo": "K40 - Medidor Contador de Litros",
+      "slug": "k40-medidor-contador-de-litros",
+      "descripcionBreve": "Medidor mecánico de engranajes ovales para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 1/” BSP\r\\n– Caudal hasta 30 l/min\r\\n– Reinicio total o parcial\r\\n-- Engranaje oval\r\\n– Origen: Italia",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMedidor mecánico de engranajes ovales para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 1/” BSP\r\\n– Caudal hasta 30 l/min\r\\n– Reinicio total o parcial\r\\n— Engranaje oval\r\\n– Origen: Italia\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/PIUSI-K40.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-024": {
+      "idExterno": null,
+      "sku": "SKU-PEND-024",
+      "titulo": "K33 / K44 - Medidor Contador de Litros para Diesel/Aceite",
+      "slug": "k33-k44-medidor-contador-de-litros-para-diesel-aceite",
+      "descripcionBreve": "Medidor contador de litros mecánico con 3 y 4 dígitos, para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 1″\r\\n– Caudal 20 a 120 l/min\r\\n– Funcionamiento Max. 10 BAR\r\\n– Sistema de disco Nutante\r\\n-4direcciones de caudal.\r\\n– Origen: Italia",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMedidor contador de litros mecánico con 3 y 4 dígitos, para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 1″\r\\n– Caudal 20 a 120 l/min\r\\n– Funcionamiento Max. 10 BAR\r\\n– Sistema de disco Nutante\r\\n-4direcciones de caudal.\r\\n– Origen: Italia\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/PIUSI-K33-K44.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-025": {
+      "idExterno": null,
+      "sku": "SKU-PEND-025",
+      "titulo": "K150 - Medidor Contador de Litros para Diesel/Aceite",
+      "slug": "k150-medidor-contador-de-litros-para-diesel-aceite",
+      "descripcionBreve": "Medidor contador de litros mecánico con 4 dígitos, para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 1″ BSP\r\\n– Caudal hasta 150 l/min\r\\n– Funcionamiento Max. 3,5 BAR\r\\n– Sistema de disco Nutante\r\\n-4direcciones de caudal.\r\\n– Origen: Italia",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMedidor contador de litros mecánico con 4 dígitos, para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 1″ BSP\r\\n– Caudal hasta 150 l/min\r\\n– Funcionamiento Max. 3,5 BAR\r\\n– Sistema de disco Nutante\r\\n-4direcciones de caudal.\r\\n– Origen: Italia\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/K150-PIUSI-FUEL.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-026": {
+      "idExterno": null,
+      "sku": "SKU-PEND-026",
+      "titulo": "K400 - Medidor Contador de Litros Electrónico",
+      "slug": "k400-medidor-contador-de-litros-electronico",
+      "descripcionBreve": "Medidor eléctrico de engranajes ovales para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 1/2” BSP\r\\n– Caudal hasta 30 l/min\r\\n-- Presión Max. 70 BAR\r\\n– Botón de reinicio\r\\n-- Engranaje oval\r\\n– Origen: Italia",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMedidor eléctrico de engranajes ovales para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 1/2” BSP\r\\n– Caudal hasta 30 l/min\r\\n— Presión Max. 70 BAR\r\\n– Botón de reinicio\r\\n— Engranaje oval\r\\n– Origen: Italia\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/PIUSI-K400.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-027": {
+      "idExterno": null,
+      "sku": "SKU-PEND-027",
+      "titulo": "K600/4 - Medidor Contador de Litros Electrónico",
+      "slug": "k600-4-medidor-contador-de-litros-electronico",
+      "descripcionBreve": "Medidor eléctrico de piñones ovalados para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 11,2” BSP / Filtro de entrada\r\\n– Caudal 15 a 150 l/min\r\\n-- Funcionamiento Max. 20 BAR\r\\n-- Piñones ovalados\r\\n– Origen: Italia",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMedidor eléctrico de piñones ovalados para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 11,2” BSP / Filtro de entrada\r\\n– Caudal 15 a 150 l/min\r\\n— Funcionamiento Max. 20 BAR\r\\n— Piñones ovalados\r\\n– Origen: Italia\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/PIUSI-K600-4.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-029": {
+      "idExterno": null,
+      "sku": "SKU-PEND-029",
+      "titulo": "NEXT/2 - Medidor Contador de Litros Electrónico",
+      "slug": "next-2-medidor-contador-de-litros-electronico",
+      "descripcionBreve": "Medidor eléctrico de engranajes ovales para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 3/4” BSP\r\\n– Caudal hasta 60 l/min\r\\n-- Presión Max. 70 BAR\r\\n-- Piñones ovalados\r\\n– Origen: Italia",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nESPECIFICACIONES\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMedidor eléctrico de engranajes ovales para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n– Conexión hilo 3/4” BSP\r\\n– Caudal hasta 60 l/min\r\\n— Presión Max. 70 BAR\r\\n— Piñones ovalados\r\\n– Origen: Italia\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nDESCARGAS\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_3 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/PIUSI-NEXT-2.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-030": {
+      "idExterno": null,
+      "sku": "SKU-PEND-030",
+      "titulo": "BR -  Medidor Contador de Litros para Aceite",
+      "slug": "br-medidor-contador-de-litros-para-aceite",
+      "descripcionBreve": "Medidor mecánico para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n\r\\n– Fluidos: Queroseno, aceite ligero y aceite pesado A, B, C.\r\\n– Viscosidad de líquidos: 2～500 mPa･s\r\\n-- Temperatura: 80°C\r\\n-- Presión líquido: hasta 1,0 Mpa o menos\r\\n– Origen: Japón",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMedidor mecánico para Fluidos de baja, mediana y alta viscosidad como: Diesel, Petróleo, Aceite, otros.\r\\n\r\\n– Fluidos: Queroseno, aceite ligero y aceite pesado A, B, C.\r\\n– Viscosidad de líquidos: 2～500 mPa･s\r\\n— Temperatura: 80°C\r\\n— Presión líquido: hasta 1,0 Mpa o menos\r\\n– Origen: Japón\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/NITTO-BR.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-033": {
+      "idExterno": null,
+      "sku": "SKU-PEND-033",
+      "titulo": "N30O – Contador de Pulso Digital Programable",
+      "slug": "n30o-contador-de-pulso-digital-programable",
+      "descripcionBreve": "Medición de pulsos, frecuencia, velocidad de rotación, período y tiempo de trabajo.\r\\n\r\\n-    La pantalla de tres colores (rojo, verde y naranja\r\\n\r\\n-Imput: pulsos, frecuencia, velocidad rotacional, periodo, contador tiempo de trabajo.\r\\n-Ouput: relé (4), analógico (1), digital RS-485 / MODBUS (1)",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMedición de pulsos, frecuencia, velocidad de rotación, período y tiempo de trabajo.\r\\n\r\\n–    La pantalla de tres colores (rojo, verde y naranja\r\\n\r\\n-Imput: pulsos, frecuencia, velocidad rotacional, periodo, contador tiempo de trabajo.\r\\n-Ouput: relé (4), analógico (1), digital RS-485 / MODBUS (1)\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/LUMEL-N30o.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--telemetria-y-comunicacion-remota",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-034": {
+      "idExterno": null,
+      "sku": "SKU-PEND-034",
+      "titulo": "Antiincrustante para Agua Salobre",
+      "slug": "antiincrustante-para-agua-salobre",
+      "descripcionBreve": "Producto químico para plantas de osmosis. Formato en bidones de 25 kilos. Entrega inmediata.",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nProducto químico para plantas de osmosis. Formato en bidones de 25 kilos. Entrega inmediata.\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">FICHA TÉCNICA</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/ANTIINCRUSTANTE-Genesys-LF.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "productos-quimicos",
+      "subcategoriaId": "productos-quimicos--antiincrustantes",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-035": {
+      "idExterno": null,
+      "sku": "SKU-PEND-035",
+      "titulo": "Toberas Filtrantes Acero Inoxidable Tipo HTC",
+      "slug": "toberas-filtrantes-acero-inoxidable-tipo-htc",
+      "descripcionBreve": "Toberas filtrantes marca ILMAP – ITALIA, modelo HTC, detalle en ficha técnica. Entregas rápidas.",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nToberas filtrantes marca ILMAP – ITALIA, modelo HTC, detalle en ficha técnica. Entregas rápidas.\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/TOBERA-HT.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--material-filtrante",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-036": {
+      "idExterno": null,
+      "sku": "SKU-PEND-036",
+      "titulo": "Toberas Filtrantes Polipropileno Tipo P7",
+      "slug": "toberas-filtrantes-polipropileno-tipo-p7",
+      "descripcionBreve": "Tobera filtrante marca ILMAP – ITALIA, modelo P7, detalle en ficha técnica. Stock permanente.",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nTobera filtrante marca ILMAP – ITALIA, modelo P7, detalle en ficha técnica. Stock permanente.\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\nFICHA TÉCNICA\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/TOBERA-P7.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\\n\\n</div>\\n</div>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--material-filtrante",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-037": {
+      "idExterno": null,
+      "sku": "SKU-PEND-037",
+      "titulo": "Toberas Filtrantes Polipropileno Tipo T",
+      "slug": "toberas-filtrantes-polipropileno-tipo-t",
+      "descripcionBreve": "'-Tobera filtrante marca ILMAP – ITALIA, modelo T, detalle en ficha técnica. Stock permanente.",
+      "descripcionLarga": "<strong>ESPECIFICACIONES</strong>\\n\\n-Tobera filtrante marca ILMAP – ITALIA, modelo T, detalle en ficha técnica. Stock permanente.\\n\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/TOBERA-T.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\n&nbsp;\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\"></div>\\n</div>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--material-filtrante",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-038": {
+      "idExterno": null,
+      "sku": "SKU-PEND-038",
+      "titulo": "Arena Silícea Filtrante",
+      "slug": "arena-silicea-filtrante",
+      "descripcionBreve": "Provenientes del Río Maipo, de cantos rodados producto de la disgregación de la roca por arrastre de fondo. Son sometidas a un proceso de lavado y secado en un horno rotatorio horizontal que tiene una potencia térmica de 600.000 Kg/Hr. Descontaminada de todo tipo de microorganismos, en especial bacterias y hongos.\r\\nGranulometría de acuerdo a cada aplicación. Son clasificadas por un sistema de tamizado vía seca.\r\\nPresentaciones en Big Bag de 1000 o 1500kg y en sacos de 40kg. de acuerdo a la solicitud.\r\\nAplicación en filtros de la industria alimenticia, minería, celulosa, etc.\r\\n\r\\nMÍNIMO 1M3\r\\n\r\\n&nbsp;",
+      "descripcionLarga": "<strong>ESPECIFICACIONES</strong>\\n\\n-Tobera filtrante marca ILMAP – ITALIA, modelo T, detalle en ficha técnica. Stock permanente.\\n\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/TOBERA-T.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\n&nbsp;\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\"></div>\\n</div>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--material-filtrante",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-039": {
+      "idExterno": null,
+      "sku": "SKU-PEND-039",
+      "titulo": "Arena Cuarzosa Filtrante, Ocre-Amarilla",
+      "slug": "arena-cuarzosa-filtrante-ocre-amarilla",
+      "descripcionBreve": "Procedentes de depósitos mineros. Son fluviales producto de la disgregación natural de la roca por impacto y arrastre de fondo. Son de cantos rodados, no contienen cantos vivos ni alargados provenientes de moliendas ni chancadas.  Libres de limos, arcillas, hongos, nematodos, no contienen carbonatos ni sales. Son clasificadas por un sistema de tamizado vía seca.\r\\nAplicación en filtros de la industria alimenticia, minería, celulosa, etc.\r\\nGranulometrías de acuerdo a la aplicación.\r\\nPresentación en Big Bag de 1000 o 1500kg y en sacos de 40kg.\r\\n\r\\nMÍNIMO 1M3",
+      "descripcionLarga": "<strong>ESPECIFICACIONES</strong>\\n\\n-Tobera filtrante marca ILMAP – ITALIA, modelo T, detalle en ficha técnica. Stock permanente.\\n\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/TOBERA-T.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\n&nbsp;\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\"></div>\\n</div>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--material-filtrante",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-040": {
+      "idExterno": null,
+      "sku": "RIF-CAR-COC",
+      "titulo": "Carbón Activado de Concha de Coco",
+      "slug": "carbon-activado-de-concha-de-coco",
+      "descripcionBreve": "Carbón granulado para filtración y purificación de agua. Origen vegetal libre de metales pesados.\r\\nCantidad de Iodo y tamaño de acuerdo a la aplicación.\r\\nPresentación sacos de 40kg. Puede variar de acuerdo a la aplicación.\r\\nSolicita oferta comercial.\r\\n\r\\nMÍNIMO 1M3",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nCarbón granulado para filtración y purificación de agua. Origen vegetal libre de metales pesados.\r\\nCantidad de Iodo y tamaño de acuerdo a la aplicación.\r\\nPresentación sacos de 40kg. Puede variar de acuerdo a la aplicación.\r\\nSolicita oferta comercial.\r\\n\r\\nMÍNIMO 1M3\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--material-filtrante",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-041": {
+      "idExterno": null,
+      "sku": "SKU-PEND-041",
+      "titulo": "Ablandador para Agua",
+      "slug": "ablandador-para-agua",
+      "descripcionBreve": "Uso COMERCIAL E INDUSTRIAL, SOLICITAR ASESORIA.\r\\n\r\\n&nbsp;",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nCarbón granulado para filtración y purificación de agua. Origen vegetal libre de metales pesados.\\nCantidad de Iodo y tamaño de acuerdo a la aplicación.\\nPresentación sacos de 40kg. Puede variar de acuerdo a la aplicación.\\nSolicita oferta comercial.\\n\\nMÍNIMO 1M3\\n\\n</div>\\n</div>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--ablandadores-de-agua",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-042": {
+      "idExterno": null,
+      "sku": "SKU-PEND-042",
+      "titulo": "Ablandador para Agua Domiciliario",
+      "slug": "ablandador-para-agua-domiciliario",
+      "descripcionBreve": "Uso domiciliario. Regeneración segunda demanda. Con exclusivo sistema de diagnóstico por teléfono, monitor remoto con pantalla de cristal líquido.\r\\n\r\\n&nbsp;",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nCarbón granulado para filtración y purificación de agua. Origen vegetal libre de metales pesados.\\nCantidad de Iodo y tamaño de acuerdo a la aplicación.\\nPresentación sacos de 40kg. Puede variar de acuerdo a la aplicación.\\nSolicita oferta comercial.\\n\\nMÍNIMO 1M3\\n\\n</div>\\n</div>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--ablandadores-de-agua",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-043": {
+      "idExterno": null,
+      "sku": "SKU-PEND-043",
+      "titulo": "Válvula de Bola, Construcción en Latón",
+      "slug": "valvula-de-bola-construccion-en-laton",
+      "descripcionBreve": "HI-HI BSP, TEMP. MAX. 180°C, DIAMETROS DE 1/4″ A 4″",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nCarbón granulado para filtración y purificación de agua. Origen vegetal libre de metales pesados.\\nCantidad de Iodo y tamaño de acuerdo a la aplicación.\\nPresentación sacos de 40kg. Puede variar de acuerdo a la aplicación.\\nSolicita oferta comercial.\\n\\nMÍNIMO 1M3\\n\\n</div>\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--valvulas",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-044": {
+      "idExterno": null,
+      "sku": "SKU-PEND-044",
+      "titulo": "Válvula de Compuerta, Modelo Ecoline, desde PN16",
+      "slug": "valvula-de-compuerta-modelo-ecoline-desde-pn16",
+      "descripcionBreve": "Conexión flanges DIN.",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nConexión flanges DIN.\\n\\n</div>\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--valvulas",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-045": {
+      "idExterno": null,
+      "sku": "SKU-PEND-045",
+      "titulo": "Válvula de Globo, Modelo ECO-VA",
+      "slug": "valvula-de-globo-modelo-eco-va",
+      "descripcionBreve": "Conexión flanges DIN PN40.",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nConexión flanges DIN.\\n\\n</div>\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--valvulas",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-047": {
+      "idExterno": null,
+      "sku": "ACC-FLA-PVC",
+      "titulo": "Conjunto de Flanges PVC",
+      "slug": "conjunto-de-flanges-pvc",
+      "descripcionBreve": "Conjunto de flanges de PVC\r\\nNorma DIN\r\\nDiámetros DN40 a DN150\r\\nConjunto incluye pernos y empaquetaduras",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nConexión flanges DIN.\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--accesorios-y-repuestos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-048": {
+      "idExterno": null,
+      "sku": "SKU-PEND-048",
+      "titulo": "Conjunto Flanges Acero/Hilo",
+      "slug": "conjunto-flanges-acero-hilo",
+      "descripcionBreve": "Conjunto de flanges de acero, con y sin hilo\r\\nNorma DIN\r\\nDiámetros DN40 a DN150\r\\nConjunto incluye pernos y empaquetaduras",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nConexión flanges DIN.\\n\\n</div>\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--accesorios-y-repuestos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-049": {
+      "idExterno": null,
+      "sku": "VAL-AIR-CIN",
+      "titulo": "Válvula de Aire Cinética",
+      "slug": "valvula-de-aire-cinetica",
+      "descripcionBreve": "Válvula ventosa cinética. Descarga grandes caudales de aire mientras el sistema se va llenando y admite grandes caudales de aire durante el vaciado del sistema y en caso de parada de la bomba o separación de la columna de agua.\r\\nPresión: 0.2 a 10 Bar\r\\nDiámetros: ¾” a 1”",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nVálvula ventosa cinética. Descarga grandes caudales de aire mientras el sistema se va llenando y admite grandes caudales de aire durante el vaciado del sistema y en caso de parada de la bomba o separación de la columna de agua.\r\\nPresión: 0.2 a 10 Bar\r\\nDiámetros: ¾” a 1”\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--valvulas",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-050": {
+      "idExterno": null,
+      "sku": "SKU-PEND-050",
+      "titulo": "Sistema AMR de Lectura Remota",
+      "slug": "sistema-amr-de-lectura-remota",
+      "descripcionBreve": "Sistema de lectura remota a través de radio frecuencias.\r\\n\r\\n- Walk By: sistema de medición remoto que necesita de un operario en terreno para, a través de un dispositivo, tomar las lecturas digitalmente.\r\\n-Estacionario: sistema de medición remoto totalmente autónomo. Antenas repiten la señal de los medidores y un concentrador envía la información a la plataforma.",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nVálvula ventosa cinética. Descarga grandes caudales de aire mientras el sistema se va llenando y admite grandes caudales de aire durante el vaciado del sistema y en caso de parada de la bomba o separación de la columna de agua.\\nPresión: 0.2 a 10 Bar\\nDiámetros: ¾” a 1”\\n\\n</div>\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--telemetria-y-comunicacion-remota",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-051": {
+      "idExterno": null,
+      "sku": "SKU-PEND-051",
+      "titulo": "Datalogger 3G",
+      "slug": "datalogger-3g",
+      "descripcionBreve": "Registrador de datos en tiempo real y memoria interna.\r\\n\r\\n-Conexión Internet\r\\n-GPS incorporado\r\\n-Batería recargable\r\\n-Panel solar\r\\n-Imputs: análogo, digital, pulsos",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nVálvula ventosa cinética. Descarga grandes caudales de aire mientras el sistema se va llenando y admite grandes caudales de aire durante el vaciado del sistema y en caso de parada de la bomba o separación de la columna de agua.\\nPresión: 0.2 a 10 Bar\\nDiámetros: ¾” a 1”\\n\\n</div>\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--telemetria-y-comunicacion-remota",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-052": {
+      "idExterno": null,
+      "sku": "SKU-PEND-052",
+      "titulo": "HRI – Sensor de Pulso",
+      "slug": "hri-sensor-de-pulso",
+      "descripcionBreve": "Sensor universal compatible con medidores domiciliarios e industriales",
+      "descripcionLarga": "<strong><span style=\"font-size: 16px\">ESPECIFICACIONES</span></strong>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nSensor universal compatible con medidores domiciliarios e industriales\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\"></div>\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--telemetria-y-comunicacion-remota",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-053": {
+      "idExterno": null,
+      "sku": "SKU-PEND-053",
+      "titulo": "HRI MEI – Sensor de Pulso",
+      "slug": "hri-mei-sensor-de-pulso",
+      "descripcionBreve": "Sensor universal compatible con medidores domiciliarios e industriales",
+      "descripcionLarga": "<strong><span style=\"font-size: 16px\">ESPECIFICACIONES</span></strong>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nSensor universal compatible con medidores domiciliarios e industriales\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\"></div>\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--telemetria-y-comunicacion-remota",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-054": {
+      "idExterno": null,
+      "sku": "SKU-PEND-054",
+      "titulo": "Sistema AMR de Lectura Remota",
+      "slug": "sistema-amr-de-lectura-remota",
+      "descripcionBreve": "Sistema de lectura remota a través de radio frecuencias.\r\\n\r\\n- Walk By: sistema de medición remoto que necesita de un operario en terreno para, a través de un dispositivo, tomar las lecturas digitalmente.\r\\n-Estacionario: sistema de medición remoto totalmente autónomo. Antenas repiten la señal de los medidores y un concentrador envía la información a la plataforma.",
+      "descripcionLarga": "<strong><span style=\"font-size: 16px\">ESPECIFICACIONES</span></strong>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\nSensor universal compatible con medidores domiciliarios e industriales\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\"></div>\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--telemetria-y-comunicacion-remota",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": false
+    },
+    "prod-057": {
+      "idExterno": null,
+      "sku": "SKU-PEND-057",
+      "titulo": "Pulso Octave Salida 4-20 mA",
+      "slug": "pulso-octave-salida-4-20-ma",
+      "descripcionBreve": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nCable emisor de pulso Octave.\r\\n\r\\n</div>\r\\n</div>",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\\n<div class=\"et_pb_text_inner\">\\n\\n<strong>ESPECIFICACIONES</strong>\\n\\n</div>\\n</div>\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\\n<div class=\"et_pb_module_inner\">\\n\\n<strong>Filtro dual para llave de cocina</strong>\\n\\n– Retiene pequeños sólidos suspendidos en el agua.\\n– Descompone y neutraliza de forma inmediata el cloro presente.\\n– Mejora notablemente el sabor y calidad del agua.\\n\\n</div>\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--telemetria-y-comunicacion-remota",
+      "atributos": [],
+      "precio": {
+        "valor": 480000.0,
+        "visible": true,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-062": {
+      "idExterno": null,
+      "sku": "SKU-PEND-062",
+      "titulo": "Medidor de Agua Potable Nereus MJ-SDC DN15/DN20 Certificación NCH 3274/1",
+      "slug": "medidor-de-agua-potable-nereus-mj-sdc-dn15-dn20-certificacion-nch-3274-1",
+      "descripcionBreve": "",
+      "descripcionLarga": "",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-mecanicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-063": {
+      "idExterno": null,
+      "sku": "NER-MJP-DN2540",
+      "titulo": "Medidor de Agua Potable Nereus MJ Plus",
+      "slug": "medidor-de-agua-potable-nereus-mj-plus",
+      "descripcionBreve": "",
+      "descripcionLarga": "",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-mecanicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-066": {
+      "idExterno": null,
+      "sku": "RIF-TBP-MED",
+      "titulo": "Medidor de Flujo Riff Turbine Pro",
+      "slug": "medidor-de-flujo-riff-turbine-pro",
+      "descripcionBreve": "Temperatura media: -20°C a + 120°C\r\\n\r\\nMateriales del cuerpo: predeterminada: acero inoxidable 304. Opcional acero inoxidable 316\r\\n\r\\nExactitud: Repetibilidad ± 0,2%. Estándar de precisión: ± 1% de lectura.\r\\n\r\\nTipos de líquidos: agua, combustibles de baja y mediana viscosidad, aceites, otros.\r\\n\r\\nSeñal de salida: Pulso, 4-20mA\r\\n\r\\nComunicación: RS485, HART\r\\n\r\\n<a href=\"https://aguapurmedicion.cl/wp-content/uploads/2022/06/RIFF-FULL-TURBINE-PRO.pdf\">FICHA 1</a>\r\\n\r\\n&nbsp;",
+      "descripcionLarga": "",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-068": {
+      "idExterno": null,
+      "sku": "FLO-CLT-FLA",
+      "titulo": "Medidor Cuenta Litros Flowtech",
+      "slug": "medidor-cuenta-litros-flowtech",
+      "descripcionBreve": "Medidor contador de litros digital con pantalla de LCD, con sistema de turbina, para instalar en línea, para agua y Adblue.\r\\n– Conexión hilo 1″\r\\n– Caudal 7 a 120 l/min\r\\n– Caudal instantáneo\r\\n– Caudal total y caudal parcial con vuelta a cero\r\\n– Origen: Italia",
+      "descripcionLarga": "ESPECIFICACIONES\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/APATOR-POWOGAZ-JS90.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-069": {
+      "idExterno": null,
+      "sku": "FLO-CLT-HIL",
+      "titulo": "Medidor Cuenta Litros Flowtech",
+      "slug": "medidor-cuenta-litros-flowtech",
+      "descripcionBreve": "Medidor contador de litros digital con pantalla de LCD, con sistema de turbina, para instalar en línea, para agua y Adblue.\r\\n– Conexión hilo 1″\r\\n– Caudal 7 a 120 l/min\r\\n– Caudal instantáneo\r\\n– Caudal total y caudal parcial con vuelta a cero\r\\n– Origen: Italia",
+      "descripcionLarga": "ESPECIFICACIONES\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/Flowtech-serie.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": false
+    },
+    "prod-070": {
+      "idExterno": null,
+      "sku": "RIF-FMC-COR",
+      "titulo": "Medidor Másico Fullmass Coriolis",
+      "slug": "medidor-masico-fullmass-coriolis",
+      "descripcionBreve": "MEDIDOR MÁSICO TIPO VORTEX FULLMAS – RIFF PARA VAPOR, GASES Y LÍQUIDOS\r\\n\r\\n– Tamaño DN15 – DN300\r\\n– Flange DIN, ANSI, JIS estándar seleccionable\r\\n– Cuerpo principal SS304, material SS316 seleccionable\r\\n– Sensor de temperatura integrado al sensor de flujo, reduce el punto de fuga\r\\n– Sensor incorporado a la estructura, proteger mejor el sensor de flujo",
+      "descripcionLarga": "ESPECIFICACIONES\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/Flowtech-serie.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-masicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-071": {
+      "idExterno": null,
+      "sku": "RIF-FSW-DOP",
+      "titulo": "Medidor Ultrasónico Fullsonic Doppler Wall Mounted",
+      "slug": "medidor-ultrasonico-fullsonic-doppler-wall-mounted",
+      "descripcionBreve": "MEDIDOR ULTRASÓNICO NO INVASIVO FULLSONIC – RIFF\r\\n\r\\n– Linealidad: 0.5%\r\\n– Repetibilidad: 0.2%\r\\n- Precisión: ± 1% de la lectura a tasas&amp;gt; 0.2mps\r\\n- Respuesta: 0-999 segundos.\r\\n- Totalizador: totalizadores de 7 dígitos para acumulación neta y acumulaciones positivas y negativas.\r\\n- Contador parcial y caudal instantáneo\r\\n- Velocidad: ± 64m / s (velocidad resolución 0.001 m / s)\r\\n- Tamaño de la tubería: 15mm-6000mm\r\\n- Materiales de tubería permitidos: Acero",
+      "descripcionLarga": "<strong>ESPECIFICACIONES</strong>\r\\n\r\\n– Adecuado para tubería de 40 a 4000 mm\r\\n– Para líquidos sucios se debe contener una cierta cantidad de burbujas de aire o\r\\nsólidos en suspensión.\r\\n– E l transductor de alta temperatura es adecuado para líquidos de -35°C ~ 200°C\r\\n– 4-20mA, salidas de relé y OCT\r\\n– Precisión: 2,0% Span calibrado\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/RIFF-WALLMOUNTED-DOPPLER_compressed.pdf\">Descarga 1</a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-ultrasonicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-072": {
+      "idExterno": null,
+      "sku": "RIF-TBN-GAS",
+      "titulo": "Medidor de Gas Tipo Turbina",
+      "slug": "medidor-de-gas-tipo-turbina",
+      "descripcionBreve": "Temperatura media: -20°C a + 120°C\r\\n\r\\nMateriales del cuerpo: predeterminada: acero inoxidable 304. Opcional acero inoxidable 316\r\\n\r\\nExactitud: Repetibilidad ± 0,2%. Estándar de precisión: ± 1% de lectura.\r\\n\r\\nTipos de líquidos: agua, combustibles de baja y mediana viscosidad, aceites, otros.\r\\n\r\\nSeñal de salida: Pulso, 4-20mA\r\\n\r\\nComunicación: RS485, HART\r\\n\r\\n<a href=\"https://aguapurmedicion.cl/wp-content/uploads/2022/06/RIFF-FULL-TURBINE-PRO.pdf\">FICHA 1</a>\r\\n\r\\n&nbsp;",
+      "descripcionLarga": "<strong>ESPECIFICACIONES</strong>\r\\n\r\\n– Adecuado para tubería de 40 a 4000 mm\r\\n– Para líquidos sucios se debe contener una cierta cantidad de burbujas de aire o\r\\nsólidos en suspensión.\r\\n– E l transductor de alta temperatura es adecuado para líquidos de -35°C ~ 200°C\r\\n– 4-20mA, salidas de relé y OCT\r\\n– Precisión: 2,0% Span calibrado\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/RIFF-WALLMOUNTED-DOPPLER_compressed.pdf\">Descarga 1</a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-073": {
+      "idExterno": null,
+      "sku": "APA-ULT-MED",
+      "titulo": "Medidor de Agua Ultrasónico Ultrimis",
+      "slug": "medidor-de-agua-ultrasonico-ultrimis",
+      "descripcionBreve": "MEDIDOR ELECTROMAGNÉTICO FULLMAG HA - RIFF\r\\nFlujómetro para fluidos son sólidos suspendidos.\r\\nDetalles y ficha técnica en ESPECIFICACIONES.",
+      "descripcionLarga": "<strong>ESPECIFICACIONES</strong>\r\\n\r\\nMedidores de tipo ultrasónico domiciliario de alta precisión, agua fría. APATOR POWOGAZ. - Polonia\r\\n- Medidores domiciliario de tipo ultrasónico, modelo Ultrimis.\r\\n- Medidores para agua fría limpia.\r\\n- Diámetros ½” y ¾”\r\\n- Disponibles para lectura a distancia, Walk by y Drive By.\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/catalogo-ultrimis.pdf\">FICHA TÉCNICA</a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-ultrasonicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-074": {
+      "idExterno": null,
+      "sku": "SEN-405S-DN2540",
+      "titulo": "Medidor de Agua Potable Sensus 405s",
+      "slug": "medidor-de-agua-potable-sensus-405s",
+      "descripcionBreve": "",
+      "descripcionLarga": "<strong>ESPECIFICACIONES</strong>\r\\n\r\\nMedidores de tipo ultrasónico domiciliario de alta precisión, agua fría. APATOR POWOGAZ. - Polonia\r\\n- Medidores domiciliario de tipo ultrasónico, modelo Ultrimis.\r\\n- Medidores para agua fría limpia.\r\\n- Diámetros ½” y ¾”\r\\n- Disponibles para lectura a distancia, Walk by y Drive By.\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/catalogo-ultrimis.pdf\">FICHA TÉCNICA</a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-mecanicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-076": {
+      "idExterno": null,
+      "sku": "RIF-FHA-MAG",
+      "titulo": "Medidor Electromagnético Fullmag HA",
+      "slug": "medidor-electromagnetico-fullmag-ha",
+      "descripcionBreve": "MEDIDOR ELECTROMAGNÉTICO FULLMAG HA - RIFF\r\\nFlujómetro para fluidos son sólidos suspendidos.\r\\nDetalles y ficha técnica en ESPECIFICACIONES.",
+      "descripcionLarga": "<strong>ESPECIFICACIONES</strong>\r\\n\r\\n– FULLMAG HA, Flujómetro de tipo electromagnético, medidor de flujo especial para uso en fluidos con sólidos suspendidos y aplicaciones agresivas. Ideal para aplicación en pulpa, fluidos agresivos, residuos industriales y otras aplicaciones. Medidor muy robusto, para las condiciones más extremas de trabajo.\r\\n– Tamaño DN3-DN3000mm (1/8”~120”)\r\\n– Corriente de excitación: 125 mA, 187 mA, 250 mA\r\\n– Estructura: Compacto/remoto, longitud de cable 10 m estándar, 100 m máx.\r\\n– Grado de protección: Transmisor: IP65 estándar, IP67 opcional\r\\nSensor: estándar IP65, IP68 (sumergible, solo disponible para tipo remoto)\r\\n– Electrodo: SS316L, Hastelloy C, Hastelloy B, titanio, tantalio, platino-iridio\r\\n– Comunicación: RS485 MODBUS estándar, HART, GPRS, PROFIBUS opcional\r\\n– Más información en ficha técnica, desargue en el link aquí abajo.\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/FULLMAG-PRO-HA_compressed.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-electromagneticos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-077": {
+      "idExterno": null,
+      "sku": "RIF-FSD-POR",
+      "titulo": "Medidor Ultrasónico Doppler Portátil Fullsonic (No Invasivo)",
+      "slug": "medidor-ultrasonico-doppler-portatil-fullsonic-no-invasivo",
+      "descripcionBreve": "MEDIDOR ULTRASÓNICO NO INVASIVO FULLSONIC – RIFF\r\\n\r\\n– Linealidad: 0.5%\r\\n– Repetibilidad: 0.2%\r\\n- Precisión: ± 1% de la lectura a tasas&gt; 0.2mps\r\\n- Respuesta: 0-999 segundos.\r\\n- Totalizador: totalizadores de 7 dígitos para acumulación neta y acumulaciones positivas y negativas.\r\\n- Contador parcial y caudal instantáneo\r\\n- Velocidad: ± 64m / s (velocidad resolución 0.001 m / s)\r\\n- Tamaño de la tubería: 15mm-6000mm\r\\n- Materiales de tubería permitidos: Acero",
+      "descripcionLarga": "<strong>ESPECIFICACIONES</strong>\r\\n\r\\n– Rango de diámetro de la tubería: 40-4000mm\r\\n– Tipo de Líquidos: Líquidos que contengan hasta 100ppm de reflexión y al menos 20% de\r\\nrefracción y hasta 100micrones de largo.\r\\n– Batería recargable, hasta 50 horas de funcionamiento\r\\n– Grado de Protección: IP65 respecto a EN60529\r\\n– Comunicaciones: 4-20mA, OCT output\r\\n– Tipo de transductores, Clamp-on\r\\n– Comunicaciones: 4-20mA, OCT output\r\\n– Tipo de transductores, Clamp-on\r\\n\r\\nDESCARGAS\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/RIFF-FULLSONIC-DOPPLER-PORTABLE_compressed.pdf\"><strong>Ver Ficha</strong></a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-ultrasonicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-078": {
+      "idExterno": null,
+      "sku": "LEN-LUV-POR",
+      "titulo": "Lámpara Portátil de Desinfección UV-C Sterilon",
+      "slug": "lampara-portatil-de-desinfeccion-uv-c-sterilon",
+      "descripcionBreve": "LÁMPARA PORTATIL UV-C STERILON - PARA DESINFECCIÓN\r\\n\r\\n– Esterilización con radiación UV-C\r\\n– Neutraliza todos los virus, bacterias y otros microorganismos dentro del rango operativo de la lámpara\r\\n– Efectos deseados después de unos minutos\r\\n– Neutraliza el 99,9% de virus, hongos y bacterias.",
+      "descripcionLarga": "<strong>ESPECIFICACIONES</strong>\r\\n\r\\n– Esterilización con radiación UV-C\r\\n– Neutraliza todos los virus, bacterias y otros microorganismos dentro del rango operativo de la lámpara\r\\n– Efectos deseados después de unos minutos\r\\n– Neutraliza el 99,9% de virus, hongos y bacterias.\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/UV-C_STERILON-ESPANOL_compressed.pdf\">Ficha Técnica</a>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--equipos-uv",
+      "atributos": [],
+      "precio": {
+        "valor": 500000.0,
+        "visible": true,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-079": {
+      "idExterno": null,
+      "sku": "BIM-420-ANT",
+      "titulo": "Antiincrustante Bimaks 420 para Ósmosis Inversa (Agua Salobre)",
+      "slug": "antiincrustante-bimaks-420-para-osmosis-inversa-agua-salobre",
+      "descripcionBreve": "Producto químico para plantas de osmosis. Formato en bidones de 25 kilos.\r\\nAntiincrustante para membranas de ósmosis en agua dulce y salobre.\r\\nEntrega inmediata.",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<span style=\"font-size: 16px;\">MAKS 420 – Antiincrustante de Amplio Espectro</span>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nEl Bimaks MAKS 420 es un antiincrustante líquido de amplio espectro, diseñado para proteger las membranas de ósmosis inversa en plantas de agua dulce, salobre y sistemas medianos de agua de mar. Su formulación avanzada previene incrustaciones minerales, depósitos de sílice y formación de sales, manteniendo un flujo constante y estable en la planta.\r\\nCon fabricación europea y certificaciones internacionales, el MAKS 420 asegura una operación eficiente, reduce los costos de limpieza y prolonga significativamente la vida útil de las membranas. Compatible con todo tipo de membranas, incluso en condiciones variables de agua de alimentación.\r\\n\r\\nBeneficios clave:\r\\n<ul>\r\\n \t<li>Protección completa contra incrustaciones y sílice.</li>\r\\n \t<li>Mayor vida útil para las membranas.</li>\r\\n \t<li>Menos limpiezas químicas y menor costo operativo.</li>\r\\n \t<li>Máxima eficiencia y producción de agua confiable.</li>\r\\n \t<li>Calidad europea garantizada.</li>\r\\n</ul>\r\\n<i>Solicite a nuestros especialistas la dosificación exacta para su sistema y optimice la operación de su planta.</i>\r\\n\r\\nFICHA TÉCNICA\r\\n<a style=\"font-size: 16px; background-color: #ffffff;\" href=\"https://somosriff.cl/wp-content/uploads/2025/09/21-01-2025-MAKS-420-RIFF-HDT-2.pdf\">FICHA TÉCNICA</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "productos-quimicos",
+      "subcategoriaId": "productos-quimicos--antiincrustantes",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-080": {
+      "idExterno": null,
+      "sku": "BIM-430-ANT",
+      "titulo": "Antiincrustante Maks 430 para Ósmosis Inversa (Agua de Mar)",
+      "slug": "antiincrustante-maks-430-para-osmosis-inversa-agua-de-mar",
+      "descripcionBreve": "Producto químico para plantas de osmosis. Formato en bidones de 25 kilos.\r\\n<span data-teams=\"true\"><i>Antiincrustante para membranas de ósmosis en agua de mar y alta salinidad.</i></span>\r\\nEntrega inmediata.",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\"></div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nMAKS 430 – Antiincrustante para Alta Salinidad\r\\n\r\\nEl Bimaks MAKS 430 es un antiincrustante especialmente formulado para plantas de ósmosis inversa que trabajan con agua de mar o con alta salinidad. Su fórmula de última generación combate incrustaciones de sílice, carbonatos de calcio y sales difíciles de controlar, garantizando un rendimiento óptimo incluso en condiciones extremas.\r\\nCon dosis bajas y gran eficacia, reduce la frecuencia de limpiezas químicas, mejora la producción de agua y prolonga la vida útil de las membranas. Desarrollado bajo estándares europeos, es compatible con todo tipo de membranas comerciales.\r\\n\r\\nBeneficios clave:\r\\n<ul>\r\\n \t<li>Especializado en agua de mar y alta salinidad.</li>\r\\n \t<li>Previene incrustaciones difíciles (sílice, carbonatos, sales).</li>\r\\n \t<li>Mayor eficiencia con menor dosificación.</li>\r\\n \t<li>Membranas más duraderas y con menos limpiezas químicas.</li>\r\\n \t<li>Certificación internacional de calidad.</li>\r\\n</ul>\r\\n<i>Consulte con nuestros especialistas para determinar la dosificación óptima según las características de su agua.</i>\r\\n\r\\nFICHA TÉCNICA\r\\n<a style=\"font-size: 16px; background-color: #ffffff;\" href=\"https://somosriff.cl/wp-content/uploads/2025/09/21-01-2025-MAKS-430-RIFF-HDT-2.pdf\">FICHA TÉCNICA</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "productos-quimicos",
+      "subcategoriaId": "productos-quimicos--antiincrustantes",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-081": {
+      "idExterno": null,
+      "sku": "ILM-TOB-R",
+      "titulo": "Tobera Filtrante de Polipropileno Tipo R",
+      "slug": "tobera-filtrante-de-polipropileno-tipo-r",
+      "descripcionBreve": "Tobera filtrante marca ILMAP – ITALIA, modelo P7, detalle en ficha técnica. Stock permanente.\r\\n<ul>\r\\n \t<li>Universal y muy robusta</li>\r\\n \t<li>Amplia gama de ranuras</li>\r\\n \t<li>Amplia gama de roscas y vástagos</li>\r\\n \t<li>Gran superficie de filtración</li>\r\\n</ul>",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nTOBERA FILTRANTE MARCA ILMAP – ITALIA\r\\nMOELO R\r\\nDetalle en ficha técnica. Stock permanente.\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/09/TOBERA-ILMAP-R.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--material-filtrante",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-082": {
+      "idExterno": null,
+      "sku": "ILM-TOB-D47",
+      "titulo": "Tobera Filtrante de Polipropileno Tipo D4,7",
+      "slug": "tobera-filtrante-de-polipropileno-tipo-d4-7",
+      "descripcionBreve": "Tobera filtrante marca ILMAP – ITALIA, modelo D4,7, detalle en ficha técnica. Stock permanente.\r\\n<ul>\r\\n \t<li>Discos con perfil de ranura con bajo riesgo de obstrucción</li>\r\\n \t<li>Para sistemas de intercambio iónico con altas velocidades de flujo</li>\r\\n \t<li>Amplia gama de ranuras con bajas caídas de presión</li>\r\\n \t<li>Muy robustas y resistentes</li>\r\\n</ul>",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nTOBERA FILTRANTE MARCA ILMAP – ITALIA\r\\nMODELO D4,7\r\\nDetalle en ficha técnica. Stock permanente.\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/09/TOBERA-ILMAP-D4.7.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--material-filtrante",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-083": {
+      "idExterno": null,
+      "sku": "ILM-TOB-P6",
+      "titulo": "Tobera Filtrante de Polipropileno Tipo P6",
+      "slug": "tobera-filtrante-de-polipropileno-tipo-p6",
+      "descripcionBreve": "Tobera filtrante marca ILMAP – ITALIA, modelo P6, detalle en ficha técnica. Stock permanente.\r\\n<ul>\r\\n \t<li>Adecuado para distribuidores de resina de intercambio iónico e intercambiadores de lecho mixto</li>\r\\n \t<li>Apto para montaje en conexiones roscadas comerciales</li>\r\\n \t<li>Se utiliza para optimizar la distribución del regenerante</li>\r\\n</ul>",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nTOBERA FILTRANTE MARCA ILMAP – ITALIA\r\\nMODELO P6\r\\nDetalle en ficha técnica. Stock permanente.\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/09/TOBERA-ILMAP-P6.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--material-filtrante",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-084": {
+      "idExterno": null,
+      "sku": "ILM-TOB-VL",
+      "titulo": "Tobera Filtrante de Polipropileno Tipo VL",
+      "slug": "tobera-filtrante-de-polipropileno-tipo-vl",
+      "descripcionBreve": "Tobera filtrante marca ILMAP – ITALIA, modelo VL, detalle en ficha técnica. Stock permanente.\r\\n<ul>\r\\n \t<li>Sección de paso muy baja</li>\r\\n \t<li>Adecuado para la distribución de reactivos en columnas de resina</li>\r\\n \t<li>Adecuado para recolección de muestras o la ventilación interna de filtros</li>\r\\n</ul>",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nTOBERA FILTRANTE MARCA ILMAP – ITALIA\r\\nMODELO VL\r\\nDetalle en ficha técnica. Stock permanente.\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/09/TOBERA-ILMAP-VL.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "tratamiento-de-agua",
+      "subcategoriaId": "tratamiento-de-agua--material-filtrante",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-085": {
+      "idExterno": null,
+      "sku": "APA-ULT-DN2540",
+      "titulo": "Medidor de Agua Ultrasónico Ultrimis DN25-DN40 (1\" - 1 1/2\")",
+      "slug": "medidor-de-agua-ultrasonico-ultrimis-dn25-dn40-1-1-1-2",
+      "descripcionBreve": "<ul>\r\\n \t<li><strong data-start=\"69\" data-end=\"83\">Ultrimis W</strong> – Medidor de agua ultrasónico con tecnología W-Sonic.</li>\r\\n \t<li>Rango de flujo <strong data-start=\"155\" data-end=\"185\">R800 desde 0,75 l/h (DN15)</strong>.</li>\r\\n \t<li>Cuerpo compuesto libre de metales pesados, <strong data-start=\"232\" data-end=\"240\">IP68</strong>, resistente a choques hidráulicos y a interferencias magnéticas.</li>\r\\n</ul>",
+      "descripcionLarga": "<strong>ESPECIFICACIONES</strong>\r\\n\r\\nMedidores de tipo ultrasónico domiciliario de alta precisión, agua fría. APATOR POWOGAZ. - Polonia\r\\n- Medidores domiciliario de tipo ultrasónico, modelo Ultrimis.\r\\n- Medidores para agua fría limpia.\r\\n- Diámetros DN25 - DN40\r\\n- Disponibles para lectura a distancia, Walk by y Drive By.\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/catalogo-ultrimis.pdf\">FICHA TÉCNICA</a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-ultrasonicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-086": {
+      "idExterno": null,
+      "sku": "APA-ULT-DN50",
+      "titulo": "Medidor de Agua Ultrasónico Ultrimis DN50 (2\")",
+      "slug": "medidor-de-agua-ultrasonico-ultrimis-dn50-2",
+      "descripcionBreve": "<ul>\r\\n \t<li><strong data-start=\"69\" data-end=\"83\">Ultrimis W</strong> – Medidor de agua ultrasónico con tecnología W-Sonic.</li>\r\\n \t<li>Rango de flujo <strong data-start=\"155\" data-end=\"185\">R800 desde 0,75 l/h (DN15)</strong>.</li>\r\\n \t<li>Cuerpo compuesto libre de metales pesados, <strong data-start=\"232\" data-end=\"240\">IP68</strong>, resistente a choques hidráulicos y a interferencias magnéticas.</li>\r\\n</ul>",
+      "descripcionLarga": "<strong>ESPECIFICACIONES</strong>\r\\n\r\\nMedidores de tipo ultrasónico domiciliario de alta precisión, agua fría. APATOR POWOGAZ. - Polonia\r\\n- Medidores domiciliario de tipo ultrasónico, modelo Ultrimis.\r\\n- Medidores para agua fría limpia.\r\\n- Diámetros DN50\r\\n- Disponibles para lectura a distancia, Walk by y Drive By.\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/catalogo-ultrimis.pdf\">FICHA TÉCNICA</a>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-ultrasonicos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-087": {
+      "idExterno": null,
+      "sku": "PIU-K24-PLS",
+      "titulo": "Medidor de Flujo K24 Pulser para Diesel y Aceite (Salida de Pulsos)",
+      "slug": "medidor-de-flujo-k24-pulser-para-diesel-y-aceite-salida-de-pulsos",
+      "descripcionBreve": "El <strong data-start=\"40\" data-end=\"53\">Piusi K24</strong> es un medidor digital de pulsos por turbina, diseñado para medir diésel, aceite, líquido limpiaparabrisas y anticongelante. No incluye pantalla, ya que se conecta a sistemas externos de gestión o visualización de datos, lo que permite monitoreo remoto. Es flexible, de fácil instalación en línea o al final de tuberías, y se adapta a aplicaciones industriales y no comerciales. Existe también una versión con pantalla digital para lectura directa del combustible dispensado.\r\\n<ul>\r\\n \t<li>Conexión hilo 1″</li>\r\\n \t<li>Caudal 7 a 120 l/min</li>\r\\n \t<li>Caudal instantáneo</li>\r\\n \t<li>Caudal total y caudal parcial con vuelta a cero</li>\r\\n \t<li>Origen: Italia</li>\r\\n</ul>",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n\r\\nEl medidor de flujo de combustible K24 con salida de pulsos es un medidor flexible que puede utilizarse para diversas aplicaciones, incluyendo el suministro de combustible industrial y no comercial. Fácil de instalar en línea o al final de la tubería de dispensación, el medidor de pulsos de combustible Piusi K24 puede instalarse en diversas instalaciones.\r\\nSi necesita una versión con pantalla digital, ofrecemos el medidor de flujo digital Piusi K24, diseñado para medir con precisión la cantidad de diésel dispensada.\r\\n\r\\n– Conexión hilo 1″\r\\n– Caudal 7 a 120 l/min\r\\n– Caudal instantáneo\r\\n– Caudal total y caudal parcial con vuelta a cero\r\\n– Origen: Italia\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/01/PIUSI-K24-DIESEL.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-de-turbina",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-088": {
+      "idExterno": null,
+      "sku": "RIF-PFP-MAG",
+      "titulo": "Medidor Electromagnético PFP para Tubería Parcialmente Llena",
+      "slug": "medidor-electromagnetico-pfp-para-tuberia-parcialmente-llena",
+      "descripcionBreve": "MEDIDOR ELECTROMAGNÉTICO FULLMAG PFP PARA CAÑERIA PARCIALMENTE LLENA",
+      "descripcionLarga": "<div class=\"et_pb_module et_pb_text et_pb_text_0 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<strong>ESPECIFICACIONES</strong>\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_wc_description et_pb_wc_description_0 et_pb_bg_layout_light et_pb_text_align_left\">\r\\n<div class=\"et_pb_module_inner\">\r\\n<ul>\r\\n \t<li>Tamaño DN200-DN3000mm (8”~120”)</li>\r\\n \t<li>Temperatura: hasta 120°C</li>\r\\n \t<li>Material del sensor: SS304</li>\r\\n \t<li>Largo estándar cable: 10mt hasta 100mt</li>\r\\n \t<li>Salida: 4-20mA</li>\r\\n \t<li>Protocolo de comunicaciÃ³n: Modbus RS 485, GPRS, PROFIBUS opcional</li>\r\\n \t<li>Presión nominal: PN16</li>\r\\n</ul>\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\nFICHA TÉCNICA\r\\n\r\\n</div>\r\\n</div>\r\\n<div class=\"et_pb_module et_pb_text et_pb_text_2 et_pb_text_align_left et_pb_bg_layout_light\">\r\\n<div class=\"et_pb_text_inner\">\r\\n\r\\n<a href=\"https://somosriff.cl/wp-content/uploads/2025/10/RIFF-FULLMAG-PFP.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Ficha Técnica 1</a>\r\\n\r\\n</div>\r\\n</div>",
+      "categoriaId": "medicion-de-fluidos",
+      "subcategoriaId": "medicion-de-fluidos--medidores-electromagneticos",
+      "atributos": [],
+      "precio": {
+        "valor": 0.0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    },
+    "prod-089": {
+      "idExterno": null,
+      "sku": "KIT-MWN-HRI-3G",
+      "titulo": "Kit de Telemetría Industrial 3G (Agua Fría)",
+      "slug": "kit-de-telemetria-industrial-3g-agua-fria",
+      "descripcionBreve": "<div id=\"model-response-message-contentr_c11a12fe0c91d141\" class=\"markdown markdown-main-panel stronger enable-updated-hr-color preserve-whitespaces-in-response\" dir=\"ltr\" aria-live=\"polite\" aria-busy=\"false\">\r\\n<p data-path-to-node=\"0\">Solución profesional para la telemetría y monitoreo de grandes caudales en tiempo real. Este kit integra la robustez del medidor industrial tipo Woltman (MWN), la alta precisión digital del sensor inductivo HRI MEI y la conectividad global del Datalogger 3G. Permite automatizar la gestión hídrica, detectar fugas de forma temprana y eliminar errores de lectura manual, asegurando datos confiables directamente en su centro de control. Ideal para aplicaciones en minería, agricultura e infraestructura sanitaria.</p>\r\\n\r\\n</div>",
+      "descripcionLarga": "<div id=\"model-response-message-contentr_bd663c8b20ea0565\" class=\"markdown markdown-main-panel stronger enable-updated-hr-color preserve-whitespaces-in-response\" dir=\"ltr\" aria-live=\"polite\" aria-busy=\"false\">\r\\n<h3 data-path-to-node=\"0\">Kit de Telemetría Industrial 3G (Agua Fría)</h3>\r\\n<p data-path-to-node=\"3\">Este kit profesional representa la solución definitiva para la <b data-path-to-node=\"3\" data-index-in-node=\"63\">gestión automatizada de grandes caudales</b>. Al integrar el medidor industrial <b data-path-to-node=\"3\" data-index-in-node=\"139\">MWN Woltman</b>, el sensor de precisión <b data-path-to-node=\"3\" data-index-in-node=\"175\">HRI MEI</b> y la conectividad del <b data-path-to-node=\"3\" data-index-in-node=\"205\">Datalogger 3G</b>, obtienes una cadena de medición robusta que elimina la necesidad de lecturas manuales y garantiza datos exactos en tiempo real.</p>\r\\n\r\\n<h4 data-path-to-node=\"4\">¿Cómo funciona este sistema integrado?</h4>\r\\n<ol start=\"1\" data-path-to-node=\"5\">\r\\n \t<li>\r\\n<p data-path-to-node=\"5,0,0\"><b data-path-to-node=\"5,0,0\" data-index-in-node=\"0\">Medición de Alto Rendimiento (MWN):</b> El núcleo del kit es el medidor tipo Woltman, reconocido por su construcción infalible y duradera. Su diseño permite el paso de grandes flujos de agua fría limpia con una pérdida de presión mínima. Además, cuenta con un mecanismo de medición extraíble y unificado, lo que facilita enormemente las labores de mantenimiento sin desmontar el cuerpo de la instalación.</p>\r\\n</li>\r\\n \t<li>\r\\n<p data-path-to-node=\"5,1,0\"><b data-path-to-node=\"5,1,0\" data-index-in-node=\"0\">Captura Electrónica de Alta Resolución (HRI MEI):</b> Sobre el medidor se instala el sensor inductivo HRI MEI. A diferencia de los emisores de pulsos magnéticos tradicionales, este sensor es inmune a interferencias externas y detecta el flujo con una precisión superior. Es el componente \"traductor\" que convierte el movimiento mecánico del medidor en señales digitales confiables.</p>\r\\n</li>\r\\n \t<li>\r\\n<p data-path-to-node=\"5,2,0\"><b data-path-to-node=\"5,2,0\" data-index-in-node=\"0\">Transmisión y Monitoreo Remoto (Datalogger 3G):</b> El cerebro del kit recibe los pulsos del sensor y los transmite de forma automática a través de la red celular 3G. Esto te permite visualizar gráficas de consumo, detectar fugas de forma temprana mediante alarmas de flujo inusual y gestionar toda tu red desde cualquier dispositivo con internet.</p>\r\\n</li>\r\\n</ol>\r\\n<h4 data-path-to-node=\"6\">Ventajas principales:</h4>\r\\n<ul data-path-to-node=\"7\">\r\\n \t<li>\r\\n<p data-path-to-node=\"7,0,0\"><b data-path-to-node=\"7,0,0\" data-index-in-node=\"0\">Eficiencia Operativa:</b> Reduce drásticamente los costos de inspección en terreno al centralizar la información de múltiples puntos de medición.</p>\r\\n</li>\r\\n \t<li>\r\\n<p data-path-to-node=\"7,1,0\"><b data-path-to-node=\"7,1,0\" data-index-in-node=\"0\">Precisión sin Interferencias:</b> Gracias al sistema inductivo del HRI MEI, te aseguras de que cada litro sea contabilizado correctamente, sin pérdidas por rebotes o campos magnéticos.</p>\r\\n</li>\r\\n \t<li>\r\\n<p data-path-to-node=\"7,2,0\"><b data-path-to-node=\"7,2,0\" data-index-in-node=\"0\">Mantenimiento Simplificado:</b> La estructura modular del medidor MWN permite modernizar o reparar el equipo de forma rápida, optimizando los tiempos de parada de la planta.</p>\r\\n</li>\r\\n \t<li>\r\\n<p data-path-to-node=\"7,3,0\"><b data-path-to-node=\"7,3,0\" data-index-in-node=\"0\">Seguridad y Alertas:</b> Configura notificaciones automáticas ante consumos fuera de rango o flujo inverso, protegiendo la integridad de tu red hidráulica.</p>\r\\n</li>\r\\n</ul>\r\\n<h4 data-path-to-node=\"8\">Aplicaciones ideales:</h4>\r\\n<ul data-path-to-node=\"9\">\r\\n \t<li>\r\\n<p data-path-to-node=\"9,0,0\">Redes de distribución de agua potable.</p>\r\\n</li>\r\\n \t<li>\r\\n<p data-path-to-node=\"9,1,0\">Sistemas de riego para comunidades agrícolas.</p>\r\\n</li>\r\\n \t<li>\r\\n<p data-path-to-node=\"9,2,0\">Control de procesos industriales de alto consumo.</p>\r\\n</li>\r\\n \t<li>\r\\n<p data-path-to-node=\"9,3,0\">Monitoreo de grandes infraestructuras hidráulicas.</p>\r\\n</li>\r\\n</ul>\r\\n<h3 data-path-to-node=\"11\">Detalles técnicos de los componentes incluidos:</h3>\r\\n<ul data-path-to-node=\"12\">\r\\n \t<li>\r\\n<p data-path-to-node=\"12,0,0\"><b data-path-to-node=\"12,0,0\" data-index-in-node=\"0\">Medidor MWN:</b> Cuerpo con protección anticorrosiva epóxica, embrague magnético y totalizador giratorio para lectura manual de respaldo.</p>\r\\n</li>\r\\n \t<li>\r\\n<p data-path-to-node=\"12,1,0\"><b data-path-to-node=\"12,1,0\" data-index-in-node=\"0\">Sensor HRI MEI:</b> Salida de pulsos configurable, larga vida útil y grado de protección para entornos industriales.</p>\r\\n</li>\r\\n \t<li>\r\\n<p data-path-to-node=\"12,2,0\"><b data-path-to-node=\"12,2,0\" data-index-in-node=\"0\">Datalogger 3G:</b> Autonomía de batería optimizada, fácil configuración y compatibilidad con sistemas de gestión de datos (AMR).</p>\r\\n</li>\r\\n</ul>\r\\n</div>",
+      "categoriaId": "control-y-accesorios",
+      "subcategoriaId": "control-y-accesorios--telemetria-y-comunicacion-remota",
+      "atributos": [],
+      "precio": {
+        "valor": 0,
+        "visible": false,
+        "moneda": "CLP"
+      },
+      "stock": {
+        "disponible": true,
+        "cantidad": null
+      },
+      "galeria": [],
+      "fichaTecnica": null,
+      "destacado": false,
+      "publicado": true
+    }
+  },
+  "_pendientes": [
+    {
+      "productoId": "prod-001",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-002",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-003",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-009",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-011",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-012",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-013",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-014",
+      "motivos": [
+        "Requiere crear primero la subcategoría 'Medidores de Nivel' en Firestore antes de publicar este producto.",
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-016",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-019",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-020",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-021",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-022",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-023",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-024",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-025",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-026",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-027",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-029",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-030",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-033",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-034",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-035",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-036",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-037",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-038",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-039",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-041",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-042",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-043",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-044",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-045",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-048",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-050",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-051",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-052",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-053",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-054",
+      "motivos": [
+        "Nombre idéntico al producto prod-050 (54 y 050). Confirmar si son productos distintos antes de publicar ambos.",
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-057",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-062",
+      "motivos": [
+        "SKU no existía en el archivo de origen; se generó un SKU temporal. Reemplazar antes de publicar."
+      ]
+    },
+    {
+      "productoId": "prod-069",
+      "motivos": [
+        "Nombre idéntico al producto prod-068 (69 y 068). Confirmar si son productos distintos antes de publicar ambos."
+      ]
+    }
+  ],
+  "_imagenesPendientesMigracion": {
+    "prod-001": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/MWN-DN50_300x300.jpg"
+    ],
+    "prod-002": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/MEDIDOR-AGUA-CALIENTE-MWN_300x300.jpg"
+    ],
+    "prod-003": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/APATOR-POWOGAZ-WI_300x300.jpg"
+    ],
+    "prod-004": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/medidor-js90-nk.jpg"
+    ],
+    "prod-005": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/medidor-meistream.jpg"
+    ],
+    "prod-008": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/medidor-fullsonic.png"
+    ],
+    "prod-009": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/MEDIDOR-ULTRASONICO-CANAL-ABIERTO-RIFF-FULLSONIC_300x300-.jpg"
+    ],
+    "prod-010": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/medidor-fullsonic.jpg"
+    ],
+    "prod-011": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/RIFF-PORTABLE_300x300.jpg"
+    ],
+    "prod-012": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/RIFF_FULLMASS_VORTEX_280x280.png"
+    ],
+    "prod-013": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/RIFF_FULLMASS_TERMICO_280x280.png"
+    ],
+    "prod-014": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/MEDIDOR-DE-NIVEL-FREATICO-RIFF-P-LEVEL.jpg"
+    ],
+    "prod-015": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/flujometro-sanitario.jpg"
+    ],
+    "prod-016": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/MEDIDOR-RIFF-FULLMAG-INPRO_300x300.jpg"
+    ],
+    "prod-019": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/MEDIDOR-DOMICILIARIO-AGUA-FRIA-CALIENTE-JS90_300x300.jpg"
+    ],
+    "prod-020": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/APATOR-POWOGAS-JS130_300x300-1.jpg"
+    ],
+    "prod-021": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/CONTADOR-DE-LITROS-PIUSI-K24_300x300.jpg"
+    ],
+    "prod-022": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/PIUSI-K24-AGUA_300X300.jpg"
+    ],
+    "prod-023": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/PIUSI-K40_300X300.jpg"
+    ],
+    "prod-024": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/PIUSI-K44_300X300.jpg"
+    ],
+    "prod-025": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/PIUSI-K150_300x300.jpg"
+    ],
+    "prod-026": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/PIUSI-K400_300X300.jpg"
+    ],
+    "prod-027": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/PIUSI-K600_4300X300.jpg"
+    ],
+    "prod-029": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/PIUSI-NEXT_2300X300.jpg"
+    ],
+    "prod-030": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/NITTO-SEIKO-BR300X300.jpg"
+    ],
+    "prod-033": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/LUMEL-N30O300X300.jpg"
+    ],
+    "prod-034": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/ANTIINCRUSTANTE300x300.jpg"
+    ],
+    "prod-035": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/TOBERA-INOX300X300.jpg"
+    ],
+    "prod-036": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/TOBERA-P7300x300.jpg"
+    ],
+    "prod-037": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/TOBERA-T300X300.jpg"
+    ],
+    "prod-038": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/ARENA-SILICEA300X300.jpg"
+    ],
+    "prod-039": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/ARENA-CUARZO300x300.jpg"
+    ],
+    "prod-040": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/carbon-activado.jpg"
+    ],
+    "prod-041": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/ABLANDADOR-AGUA-INDUSTRIAL300x300.jpg"
+    ],
+    "prod-042": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/ABLANDADOR-AGUA-DOMICILIARIO300x300.jpg"
+    ],
+    "prod-043": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/LLAVE-DE-BOLA_300x300.jpg"
+    ],
+    "prod-044": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/VALVULA-DE-CORTE_300x300.jpg"
+    ],
+    "prod-045": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/VALVULA-GLOBO300X300.jpg"
+    ],
+    "prod-047": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/flanges-pvc.jpg"
+    ],
+    "prod-048": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/CONJUNTO-FLANGES-ACERO300x300.jpg"
+    ],
+    "prod-049": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/valvula-aire.jpg"
+    ],
+    "prod-050": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/AMR-Apator300X300.jpg"
+    ],
+    "prod-051": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/DATALOGGER300X300.jpg"
+    ],
+    "prod-052": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/SENSUS-HRI-MICRO300x300.jpg"
+    ],
+    "prod-053": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/SENSUS-HRI-MEI300x300.jpg"
+    ],
+    "prod-054": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/AMR-Apator300X300.jpg"
+    ],
+    "prod-057": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/CABLE-OCTAVE.png"
+    ],
+    "prod-062": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/NEREUS-JM-SDC-WEB.png"
+    ],
+    "prod-063": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/NEREUS-JM-PLUS-WEB.png"
+    ],
+    "prod-066": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/TURBINE-PRO-2022-web.png",
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/TURBINE-PRO-2022-web.png"
+    ],
+    "prod-068": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/FLOWTECH-FLANGE-web.png"
+    ],
+    "prod-069": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/FLOWTECH-HILO-web.png",
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/FLOWTECH-HILO-web.png"
+    ],
+    "prod-070": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/RIFF_FULLMASS_CORIOLIS_280x280.png"
+    ],
+    "prod-071": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/FULLSONIC-DOPPLER.png"
+    ],
+    "prod-072": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/RIFF-GAS.png",
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/RIFF-GAS.png"
+    ],
+    "prod-073": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/ultrimis-ultrasonic-water-meter-500x500-1.png",
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/ultrimis-ultrasonic-water-meter-500x500-1.png"
+    ],
+    "prod-074": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/MEDIDOR-AGUA-FRIA-SENSUS-405s_300x300.jpg"
+    ],
+    "prod-076": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/medidor-electromagnetico.png"
+    ],
+    "prod-077": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/FULLSONIC-DOPPLER-CONTABLE.png"
+    ],
+    "prod-078": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/LAMPARA-UV-C.png",
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/LAMPARA-UV-C.png"
+    ],
+    "prod-079": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/antiincrustante-Bimaks.png"
+    ],
+    "prod-080": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/MAKS-430-1.png"
+    ],
+    "prod-081": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/TOBERA-ILMAP-R.png"
+    ],
+    "prod-082": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/TOBERA-ILMAP-D47.png"
+    ],
+    "prod-083": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/TOBERA-ILMAP-P6.png"
+    ],
+    "prod-084": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/TOBERA-ILMAP-VL.png"
+    ],
+    "prod-085": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/ULTRIMIS-DN25.png"
+    ],
+    "prod-086": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/ULTRIMIS-DN50.png"
+    ],
+    "prod-087": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/K24-PULSER.png"
+    ],
+    "prod-088": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/RIFF-FULLMAG-PRO-PFP.png"
+    ],
+    "prod-089": [
+      "https://yellowgreen-penguin-726314.hostingersite.com/wp-content/uploads/2026/02/kit-medicion-inteligente.png"
+    ]
+  }
+}
