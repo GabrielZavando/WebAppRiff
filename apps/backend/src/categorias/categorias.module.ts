@@ -8,6 +8,8 @@ import {
   I_CATEGORIA_INTEGRITY_REPOSITORY,
   I_CATEGORIA_REPOSITORY,
 } from './domain/icategoria.repository';
+import { I_CATEGORY_CHANGE_NOTIFIER } from './domain/icategory-change-notifier';
+import { WebhookCategoryChangeNotifier } from './infrastructure/webhook-category-change-notifier';
 
 @Module({
   imports: [AuthModule, FirebaseModule],
@@ -16,6 +18,7 @@ import {
     CategoriaService,
     { provide: I_CATEGORIA_REPOSITORY, useClass: CategoriaRepository },
     { provide: I_CATEGORIA_INTEGRITY_REPOSITORY, useClass: CategoriaRepository },
+    { provide: I_CATEGORY_CHANGE_NOTIFIER, useClass: WebhookCategoryChangeNotifier },
   ],
   exports: [I_CATEGORIA_REPOSITORY, I_CATEGORIA_INTEGRITY_REPOSITORY],
 })

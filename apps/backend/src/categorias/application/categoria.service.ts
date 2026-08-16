@@ -12,6 +12,11 @@ import {
   I_CATEGORIA_INTEGRITY_REPOSITORY,
   I_CATEGORIA_REPOSITORY,
 } from '../domain/icategoria.repository';
+import {
+  CategoryChangeEvent,
+  ICategoryChangeNotifier,
+  I_CATEGORY_CHANGE_NOTIFIER,
+} from '../domain/icategory-change-notifier';
 import { Categoria } from '../domain/categoria.entity';
 import { CategoriaCreateDto } from '../infrastructure/categoria-create.dto';
 import { CategoriaUpdateDto } from '../infrastructure/categoria-update.dto';
@@ -23,7 +28,17 @@ export class CategoriaService {
     @Inject(I_CATEGORIA_REPOSITORY) private readonly repository: ICategoriaRepository,
     @Inject(I_CATEGORIA_INTEGRITY_REPOSITORY)
     private readonly integrity: ICategoriaIntegrityRepository,
+    @Inject(I_CATEGORY_CHANGE_NOTIFIER)
+    private readonly notifier: ICategoryChangeNotifier,
   ) {}
+
+  private emitChange(id: string, action: CategoryChangeEvent['action']): void {
+    this.notifier.notifyChange({
+      id,
+      action,
+      occurredAt: new Date().toISOString(),
+    });
+  }
 
   findAll(filter?: CategoriaFilter): Promise<Categoria[]> {
     return this.repository.findAll(filter);
@@ -49,7 +64,9 @@ export class CategoriaService {
       orden: dto.orden ?? 0,
       activa: dto.activa ?? true,
     };
-    return this.repository.create(input);
+    const categoria = await this.repository.create(input);
+    this.emitChange(categoria.id, 'created');
+    return categoria;
   }
 
   async update(id: string, dto: CategoriaUpdateDto): Promise<Categoria> {
@@ -63,7 +80,9 @@ export class CategoriaService {
         throw new ConflictException('Slug already in use');
       }
     }
-    return this.repository.update(id, dto);
+    const updated = await this.repository.update(id, dto);
+    this.emitChange(id, 'updated');
+    return updated;
   }
 
   async remove(id: string): Promise<void> {
@@ -79,6 +98,7 @@ export class CategoriaService {
       throw new ConflictException('Cannot delete a category with associated products');
     }
     await this.repository.remove(id);
+    this.emitChange(id, 'deleted');
   }
 
   ensureDefault(): Promise<void> {
