@@ -9,9 +9,10 @@ export class SubcategoriaCreateDto {
   @IsNotEmpty()
   nombre!: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  slug!: string;
+  slug?: string;
 
   @IsOptional()
   @IsInt()

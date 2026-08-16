@@ -12,10 +12,20 @@ describe('SubcategoriaCreateDto', () => {
     expect(errors).toHaveLength(0);
   });
 
-  it('is invalid without slug', async () => {
+  it('is valid without slug (auto-generated from nombre)', async () => {
     const dto = Object.assign(new SubcategoriaCreateDto(), {
       categoriaId: 'cat-1',
       nombre: 'Válvulas',
+    });
+    const errors = await validate(dto);
+    expect(errors).toHaveLength(0);
+  });
+
+  it('is invalid when slug is an empty string', async () => {
+    const dto = Object.assign(new SubcategoriaCreateDto(), {
+      categoriaId: 'cat-1',
+      nombre: 'Válvulas',
+      slug: '',
     });
     const errors = await validate(dto);
     expect(errors.some((e) => e.property === 'slug')).toBe(true);

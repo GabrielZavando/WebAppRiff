@@ -87,6 +87,51 @@ describe('SubcategoriaService', () => {
         activa: true,
       });
     });
+
+    it('derives slug from nombre when slug is omitted', async () => {
+      const noSlugDto = { categoriaId: 'cat-1', nombre: 'Medidores Electromagnéticos' } as never;
+      categoriaRepository.findById.mockResolvedValue({ id: 'cat-1' });
+      integrity.findByCategoriaAndSlug.mockResolvedValue(null);
+      repository.create.mockResolvedValue({ id: 's1' });
+      await service.create(noSlugDto);
+      expect(integrity.findByCategoriaAndSlug).toHaveBeenCalledWith(
+        'cat-1',
+        'medidores-electromagneticos',
+      );
+      expect(repository.create).toHaveBeenCalledWith({
+        categoriaId: 'cat-1',
+        nombre: 'Medidores Electromagnéticos',
+        slug: 'medidores-electromagneticos',
+        orden: 0,
+        activa: true,
+      });
+    });
+
+    it('uses the explicit slug when provided', async () => {
+      const explicitDto = {
+        categoriaId: 'cat-1',
+        nombre: 'Medidores Electromagnéticos',
+        slug: 'sub-explicita',
+      } as never;
+      categoriaRepository.findById.mockResolvedValue({ id: 'cat-1' });
+      integrity.findByCategoriaAndSlug.mockResolvedValue(null);
+      repository.create.mockResolvedValue({ id: 's1' });
+      await service.create(explicitDto);
+      expect(repository.create).toHaveBeenCalledWith({
+        categoriaId: 'cat-1',
+        nombre: 'Medidores Electromagnéticos',
+        slug: 'sub-explicita',
+        orden: 0,
+        activa: true,
+      });
+    });
+
+    it('rejects a duplicate derived slug with ConflictException', async () => {
+      const noSlugDto = { categoriaId: 'cat-1', nombre: 'Medidores Electromagnéticos' } as never;
+      categoriaRepository.findById.mockResolvedValue({ id: 'cat-1' });
+      integrity.findByCategoriaAndSlug.mockResolvedValue({ id: 'other' });
+      await expect(service.create(noSlugDto)).rejects.toThrow(ConflictException);
+    });
   });
 
   describe('update', () => {

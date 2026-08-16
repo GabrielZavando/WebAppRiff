@@ -15,6 +15,7 @@ import {
 import { Categoria } from '../domain/categoria.entity';
 import { CategoriaCreateDto } from '../infrastructure/categoria-create.dto';
 import { CategoriaUpdateDto } from '../infrastructure/categoria-update.dto';
+import { slugify } from '@/common/utils/slugify';
 
 @Injectable()
 export class CategoriaService {
@@ -37,13 +38,14 @@ export class CategoriaService {
   }
 
   async create(dto: CategoriaCreateDto): Promise<Categoria> {
-    const existing = await this.integrity.findBySlug(dto.slug);
+    const slug = dto.slug ?? slugify(dto.nombre);
+    const existing = await this.integrity.findBySlug(slug);
     if (existing) {
       throw new ConflictException('Slug already in use');
     }
     const input: CategoriaInput = {
       nombre: dto.nombre,
-      slug: dto.slug,
+      slug,
       orden: dto.orden ?? 0,
       activa: dto.activa ?? true,
     };

@@ -19,6 +19,7 @@ import {
 import { Subcategoria } from '../domain/subcategoria.entity';
 import { SubcategoriaCreateDto } from '../infrastructure/subcategoria-create.dto';
 import { SubcategoriaUpdateDto } from '../infrastructure/subcategoria-update.dto';
+import { slugify } from '@/common/utils/slugify';
 
 @Injectable()
 export class SubcategoriaService {
@@ -48,14 +49,15 @@ export class SubcategoriaService {
     if (!parent) {
       throw new NotFoundException('Parent category not found');
     }
-    const existing = await this.integrity.findByCategoriaAndSlug(dto.categoriaId, dto.slug);
+    const slug = dto.slug ?? slugify(dto.nombre);
+    const existing = await this.integrity.findByCategoriaAndSlug(dto.categoriaId, slug);
     if (existing) {
       throw new ConflictException('Slug already in use within this category');
     }
     const input: SubcategoriaInput = {
       categoriaId: dto.categoriaId,
       nombre: dto.nombre,
-      slug: dto.slug,
+      slug,
       orden: dto.orden ?? 0,
       activa: dto.activa ?? true,
     };

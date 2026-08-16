@@ -97,6 +97,42 @@ describe('CategoriaService', () => {
       integrity.findBySlug.mockResolvedValue(makeCategoria({ slug: 'valvulas' }));
       await expect(service.create(dto)).rejects.toBeInstanceOf(ConflictException);
     });
+
+    it('derives slug from nombre when slug is omitted', async () => {
+      const dto: CategoriaCreateDto = { nombre: 'Medición de Fluidos' };
+      integrity.findBySlug.mockResolvedValue(null);
+      repository.create.mockResolvedValue(makeCategoria({ slug: 'medicion-de-fluidos' }));
+      await service.create(dto);
+      expect(integrity.findBySlug).toHaveBeenCalledWith('medicion-de-fluidos');
+      expect(repository.create).toHaveBeenCalledWith({
+        nombre: 'Medición de Fluidos',
+        slug: 'medicion-de-fluidos',
+        orden: 0,
+        activa: true,
+      });
+    });
+
+    it('uses the explicit slug when provided', async () => {
+      const dto: CategoriaCreateDto = {
+        nombre: 'Medición de Fluidos',
+        slug: 'categoria-explicita',
+      };
+      integrity.findBySlug.mockResolvedValue(null);
+      repository.create.mockResolvedValue(makeCategoria({ slug: 'categoria-explicita' }));
+      await service.create(dto);
+      expect(repository.create).toHaveBeenCalledWith({
+        nombre: 'Medición de Fluidos',
+        slug: 'categoria-explicita',
+        orden: 0,
+        activa: true,
+      });
+    });
+
+    it('rejects a duplicate derived slug with ConflictException', async () => {
+      const dto: CategoriaCreateDto = { nombre: 'Medición de Fluidos' };
+      integrity.findBySlug.mockResolvedValue(makeCategoria({ slug: 'medicion-de-fluidos' }));
+      await expect(service.create(dto)).rejects.toBeInstanceOf(ConflictException);
+    });
   });
 
   describe('update', () => {
