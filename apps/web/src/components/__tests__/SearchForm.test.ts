@@ -1,14 +1,24 @@
 import { describe, it, expect } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import SearchForm from '@/components/SearchForm.astro';
-import {
-  CATEGORY_OPTIONS,
-  getSearchFormConfig,
-} from '@/lib/config/search-form';
+import { getSearchFormConfig } from '@/lib/config/search-form';
 import type { SearchFormProps } from '@/lib/types/search-form';
 
+/**
+ * Local fixture for the category list. The real list is now sourced at build
+ * time from the backend via `lib/api/categories.ts`; the component is dumb and
+ * only renders whatever `categories` prop it receives, so a fixed fixture keeps
+ * the existing snapshot stable.
+ */
+const EXAMPLE_CATEGORIES: SearchFormProps['categories'] = [
+  { id: '', label: 'Todas las categorías' },
+  { id: 'herramientas', label: 'Herramientas' },
+  { id: 'seguridad', label: 'Seguridad' },
+  { id: 'electricidad', label: 'Electricidad' },
+];
+
 const baseProps: SearchFormProps = {
-  categories: CATEGORY_OPTIONS,
+  categories: EXAMPLE_CATEGORIES,
   config: getSearchFormConfig(),
 };
 
@@ -100,8 +110,8 @@ describe('SearchForm — category select', () => {
     const options = [...select.matchAll(/<option[^>]*>([^<]*)<\/option>/g)].map(
       (m) => m[0] ?? '',
     );
-    expect(options).toHaveLength(CATEGORY_OPTIONS.length);
-    CATEGORY_OPTIONS.forEach((category, index) => {
+    expect(options).toHaveLength(EXAMPLE_CATEGORIES.length);
+    EXAMPLE_CATEGORIES.forEach((category, index) => {
       const option = options[index] ?? '';
       // Empty id is serialised as `value` (boolean-style), non-empty as `value="..."`.
       if (category.id === '') {

@@ -1,9 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import {
-  CATEGORY_OPTIONS,
-  getSearchFormConfig,
-  buildSearchHref,
-} from '@/lib/config/search-form';
+import { getSearchFormConfig, buildSearchHref } from '@/lib/config/search-form';
 
 const ENV_KEYS = [
   'SEARCH_RESULTS_PATH',
@@ -19,30 +15,6 @@ function clearEnv(): void {
 
 afterEach(() => {
   clearEnv();
-});
-
-describe('CATEGORY_OPTIONS', () => {
-  it('has "Todas las categorías" as the first option with empty id', () => {
-    expect(CATEGORY_OPTIONS[0]).toEqual({
-      id: '',
-      label: 'Todas las categorías',
-    });
-  });
-
-  it('declares non-empty ids for the rest of the options', () => {
-    // Skip the first element (default option with empty id)
-    for (const option of CATEGORY_OPTIONS.slice(1)) {
-      expect(option.id).not.toBe('');
-      expect(typeof option.id).toBe('string');
-      expect(option.label.length).toBeGreaterThan(0);
-    }
-  });
-
-  it('declares stable ids without whitespace', () => {
-    for (const option of CATEGORY_OPTIONS.slice(1)) {
-      expect(option.id).toMatch(/^[a-z0-9-]+$/);
-    }
-  });
 });
 
 describe('getSearchFormConfig', () => {
