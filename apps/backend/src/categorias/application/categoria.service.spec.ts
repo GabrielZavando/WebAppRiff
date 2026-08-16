@@ -6,6 +6,10 @@ import {
   I_CATEGORIA_REPOSITORY,
   I_CATEGORIA_INTEGRITY_REPOSITORY,
 } from '../domain/icategoria.repository';
+import {
+  ICategoryChangeNotifier,
+  I_CATEGORY_CHANGE_NOTIFIER,
+} from '../domain/icategory-change-notifier';
 import { Categoria } from '../domain/categoria.entity';
 import { CategoriaCreateDto } from '../infrastructure/categoria-create.dto';
 import { CategoriaUpdateDto } from '../infrastructure/categoria-update.dto';
@@ -36,6 +40,7 @@ describe('CategoriaService', () => {
     hasAssociatedProducts: jest.Mock;
     ensureDefault: jest.Mock;
   };
+  let notifier: { notifyChange: jest.Mock };
 
   beforeEach(() => {
     repository = {
@@ -50,9 +55,11 @@ describe('CategoriaService', () => {
       hasAssociatedProducts: jest.fn(),
       ensureDefault: jest.fn(),
     };
+    notifier = { notifyChange: jest.fn() };
     service = new CategoriaService(
       repository as unknown as ICategoriaRepository,
       integrity as unknown as ICategoriaIntegrityRepository,
+      notifier as unknown as ICategoryChangeNotifier,
     );
   });
 
@@ -199,6 +206,50 @@ describe('CategoriaService', () => {
       integrity.ensureDefault.mockResolvedValue(undefined);
       await service.ensureDefault();
       expect(integrity.ensureDefault).toHaveBeenCalled();
+    });
+  });
+
+  describe('change notifications', () => {
+    it('notifies with action "created" after a successful create', async () => {
+      const dto: CategoriaCreateDto = { nombre: 'Válvulas', slug: 'valvulas' };
+      integrity.findBySlug.mockResolvedValue(null);
+      repository.create.mockResolvedValue(makeCategoria({ id: 'new-id' }));
+      await service.create(dto);
+      expect(notifier.notifyChange).toHaveBeenCalledWith({
+        id: 'new-id',
+        action: 'created',
+        occurredAt: expect.any(String),
+      });
+    });
+
+    it('notifies with action "updated" after a successful update', async () => {
+      repository.findById.mockResolvedValue(makeCategoria());
+      integrity.findBySlug.mockResolvedValue(null);
+      repository.update.mockResolvedValue(makeCategoria());
+      await service.update('c1', { nombre: 'X' });
+      expect(notifier.notifyChange).toHaveBeenCalledWith({
+        id: 'c1',
+        action: 'updated',
+        occurredAt: expect.any(String),
+      });
+    });
+
+    it('notifies with action "deleted" after a successful remove', async () => {
+      repository.findById.mockResolvedValue(makeCategoria());
+      integrity.hasAssociatedProducts.mockResolvedValue(false);
+      repository.remove.mockResolvedValue(undefined);
+      await service.remove('c1');
+      expect(notifier.notifyChange).toHaveBeenCalledWith({
+        id: 'c1',
+        action: 'deleted',
+        occurredAt: expect.any(String),
+      });
+    });
+
+    it('does NOT notify when the mutation fails', async () => {
+      repository.findById.mockResolvedValue(null);
+      await expect(service.remove('missing')).rejects.toBeInstanceOf(NotFoundException);
+      expect(notifier.notifyChange).not.toHaveBeenCalled();
     });
   });
 });
