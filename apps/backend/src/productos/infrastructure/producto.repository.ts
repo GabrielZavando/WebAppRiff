@@ -23,7 +23,7 @@ export class ProductoRepository implements IProductRepository, IProductQueryRepo
   constructor(@Inject(FIRESTORE) private readonly firestore: Firestore) {}
 
   async create(input: ProductoInput): Promise<Producto> {
-    const id = this.firestore.collection(COLLECTION).doc().id;
+    const id = input.id ?? this.firestore.collection(COLLECTION).doc().id;
     const now = new Date();
     const { idExterno, subcategoriaId, ...rest } = input;
     const doc: Omit<Producto, 'id'> = {

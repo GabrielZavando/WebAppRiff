@@ -32,7 +32,7 @@ const CREATE_DEFAULTS: Record<string, unknown> = {
   publicado: false,
 };
 
-const UPDATE_PASSTHROUGH: Array<keyof ProductoUpdateInput> = [
+const UPDATE_PASSTHROUGH: Array<Exclude<keyof ProductoUpdateInput, 'id'>> = [
   'titulo',
   'descripcionBreve',
   'descripcionLarga',

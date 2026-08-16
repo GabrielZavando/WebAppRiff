@@ -49,6 +49,7 @@ export interface Producto {
 }
 
 export type ProductoInput = {
+  id?: string;
   idExterno?: string | null;
   sku: string;
   titulo: string;

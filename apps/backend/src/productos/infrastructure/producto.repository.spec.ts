@@ -125,6 +125,31 @@ describe('ProductoRepository', () => {
       });
       expect(result.creadoEn).toBeInstanceOf(Date);
     });
+
+    it('uses the explicit id when provided instead of auto-generating', async () => {
+      const result = await repo.create({
+        id: 'prod-001',
+        sku: 'SKU-1',
+        titulo: 'Válvula',
+        slug: 'valvula',
+        descripcionBreve: 'Breve',
+        descripcionLarga: '',
+        categoriaId: 'cat-1',
+        subcategoriaId: null,
+        atributos: [],
+        precio: { valor: 100, visible: true },
+        stock: { disponible: true, cantidad: null },
+        galeria: [],
+        fichaTecnica: null,
+        destacado: false,
+        publicado: true,
+      });
+      expect(result.id).toBe('prod-001');
+      expect(store.get('productos/prod-001')).toMatchObject({
+        sku: 'SKU-1',
+        categoriaId: 'cat-1',
+      });
+    });
   });
 
   describe('findById', () => {
