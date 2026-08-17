@@ -21,6 +21,8 @@ playwright-report/
 .env
 .env.local
 .env.*.local
+# Archivo temporal de secretos de migración (se borra tras usar)
+.migration-secrets.json
 
 # OS
 .DS_Store
