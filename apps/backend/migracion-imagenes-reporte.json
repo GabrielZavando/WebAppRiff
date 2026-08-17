@@ -1,0 +1,349 @@
+{
+  "fecha": "2026-08-16T20:46:13.546Z",
+  "exitosos": [
+    {
+      "productoId": "prod-051",
+      "titulo": "Datalogger 3G",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-052",
+      "titulo": "HRI – Sensor de Pulso",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-053",
+      "titulo": "HRI MEI – Sensor de Pulso",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-057",
+      "titulo": "Pulso Octave Salida 4-20 mA",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-062",
+      "titulo": "Medidor de Agua Potable Nereus MJ-SDC DN15/DN20 Certificación NCH 3274/1",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-063",
+      "titulo": "Medidor de Agua Potable Nereus MJ Plus",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-066",
+      "titulo": "Medidor de Flujo Riff Turbine Pro",
+      "imagenesMigradas": 2,
+      "imagenesTotales": 2
+    },
+    {
+      "productoId": "prod-068",
+      "titulo": "Medidor Cuenta Litros Flowtech",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-069",
+      "titulo": "Medidor Cuenta Litros Flowtech",
+      "imagenesMigradas": 2,
+      "imagenesTotales": 2
+    },
+    {
+      "productoId": "prod-070",
+      "titulo": "Medidor Másico Fullmass Coriolis",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-071",
+      "titulo": "Medidor Ultrasónico Fullsonic Doppler Wall Mounted",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-072",
+      "titulo": "Medidor de Gas Tipo Turbina",
+      "imagenesMigradas": 2,
+      "imagenesTotales": 2
+    },
+    {
+      "productoId": "prod-073",
+      "titulo": "Medidor de Agua Ultrasónico Ultrimis",
+      "imagenesMigradas": 2,
+      "imagenesTotales": 2
+    },
+    {
+      "productoId": "prod-074",
+      "titulo": "Medidor de Agua Potable Sensus 405s",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-076",
+      "titulo": "Medidor Electromagnético Fullmag HA",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-077",
+      "titulo": "Medidor Ultrasónico Doppler Portátil Fullsonic (No Invasivo)",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-078",
+      "titulo": "Lámpara Portátil de Desinfección UV-C Sterilon",
+      "imagenesMigradas": 2,
+      "imagenesTotales": 2
+    },
+    {
+      "productoId": "prod-079",
+      "titulo": "Antiincrustante Bimaks 420 para Ósmosis Inversa (Agua Salobre)",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-080",
+      "titulo": "Antiincrustante Maks 430 para Ósmosis Inversa (Agua de Mar)",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-081",
+      "titulo": "Tobera Filtrante de Polipropileno Tipo R",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-082",
+      "titulo": "Tobera Filtrante de Polipropileno Tipo D4,7",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-083",
+      "titulo": "Tobera Filtrante de Polipropileno Tipo P6",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-084",
+      "titulo": "Tobera Filtrante de Polipropileno Tipo VL",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-085",
+      "titulo": "Medidor de Agua Ultrasónico Ultrimis DN25-DN40 (1\" - 1 1/2\")",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-086",
+      "titulo": "Medidor de Agua Ultrasónico Ultrimis DN50 (2\")",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-087",
+      "titulo": "Medidor de Flujo K24 Pulser para Diesel y Aceite (Salida de Pulsos)",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-088",
+      "titulo": "Medidor Electromagnético PFP para Tubería Parcialmente Llena",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-089",
+      "titulo": "Kit de Telemetría Industrial 3G (Agua Fría)",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    }
+  ],
+  "fallidos": [],
+  "omitidos": [
+    {
+      "productoId": "prod-001",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-002",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-003",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-004",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-005",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-008",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-009",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-010",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-011",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-012",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-013",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-014",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-015",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-016",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-019",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-020",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-021",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-022",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-023",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-024",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-025",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-026",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-027",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-029",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-030",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-033",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-034",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-035",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-036",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-037",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-038",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-039",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-040",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-041",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-042",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-043",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-044",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-045",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-047",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-048",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-049",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-050",
+      "motivo": "Ya migrado completamente (idempotencia)."
+    },
+    {
+      "productoId": "prod-054",
+      "motivo": "El documento no existe en Firestore (probablemente excluido del seed)."
+    }
+  ],
+  "advertencias": []
+}
