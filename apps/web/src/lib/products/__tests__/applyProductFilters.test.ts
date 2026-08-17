@@ -9,9 +9,12 @@ function makeProduct(overrides: Partial<ProductoApi>): ProductoApi {
     titulo: overrides.titulo ?? 'Producto Uno',
     slug: overrides.slug ?? 'producto-uno',
     descripcionBreve: overrides.descripcionBreve ?? 'Descripción corta.',
+    descripcionLarga: overrides.descripcionLarga ?? '<p>Descripción larga.</p>',
     categoriaId: overrides.categoriaId ?? 'cat-a',
     subcategoriaId: overrides.subcategoriaId ?? null,
     galeria: overrides.galeria ?? [],
+    atributos: overrides.atributos ?? [],
+    fichaTecnica: overrides.fichaTecnica ?? null,
     precio: overrides.precio ?? { valor: 1000, visible: true },
     creadoEn: overrides.creadoEn ?? '2026-01-01T00:00:00.000Z',
   };

@@ -10,9 +10,12 @@ function makeProduct(o: Partial<ProductoApi> & Pick<ProductoApi, 'slug' | 'categ
     titulo: o.titulo ?? o.slug,
     slug: o.slug,
     descripcionBreve: o.descripcionBreve ?? '',
+    descripcionLarga: o.descripcionLarga ?? '',
     categoriaId: o.categoriaId,
     subcategoriaId: o.subcategoriaId ?? null,
     galeria: [],
+    atributos: [],
+    fichaTecnica: null,
     precio: { valor: 0, visible: false },
     creadoEn: o.creadoEn ?? '2026-01-01T00:00:00.000Z',
   };

@@ -19,9 +19,12 @@ function makeProducts(count: number): ProductoApi[] {
     titulo: `Producto ${i}`,
     slug: `producto-${i}`,
     descripcionBreve: 'Descripción corta.',
+    descripcionLarga: '<p>Descripción larga.</p>',
     categoriaId: i % 2 === 0 ? 'cat-fluidos' : 'cat-bombas',
     subcategoriaId: i % 2 === 0 ? 'sub-caudal' : 'sub-presion',
     galeria: [],
+    atributos: [],
+    fichaTecnica: null,
     precio: { valor: 1000 + i, visible: true },
     creadoEn: `2026-01-${String((i % 28) + 1).padStart(2, '0')}T00:00:00.000Z`,
   }));
