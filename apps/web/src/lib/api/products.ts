@@ -52,6 +52,58 @@ export async function getPublicProducts(): Promise<readonly ProductoApi[]> {
   return cached;
 }
 
+interface ProductDetailResponse {
+  readonly data: ProductoApi;
+}
+
+// Per-slug cache: each product is fetched at most once per build. Keyed by slug
+// because the detail page is reached via `getStaticPaths` (one render per slug),
+// and the same slug can be re-rendered (e.g. HMR, multiple route renders in one
+// build). The cache mirrors `cached` above but is keyed, not single-value.
+const detailCache = new Map<string, ProductoApi | null>();
+
+/**
+ * Returns a single public product by slug, baked into the static site at build
+ * time. Fetches from the backend, caches the result per slug, and falls back to
+ * `null` if the product is missing or the API is unreachable so `astro build`
+ * never fails (the page simply renders a 404).
+ */
+export async function getProductBySlug(slug: string): Promise<ProductoApi | null> {
+  if (detailCache.has(slug)) {
+    return detailCache.get(slug) ?? null;
+  }
+  // Reuse the catalog cache populated by `getPublicProducts()` during
+  // `getStaticPaths` so the detail page doesn't issue one extra HTTP call per
+  // product at build time. The standalone fetch below is the fallback for
+  // runtime/SSR usage where the catalog cache is not primed.
+  if (cached) {
+    const found = cached.find((p) => p.slug === slug);
+    if (found) {
+      detailCache.set(slug, found);
+      return found;
+    }
+  }
+  let product: ProductoApi | null = null;
+  try {
+    const response = await fetch(`${getApiBaseUrl()}/products/slug/${slug}`, {
+      headers: { accept: 'application/json' },
+    });
+    if (!response.ok) {
+      throw new Error(`Product detail API responded with ${response.status}`);
+    }
+    const body = (await response.json()) as ProductDetailResponse;
+    product = body.data;
+  } catch (error) {
+    console.warn(
+      `Failed to load product "${slug}" from API; rendering 404.`,
+      error,
+    );
+    product = null;
+  }
+  detailCache.set(slug, product);
+  return product;
+}
+
 // Re-export the category type so consumers can build the card model without a
 // second import line.
 export type { CategoriaApi };

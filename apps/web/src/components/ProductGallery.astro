@@ -1,0 +1,68 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { GaleriaItemApi } from '@/lib/types/products-page';
+
+interface Props {
+  galeria: readonly GaleriaItemApi[];
+  titulo: string;
+  class?: string;
+}
+
+const { galeria, titulo, class: className = '' } = Astro.props;
+
+const mainImage = galeria[0];
+const hasGallery = galeria.length > 0;
+---
+
+<div class={`flex flex-col gap-4 ${className}`}>
+  <!-- Main image area -->
+  <div
+    class="flex h-96 items-center justify-center border border-border bg-white p-6"
+    data-gallery-main
+  >
+    {
+      hasGallery && mainImage ? (
+        <img
+          src={mainImage.url}
+          alt={mainImage.alt}
+          aria-label={titulo}
+          loading="lazy"
+          decoding="async"
+          class="h-full w-full object-contain"
+          data-main-image
+        />
+      ) : (
+        <span class="flex h-full w-full items-center justify-center text-muted" aria-hidden="true">
+          <Icon name="lucide:image-off" class="h-10 w-10" />
+        </span>
+      )
+    }
+  </div>
+
+  <!-- Thumbnails -->
+  {
+    hasGallery && (
+      <div class="grid grid-cols-3 gap-4" data-gallery-thumbs role="group" aria-label="Miniaturas del producto">
+        {galeria.map((item, index) => (
+          <button
+            type="button"
+            class:list={[
+              'flex h-24 items-center justify-center border bg-white p-2 transition-colors',
+              index === 0 ? 'border-primary' : 'border-border hover:bg-bg',
+            ]}
+            data-gallery-index={index}
+            aria-label={`Ver imagen ${index + 1}`}
+          >
+            <img
+              src={item.url}
+              alt={item.alt}
+              loading="lazy"
+              decoding="async"
+              class="h-full w-full object-contain"
+            />
+          </button>
+        ))}
+      </div>
+    )
+  }
+</div>

@@ -1,0 +1,63 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<section class="border-t border-border bg-bg px-4 py-16 md:px-8">
+  <div class="mx-auto max-w-7xl">
+    <div class="mb-8 text-center">
+      <h2 class="mb-4 font-heading text-3xl font-bold text-text">Aplicaciones Industriales</h2>
+      <p class="mx-auto max-w-3xl font-body text-lg text-text-2">
+        Diseñado para operar en entornos exigentes donde la precisión y confiabilidad son
+        críticas.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <!-- Card 1 -->
+      <div
+        class="border border-border bg-white p-8 transition-shadow duration-300 hover:shadow-lg"
+      >
+        <div class="mb-4 flex h-16 w-16 items-center justify-center bg-primary-light/10">
+          <Icon name="lucide:factory" class="text-[32px] text-primary-deep" />
+        </div>
+        <h3 class="mb-2 font-heading text-2xl font-semibold text-text">Minería</h3>
+        <p class="font-body text-base text-text-2">
+          Medición de pulpas, lodos y relaves mineros altamente abrasivos sin desgaste del
+          sensor.
+        </p>
+      </div>
+
+      <!-- Card 2 -->
+      <div
+        class="border border-border bg-white p-8 transition-shadow duration-300 hover:shadow-lg"
+      >
+        <div class="mb-4 flex h-16 w-16 items-center justify-center bg-primary-light/10">
+          <Icon name="lucide:droplets" class="text-[32px] text-primary-deep" />
+        </div>
+        <h3 class="mb-2 font-heading text-2xl font-semibold text-text">
+          Tratamiento de Aguas
+        </h3>
+        <p class="font-body text-base text-text-2">
+          Control de lodos activados, aguas residuales crudas y efluentes industriales
+          complejos.
+        </p>
+      </div>
+
+      <!-- Card 3 -->
+      <div
+        class="border border-border bg-white p-8 transition-shadow duration-300 hover:shadow-lg"
+      >
+        <div class="mb-4 flex h-16 w-16 items-center justify-center bg-primary-light/10">
+          <Icon name="lucide:flask-conical" class="text-[32px] text-primary-deep" />
+        </div>
+        <h3 class="mb-2 font-heading text-2xl font-semibold text-text">
+          Química y Celulosa
+        </h3>
+        <p class="font-body text-base text-text-2">
+          Monitoreo de pastas, suspensiones químicas y líquidos corrosivos en tuberías
+          cerradas.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

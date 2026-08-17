@@ -1,0 +1,104 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import { getPublicProducts, getProductBySlug } from '@/lib/api/products';
+import { getCategorias } from '@/lib/api/categories';
+import { toProductDetailModel } from '@/lib/products/toProductDetailModel';
+import ProductGallery from '@/components/ProductGallery.astro';
+import ProductSpecifications from '@/components/ProductSpecifications.astro';
+import TechnicalDocs from '@/components/TechnicalDocs.astro';
+import IndustrialApplications from '@/components/IndustrialApplications.astro';
+
+// Build-time: generate one static page per published product.
+export async function getStaticPaths() {
+  const products = await getPublicProducts();
+  return products.map((product) => ({
+    params: { slug: product.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const product = slug ? await getProductBySlug(slug) : null;
+const categories = await getCategorias();
+const model = product ? toProductDetailModel(product, { categories }) : null;
+
+if (!product) {
+  Astro.response.status = 404;
+}
+---
+
+{
+  !model ? (
+    <Layout title="Producto no encontrado">
+      <main class="flex flex-1 flex-col items-center justify-center px-4 py-16 text-center">
+        <h1 class="mb-4 font-heading text-3xl font-bold text-secondary">Producto no encontrado</h1>
+        <p class="mb-8 text-text-2">
+          El producto que buscas no existe o ya no está disponible.
+        </p>
+        <a
+          href="/productos"
+          class="inline-flex items-center justify-center bg-secondary-container px-6 py-3 font-semibold text-white hover:bg-secondary-dark"
+        >
+          Volver al catálogo
+        </a>
+      </main>
+    </Layout>
+  ) : (
+    <Layout title={`${model.titulo} — Riff`} description={model.descripcionBreve}>
+      <main class="flex-grow">
+        {/* Hero + info */}
+        <section class="bg-bg py-16 px-4 md:px-8">
+          <div class="mx-auto grid max-w-7xl grid-cols-1 gap-12 md:grid-cols-2">
+            <ProductGallery galeria={model.galeria} titulo={model.titulo} />
+
+            <div class="flex flex-col justify-center">
+              {
+                model.categoriaNombre && (
+                  <div class="mb-4">
+                    <span class="inline-block border border-border bg-white px-3 py-1 text-caption font-medium uppercase tracking-wider text-text-2">
+                      {model.categoriaNombre}
+                    </span>
+                  </div>
+                )
+              }
+
+              <h1 class="mb-4 font-heading text-5xl font-bold text-text">{model.titulo}</h1>
+
+              <p class="mb-8 max-w-prose font-body text-lg text-text-2">
+                {model.descripcionBreve}
+              </p>
+
+              <ProductSpecifications atributos={model.atributos} class="mb-8" />
+
+              <div class="flex flex-col gap-4 sm:flex-row">
+                <a
+                  href={model.cotizarHref}
+                  class="flex items-center justify-center gap-2 bg-accent px-8 py-4 font-bold uppercase text-white transition-colors hover:bg-accent-dark"
+                >
+                  <Icon name="lucide:calculator" class="text-[20px]" />
+                  SOLICITAR COTIZACIÓN
+                </a>
+                <a
+                  href="mailto:contacto@riff.cl"
+                  class="flex items-center justify-center gap-2 border-2 border-primary px-8 py-4 font-bold uppercase text-primary transition-colors hover:bg-primary-light"
+                >
+                  <Icon name="lucide:headset" class="text-[20px]" />
+                  CONTACTAR ASESOR
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <IndustrialApplications />
+
+        <TechnicalDocs fichaTecnica={model.fichaTecnica} />
+      </main>
+
+      <script>
+        import { initProductGallery } from '@/lib/products/productGalleryClient';
+        initProductGallery();
+      </script>
+    </Layout>
+  )
+}

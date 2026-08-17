@@ -1,0 +1,69 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { FichaTecnicaApi } from '@/lib/types/products-page';
+
+interface Props {
+  fichaTecnica?: FichaTecnicaApi | null;
+}
+
+const { fichaTecnica } = Astro.props;
+const hasDoc = Boolean(fichaTecnica && fichaTecnica.url);
+---
+
+<section class="relative overflow-hidden bg-primary-deep px-4 py-16 md:px-8">
+  <!-- Subtle dot pattern overlay; white dots via design token variable (no raw hex). -->
+  <div
+    class="absolute inset-0 opacity-10"
+    style="background-image: radial-gradient(circle, var(--color-white) 1px, transparent 1px); background-size: 20px 20px;"
+  >
+  </div>
+
+  <div
+    class="relative z-10 mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 md:flex-row"
+  >
+    <div class="text-left text-white md:w-1/2">
+      <h2 class="mb-4 font-heading text-3xl font-bold">Documentación Técnica</h2>
+      <p class="font-body text-lg opacity-90">
+        Acceda a especificaciones detalladas, manuales de operación y guías de instalación
+        rápida para asegurar un rendimiento óptimo.
+      </p>
+    </div>
+
+    <div class="flex w-full flex-col gap-4 md:w-1/2">
+      {
+        hasDoc ? (
+          <a
+            class="group flex items-center justify-between border border-white/20 bg-white/10 p-4 transition-colors hover:bg-white/20"
+            href={fichaTecnica!.url}
+          >
+            <div class="flex items-center gap-4 text-white">
+              <Icon name="lucide:file-text" class="text-[32px] opacity-80" />
+              <div>
+                <h4 class="text-sm font-bold uppercase">Catálogo Técnico</h4>
+                <span class="text-xs opacity-75">{fichaTecnica!.nombreArchivo}</span>
+              </div>
+            </div>
+            <Icon
+              name="lucide:download"
+              class="text-white opacity-50 transition-opacity group-hover:opacity-100"
+            />
+          </a>
+        ) : (
+          <a
+            class="group flex items-center justify-between border border-white/20 bg-white/10 p-4 transition-colors hover:bg-white/20"
+            href="/contacto"
+          >
+            <div class="flex items-center gap-4 text-white">
+              <Icon name="lucide:mail" class="text-[32px] opacity-80" />
+              <span class="text-sm font-bold uppercase">Solicitar ficha técnica</span>
+            </div>
+            <Icon
+              name="lucide:arrow-right"
+              class="text-white opacity-50 transition-opacity group-hover:opacity-100"
+            />
+          </a>
+        )
+      }
+    </div>
+  </div>
+</section>

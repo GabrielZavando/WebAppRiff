@@ -6,9 +6,12 @@ interface ProductoApi {
   readonly titulo: string;
   readonly slug: string;
   readonly descripcionBreve: string;
+  readonly descripcionLarga?: string;
   readonly categoriaId: string;
   readonly subcategoriaId: string | null;
   readonly galeria: readonly { readonly url: string; readonly alt: string }[];
+  readonly atributos?: readonly { readonly etiqueta: string; readonly valor: string }[];
+  readonly fichaTecnica?: { readonly url: string; readonly nombreArchivo: string } | null;
   readonly precio: { readonly valor: number; readonly visible: boolean };
   readonly creadoEn: string;
 }
@@ -105,6 +108,72 @@ describe('getPublicProducts', () => {
     await getPublicProducts();
     expect(fetchMock).toHaveBeenCalledWith(
       'https://api.example.com/v1/products',
+      expect.anything(),
+    );
+  });
+});
+
+const SINGLE: ProductoApi = {
+  id: 'p1',
+  sku: 'FLJ-001',
+  titulo: 'Flujómetro Universal',
+  slug: 'flujometro-universal',
+  descripcionBreve: 'Medidor electromagnético.',
+  descripcionLarga: '<p>Desc larga.</p>',
+  categoriaId: 'cat-fluidos',
+  subcategoriaId: 'sub-caudal',
+  galeria: [],
+  atributos: [],
+  fichaTecnica: null,
+  precio: { valor: 125000, visible: true },
+  creadoEn: '2026-01-15T12:00:00.000Z',
+};
+
+describe('getProductBySlug', () => {
+  it('returns the product on success', async () => {
+    const { getProductBySlug } = await load();
+    const fetchMock = mockFetch({ data: SINGLE });
+    const result = await getProductBySlug('flujometro-universal');
+    expect(result).not.toBeNull();
+    expect(result?.id).toBe('p1');
+    expect(result?.slug).toBe('flujometro-universal');
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/products/slug/flujometro-universal'),
+      expect.objectContaining({ headers: { accept: 'application/json' } }),
+    );
+  });
+
+  it('caches so fetch is called only once across calls for the same slug', async () => {
+    const { getProductBySlug } = await load();
+    const fetchMock = mockFetch({ data: SINGLE });
+    await getProductBySlug('flujometro-universal');
+    await getProductBySlug('flujometro-universal');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns null when the API returns non-2xx', async () => {
+    const { getProductBySlug } = await load();
+    const fetchMock = mockFetch({ message: 'boom' }, false, 404);
+    const result = await getProductBySlug('missing');
+    expect(result).toBeNull();
+  });
+
+  it('returns null on network error', async () => {
+    const { getProductBySlug } = await load();
+    const fetchMock = vi.fn().mockRejectedValue(new Error('network down'));
+    (globalThis as unknown as { fetch: typeof fetch }).fetch =
+      fetchMock as unknown as typeof fetch;
+    const result = await getProductBySlug('flujometro-universal');
+    expect(result).toBeNull();
+  });
+
+  it('uses the configured base URL from NESTJS_API_URL', async () => {
+    process.env.NESTJS_API_URL = 'https://api.example.com/v1';
+    const { getProductBySlug } = await load();
+    const fetchMock = mockFetch({ data: SINGLE });
+    await getProductBySlug('flujometro-universal');
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.example.com/v1/products/slug/flujometro-universal',
       expect.anything(),
     );
   });

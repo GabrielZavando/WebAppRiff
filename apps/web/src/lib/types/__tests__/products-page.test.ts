@@ -15,9 +15,12 @@ const SAMPLE_PRODUCTO: ProductoApi = {
   titulo: 'Flujómetro Universal',
   slug: 'flujometro-universal',
   descripcionBreve: 'Medidor electromagnético de alta precisión.',
+  descripcionLarga: '<p>Descripción completa del flujómetro.</p>',
   categoriaId: 'cat-fluidos',
   subcategoriaId: 'sub-caudal',
   galeria: [{ url: 'https://cdn.example.com/flj-001.webp', alt: 'Flujómetro' }],
+  atributos: [{ nombre: 'Precisión', valor: '±2%' }],
+  fichaTecnica: null,
   precio: { valor: 125000, visible: true },
   creadoEn: '2026-01-15T12:00:00.000Z',
 };

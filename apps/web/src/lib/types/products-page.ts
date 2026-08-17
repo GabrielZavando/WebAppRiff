@@ -28,6 +28,19 @@ export interface GaleriaItemApi {
   readonly orden?: number;
 }
 
+/** A single technical attribute / specification (e.g. "Precisión: ±2%"). */
+export interface AtributoApi {
+  readonly nombre: string;
+  readonly valor: string;
+}
+
+/** A downloadable technical document (PDF) attached to a product. */
+export interface FichaTecnicaApi {
+  readonly url: string;
+  readonly storagePath: string;
+  readonly nombreArchivo: string;
+}
+
 /** A product as returned by `GET /api/v1/products` (public subset used by the page). */
 export interface ProductoApi {
   readonly id: string;
@@ -35,14 +48,38 @@ export interface ProductoApi {
   readonly titulo: string;
   readonly slug: string;
   readonly descripcionBreve: string;
+  readonly descripcionLarga: string;
   readonly categoriaId: string;
   readonly subcategoriaId: string | null;
   readonly galeria: readonly GaleriaItemApi[];
+  readonly atributos: readonly AtributoApi[];
+  readonly fichaTecnica: FichaTecnicaApi | null;
   readonly precio: {
     readonly valor: number;
     readonly visible: boolean;
   };
   readonly creadoEn: string;
+}
+
+/**
+ * View-model consumed by the product detail page (`/productos/[slug].astro`).
+ * Carries the resolved category name plus the gallery, attributes and
+ * technical document, all derived from a `ProductoApi` server-side at build
+ * time. Pure and deterministic.
+ */
+export interface ProductDetailPage {
+  readonly id: string;
+  readonly sku: string;
+  readonly slug: string;
+  readonly titulo: string;
+  readonly descripcionBreve: string;
+  readonly descripcionLarga: string;
+  readonly categoriaId: string;
+  readonly categoriaNombre: string;
+  readonly galeria: readonly GaleriaItemApi[];
+  readonly atributos: readonly AtributoApi[];
+  readonly fichaTecnica: FichaTecnicaApi | null;
+  readonly cotizarHref: string;
 }
 
 export type ViewMode = 'grid' | 'list';
