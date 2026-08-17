@@ -63,6 +63,29 @@ async function fetchActiveCategories(): Promise<CategoriaApi[]> {
 // a single Node process, so caching here means exactly one fetch per build.
 let cached: readonly CategoryOption[] | null = null;
 
+// Separate cache for the full category list consumed by the catalog sidebar
+// (ProductsFiltersSidebar expects the raw CategoriaApi shape, not options).
+let cachedCategorias: CategoriaApi[] | null = null;
+
+/**
+ * Returns the full active category list for the catalog sidebar. Fetches from
+ * the backend at build time, caches the result, and falls back to an empty list
+ * (the sidebar then shows only "Todas las categorías") if the API is
+ * unreachable so the static build never fails.
+ */
+export async function getCategorias(): Promise<CategoriaApi[]> {
+  if (cachedCategorias) {
+    return cachedCategorias;
+  }
+  try {
+    cachedCategorias = await fetchActiveCategories();
+  } catch (error) {
+    console.warn('Failed to load categories from API; falling back to empty list.', error);
+    cachedCategorias = [];
+  }
+  return cachedCategorias;
+}
+
 /**
  * Returns the category options for the SearchForm. Fetches from the backend at
  * build time, caches the result, and falls back to only the default option if

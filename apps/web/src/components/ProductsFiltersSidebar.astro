@@ -1,0 +1,102 @@
+---
+import { buildProductsPageHref } from '@/lib/products/buildProductsPageHref';
+import type {
+  CategoriaApi,
+  SubcategoriaApi,
+  ProductsPageFilters,
+} from '@/lib/types/products-page';
+
+interface Props {
+  categories: CategoriaApi[];
+  subcategories: SubcategoriaApi[];
+  filtros: ProductsPageFilters;
+}
+
+const { categories, subcategories, filtros } = Astro.props;
+const selectedSubIds = filtros.subcategoriaIds ?? [];
+// Every category that has subcategories gets a baked checkbox group. All groups
+// start hidden + disabled except the one matching the selected category; the
+// client runtime (`catalogClient.ts`) reveals the active group instantly when
+// the <select> changes — no full navigation required.
+const clearHref = buildProductsPageHref({ q: filtros.q, view: filtros.view });
+---
+
+<form
+  id="products-filter-form"
+  method="get"
+  action="/productos"
+  class="flex flex-col gap-4 border border-border bg-white p-4 shadow-1"
+>
+  {/* Title block: uppercase heading with a divider line underneath (per
+      ProductsPage.png reference). */}
+  <div class="border-b border-border pb-3">
+    <h2 class="font-heading text-sm font-bold uppercase tracking-wide text-text">
+      FILTRO DE BÚSQUEDA
+    </h2>
+  </div>
+
+  <input type="hidden" name="q" value={filtros.q ?? ''} />
+  <input type="hidden" name="view" value={filtros.view ?? 'grid'} />
+
+  <div class="flex flex-col gap-1">
+    <label for="filtro-categoria" class="text-sm font-semibold text-text">
+      Categorías
+    </label>
+    <select
+      id="filtro-categoria"
+      name="categoriaId"
+      class="border border-border bg-white px-3 py-2 text-sm text-text focus:border-primary"
+    >
+      <option value="">Todas las categorías</option>
+      {categories.map((cat) => (
+        <option value={cat.id} selected={cat.id === filtros.categoriaId}>
+          {cat.nombre}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {
+    categories.map((cat) => {
+      const subs = subcategories.filter((s) => s.categoriaId === cat.id);
+      if (subs.length === 0) return null;
+      const isSelected = cat.id === filtros.categoriaId;
+      return (
+        <fieldset
+          data-categoria-id={cat.id}
+          class:list={['flex flex-col gap-2', !isSelected && 'hidden']}
+        >
+          <legend class="text-sm font-semibold text-text">{cat.nombre}</legend>
+          {subs.map((sub) => (
+            <label class="flex items-center gap-2 text-sm text-text-2">
+              <input
+                type="checkbox"
+                name="subcategoriaId"
+                value={sub.id}
+                checked={isSelected && selectedSubIds.includes(sub.id)}
+                disabled={!isSelected}
+                class="border border-border text-primary focus:border-primary"
+              />
+              {sub.nombre}
+            </label>
+          ))}
+        </fieldset>
+      );
+    })
+  }
+
+  <div class="flex flex-col gap-2">
+    <button
+      type="submit"
+      class="inline-flex items-center justify-center bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-dark"
+    >
+      Aplicar filtros
+    </button>
+    <a
+      href={clearHref}
+      class="inline-flex items-center justify-center border border-border px-4 py-2 text-sm font-semibold text-secondary hover:bg-bg"
+    >
+      Limpiar filtros
+    </a>
+  </div>
+</form>

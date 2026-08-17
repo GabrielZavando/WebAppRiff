@@ -1,0 +1,83 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { PaginationModel } from '@/lib/types/products-page';
+
+interface Props {
+  pagination: PaginationModel;
+  buildHref: (page: number) => string;
+}
+
+const { pagination, buildHref } = Astro.props;
+const { items, page, totalPages } = pagination;
+const prevHref = page > 1 ? buildHref(page - 1) : null;
+const nextHref = page < totalPages ? buildHref(page + 1) : null;
+
+// Single shared class for the compact chevron/number controls (flat, square).
+const baseControl = 'inline-flex h-9 w-9 items-center justify-center text-sm font-medium';
+---
+
+{
+  totalPages > 1 && (
+    <nav
+      aria-label="Paginación de productos"
+      class="flex items-center justify-center gap-1"
+    >
+      {prevHref ? (
+        <a
+          href={prevHref}
+          class={`${baseControl} text-text-2 hover:text-primary`}
+          aria-label="Página anterior"
+        >
+          <Icon name="lucide:chevron-left" class="h-5 w-5" aria-hidden="true" />
+        </a>
+      ) : (
+        <span
+          aria-disabled="true"
+          class={`${baseControl} text-muted`}
+          aria-label="Página anterior"
+        >
+          <Icon name="lucide:chevron-left" class="h-5 w-5" aria-hidden="true" />
+        </span>
+      )}
+
+      {items.map((item) =>
+        item === '…' ? (
+          <span aria-hidden="true" class={`${baseControl} text-muted`}>
+            …
+          </span>
+        ) : (
+          <a
+            href={buildHref(item)}
+            aria-current={item === page ? 'page' : undefined}
+            class:list={[
+              baseControl,
+              item === page
+                ? 'bg-primary text-white'
+                : 'text-text-2 hover:text-primary',
+            ]}
+          >
+            {item}
+          </a>
+        )
+      )}
+
+      {nextHref ? (
+        <a
+          href={nextHref}
+          class={`${baseControl} text-text-2 hover:text-primary`}
+          aria-label="Página siguiente"
+        >
+          <Icon name="lucide:chevron-right" class="h-5 w-5" aria-hidden="true" />
+        </a>
+      ) : (
+        <span
+          aria-disabled="true"
+          class={`${baseControl} text-muted`}
+          aria-label="Página siguiente"
+        >
+          <Icon name="lucide:chevron-right" class="h-5 w-5" aria-hidden="true" />
+        </span>
+      )}
+    </nav>
+  )
+}

@@ -1,0 +1,77 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { ProductCardModel } from '@/lib/types/products-page';
+
+interface Props {
+  product: ProductCardModel;
+  class?: string;
+}
+
+const { product, class: className = '' } = Astro.props;
+---
+
+<article
+  data-product-id={product.slug}
+  data-categoria-id={product.categoriaId}
+  data-subcategoria-id={product.subcategoriaId ?? ''}
+  class={`group flex h-full flex-col border border-border bg-white shadow-1 catalog-card ${className}`}
+>
+  <a
+    href={product.detalleHref}
+    class="block aspect-[4/3] overflow-hidden bg-bg"
+    aria-label={`Ver detalles de ${product.titulo}`}
+  >
+    {
+      product.imageUrl ? (
+        <img
+          src={product.imageUrl}
+          alt={product.imageAlt}
+          loading="lazy"
+          decoding="async"
+          class="h-full w-full object-cover"
+        />
+      ) : (
+        <span
+          class="flex h-full w-full items-center justify-center text-muted"
+          aria-hidden="true"
+        >
+          <Icon name="lucide:image-off" class="h-8 w-8" />
+        </span>
+      )
+    }
+  </a>
+
+  <div class="flex flex-1 flex-col gap-3 p-4">
+    {
+      product.categoriaNombre && (
+        <span class="inline-block bg-primary-light px-2 py-0.5 text-xs font-medium text-primary-dark">
+          {product.categoriaNombre}
+        </span>
+      )
+    }
+
+    <a
+      href={product.detalleHref}
+      class="font-heading text-lg font-semibold text-text hover:text-primary"
+    >
+      {product.titulo}
+    </a>
+
+    <p class="text-sm text-text-2 line-clamp-3">{product.descripcionBreve}</p>
+
+    <div class="mt-auto flex gap-2 pt-2">
+      <a
+        href={product.cotizarHref}
+        class="inline-flex flex-1 items-center justify-center gap-1 bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary-dark"
+      >
+        Cotizar
+      </a>
+      <a
+        href={product.detalleHref}
+        class="inline-flex flex-1 items-center justify-center gap-1 border border-secondary px-3 py-2 text-sm font-semibold text-secondary hover:bg-secondary hover:text-white"
+      >
+        Ver detalles
+      </a>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,49 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { ViewMode } from '@/lib/types/products-page';
+
+interface Props {
+  titulo: string;
+  subtitulo: string;
+  total: number;
+  view: ViewMode;
+  buildViewHref: (view: ViewMode) => string;
+}
+
+const { titulo, subtitulo, total, view, buildViewHref } = Astro.props;
+const views: { mode: ViewMode; icon: string; label: string }[] = [
+  { mode: 'grid', icon: 'lucide:layout-grid', label: 'Cuadrícula' },
+  { mode: 'list', icon: 'lucide:list', label: 'Lista' },
+];
+---
+
+<div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+  <div class="flex flex-col gap-1">
+    <h1 class="font-heading text-3xl font-bold text-primary">{titulo}</h1>
+    <p class="text-sm text-text-2">{subtitulo}</p>
+    <p class="text-sm text-text-2" id="catalog-total">
+      {total} {total === 1 ? 'producto' : 'productos'}
+    </p>
+  </div>
+
+  <div class="flex items-center gap-1" role="group" aria-label="Vista de productos">
+    {
+      views.map((v) => (
+        <a
+          href={buildViewHref(v.mode)}
+          data-view-toggle={v.mode}
+          aria-pressed={view === v.mode ? 'true' : 'false'}
+          aria-label={v.label}
+          class:list={[
+            'inline-flex h-9 w-9 items-center justify-center border',
+            view === v.mode
+              ? 'border-primary bg-primary-light text-primary-dark'
+              : 'border-border text-secondary hover:text-primary',
+          ]}
+        >
+          <Icon name={v.icon} class="h-5 w-5" />
+        </a>
+      ))
+    }
+  </div>
+</div>

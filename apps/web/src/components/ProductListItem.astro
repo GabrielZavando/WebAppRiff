@@ -1,0 +1,72 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { ProductCardModel } from '@/lib/types/products-page';
+
+interface Props {
+  product: ProductCardModel;
+  class?: string;
+}
+
+const { product, class: className = '' } = Astro.props;
+---
+
+<article class={`flex gap-4 border border-border bg-white p-4 shadow-1 ${className}`}>
+  <a
+    href={product.detalleHref}
+    class="block h-24 w-24 shrink-0 overflow-hidden bg-bg"
+    aria-label={`Ver detalles de ${product.titulo}`}
+  >
+    {
+      product.imageUrl ? (
+        <img
+          src={product.imageUrl}
+          alt={product.imageAlt}
+          loading="lazy"
+          decoding="async"
+          class="h-full w-full object-cover"
+        />
+      ) : (
+        <span
+          class="flex h-full w-full items-center justify-center text-muted"
+          aria-hidden="true"
+        >
+          <Icon name="lucide:image-off" class="h-6 w-6" />
+        </span>
+      )
+    }
+  </a>
+
+  <div class="flex flex-1 flex-col gap-2">
+    {
+      product.categoriaNombre && (
+        <span class="inline-block w-fit bg-primary-light px-2 py-0.5 text-xs font-medium text-primary-dark">
+          {product.categoriaNombre}
+        </span>
+      )
+    }
+
+    <a
+      href={product.detalleHref}
+      class="font-heading text-lg font-semibold text-text hover:text-primary"
+    >
+      {product.titulo}
+    </a>
+
+    <p class="text-sm text-text-2 line-clamp-2">{product.descripcionBreve}</p>
+
+    <div class="mt-auto flex flex-wrap gap-2 pt-2">
+      <a
+        href={product.cotizarHref}
+        class="inline-flex items-center justify-center gap-1 bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary-dark"
+      >
+        Cotizar
+      </a>
+      <a
+        href={product.detalleHref}
+        class="inline-flex items-center justify-center gap-1 border border-secondary px-3 py-2 text-sm font-semibold text-secondary hover:bg-secondary hover:text-white"
+      >
+        Ver detalles
+      </a>
+    </div>
+  </div>
+</article>

@@ -1,21 +1,106 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import { getPublicProducts } from '@/lib/api/products';
+import { getCategorias } from '@/lib/api/categories';
+import { getActiveSubcategories } from '@/lib/api/subcategories';
+import { toProductCardModel } from '@/lib/products/toProductCardModel';
+import { PRODUCTS_PAGE_SIZE, getProductsPageContent } from '@/lib/config/products';
+import type { ViewMode } from '@/lib/types/products-page';
+import ProductsPageHeader from '@/components/ProductsPageHeader.astro';
+import ProductsFiltersSidebar from '@/components/ProductsFiltersSidebar.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import ProductsEmptyState from '@/components/ProductsEmptyState.astro';
+
+const [products, categories, subcategories] = await Promise.all([
+  getPublicProducts(),
+  getCategorias(),
+  getActiveSubcategories(),
+]);
+
+// Render the COMPLETE catalog server-side (progressive enhancement). Because the
+// site is `output: 'static'` (SSG), query params are not available at build
+// time, so every card is baked; the client runtime (`catalogClient.ts`) filters,
+// paginates and re-lays-out from this data + the URL, without a full navigation.
+const cards = products.map((product) => toProductCardModel(product, { categories }));
+const content = getProductsPageContent();
+const defaultView: ViewMode = 'grid';
+
+// JSON-safe embedding: escape `<`, `>` and `&` so a product field containing
+// markup can never terminate the <script> early.
+const rawCatalogData = JSON.stringify({ products, categories, subcategorias: subcategories });
+const catalogData = rawCatalogData.replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
+
+const sidebarFilters = {
+  q: '',
+  categoriaId: '',
+  subcategoriaIds: [] as string[],
+  sortBy: 'creadoEn' as const,
+  sortDir: 'desc' as const,
+  view: defaultView,
+  page: 1,
+  pageSize: PRODUCTS_PAGE_SIZE,
+};
 ---
 
-<Layout title="Resultados de búsqueda — Riff">
-  <main class="flex-1 flex items-center justify-center px-4 py-16">
-    <div class="text-center max-w-xl">
-      <h1 class="text-3xl font-bold text-secondary mb-4">Resultados de búsqueda</h1>
-      <p class="text-gray-600 mb-6">
-        <!-- TODO[product-catalog]: replace this placeholder with the real
-             catalog page that consumes GET /api/v1/products?q=...&categoriaId=... .
-             The search form (search-form change) navigates here with canonical
-             query params; the catalog UI, filters, pagination and product cards
-             will live in a future change. -->
-        El catálogo de productos se mostrará aquí. Mientras tanto, vuelve al
-        <a class="text-accent underline" href="/">inicio</a> para seguir
-        explorando el sitio.
-      </p>
+<Layout title={`${content.titulo} — Riff`} description={content.subtitulo}>
+  <main class="container py-8">
+    <ProductsPageHeader
+      titulo={content.titulo}
+      subtitulo={content.subtitulo}
+      total={products.length}
+      view={defaultView}
+      buildViewHref={(view) => (view === 'grid' ? '/productos' : '/productos?view=list')}
+    />
+
+    <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
+      <aside class="lg:sticky lg:top-24 lg:self-start">
+        <ProductsFiltersSidebar
+          categories={categories}
+          subcategories={subcategories}
+          filtros={sidebarFilters}
+        />
+      </aside>
+
+      <section aria-label="Listado de productos">
+        <div
+          id="catalog-grid"
+          class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
+        >
+          {cards.map((card) => <ProductCard product={card} />)}
+        </div>
+
+        <div id="catalog-empty" class="hidden">
+          <ProductsEmptyState clearHref="/productos" />
+        </div>
+
+        <div id="catalog-pagination" class="mt-8"></div>
+      </section>
     </div>
   </main>
+
+  <script type="application/json" id="catalog-data" is:inline set:html={catalogData}></script>
+  <script>
+    import { initCatalog } from '@/lib/products/catalogClient';
+    initCatalog();
+  </script>
+
+  <style is:global>
+    #catalog-grid.catalog-list-mode {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    #catalog-grid.catalog-list-mode .catalog-card {
+      flex-direction: row;
+    }
+    #catalog-grid.catalog-list-mode .catalog-card > a:first-child {
+      width: 12rem;
+      aspect-ratio: auto;
+      flex-shrink: 0;
+      height: auto;
+    }
+    #catalog-grid.catalog-list-mode .catalog-card > div {
+      flex: 1;
+    }
+  </style>
 </Layout>

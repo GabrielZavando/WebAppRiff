@@ -1,0 +1,29 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  clearHref: string;
+}
+
+const { clearHref } = Astro.props;
+---
+
+<div
+  class="flex flex-col items-center gap-4 border border-border bg-white p-10 text-center shadow-1"
+>
+  <span
+    class="flex h-16 w-16 items-center justify-center bg-primary-light text-primary-dark"
+    aria-hidden="true"
+  >
+    <Icon name="lucide:package-x" class="h-8 w-8" />
+  </span>
+  <p class="text-lg font-semibold text-text">
+    No se encontraron productos que coincidan con tu búsqueda.
+  </p>
+  <a
+    href={clearHref}
+    class="inline-flex items-center justify-center bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-dark"
+  >
+    Limpiar filtros
+  </a>
+</div>
