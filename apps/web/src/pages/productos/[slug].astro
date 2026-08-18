@@ -29,7 +29,7 @@ if (!product) {
 
 {
   !model ? (
-    <Layout title="Producto no encontrado">
+    <Layout title="Producto no encontrado" searchSecondary>
       <main class="flex flex-1 flex-col items-center justify-center px-4 py-16 text-center">
         <h1 class="mb-4 font-heading text-3xl font-bold text-secondary">Producto no encontrado</h1>
         <p class="mb-8 text-text-2">
@@ -44,7 +44,7 @@ if (!product) {
       </main>
     </Layout>
   ) : (
-    <Layout title={`${model.titulo} — Riff`} description={model.descripcionBreve}>
+    <Layout title={`${model.titulo} — Riff`} description={model.descripcionBreve} searchSecondary>
       <main class="flex-grow">
         {/* Hero + info */}
         <section class="bg-bg py-16 px-4 md:px-8">

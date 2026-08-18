@@ -14,6 +14,8 @@ const {
   initialQuery = '',
   initialCategoriaId = '',
   transparent = false,
+  secondaryBg = false,
+  showCategorySelect = true,
 } = Astro.props;
 
 // Stable ids for label↔control association. They are deterministic within the
@@ -45,7 +47,14 @@ function isSelected(categoryId: string): boolean {
 <div
   role="search"
   aria-label="Buscar productos"
-  class:list={['site-search', transparent ? 'bg-transparent' : 'bg-white border-b border-border']}
+  class:list={[
+    'site-search',
+    transparent
+      ? 'bg-transparent'
+      : secondaryBg
+        ? 'bg-linear-to-r from-secondary to-secondary-light'
+        : 'bg-white border-b border-border',
+  ]}
 >
   <!-- Inner container: 760px max-width centered. `px-4` adds horizontal
        breathing room on mobile so the form doesn't touch the screen edges;
@@ -57,22 +66,24 @@ function isSelected(categoryId: string): boolean {
       data-search-form
       class="flex flex-col md:flex-row gap-3 md:gap-px"
     >
-      <div class="w-full md:w-56">
-        <label for={selectId} class="sr-only">Filtrar por categoría</label>
-        <select
-          id={selectId}
-          name={config.selectName}
-          class="w-full h-11 border border-border bg-white px-3 text-sm text-text-2 focus:outline-none focus:border-primary"
-        >
-          {
-            categories.map((category) => (
-              <option value={category.id} selected={isSelected(category.id)}>
-                {category.label}
-              </option>
-            ))
-          }
-        </select>
-      </div>
+      {
+        showCategorySelect && (
+          <div class="w-full md:w-56">
+            <label for={selectId} class="sr-only">Filtrar por categoría</label>
+            <select
+              id={selectId}
+              name={config.selectName}
+              class="w-full h-11 border border-border bg-white px-3 text-sm text-text-2 focus:outline-none focus:border-primary"
+            >
+              {categories.map((category) => (
+                <option value={category.id} selected={isSelected(category.id)}>
+                  {category.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )
+      }
 
       <div class="w-full md:flex-1">
         <label for={inputId} class="sr-only">Buscar productos</label>

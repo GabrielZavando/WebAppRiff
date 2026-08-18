@@ -54,4 +54,19 @@ export interface SearchFormProps {
    * the default "Todas las categorías" option stays selected.
    */
   readonly initialCategoriaId?: string;
+  /**
+   * When `true`, the `role="search"` wrapper uses the navy `--color-secondary`
+   * token (`bg-secondary`, #1F2D40) instead of the default white wrapper. Used
+   * on the Productos, Servicios, Cotización and product-detail pages so the
+   * search bar matches the brand navy surfaces. `transparent` (hero) takes
+   * precedence over this flag.
+   */
+  readonly secondaryBg?: boolean;
+  /**
+   * When `false`, the category `<select name="categoriaId">` block is NOT
+   * rendered (e.g. the Productos page, which has its own sidebar filter). The
+   * search input and submit button remain; the input's wrapper keeps
+   * `md:flex-1` so it fills the freed width. Defaults to `true`.
+   */
+  readonly showCategorySelect?: boolean;
 }
