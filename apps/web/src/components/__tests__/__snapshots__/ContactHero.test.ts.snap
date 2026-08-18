@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ContactHero — snapshot > matches the snapshot 1`] = `
+"<!--
+  Dumb presentational component for the contact page hero. All copy comes via
+  props spread from \`CONTACT_PAGE_CONTENT.hero\` by
+  \`apps/web/src/pages/contacto.astro\`. The page's <Layout hero> renders the
+  full-bleed banner image + dark overlay behind this section, so the text uses
+  the white-on-overlay treatment (matching HeroBanner). Single <h1> per page is
+  preserved (this is the only <h1> on /contacto); the subtitle is a <p> beneath
+  it. Strict flat design: no \`rounded*\` and no \`shadow*\` in the static state.
+--><section class="relative"><div class="container mx-auto pt-4 md:pt-8 lg:pt-24 pb-0"><h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white max-w-4xl">Conecte con la <span class="text-primary">Ingeniería de Precisión</span></h1><p class="mt-6 text-base md:text-lg text-white/80 max-w-2xl font-body">Expertos en medición de fluidos, control y tratamiento de agua. Soporte técnico y ejecución en terreno garantizada.</p></div></section>"
+`;

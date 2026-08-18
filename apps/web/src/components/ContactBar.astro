@@ -1,0 +1,83 @@
+---
+import type { ContactBarProps } from '@/lib/types/contact-form';
+import { Icon } from 'astro-icon/components';
+import type { SocialNetworkName } from '@/lib/types/top-header';
+
+interface Props extends ContactBarProps {}
+
+const { phone, email, phoneHref, emailHref, socialLinks } = Astro.props;
+
+// Same icon map and accessibility pattern as Footer.astro / TopHeader.astro —
+// the site has a single social presence across chrome (design.md § Decision 4).
+// The X logo uses `simple-icons:x` as the documented, sole exception to the
+// unique Lucide set (Lucide lacks the current X brand mark; see style-guide
+// README).
+const socialIconMap: Record<SocialNetworkName, string> = {
+  Facebook: 'lucide:facebook',
+  X: 'simple-icons:x',
+  Instagram: 'lucide:instagram',
+  LinkedIn: 'lucide:linkedin',
+};
+---
+
+<!--
+  Dumb presentational component for the contact page bottom bar. All content
+  (phone, email, social links) comes via props spread from
+  `CONTACT_PAGE_CONTENT.bar` by `apps/web/src/pages/contacto.astro`. This bar
+  is rendered ONLY on /contacto (design.md Decision 5) — it is not global
+  chrome, so it does not live in Layout.astro.
+
+  Layout (corrección): la barra se muestra DEBAJO del formulario, con el MISMO
+  fondo azul de la página (`bg-primary-deep`, #006874) y restringida al ancho
+  del formulario (`max-w-3xl`), de modo que no se lea como un footer aparte.
+  Teléfono, email e iconos sociales van en una sola fila centrada. Strict flat
+  design: no `rounded*` and no `shadow*` in the static state.
+
+  Accessibility: phone and email are real anchors with descriptive text;
+  social anchors carry `aria-label`, `target="_blank"` and
+  `rel="noopener noreferrer"`; decorative icons are `aria-hidden="true"`.
+-->
+<section class="bg-primary-deep text-white">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- 1px primary (#41B3C4) divider spanning the full form width, separating
+         the upper block (hero + form) from the contact data below, with
+         equivalent 16/32px padding above and below (design.md Decision 13c). -->
+    <div class="border-t border-primary my-4 sm:my-8"></div>
+    <div class="flex flex-col items-start gap-3 pb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
+      <div class="flex items-center gap-2 sm:gap-8">
+        <a
+          href={phoneHref}
+          class="flex items-center gap-2 font-body text-sm text-white/90 hover:text-primary transition-colors"
+        >
+          <Icon name="lucide:phone" class="h-4 w-4" aria-hidden="true" />
+          {phone}
+        </a>
+        <a
+          href={emailHref}
+          class="flex items-center gap-2 font-body text-sm text-white/90 hover:text-primary transition-colors"
+        >
+          <Icon name="lucide:mail" class="h-4 w-4" aria-hidden="true" />
+          {email}
+        </a>
+      </div>
+
+      {
+        socialLinks.length > 0 && (
+          <nav aria-label="Redes sociales" class="flex items-center gap-1">
+            {socialLinks.map((link) => (
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={link.name}
+                class="flex h-10 w-10 items-center justify-center text-white/80 hover:bg-primary hover:text-white transition-colors"
+              >
+                <Icon name={socialIconMap[link.name]} class="h-4 w-4" />
+              </a>
+            ))}
+          </nav>
+        )
+      }
+    </div>
+  </div>
+</section>

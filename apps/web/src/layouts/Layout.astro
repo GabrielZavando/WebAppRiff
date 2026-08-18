@@ -23,9 +23,18 @@ interface Props {
    * image + secondary overlay. Header/search-form render transparent so the
    * image shows through behind them. */
   hero?: boolean;
+  /** When false, the global SearchForm is omitted from the sticky header
+   * group. Used by pages like /contacto that manage their own layout and must
+   * not show the catalog search (design decision). Defaults to true. */
+  showSearch?: boolean;
 }
 
-const { title, description = 'Catálogo digital de productos industriales Riff', hero = false } = Astro.props;
+const {
+  title,
+  description = 'Catálogo digital de productos industriales Riff',
+  hero = false,
+  showSearch = true,
+} = Astro.props;
 // AstroContainer tests have no `site` configured; in real builds the astro
 // config always provides it. The fallback only guards the test environment.
 const site = Astro.site ?? new URL('http://localhost:4321');
@@ -100,7 +109,7 @@ const searchFormProps: SearchFormProps = {
           overlay (z-40) and toggle (z-50) defined inside Header. */}
       <div class="sticky top-0 z-30 header-scroll-shell">
         <Header {...headerProps} transparent={hero} />
-        <SearchForm {...searchFormProps} transparent={hero} />
+        {showSearch && <SearchForm {...searchFormProps} transparent={hero} />}
       </div>
       <slot />
       <Footer {...SITE_FOOTER_CONTENT} />

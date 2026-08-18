@@ -1,0 +1,31 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import ContactHero from '@/components/ContactHero.astro';
+import ContactForm from '@/components/ContactForm.astro';
+import ContactBar from '@/components/ContactBar.astro';
+import { CONTACT_PAGE_CONTENT } from '@/lib/config/contact-page';
+---
+
+<!--
+  Contact page. Corrección post-apply: sin imagen de hero (hero={false}) y sin
+  buscador global (showSearch={false}). El contenido se envuelve en un fondo
+  azul sólido (#006874 = bg-primary-deep, teal profundo) detrás de la caja
+  blanca del formulario. La barra de contacto va debajo del formulario, con el
+  mismo fondo y restringida a su ancho (design.md Decisiones 7-8, 12).
+-->
+<Layout
+  title="Contacto — Riff"
+  description="Conecte con la ingeniería de precisión de Riff: medición de fluidos, control y tratamiento de agua. Soporte técnico y ejecución en terreno."
+  hero={false}
+  showSearch={false}
+>
+  <div class="bg-primary-deep">
+    <ContactHero {...CONTACT_PAGE_CONTENT.hero} />
+    <!-- Small gap (16px mobile / 32px desktop) between the hero and the form.
+         The hero no longer carries bottom padding and the form no top padding,
+         so this spacer governs the rhythm (design.md Decision 13a). -->
+    <div class="h-4 sm:h-8" aria-hidden="true"></div>
+    <ContactForm {...CONTACT_PAGE_CONTENT.form} />
+    <ContactBar {...CONTACT_PAGE_CONTENT.bar} />
+  </div>
+</Layout>

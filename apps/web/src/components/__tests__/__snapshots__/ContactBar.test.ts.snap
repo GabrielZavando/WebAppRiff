@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ContactBar — snapshot > matches the snapshot 1`] = `
+"<!--
+  Dumb presentational component for the contact page bottom bar. All content
+  (phone, email, social links) comes via props spread from
+  \`CONTACT_PAGE_CONTENT.bar\` by \`apps/web/src/pages/contacto.astro\`. This bar
+  is rendered ONLY on /contacto (design.md Decision 5) — it is not global
+  chrome, so it does not live in Layout.astro.
+
+  Layout (corrección): la barra se muestra DEBAJO del formulario, con el MISMO
+  fondo azul de la página (\`bg-primary-deep\`, #006874) y restringida al ancho
+  del formulario (\`max-w-3xl\`), de modo que no se lea como un footer aparte.
+  Teléfono, email e iconos sociales van en una sola fila centrada. Strict flat
+  design: no \`rounded*\` and no \`shadow*\` in the static state.
+
+  Accessibility: phone and email are real anchors with descriptive text;
+  social anchors carry \`aria-label\`, \`target="_blank"\` and
+  \`rel="noopener noreferrer"\`; decorative icons are \`aria-hidden="true"\`.
+--><section class="bg-primary-deep text-white"><div class="container mx-auto px-4 sm:px-6 lg:px-8"><!-- 1px primary (#41B3C4) divider spanning the full form width, separating
+         the upper block (hero + form) from the contact data below, with
+         equivalent 16/32px padding above and below (design.md Decision 13c). --><div class="border-t border-primary my-4 sm:my-8"></div><div class="flex flex-col items-start gap-3 pb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-8"><div class="flex items-center gap-2 sm:gap-8"><a href="tel:+56229079067" class="flex items-center gap-2 font-body text-sm text-white/90 hover:text-primary transition-colors"><svg width="1em" height="1em" class="h-4 w-4" aria-hidden="true" data-icon="lucide:phone"><symbol id="ai:lucide:phone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233a14 14 0 0 0 6.392 6.384"/></symbol><use href="#ai:lucide:phone"></use></svg>+56 2 29079067</a><a href="mailto:contacto@riff.cl" class="flex items-center gap-2 font-body text-sm text-white/90 hover:text-primary transition-colors"><svg width="1em" height="1em" class="h-4 w-4" aria-hidden="true" data-icon="lucide:mail"><symbol id="ai:lucide:mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m22 7l-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect width="20" height="16" x="2" y="4" rx="2"/></g></symbol><use href="#ai:lucide:mail"></use></svg>contacto@riff.cl</a></div></div></div></section>"
+`;

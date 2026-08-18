@@ -1,0 +1,37 @@
+---
+import type { ContactHeroProps } from '@/lib/types/contact-form';
+import { splitHeadline } from '@/lib/config/hero-banner';
+
+interface Props extends ContactHeroProps {}
+
+const { headline, highlightedWord, subtitle } = Astro.props;
+
+// Pure helper extracted to lib/config (same one used by HeroBanner) so the
+// edge cases (word absent, word at start/end, multiple occurrences) are
+// testable without mounting the component (frontend-standards § "Frontmatter
+// sin lógica de negocio no trivial"). `before` + `after` are the text
+// fragments around the single highlighted occurrence; when the word is absent
+// or empty, `after === ""` and we skip rendering the highlighted <span>.
+const [before, after] = splitHeadline(headline, highlightedWord);
+const shouldRenderHighlight = highlightedWord !== '' && before !== headline;
+---
+
+<!--
+  Dumb presentational component for the contact page hero. All copy comes via
+  props spread from `CONTACT_PAGE_CONTENT.hero` by
+  `apps/web/src/pages/contacto.astro`. The page's <Layout hero> renders the
+  full-bleed banner image + dark overlay behind this section, so the text uses
+  the white-on-overlay treatment (matching HeroBanner). Single <h1> per page is
+  preserved (this is the only <h1> on /contacto); the subtitle is a <p> beneath
+  it. Strict flat design: no `rounded*` and no `shadow*` in the static state.
+-->
+<section class="relative">
+  <div class="container mx-auto pt-4 md:pt-8 lg:pt-24 pb-0">
+    <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white max-w-4xl">
+      {before}{shouldRenderHighlight && <span class="text-primary">{highlightedWord}</span>}{after}
+    </h1>
+    <p class="mt-6 text-base md:text-lg text-white/80 max-w-2xl font-body">
+      {subtitle}
+    </p>
+  </div>
+</section>
