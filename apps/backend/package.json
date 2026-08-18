@@ -14,6 +14,7 @@
     "seed:productos": "nest build && node dist/cli/seed-productos.js",
     "migrate:firestore": "nest build && node dist/cli/migrate-firestore.js",
     "migrate:productos:imagenes": "nest build && node dist/cli/migrate-imagenes.js",
+    "migrate:descriptions": "nest build && node dist/cli/normalize-descriptions.js",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "test": "jest",
     "test:e2e": "jest --config jest-e2e.json",

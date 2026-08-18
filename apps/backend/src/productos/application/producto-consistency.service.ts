@@ -7,16 +7,18 @@ import {
   ISubcategoriaIntegrityRepository,
   I_SUBCATEGORIA_INTEGRITY_REPOSITORY,
 } from '../../subcategorias/domain/isubcategoria.repository';
+import { IHtmlSanitizer, I_HTML_SANITIZER } from '../domain/ihtml-sanitizer';
 
 export const DEFAULT_CATEGORIA_ID = 'sin-categoria';
 
 /**
- * Valida la consistencia categoría/subcategoría de un producto aislando las
- * dependencias de otros módulos. Inyecta dos puertos. La existencia de la
- * categoría se resuelve con `ICategoriaRepository.findById` (el módulo de
- * categorías ya exporta el token); la pertenencia de la subcategoría con
- * `ISubcategoriaIntegrityRepository.belongsToCategoria`. La categoría por
- * defecto es "sin-categoria" cuando se omite `categoriaId`.
+ * Valida la consistencia y el formato del contenido de un producto antes de
+ * persistir, aislando las dependencias de otros módulos. Inyecta tres puertos
+ * (dentro del límite de 3 del estándar de backend):
+ * - `ICategoriaRepository` para la existencia de la categoría.
+ * - `ISubcategoriaIntegrityRepository` para la pertenencia de la subcategoría.
+ * - `IHtmlSanitizer` para sanear `descripcionLarga` (HTML) y `descripcionBreve`
+ *   (texto plano) según la política compartida `@riff/html-sanitize`.
  */
 @Injectable()
 export class ProductoConsistencyService {
@@ -25,6 +27,8 @@ export class ProductoConsistencyService {
     private readonly categoriaRepository: ICategoriaRepository,
     @Inject(I_SUBCATEGORIA_INTEGRITY_REPOSITORY)
     private readonly subcategoriaIntegrity: ISubcategoriaIntegrityRepository,
+    @Inject(I_HTML_SANITIZER)
+    private readonly htmlSanitizer: IHtmlSanitizer,
   ) {}
 
   /**
@@ -55,5 +59,26 @@ export class ProductoConsistencyService {
       throw new NotFoundException('Category not found');
     }
     return effectiveCategoriaId;
+  }
+
+  /**
+   * Sanea los campos de descripción de un producto antes de persistirlo:
+   * - `descripcionLarga` → subconjunto HTML seguro (vía `sanitizeRichHtml`).
+   * - `descripcionBreve` → texto plano sin tags (vía `stripHtmlToText`).
+   *
+   * Mutua el objeto recibido (solo los campos presentes) y lo devuelve, de modo
+   * que puede aplicarse tanto al `ProductoInput` completo (create) como a un
+   * `ProductoUpdateInput` parcial (update).
+   */
+  sanitizeDescriptions<T extends { descripcionBreve?: string; descripcionLarga?: string }>(
+    data: T,
+  ): T {
+    if (data.descripcionLarga !== undefined) {
+      data.descripcionLarga = this.htmlSanitizer.sanitizeRichHtml(data.descripcionLarga);
+    }
+    if (data.descripcionBreve !== undefined) {
+      data.descripcionBreve = this.htmlSanitizer.stripHtmlToText(data.descripcionBreve);
+    }
+    return data;
   }
 }

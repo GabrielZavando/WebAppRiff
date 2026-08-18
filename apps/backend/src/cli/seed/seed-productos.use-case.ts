@@ -50,6 +50,7 @@ export class SeedProductosUseCase {
         throw new ConflictException(`Slug already in use: ${item.slug}`);
       }
 
+      this.consistency.sanitizeDescriptions(item);
       await this.repository.create(item);
       result.productosCreados += 1;
     }

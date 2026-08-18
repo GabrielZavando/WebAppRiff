@@ -106,4 +106,12 @@ describe('ProductCard', () => {
     expect(cotizar).toContain('bg-primary');
     expect(cotizar).not.toContain('bg-accent');
   });
+
+  it('renders descripcionBreve as plain text (HTML stripped by the mapper)', async () => {
+    const html = await render(makeProduct({ descripcionBreve: '<p>Bold <strong>text</strong> &amp; más</p>' }));
+    expect(html).toContain('Bold text');
+    expect(html).not.toContain('<p>');
+    expect(html).not.toContain('<strong>');
+    expect(html).not.toContain('&lt;');
+  });
 });

@@ -73,4 +73,12 @@ describe('ProductListItem', () => {
     expect(html).toContain('bg-white');
     expect(html).not.toMatch(/rounded(?:-(?:sm|md|lg|xl|2xl|3xl|full|none|t|b|l|r|tl|tr|bl|br))?/);
   });
+
+  it('renders descripcionBreve as plain text (HTML stripped by the mapper)', async () => {
+    const html = await render(makeProduct({ descripcionBreve: '<p>Bold <strong>text</strong> &amp; más</p>' }));
+    expect(html).toContain('Bold text');
+    expect(html).not.toContain('<p>');
+    expect(html).not.toContain('<strong>');
+    expect(html).not.toContain('&lt;');
+  });
 });

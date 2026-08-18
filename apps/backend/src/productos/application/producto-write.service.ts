@@ -77,6 +77,7 @@ export class ProductoWriteService {
     this.assertFichaTecnica(dto.fichaTecnica);
 
     const input = this.buildCreateInput(dto, slug, categoriaId);
+    this.consistency.sanitizeDescriptions(input);
     return this.repository.create(input);
   }
 
@@ -105,6 +106,7 @@ export class ProductoWriteService {
     }
 
     const input = this.buildUpdateInput(dto, sku.value, slug.value);
+    this.consistency.sanitizeDescriptions(input);
     return this.repository.update(id, input);
   }
 

@@ -104,9 +104,11 @@ components:
           description: "URL amigable única"
         descripcionBreve:
           type: string
+          description: "Plain-text summary for listings. Server strips all HTML on write (stored as text)."
         descripcionLarga:
           type: string
           format: html
+          description: "Sanitized rich-text HTML subset for the detail page. Server sanitizes on write (allowlist: p, br, strong, b, em, i, u, ul, ol, li, a, blockquote, h2-h4; forbids scripts, styles and on* handlers)."
         categoriaId:
           type: string
         subcategoriaId:

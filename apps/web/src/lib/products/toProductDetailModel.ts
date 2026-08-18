@@ -3,6 +3,7 @@ import type {
   ProductDetailPage,
   ProductoApi,
 } from '@/lib/types/products-page';
+import { sanitizeRichHtml, stripHtmlToText } from '@riff/html-sanitize';
 
 export interface ToProductDetailModelContext {
   readonly categories: readonly CategoriaApi[];
@@ -32,8 +33,8 @@ export function toProductDetailModel(
     sku: product.sku,
     slug,
     titulo: product.titulo,
-    descripcionBreve: product.descripcionBreve,
-    descripcionLarga: product.descripcionLarga,
+    descripcionBreve: stripHtmlToText(product.descripcionBreve ?? ''),
+    descripcionLarga: sanitizeRichHtml(product.descripcionLarga ?? ''),
     categoriaId: product.categoriaId,
     categoriaNombre,
     galeria: product.galeria,

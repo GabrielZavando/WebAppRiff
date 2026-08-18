@@ -4,7 +4,8 @@
   "private": true,
   "description": "Riff Catálogo Digital Headless — Mono-repo con NestJS (BFF), Astro (sitio público SSG) y Angular (panel admin)",
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
     "install:all": "npm ci",

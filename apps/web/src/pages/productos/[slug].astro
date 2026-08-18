@@ -90,6 +90,14 @@ if (!product) {
           </div>
         </section>
 
+        {/* Rich long description — already sanitized server-side by the mapper */}
+        <section class="bg-bg py-16 px-4 md:px-8">
+          <div class="mx-auto max-w-7xl">
+            <h2 class="mb-6 font-heading text-3xl font-bold text-text">Descripción</h2>
+            <div class="rich-text font-body text-text-2" set:html={model.descripcionLarga} />
+          </div>
+        </section>
+
         <IndustrialApplications />
 
         <TechnicalDocs fichaTecnica={model.fichaTecnica} />

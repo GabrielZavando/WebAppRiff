@@ -39,6 +39,7 @@ describe('seed:productos CLI wiring', () => {
   };
   const consistency = {
     assertConsistency: jest.fn(),
+    sanitizeDescriptions: jest.fn((input: unknown) => input),
   };
   const subcategoriaRepo = {
     findById: jest.fn(),
@@ -67,7 +68,7 @@ describe('seed:productos CLI wiring', () => {
       providers: [
         SeedProductosUseCase,
         EnsureSeedSubcategorias,
-        ProductoConsistencyService,
+        { provide: ProductoConsistencyService, useValue: consistency },
         { provide: I_PRODUCT_REPOSITORY, useValue: productoRepo },
         { provide: I_PRODUCT_INTEGRITY_REPOSITORY, useValue: integrity },
         { provide: I_SUBCATEGORIA_REPOSITORY, useValue: subcategoriaRepo },

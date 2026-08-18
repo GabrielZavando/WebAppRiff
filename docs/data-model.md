@@ -14,8 +14,8 @@ Colección central del catálogo. Cada documento representa un producto.
 | sku | string | Código de producto, editable, único, requerido. |
 | titulo | string | Nombre del producto. |
 | slug | string | URL amigable, autogenerada desde el título, editable y única. |
-| descripcionBreve | string | Resumen corto para listados. |
-| descripcionLarga | string (HTML) | Descripción completa, editor de texto enriquecido. |
+| descripcionBreve | string | Resumen corto para listados. **Texto plano**: el backend elimina todo HTML al guardar (sanitización en escritura vía `@riff/html-sanitize`). |
+| descripcionLarga | string (HTML saneado) | Descripción completa (editor de texto enriquecido). **HTML saneado** en escritura con allowlist (p, br, strong, b, em, i, u, ul, ol, li, a, blockquote, h2-h4); sin scripts, styles ni handlers `on*`. |
 | categoriaId | string | Referencia a `categorias`. Obligatoria (default: "sin-categoria"). |
 | subcategoriaId | string \| null | Referencia a `subcategorias`. Opcional. |
 | atributos | array<{nombre: string, valor: string}> | Especificaciones técnicas de longitud libre (ej. Fluido, Diámetro, Presión Nominal). |
@@ -31,6 +31,8 @@ Colección central del catálogo. Cada documento representa un producto.
 | actualizadoEn | timestamp | Trazabilidad de última edición. |
 
 **Nota de diseño**: Los campos que requieren filtrarse u ordenarse (`destacado`, `publicado`, `categoriaId`) se modelan como campos de primer nivel, indexables por Firestore. El array `atributos` se reserva exclusivamente para datos descriptivos que solo se muestran en la ficha del producto, no para datos que el sistema necesite consultar.
+
+**Política de saneo de descripciones**: `descripcionLarga` y `descripcionBreve` se sanea en escritura (create/update) en el backend vía el paquete compartido `@riff/html-sanitize` (allowlist de tags, sin `script`/`style`/`on*`, decodificación de entidades doblemente escapadas). `descripcionLarga` se guarda como HTML permitido; `descripcionBreve` se guarda como texto plano (sin tags). El sitio público (Astro) reaplica el mismo saneo en tiempo de build como defensa en profundidad. Los documentos existentes se normalizan con `npm run migrate:descriptions` (idempotente, con `--dry-run`).
 
 ### 2. categorias
 

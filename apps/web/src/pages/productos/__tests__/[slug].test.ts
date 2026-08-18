@@ -23,6 +23,10 @@ const product = {
   actualizadoEn: '2026-08-16T20:44:00.388Z',
   idExterno: null,
   descripcionBreve: 'Uso COMERCIAL E INDUSTRIAL, SOLICITAR ASESORIA.',
+  descripcionLarga:
+    '<p>Descripción rica con <strong>negrita</strong>.</p>' +
+    '<script>alert(1)</script>' +
+    '<div class="et_pb_section">oculto</div>',
 };
 
 const categories = [
@@ -75,6 +79,16 @@ describe('Product detail page', () => {
   it('renders the short description', async () => {
     const html = await render();
     expect(html).toContain('Uso COMERCIAL E INDUSTRIAL, SOLICITAR ASESORIA.');
+  });
+
+  it('renders the sanitized rich description as HTML inside .rich-text and strips unsafe markup', async () => {
+    const html = await render();
+    expect(html).toContain('rich-text');
+    expect(html).toContain('<p>Descripción rica con <strong>negrita</strong>.</p>');
+    // The malicious <script> payload must be stripped (the page may still ship
+    // its own legitimate client script, so we assert on the payload, not '<script').
+    expect(html).not.toContain('alert(1)');
+    expect(html).not.toContain('et_pb');
   });
 
   it('renders the specifications box with the attribute', async () => {

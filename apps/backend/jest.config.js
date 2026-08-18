@@ -4,7 +4,7 @@ module.exports = {
   testEnvironment: 'node',
   rootDir: '.',
   roots: ['<rootDir>/src'],
-  setupFiles: ['reflect-metadata'],
+  setupFiles: ['reflect-metadata', '<rootDir>/src/common/test/html-sanitize.mock.ts'],
   moduleFileExtensions: ['js', 'json', 'ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',

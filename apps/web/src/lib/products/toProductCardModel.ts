@@ -1,4 +1,5 @@
 import type { CategoriaApi, ProductCardModel, ProductoApi } from '@/lib/types/products-page';
+import { stripHtmlToText } from '@riff/html-sanitize';
 
 export interface ToProductCardModelContext {
   readonly categories: readonly CategoriaApi[];
@@ -33,7 +34,7 @@ export function toProductCardModel(
     categoriaId: product.categoriaId,
     subcategoriaId: product.subcategoriaId,
     categoriaNombre,
-    descripcionBreve: product.descripcionBreve,
+    descripcionBreve: stripHtmlToText(product.descripcionBreve ?? ''),
     imageUrl,
     imageAlt,
     cotizarHref: `/cotizacion?producto=${encodeURIComponent(slug)}`,

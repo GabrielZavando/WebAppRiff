@@ -66,4 +66,27 @@ describe('toProductDetailModel', () => {
     const model = toProductDetailModel(makeProduct({ slug: 'flujo raro' }), { categories: CATEGORIES });
     expect(model.cotizarHref).toBe('/cotizacion?producto=flujo%20raro');
   });
+
+  it('sanitizes descripcionLarga to a safe HTML subset and strips descripcionBreve to plain text', () => {
+    const model = toProductDetailModel(
+      makeProduct({
+        descripcionLarga: '<p>OK</p><script>alert(1)</script><div onclick="x()">bad</div>',
+        descripcionBreve: '<p>Bold <strong>text</strong></p>',
+      }),
+      { categories: CATEGORIES },
+    );
+    expect(model.descripcionLarga).not.toContain('<script');
+    expect(model.descripcionLarga).not.toContain('onclick');
+    expect(model.descripcionLarga).toContain('<p>OK</p>');
+    expect(model.descripcionBreve).toBe('Bold text');
+  });
+
+  it('decodes double-escaped HTML in descripcionLarga', () => {
+    const model = toProductDetailModel(
+      makeProduct({ descripcionLarga: '&lt;p&gt;Decodificado&lt;/p&gt;' }),
+      { categories: CATEGORIES },
+    );
+    expect(model.descripcionLarga).toContain('<p>Decodificado</p>');
+    expect(model.descripcionLarga).not.toContain('&lt;');
+  });
 });

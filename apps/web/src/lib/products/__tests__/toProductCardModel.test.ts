@@ -67,4 +67,19 @@ describe('toProductCardModel', () => {
     expect(model).not.toHaveProperty('precio');
     expect(model).not.toHaveProperty('atributos');
   });
+
+  it('strips HTML from descripcionBreve to plain text', () => {
+    const model = toProductCardModel(
+      makeProduct({ descripcionBreve: '<p>Bold <strong>text</strong> &amp; more</p>' }),
+      { categories: CATEGORIES },
+    );
+    expect(model.descripcionBreve).toBe('Bold text & more');
+  });
+
+  it('keeps a plain descripcionBreve unchanged', () => {
+    const model = toProductCardModel(makeProduct({ descripcionBreve: 'Medidor simple.' }), {
+      categories: CATEGORIES,
+    });
+    expect(model.descripcionBreve).toBe('Medidor simple.');
+  });
 });

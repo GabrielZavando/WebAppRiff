@@ -21,6 +21,7 @@ describe('SeedProductosUseCase', () => {
   };
   const consistency = {
     assertConsistency: jest.fn(),
+    sanitizeDescriptions: jest.fn((input: unknown) => input),
   };
 
   const seed: ProductoSeed = {
