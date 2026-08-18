@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import Layout from '@/layouts/Layout.astro';
+import tratamientoAgua from '@/assets/img/tratamiento-agua.webp';
 
 async function renderHeroLayout(): Promise<string> {
   const container = await AstroContainer.create();
@@ -72,6 +73,26 @@ describe('Layout — hero shell (home full-viewport background)', () => {
     const html = await renderHeroLayout();
     const headerCount = (html.match(/<header[\s>]/g) ?? []).length;
     expect(headerCount).toBe(1);
+  });
+
+  it('renders a custom heroImage when the heroImage prop is provided', async () => {
+    const container = await AstroContainer.create();
+    const html = await container
+      .renderToString(Layout, {
+        props: {
+          title: 'Riff Catálogo Digital',
+          hero: true,
+          heroImage: tratamientoAgua,
+        },
+      })
+      .then((h) =>
+        h
+          .replace(/<!--[\s\S]*?-->/g, '')
+          .replace(/<style[\s\S]*?<\/style>/g, '')
+          .replace(/<script[\s\S]*?<\/script>/g, ''),
+      );
+    expect(html).toContain('tratamiento-agua');
+    expect(html).not.toContain('banner_home');
   });
 });
 

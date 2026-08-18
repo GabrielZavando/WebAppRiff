@@ -1,15 +1,44 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-// /servicios: brand navy search bar (searchSecondary) + a placeholder <main>.
-// The page content is scoped for a later change; this commit establishes the
-// route shell (Header + Footer via Layout) so the navigation link resolves.
+import ServicesHero from '@/components/ServicesHero.astro';
+import ServiceCard from '@/components/ServiceCard.astro';
+import tratamientoAgua from '@/assets/img/tratamiento-agua.webp';
+import { SERVICIOS_PAGE_CONTENT } from '@/lib/config/services-page';
 ---
 
-<Layout title="Servicios — Riff" searchSecondary>
+<!--
+  Public services page (/servicios). Composes the transparent ServicesHero (no
+  own background) with the four alternating ServiceCard components fed by
+  SERVICIOS_PAGE_CONTENT (dumb components + hardcoded config, site-wide
+  pattern). The page passes the hero flag to Layout so the full-bleed hero image
+  is rendered with the color overlay; heroImage overrides the default home image
+  with tratamiento-agua.webp (design.md Decision 3). The transparent header and
+  search bar become solid on scroll, exactly like the home page. The cards sit on
+  a neutral surface to separate them from the hero (design.md Decision 11). Image
+  position alternates per card: even indices (1st, 3rd) image-left, odd indices
+  (2nd, 4th) image-right.
+-->
+<Layout
+  title="Servicios — Riff"
+  description="Servicios especializados de Riff en medición, control y tratamiento de fluidos: edificios, industria, obras y plantas de agua."
+  hero
+  heroImage={tratamientoAgua}
+>
   <main class="flex-grow">
-    <section class="mx-auto min-h-[60vh] max-w-[1200px] px-4 py-12">
-      <h1 class="mb-4 font-heading text-3xl font-bold text-secondary">Servicios</h1>
-      <p class="text-text-2">El contenido de la página de servicios está en construcción.</p>
+    <ServicesHero {...SERVICIOS_PAGE_CONTENT.hero} />
+    <section class="bg-bg py-12 md:py-20">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col gap-12 md:gap-16">
+          {
+            SERVICIOS_PAGE_CONTENT.services.map((service, index) => (
+              <ServiceCard
+                {...service}
+                imagePosition={index % 2 === 0 ? 'left' : 'right'}
+              />
+            ))
+          }
+        </div>
+      </div>
     </section>
   </main>
 </Layout>

@@ -1,0 +1,129 @@
+---
+import type { ServiceCardProps } from '@/lib/types/services-page';
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+
+interface Props extends ServiceCardProps {}
+
+const {
+  number,
+  sector,
+  title,
+  intro,
+  image,
+  imageAlt,
+  bullets,
+  tags,
+  imagePosition,
+} = Astro.props;
+
+// Two-digit badge, e.g. 1 -> "01" (design.md § Decision 6).
+const formattedNumber = String(number).padStart(2, '0');
+const isImageRight = imagePosition === 'right';
+const hasIntro = typeof intro === 'string' && intro.length > 0;
+const hasBullets = Array.isArray(bullets) && bullets.length > 0;
+const hasTags = Array.isArray(tags) && tags.length > 0;
+
+// Flat white surface, no rounded corners, no shadow. `md:flex-row-reverse`
+// flips the image to the right for cards 02 and 04 (design.md § Decision 4).
+const cardClass = [
+  'bg-white border border-border flex flex-col md:flex-row overflow-hidden',
+  isImageRight ? 'md:flex-row-reverse' : '',
+]
+  .join(' ')
+  .trim();
+---
+
+<!--
+  Dumb presentational component for a single service card on the /servicios page.
+  All content comes via props spread by apps/web/src/pages/servicios.astro
+  from SERVICIOS_PAGE_CONTENT.services (with the layout-only imagePosition
+  prop added per card for the alternating layout). The component never fetches
+  or mutates data (frontend-standards: "Frontmatter sin lógica de negocio no
+  trivial").
+
+  Layout (design.md Decisions):
+    - Root element: flat white surface with a 1px border, no rounded corners,
+      no shadow (flat design). Flex column on mobile (image stacked on top),
+      flex row side-by-side from md+. imagePosition === 'right' adds the
+      md:flex-row-reverse utility so the image sits on the right (cards 02, 04).
+    - Image: astro:assets (sharp-processed WebP/AVIF), full-width on mobile,
+      half-width from md+, aspect-[4/3] object-cover, lazy-loaded.
+     - Content block: sector label (text-primary uppercase), two-digit number
+       badge (text-primary), h2 title (text-secondary),
+       optional intro paragraph (text-text-2, the only prose block, above bullets),
+       optional bullets (ul + decorative lucide:check icon), optional tags (pills
+       with border border-border), and the accent CTA.
+    - CTA: solid bg-accent button linking to /contacto with a decorative
+      lucide:arrow-right icon (aria-hidden).
+
+  Tokens: bg-white, border-border, text-primary, text-secondary, text-text-2,
+  bg-accent / bg-accent-dark. Strict flat design — no rounded-* and no shadow-*
+  in the static state.
+-->
+<article class={cardClass}>
+  <Image
+    src={image}
+    alt={imageAlt}
+    widths={[400, 800]}
+    sizes="(max-width: 768px) 100vw, 50vw"
+    loading="lazy"
+    class="w-full md:w-1/2 aspect-[4/3] object-cover"
+  />
+  <div class="flex-1 p-6 md:p-10 flex flex-col">
+    <span class="text-primary font-heading uppercase text-xs tracking-wide">
+      {sector}
+    </span>
+    <span class="text-primary font-heading font-bold text-3xl md:text-4xl mt-2">
+      {formattedNumber}
+    </span>
+    <h2 class="text-2xl md:text-3xl font-heading font-bold text-secondary mt-4">
+      {title}
+    </h2>
+
+    {
+      hasIntro && (
+        <p class="mt-3 text-base font-body text-text-2">
+          {intro}
+        </p>
+      )
+    }
+
+    {
+      hasBullets && (
+        <ul class="mt-4 space-y-2">
+          {bullets.map((bullet) => (
+            <li class="flex items-start gap-2 text-text-2 font-body">
+              <Icon
+                name="lucide:check"
+                class="h-5 w-5 text-primary shrink-0 mt-0.5"
+                aria-hidden="true"
+              />
+              <span>{bullet}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      hasTags && (
+        <div class="mt-4 flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <span class="border border-border text-text-2 text-xs uppercase tracking-wide px-3 py-1">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )
+    }
+
+    <a
+      href="/contacto"
+      class="mt-6 inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white font-heading font-semibold uppercase text-sm px-6 py-3 transition-colors self-start"
+    >
+      CONTACTAR A UN ESPECIALISTA
+      <Icon name="lucide:arrow-right" class="h-4 w-4" aria-hidden="true" />
+    </a>
+  </div>
+</article>

@@ -12,7 +12,7 @@ import { getSearchFormCategories } from '@/lib/api/categories';
 import { SITE_FOOTER_CONTENT } from '@/lib/config/footer';
 import { SITE_CREDITS_CONTENT } from '@/lib/config/site-credits';
 import { Picture } from 'astro:assets';
-import heroImage from '@/assets/img/banner_home.webp';
+import defaultHeroImage from '@/assets/img/banner_home.webp';
 import type { HeaderProps } from '@/lib/types/header';
 import type { SearchFormProps } from '@/lib/types/search-form';
 
@@ -23,6 +23,10 @@ interface Props {
    * image + secondary overlay. Header/search-form render transparent so the
    * image shows through behind them. */
   hero?: boolean;
+  /** Hero background image. Defaults to `banner_home.webp`; pages can override
+   * it (e.g. /servicios uses `tratamiento-agua.webp`) while keeping the same
+   * shell, overlay and transparent-on-scroll header behavior. */
+  heroImage?: ImageMetadata;
   /** When false, the global SearchForm is omitted from the sticky header
    * group. Used by pages like /contacto that manage their own layout and must
    * not show the catalog search (design decision). Defaults to true. */
@@ -42,6 +46,7 @@ const {
   title,
   description = 'Catálogo digital de productos industriales Riff',
   hero = false,
+  heroImage = defaultHeroImage,
   showSearch = true,
   searchSecondary = false,
   searchShowCategorySelect = true,

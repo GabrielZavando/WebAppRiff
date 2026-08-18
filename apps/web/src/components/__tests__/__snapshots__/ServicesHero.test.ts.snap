@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ServicesHero — snapshot > matches the snapshot 1`] = `
+"<!--
+  Dumb presentational component for the services page hero. All copy comes via
+  props spread from SERVICIOS_PAGE_CONTENT.hero by pages/servicios.astro. The
+  page passes the hero flag to Layout, so Layout renders the full-bleed home
+  banner image plus a color overlay behind this transparent section. This
+  component adds only the hero copy and its height; it must not set its own
+  background (design.md Decision 3: hero identical to the home page). Single h1
+  per page is preserved (this is the only h1 on /servicios); the subtitle is a p
+  beneath it. Strict flat design: no rounded and no shadow in the static state.
+  The highlighted word uses the accent token (design.md Decision 9).
+--><section><div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24"><h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white max-w-4xl">Servicios Especializados en <span class="text-accent">Precisión</span> y Control</h1><p class="mt-6 text-base md:text-lg text-white/80 max-w-2xl font-body">Soluciones técnicas integrales para la instalación, mantenimiento y optimización de sistemas de medición y tratamiento de fluidos.</p></div></section>"
+`;
