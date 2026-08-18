@@ -331,3 +331,80 @@ test.describe('SearchForm (global search bar)', () => {
     expect(searchY).toBeLessThan(slotY);
   });
 });
+
+test.describe('Search visibility & variant per page (search-bar-pages-scope)', () => {
+  test('/productos shows a navy search bar WITHOUT the category select', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    const response = await page.goto('/productos');
+    expect(response?.status()).toBe(200);
+
+    const search = page.getByRole('search', { name: 'Buscar productos' });
+    await expect(search).toBeVisible();
+
+    // Navy (bg-secondary) wrapper, never the white wrapper.
+    const wrapperClass = (await search.getAttribute('class')) ?? '';
+    expect(wrapperClass).toContain('bg-linear-to-r');
+    expect(wrapperClass).toContain('from-secondary');
+    expect(wrapperClass).not.toContain('bg-white');
+
+    // The category <select> is hidden on /productos (own sidebar filter);
+    // the input and BUSCAR button remain.
+    await expect(search.getByRole('combobox')).toHaveCount(0);
+    await expect(search.getByRole('searchbox')).toBeVisible();
+    await expect(search.getByRole('button', { name: 'BUSCAR' })).toBeVisible();
+  });
+
+  test('/servicios renders the placeholder page with a navy search bar (select visible)', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    const response = await page.goto('/servicios');
+    expect(response?.status()).toBe(200);
+
+    const search = page.getByRole('search', { name: 'Buscar productos' });
+    await expect(search).toBeVisible();
+    const wrapperClass = (await search.getAttribute('class')) ?? '';
+    expect(wrapperClass).toContain('bg-linear-to-r');
+    expect(wrapperClass).toContain('from-secondary');
+
+    // The category <select> IS visible on /servicios.
+    await expect(search.getByRole('combobox')).toBeVisible();
+  });
+
+  test('/marcas renders the placeholder page WITHOUT a search bar', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    const response = await page.goto('/marcas');
+    expect(response?.status()).toBe(200);
+    await expect(page.getByRole('search')).toHaveCount(0);
+  });
+
+  test('/cotizacion shows a navy search bar WITH the category select', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    const response = await page.goto('/cotizacion');
+    expect(response?.status()).toBe(200);
+
+    const search = page.getByRole('search', { name: 'Buscar productos' });
+    await expect(search).toBeVisible();
+    const wrapperClass = (await search.getAttribute('class')) ?? '';
+    expect(wrapperClass).toContain('bg-linear-to-r');
+    expect(wrapperClass).toContain('from-secondary');
+
+    // The category <select> IS visible on /cotizacion.
+    await expect(search.getByRole('combobox')).toBeVisible();
+  });
+
+  test('/productos/{slug} shows a navy search bar WITH the category select', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    const response = await page.goto('/productos/ablandador-para-agua');
+    expect(response?.status()).toBe(200);
+
+    const search = page.getByRole('search', { name: 'Buscar productos' });
+    await expect(search).toBeVisible();
+    const wrapperClass = (await search.getAttribute('class')) ?? '';
+    expect(wrapperClass).toContain('bg-linear-to-r');
+    expect(wrapperClass).toContain('from-secondary');
+
+    // The category <select> IS visible on the product-detail page.
+    await expect(search.getByRole('combobox')).toBeVisible();
+  });
+});

@@ -407,3 +407,96 @@ describe('SearchForm — compact scroll state class (site-header-scroll-animatio
     expect(wrapper).toContain('site-search');
   });
 });
+
+async function renderSecondary(
+  props: SearchFormProps = baseProps,
+): Promise<string> {
+  const container = await AstroContainer.create();
+  return container.renderToString(SearchForm, {
+    props: { ...props, secondaryBg: true },
+  });
+}
+
+async function renderWithoutSelect(
+  props: SearchFormProps = baseProps,
+): Promise<string> {
+  const container = await AstroContainer.create();
+  return container.renderToString(SearchForm, {
+    props: { ...props, showCategorySelect: false },
+  });
+}
+
+describe('SearchForm — secondary background variant (search-bar-pages-scope)', () => {
+  it('renders the header gradient wrapper when secondaryBg is true', async () => {
+    const html = await renderSecondary();
+    const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
+    const wrapperClass = wrapper.match(/class="([^"]*)"/)?.[1] ?? '';
+    // The navy variant reuses the SAME left-to-right gradient as the site
+    // <Header> (`bg-linear-to-r from-secondary to-secondary-light`) so the
+    // adjacent header/search surfaces blend into one continuous surface.
+    expect(wrapperClass).toContain('bg-linear-to-r');
+    expect(wrapperClass).toContain('from-secondary');
+    expect(wrapperClass).toContain('to-secondary-light');
+    // It must NOT be the flat --color-secondary token, nor the white wrapper.
+    expect(wrapperClass).not.toContain('bg-secondary');
+    expect(wrapperClass).not.toContain('bg-white');
+    expect(wrapperClass).not.toContain('border-b');
+    expect(wrapperClass).not.toContain('bg-transparent');
+    // No raw hex: the navy color comes from the --color-secondary token.
+    expect(wrapperClass).not.toContain('#1F2D40');
+  });
+
+  it('keeps white controls and the primary button in secondary mode', async () => {
+    const html = await renderSecondary();
+    expect(getSelect(html)).toContain('bg-white');
+    expect(getInput(html)).toContain('bg-white');
+    expect(getButton(html)).toContain('bg-primary');
+    expect(getButton(html)).not.toContain('bg-accent');
+  });
+
+  it('keeps the white wrapper by default (secondaryBg false)', async () => {
+    const html = await render();
+    const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
+    const wrapperClass = wrapper.match(/class="([^"]*)"/)?.[1] ?? '';
+    expect(wrapperClass).toContain('bg-white');
+    expect(wrapperClass).toContain('border-b');
+    expect(wrapperClass).not.toContain('bg-secondary');
+    expect(wrapperClass).not.toContain('bg-linear-to-r');
+  });
+
+  it('transparent takes precedence over secondaryBg', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(SearchForm, {
+      props: { ...baseProps, transparent: true, secondaryBg: true },
+    });
+    const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
+    const wrapperClass = wrapper.match(/class="([^"]*)"/)?.[1] ?? '';
+    expect(wrapperClass).toContain('bg-transparent');
+    expect(wrapperClass).not.toContain('bg-secondary');
+    expect(wrapperClass).not.toContain('bg-linear-to-r');
+  });
+});
+
+describe('SearchForm — hide category select (search-bar-pages-scope)', () => {
+  it('renders no category <select> when showCategorySelect is false', async () => {
+    const html = await renderWithoutSelect();
+    // `name="categoriaId"` only appears on the category <select>; the search
+    // input uses `name="q"`. Keying on the name attribute is robust to Astro's
+    // attribute ordering.
+    expect(html).not.toContain('name="categoriaId"');
+    expect(html).toContain('name="q"');
+    expect(getButton(html)).toContain('BUSCAR');
+  });
+
+  it('the search input expands to fill width (md:flex-1) when select is hidden', async () => {
+    const html = await renderWithoutSelect();
+    // `md:flex-1` lives on the input's wrapper <div> (the select wrapper uses
+    // `md:w-56`), so it uniquely identifies the expandable input container.
+    expect(html).toContain('md:flex-1');
+  });
+
+  it('still renders the select by default (showCategorySelect true)', async () => {
+    const html = await render();
+    expect(html).toContain('name="categoriaId"');
+  });
+});

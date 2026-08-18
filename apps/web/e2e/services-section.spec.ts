@@ -227,8 +227,8 @@ test.describe('ServicesSection (home specialized services)', () => {
 
     await firstLink.focus();
     await expect(firstLink).toBeFocused();
-    // Navigate to /servicios (a 404 page today, but the href contract is what
-    // matters; the route will exist in the future servicios-page change).
+    // The card links to /servicios; this route now exists (servicios-page
+    // change) and renders the placeholder shell, so the href contract holds.
     const href = await firstLink.getAttribute('href');
     expect(href).toBe('/servicios');
   });
