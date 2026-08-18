@@ -1,17 +1,43 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import CotizacionForm from '@/components/CotizacionForm.astro';
+import CotizacionProcess from '@/components/CotizacionProcess.astro';
+import CotizacionSupport from '@/components/CotizacionSupport.astro';
+import { COTIZACION_PAGE_CONTENT } from '@/lib/config/cotizacion-page';
 ---
 
-<Layout title="Solicitar cotización — Riff" searchSecondary>
-  <main class="flex-1 flex items-center justify-center px-4 py-16">
-    <div class="text-center max-w-xl">
-      <h1 class="text-3xl font-bold text-secondary mb-4">Solicitar cotización</h1>
-      <p class="text-gray-600">
-        El formulario de cotización estará disponible próximamente. Mientras tanto, escríbenos a
-        <a class="text-accent underline" href="mailto:contacto@riff.cl">contacto@riff.cl</a>
-        o llámanos al
-        <a class="text-accent underline" href="tel:+56229079067">+56 2 29079067</a>.
-      </p>
+<!--
+  Cotizacion (quote request) page. Two-column responsive layout (CSS grid):
+  the form occupies the left 2 columns on lg+, and the sidebar (process steps
+  card + urgent-support card) occupies the right column. On mobile the three
+  blocks stack vertically with the form first.
+
+  No hero image and no global search form (hero={false}, showSearch={false}):
+  the page is a focused form destination for the header CTA "SOLICITAR
+  COTIZACION". The page wrapper uses the neutral `bg-bg` token so the three
+  distinct cards (white form, light-teal process, deep-teal support) stay
+  clearly separated — flat design, no rounded corners, no shadows.
+-->
+<Layout
+  title="Solicitar cotización — Riff"
+  description="Solicite una cotización de ingeniería: medición de fluidos, control y tratamiento de agua. Complete el formulario y reciba una propuesta técnica en 24 horas hábiles."
+  hero={false}
+  showSearch={false}
+>
+  <main class="bg-bg">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Form: left column (spans 2 of 3 on lg+) -->
+        <div class="lg:col-span-2">
+          <CotizacionForm {...COTIZACION_PAGE_CONTENT.form} />
+        </div>
+
+        <!-- Sidebar: right column (process + support cards, stacked) -->
+        <div class="flex flex-col gap-8">
+          <CotizacionProcess {...COTIZACION_PAGE_CONTENT.process} />
+          <CotizacionSupport {...COTIZACION_PAGE_CONTENT.support} />
+        </div>
+      </div>
     </div>
   </main>
 </Layout>

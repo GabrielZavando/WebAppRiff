@@ -1,0 +1,179 @@
+---
+import type { CotizacionFormProps } from '@/lib/types/cotizacion-form';
+import { Icon } from 'astro-icon/components';
+
+interface Props extends CotizacionFormProps {}
+
+const { config } = Astro.props;
+const { placeholders, submitLabel, action } = config;
+
+// Deterministic ids for label↔control association. There is exactly one
+// CotizacionForm per page (the /cotizacion page), so these ids stay unique
+// within the document and the `for`/`id` bindings remain valid.
+const fieldIds = {
+  nombre: 'cotizacion-nombre',
+  email: 'cotizacion-email',
+  telefono: 'cotizacion-telefono',
+  empresa: 'cotizacion-empresa',
+  rut: 'cotizacion-rut',
+  mensaje: 'cotizacion-mensaje',
+} as const;
+
+// Label text for the inputs. Uppercase by design (flat, technical aesthetic
+// consistent with the mockup). The placeholder carries the hint.
+const inputLabels = {
+  nombre: 'NOMBRE COMPLETO',
+  email: 'CORREO ELECTRÓNICO',
+  telefono: 'TELÉFONO',
+  empresa: 'NOMBRE DE LA EMPRESA',
+  rut: 'RUT DE LA EMPRESA',
+} as const;
+---
+
+<!--
+  Dumb presentational component for the cotizacion page form. All content
+  (copy, placeholders, action) comes via props spread from
+  `COTIZACION_PAGE_CONTENT.form` by `apps/web/src/pages/cotizacion.astro`.
+
+  Layout:
+    - Form heading "Datos del Requerimiento" as the page <h1>.
+    - Text inputs grid `grid-cols-1 md:grid-cols-2`: Nombre | Email, then
+      Teléfono | Empresa (mobile stacked, desktop two columns).
+    - RUT and Mensaje span the full width (block-level, below the 2-col grid).
+    - Submit: <button type="submit"> with accent token + decorative arrow icon.
+
+  The form posts to the existing backend endpoint `POST /api/v1/quotes`. The
+  `rut` field is sent as `name="rut"` and will be persisted by the separate
+  backend change `backend-cotizaciones-rut`; until then the backend ignores it.
+
+  Accessibility: every control has a visible <label> associated via `for`/`id`;
+  the button relies on its visible text (no extra aria-label). Native HTML5
+  validation (`required`, `type`) is used so the form is operable without JS.
+
+  Strict flat design: no `rounded*` and no `shadow*` in the static state.
+-->
+<form method="post" action={action} class="bg-white border border-border">
+  <div class="px-6 py-10 md:px-10 md:py-12">
+    <h1 class="text-2xl md:text-3xl font-heading font-bold text-primary-dark">
+      Datos del Requerimiento
+    </h1>
+
+    <!-- Text inputs: mobile stacked, desktop two columns -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+      <div>
+        <label
+          for={fieldIds.nombre}
+          class="block font-heading text-xs font-semibold uppercase tracking-wider text-secondary"
+        >
+          {inputLabels.nombre}
+        </label>
+        <input
+          id={fieldIds.nombre}
+          name="nombre"
+          type="text"
+          required
+          placeholder={placeholders.nombre}
+          class="mt-2 w-full h-11 border border-border bg-bg px-3 text-sm text-text-2 focus:outline-none focus:border-primary"
+        />
+      </div>
+
+      <div>
+        <label
+          for={fieldIds.email}
+          class="block font-heading text-xs font-semibold uppercase tracking-wider text-secondary"
+        >
+          {inputLabels.email}
+        </label>
+        <input
+          id={fieldIds.email}
+          name="email"
+          type="email"
+          required
+          placeholder={placeholders.email}
+          class="mt-2 w-full h-11 border border-border bg-bg px-3 text-sm text-text-2 focus:outline-none focus:border-primary"
+        />
+      </div>
+
+      <div>
+        <label
+          for={fieldIds.telefono}
+          class="block font-heading text-xs font-semibold uppercase tracking-wider text-secondary"
+        >
+          {inputLabels.telefono}
+        </label>
+        <input
+          id={fieldIds.telefono}
+          name="telefono"
+          type="tel"
+          required
+          placeholder={placeholders.telefono}
+          class="mt-2 w-full h-11 border border-border bg-bg px-3 text-sm text-text-2 focus:outline-none focus:border-primary"
+        />
+      </div>
+
+      <div>
+        <label
+          for={fieldIds.empresa}
+          class="block font-heading text-xs font-semibold uppercase tracking-wider text-secondary"
+        >
+          {inputLabels.empresa}
+        </label>
+        <input
+          id={fieldIds.empresa}
+          name="empresa"
+          type="text"
+          required
+          placeholder={placeholders.empresa}
+          class="mt-2 w-full h-11 border border-border bg-bg px-3 text-sm text-text-2 focus:outline-none focus:border-primary"
+        />
+      </div>
+    </div>
+
+    <!-- RUT spans the full width -->
+    <div class="mt-5">
+      <label
+        for={fieldIds.rut}
+        class="block font-heading text-xs font-semibold uppercase tracking-wider text-secondary"
+      >
+        {inputLabels.rut}
+      </label>
+      <input
+        id={fieldIds.rut}
+        name="rut"
+        type="text"
+        required
+        placeholder={placeholders.rut}
+        class="mt-2 w-full h-11 border border-border bg-bg px-3 text-sm text-text-2 focus:outline-none focus:border-primary"
+      />
+    </div>
+
+    <!-- Message textarea spans the full width -->
+    <div class="mt-5">
+      <label
+        for={fieldIds.mensaje}
+        class="block font-heading text-xs font-semibold uppercase tracking-wider text-secondary"
+      >
+        MENSAJE
+      </label>
+      <textarea
+        id={fieldIds.mensaje}
+        name="mensaje"
+        required
+        placeholder={placeholders.mensaje}
+        rows="5"
+        class="mt-2 w-full border border-border bg-bg px-3 py-2 text-sm text-text-2 focus:outline-none focus:border-primary"
+      ></textarea>
+    </div>
+
+    <!-- Submit: full width, text left, arrow icon right -->
+    <div class="mt-8">
+      <button
+        type="submit"
+        class="flex w-full items-center justify-center gap-3 px-8 py-3 font-heading font-semibold uppercase text-xs tracking-wide bg-accent hover:bg-accent-dark text-white transition-colors"
+      >
+        <span>{submitLabel}</span>
+        <Icon name="lucide:arrow-right" class="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+</form>

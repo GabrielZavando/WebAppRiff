@@ -1,0 +1,34 @@
+---
+import type { CotizacionSupportProps } from '@/lib/types/cotizacion-form';
+import { Icon } from 'astro-icon/components';
+
+interface Props extends CotizacionSupportProps {}
+
+const { title, description, phone, phoneHref } = Astro.props;
+---
+
+<!--
+  Dumb presentational card for the cotizacion page sidebar. All content comes
+  via props spread from `COTIZACION_PAGE_CONTENT.support` by the page.
+
+  Layout:
+    - Dark teal card (`bg-primary-deep`), white text, flat (no rounded/shadow).
+    - Heading (h2) + description paragraph.
+    - Phone row: phone icon (Lucide, decorative) + clickable `tel:` link with
+      the canonical Riff support number.
+
+  Accessibility: the `tel:` link has visible text and an accessible name equal
+  to its content; the icon is decorative (`aria-hidden="true"`).
+-->
+<div class="bg-primary-deep p-6 md:p-8 text-white">
+  <h2 class="font-heading text-xl font-bold">{title}</h2>
+  <p class="mt-2 font-body text-sm text-white/90">{description}</p>
+
+  <a
+    href={phoneHref}
+    class="mt-4 flex items-center gap-2 font-heading font-semibold text-white hover:text-primary-light transition-colors"
+  >
+    <Icon name="lucide:phone" class="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+    <span>{phone}</span>
+  </a>
+</div>

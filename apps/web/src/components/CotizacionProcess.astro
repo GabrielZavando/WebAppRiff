@@ -1,0 +1,52 @@
+---
+import type { CotizacionProcessProps } from '@/lib/types/cotizacion-form';
+import { Icon } from 'astro-icon/components';
+
+interface Props extends CotizacionProcessProps {}
+
+const { title, steps } = Astro.props;
+---
+
+<!--
+  Dumb presentational card for the cotizacion page sidebar. All content comes
+  via props spread from `COTIZACION_PAGE_CONTENT.process` by the page.
+
+  Layout:
+    - Light teal card (`bg-primary-light`, 1px border, flat: no rounded/shadow).
+    - Header row: question-mark circle icon (Lucide, decorative) + heading.
+    - Ordered list of steps, each with a bold title (`<strong>`) and a
+      description paragraph, separated by a `border-t` divider (first step has
+      no top divider).
+
+  Accessibility: the heading uses an <h2> (the form on the page owns the <h1>);
+  the icon is decorative (`aria-hidden="true"`); steps are a real <ol> so
+  assistive tech announces ordinal position.
+-->
+<div class="bg-primary-light border border-border p-6 md:p-8">
+  <div class="flex items-start gap-3">
+    <Icon
+      name="lucide:circle-question-mark"
+      class="h-6 w-6 flex-shrink-0 text-primary mt-0.5"
+      aria-hidden="true"
+    />
+    <h2 class="font-heading text-xl font-bold text-secondary">{title}</h2>
+  </div>
+
+  <ol class="mt-6">
+    {
+      steps.map((step, index) => (
+        <li
+          class:list={[
+            'py-4',
+            index > 0 && 'border-t border-border',
+          ]}
+        >
+          <strong class="block font-heading font-semibold text-secondary">
+            {index + 1}. {step.title}
+          </strong>
+          <p class="mt-1 font-body text-sm text-text-2">{step.description}</p>
+        </li>
+      ))
+    }
+  </ol>
+</div>
