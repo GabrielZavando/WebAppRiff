@@ -34,8 +34,8 @@ openspec init
 # 4. Personaliza (OBLIGATORIO)
 #    - Edita docs/base-standards.md (sección 8)
 #    - Edita docs/backend-standards.md y docs/frontend-standards.md
-#    - Edita docs/api-spec.yml con tus endpoints
-#    - Edita docs/data-model.md con tus entidades
+#    - Edita docs/api/api-spec.yml con tus endpoints
+#    - Edita docs/data-model/data-model.md con tus entidades
 
 # 5. Verifica personalización
 bash specboot.sh --init
@@ -104,8 +104,8 @@ opencode
 | `docs/backend-standards.md` | Stack: runtime, framework, ORM, DB, tests |
 | `docs/frontend-standards.md` | Stack: framework, CSS, build, tests |
 | `docs/deploy-standards.md` | Flujo de despliegue: entornos, versionado, Docker, rollback |
-| `docs/api-spec.yml` | Endpoints reales de tu API |
-| `docs/data-model.md` | Entidades reales del dominio |
+| `docs/api/api-spec.yml` | Endpoints reales de tu API |
+| `docs/data-model/data-model.md` | Entidades reales del dominio |
 | `opencode.json` | Opcional: añade `model` para fijar un proveedor distinto |
 
 ## Flujo SDD — Comandos
