@@ -50,7 +50,7 @@ Si falta cualquiera de las tres variables, el backend falla rápido (fail-fast) 
 
 ## Bootstrap del primer superadmin
 
-El módulo `usuarios` protege la creación de usuarios por rol, y crear un `superadmin` requiere un `superadmin` ya autenticado (ver `docs/api-spec.yml` y `docs/data-model.md`). Eso crea el problema del huevo y la gallina: **no hay forma de crear el primero desde la API**. Por eso existe un comando CLI operativo, idempotente, que crea el primer `superadmin` directamente (Firebase Auth + custom claim `role` + documento `usuarios/{uid}`), sin necesidad de un actor autenticado.
+El módulo `usuarios` protege la creación de usuarios por rol, y crear un `superadmin` requiere un `superadmin` ya autenticado (ver `docs/api/api-spec.yml` y `docs/data-model/data-model.md`). Eso crea el problema del huevo y la gallina: **no hay forma de crear el primero desde la API**. Por eso existe un comando CLI operativo, idempotente, que crea el primer `superadmin` directamente (Firebase Auth + custom claim `role` + documento `usuarios/{uid}`), sin necesidad de un actor autenticado.
 
 1. Seteá las variables de entorno `BOOTSTRAP_SUPERADMIN_EMAIL` y `BOOTSTRAP_SUPERADMIN_PASSWORD` (mínimo 6 caracteres) en el `.env` del backend (o en el entorno del deploy). Opcionalmente `BOOTSTRAP_SUPERADMIN_NAME`.
 2. Ejecutá una sola vez (desde `apps/backend`):
@@ -111,8 +111,8 @@ Reglas duras (ver `docs/backend-standards.md`):
 
 ## Contrato
 
-- `docs/api-spec.yml` — endpoints REST `/api/v1/...` (versioning se configura en `backend-commons`; `/health` va en la raíz sin prefijo).
-- `docs/data-model.md` — colecciones Firestore (`productos`, `categorias`, `subcategorias`, `usuarios`, `cotizaciones`).
+- `docs/api/api-spec.yml` — endpoints REST `/api/v1/...` (versioning se configura en `backend-commons`; `/health` va en la raíz sin prefijo).
+- `docs/data-model/data-model.md` — colecciones Firestore (`productos`, `categorias`, `subcategorias`, `usuarios`, `cotizaciones`).
 
 ## Docker
 
