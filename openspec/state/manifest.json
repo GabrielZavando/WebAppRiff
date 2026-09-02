@@ -1,0 +1,25 @@
+{
+  "changes": [
+    {
+      "change_name": "update-specboot-framework",
+      "ticket_id": "",
+      "archived_at": "2026-09-02T00:00:00Z",
+      "specs_applied": [
+        "commit-msg-enforcement",
+        "specboot-docs-canonical",
+        "specboot-framework-sync",
+        "specboot-package-consumption"
+      ]
+    },
+    {
+      "change_name": "fix-preexisting-lint-test-failures",
+      "ticket_id": "",
+      "archived_at": "2026-09-02T00:00:00Z",
+      "specs_applied": [
+        "design-tokens",
+        "lint-compliance",
+        "test-runner-consistency"
+      ]
+    }
+  ]
+}
