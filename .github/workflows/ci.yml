@@ -6,8 +6,13 @@ on:
   pull_request:
     branches: [main, develop]
 
+permissions:
+  contents: read
+  packages: read
+
 env:
   NODE_VERSION: '20'
+  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   lint:
@@ -21,6 +26,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://npm.pkg.github.com
 
       - name: Install dependencies
         run: make install
@@ -39,6 +45,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://npm.pkg.github.com
 
       - name: Install dependencies
         run: make install
@@ -59,6 +66,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://npm.pkg.github.com
 
       - name: Install dependencies
         run: make install
@@ -85,6 +93,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://npm.pkg.github.com
 
       - name: Install dependencies
         run: make install
@@ -114,6 +123,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://npm.pkg.github.com
 
       - name: Install dependencies
         run: make install
