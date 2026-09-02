@@ -2,24 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import IndustrialApplications from '@/components/IndustrialApplications.astro';
 
-const industrialApplications = [
-  {
-    title: 'Minería',
-    description: 'Medición de pulpas, lodos y relaves mineros altamente abrasivos sin desgaste del sensor.',
-    icon: 'factory',
-  },
-  {
-    title: 'Tratamiento de Aguas',
-    description: 'Control de lodos activados, aguas residuales crudas y efluentes industriales complejos.',
-    icon: 'water_ec',
-  },
-  {
-    title: 'Química y Celulosa',
-    description: 'Monitoreo de pastas, suspensiones químicas y líquidos corrosivos en tuberías cerradas.',
-    icon: 'science',
-  },
-];
-
 async function render() {
   const container = await AstroContainer.create();
   return container.renderToString(IndustrialApplications);

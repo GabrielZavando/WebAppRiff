@@ -30,45 +30,6 @@ Para estándares detallados, leer los archivos correspondientes:
 - [Frontend Standards](frontend-standards.md) — Componentes, UI/UX, estado
 - [Documentation Standards](documentation-standards.md) — Estructura docs, OpenAPI, mantenimiento
 
-## 4. Skills del proyecto
-
-- Los skills viven en `ai-specs/skills/`.
-- Cuando una solicitud coincida con la descripción de un skill, cargar y seguir el `SKILL.md` correspondiente automáticamente antes de continuar.
-- Cargar también los archivos referenciados en la carpeta del skill cuando el skill los requiera.
-- La lista de skills disponibles y sus triggers está en `AGENTS.md` (se carga junto con este archivo). Para descripciones extendidas, ver [`ai-specs/README.md`](../ai-specs/README.md).
-
-## 5. Modelo de planning
-
-Los flujos de planning se ejecutan mediante los custom commands definidos en `opencode.json`:
-
-- `/enrich-us` — Enriquecer user story vaga antes de planificar
-- `/plan-change` — Generar OpenSpec specs y tasks a partir de un ticket
-- `/apply` — Implementar tareas desde los artefactos OpenSpec (TDD)
-- `/verify` — Validar implementación contra escenarios OpenSpec
-- `/adversarial-review` — Auditoría sistemática de calidad
-- `/archive` — Archivar artefactos OpenSpec al completar
-- `/commit` — Crear commits convencionales y PR
-
-El modelo para cada agente está definido en `opencode.json`. No hardcodear modelos aquí.
-
-## 6. Orquestación con OpenCode (fuente canónica)
-
-- **OpenCode es la única herramienta objetivo** de este template. No se generan
-  symlinks ni configuraciones para Claude Code (`.claude/`) ni Cursor (`.cursor/`).
-- **Fuente canónica**: Los artefactos reutilizables (agentes y skills) viven en
-  `ai-specs/`. OpenCode los consume directamente mediante referencias
-  `{file:...}` declaradas en `opencode.json`.
-- **Un cambio es incompleto** si deja referencias `{file:...}` rotas o artefactos
-  canónicos duplicados.
-- **Seguridad al renombrar**: Al renombrar o mover un archivo dentro de `ai-specs/`,
-  verificar y actualizar todas las referencias `{file:...}` que lo apuntan (usar
-  `bash check-refs.sh`) antes de cerrar el cambio.
-- **Nuevos artefactos**: Al crear un nuevo skill o agente en `ai-specs/`, añadir su
-  referencia `{file:...}` donde corresponda en `opencode.json` y registrarlo en
-  `ai-specs/README.md`.
-- `specboot.sh` valida la estructura, los placeholders y la integridad referencial
-  (`check-refs.sh`); no crea symlinks porque el template es OpenCode-only.
-
 ## 7. Actualización de artefactos OpenSpec ante cambios post-apply
 
 Si aparece un fix o cambio nuevo después de `/apply` y antes de `/archive`:
@@ -82,17 +43,26 @@ Si aparece un fix o cambio nuevo después de `/apply` y antes de `/archive`:
 
 ## 8. Contexto del proyecto (personalizar por proyecto)
 
-> ⚠️ Esta sección DEBE ser actualizada al iniciar cada proyecto nuevo.
+> ⚠️ Esta sección no se completa aquí: `base-standards.md` es intocable (plantilla de
+> principios). El contexto específico del proyecto vive en `docs/project/` (plantillas del
+> framework): `docs/project/stack.md`, `docs/project/domain.md` y `docs/project/client.md`.
+> Ver `docs/docs-standard.md` para la frontera intocable/del proyecto en `docs/`.
 
-```
-Stack: Node.js 20, NestJS (BFF) + Astro (SSG) + Angular (admin) + Firebase (Firestore, Storage, Auth)
-Arquitectura: Backend-for-Frontend (BFF) con Clean Architecture en NestJS
-Dominio: Catálogo digital headless — productos, categorías, subcategorías, usuarios, cotizaciones. Sitio público Astro (SSG), panel admin Angular, backend NestJS como BFF concentrando lógica de negocio, validaciones, control de acceso por roles e integridad referencial que Firestore no garantiza nativamente.
-Cliente: Riff
-Convenciones de commits: Conventional Commits
-Lenguaje del código: English
-Lenguaje de documentación cliente: Español
-```
+El proyecto debe definir, en esos archivos:
+
+- **Stack**: lenguajes, frameworks, bases de datos e infraestructura.
+- **Arquitectura**: estilo elegido por el proyecto (Clean Architecture, MVC, hexagonal, etc.).
+- **Dominio**: descripción del negocio y entidades centrales.
+- **Cliente / audiencia**: para quién se construye.
+
+Convenciones transversales (aplican a todo proyecto):
+
+- Convenciones de commits: Conventional Commits
+- Lenguaje del código: English
+- Lenguaje de documentación cliente: Español
+
+Esto mantiene `base-standards.md` como plantilla pura de principios (SDD/TDD/SOLID) sin
+placeholders sin reemplazar.
 
 ## 9. Principios de Diseño No Negociables
 

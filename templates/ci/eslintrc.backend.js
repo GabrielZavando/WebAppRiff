@@ -34,7 +34,11 @@ module.exports = {
     // SOLID: SRP — a method with cyclomatic complexity > 10 has too many independent paths.
     'complexity': ['error', 10],
 
-    // SOLID: SRP — cognitive complexity catches tangled-but-low-cyclomatic methods (nested conditionals, deep else-if).
+    // SOLID: SRP — max-params: un constructor con más de 5 parámetros indica que
+    // la clase probablemente viola SRP y debería dividirse.
+    'max-params': ['error', 5],
+
+    // SOLID: SRP — cognitive complexity catches tangled-but-low-cyclomatic methods
     'sonarjs/cognitive-complexity': ['error', 10],
 
     // SOLID: OCP — collapsible-if is a weak mechanical signal; real OCP violations (growing switch) need judgment.

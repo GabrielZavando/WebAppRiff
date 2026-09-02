@@ -1,0 +1,7 @@
+{
+  "frameworkVersion": "0.1.2",
+  "name": "riff-catalogo-digital",
+  "description": "Riff Catálogo Digital Headless — NestJS (BFF) + Astro (SSG) + Angular (admin)",
+  "services": ["."],
+  "stack": ["node"]
+}

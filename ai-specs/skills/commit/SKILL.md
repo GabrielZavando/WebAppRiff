@@ -2,275 +2,109 @@
 
 ## Description
 
-Create semantic commits following Conventional Commits and manage Pull Requests when finishing an OpenSpec change.
+Creates semantic commits following Conventional Commits and manages Pull Requests when finishing an OpenSpec change. This skill is **token-light**: uses `git diff --stat` and `git status --short` instead of reading the full diff, and groups changes by path patterns rather than analyzing content.
 
-**Use when:** Executing `/commit` in the SDD workflow, after `/verify` and successful `/adversarial-review`.
+**Use after:** `/verify` passes (or user confirms verify was run). If `/adversarial-review` was used, confirm it passed before committing.
 
----
-
-## Commit Format
-
-```
-<type>(<scope>): <short description in English>
-
-[optional body — what and why, not how]
-
-[optional footer — BREAKING CHANGE, Closes #ticket]
-```
-
-### Allowed Types
-
-| Type | When to Use |
-|------|-------------|
-| `feat` | New functionality for the user |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `refactor` | Refactor with no behavior change |
-| `test` | Add or fix tests |
-| `chore` | Build, dependencies, config |
-| `perf` | Performance improvement |
-| `ci` | CI/CD changes |
-| `revert` | Revert previous commit |
-
-### Examples
-
-```
-feat(auth): add password reset endpoint
-
-fix(orders): prevent duplicate submission on slow connections
-Closes #SCRUM-42
-
-docs(api): update payment endpoint spec with new error codes
-
-refactor(user): extract email validation to shared util
-
-test(auth): add integration tests for password reset flow
-
-chore(deps): upgrade bcrypt from 5.0.1 to 5.1.0
-```
+**Reference:** For Conventional Commits format, allowed types, semver, and commitlint configuration, see `ai-specs/reference/commits.md`.
 
 ---
 
-## Semver and Versioning
+## Step 1 — Extraer contexto del cambio (token-light)
 
-### How Types Map to Version Bumps
+Obtener el cambio activo:
 
-| Type | Version Bump | Example |
-|------|--------------|---------|
-| `feat` | Minor | 1.0.0 → 1.1.0 |
-| `fix` | Patch | 1.0.0 → 1.0.1 |
-| `feat` + `BREAKING CHANGE` | Major | 1.0.0 → 2.0.0 |
-| `refactor` (no feature change) | None | No version bump |
-
-### Version Bump Commands
-
-```bash
-# Automatic (creates commit + tag)
-npm version patch  # 1.0.0 → 1.0.1
-npm version minor  # 1.0.0 → 1.1.0
-npm version major  # 1.0.0 → 2.0.0
-
-# Manual with message
-git tag v1.2.3 -m "Release v1.2.3"
-```
+- `ls openspec/changes/` y tomar el único cambio presente. Si hay varios, listar nombres y pedir al usuario cuál commitear.
+- Leer el `TICKET-ID` y el `derived-name` desde `proposal.md` (header `Ticket ID:`). Si no existe, intentar leerlo de `openspec/tickets/{derived-name}-enriched.md` (solo el nombre de archivo, no su contenido).
+- **No** leer `scenarios.md`, `requirements.md` ni `tasks.md` en su contenido completo.
 
 ---
 
-## Process
+## Step 2 — Gateway de verify (suave, sin estado persistido)
 
-### Step 1: Verify Preconditions
+Dado que `/verify` no persiste `.verify-passed` (decisión previa), el gate es **suave**:
 
-```bash
-# All tests must pass
-npm test
+1. Preguntar al usuario: **"¿Ejecutaste `/verify` y pasó para este cambio?"**
+2. Si el usuario responde **"no"**:
+   - Ofrecer: (a) re-ejecutar `/verify` ahora (subproceso), o (b) abortar.
+   - **No continuar sin confirmación.**
+3. Si el usuario indica que usó `/adversarial-review` → pedir confirmación de que pasó.
+4. Si no se usó `/adversarial-review` → continuar sin bloqueos.
 
-# No lint errors
-npm run lint
-
-# Build succeeds
-npm run build
-```
-
-**If any check fails:** Fix before committing.
-
-### Step 2: Review Changes
-
-```bash
-# See all changes
-git status
-
-# See diff stats
-git diff --stat
-
-# See full diff
-git diff
-```
-
-### Step 3: Group Changes
-
-Group into logical commits. One commit = one logical change.
-
-**Commits grouping example for a feature:**
-
-```bash
-# Commit 1: Documentation changes
-git add docs/api-spec.yml docs/data-model.md
-git commit -m "docs(api): update spec with new auth endpoints"
-
-# Commit 2: Tests
-git add tests/unit/auth.test.ts tests/integration/auth.test.ts
-git commit -m "test(auth): add unit and integration tests"
-
-# Commit 3: Implementation
-git add src/
-git commit -m "feat(auth): implement password reset flow"
-```
-
-### Step 4: Push Commits
-
-```bash
-git push origin feature/SCRUM-42
-```
-
-### Step 5: Create Pull Request
-
-Use the template in `.github/pull_request_template.md`:
-
-```bash
-# Create PR with conventional format
-gh pr create \
-  --title "feat(auth): implement password reset" \
-  --body-file .github/pull_request_template.md \
-  --base main \
-  --head feature/SCRUM-42
-```
-
-Or push to remote and create PR via GitHub UI.
+**Nota:** No depender de archivo `.verify-passed` (déjálo como decisión previa de `/verify`).
 
 ---
 
-## Automated Changelog
+## Step 3 — Validación de rama (solo advertir)
 
-For automated changelog generation, use `standard-version`:
-
-```bash
-# Install
-npm install --save-dev standard-version
-
-# Generate CHANGELOG.md and bump version
-npm run release -- --release-as minor
-
-# Or手动
-npx standard-version --release-as minor
-```
-
-### CHANGELOG.md Format (keep-a-changelog)
-
-```markdown
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-## [1.2.0] - 2024-01-15
-
-### Features
-- **auth**: add password reset endpoint ([#42](link))
-
-### Bug Fixes
-- **orders**: prevent duplicate submission on slow connections
-
-### Documentation
-- **api**: update payment endpoint spec
-```
+- `git branch --show-current`.
+- Si la rama actual **no** coincide con `feature/*` → imprimir advertencia:
+  ```
+  ⚠️ Rama actual '{branch}' no sigue la convención feature/.
+  ¿Continuar de todos modos?
+  ```
+- **Preguntar al usuario**; **no abortar ciegamente** (el proyecto puede usar otra convención).
 
 ---
 
-## commitlint Configuration
+## Step 4 — Diff selectivo (prop. 3.7)
 
-For enforced conventional commits, use `commitlint` with `@commitlint/config-conventional`:
-
-```bash
-npm install --save-dev @commitlint/config-conventional @commitlint/cli
-```
-
-### .commitlintrc.json
-
-```json
-{
-  "extends": ["@commitlint/config-conventional"],
-  "rules": {
-    "type-enum": [
-      2,
-      "always",
-      ["feat", "fix", "docs", "refactor", "test", "chore", "perf", "ci", "revert"]
-    ],
-    "subject-case": [
-      2,
-      "never",
-      ["sentence-case", "start-case", "pascal-case", "upper-case"]
-    ]
-  }
-}
-```
-
-### Git Hook (husky)
-
-```bash
-npm install --save-dev husky
-npx husky init
-
-# Add commitlint to commit-msg hook
-echo 'npx --no -- commitlint --edit $1' > .husky/commit-msg
-```
+- `git status --short` y `git diff --stat` (stageados + no stageados). **Nunca** `git diff` completo.
+- Detectar grupo ya stageado por `/archive`: archivos bajo `openspec/` → tratar como commit `chore(specs): archive {TICKET-ID} ({derived-name})` (reutilizar el mensaje sugerido por archive Step 6).
+- Agrupación lógica por patrones de ruta:
+  - `tests/` → `test(...)`
+  - `src/`/`app/` → `feat|fix|refactor(...)` 
+  - `docs/` → `docs(...)`
+  - `package.json`/`pyproject.toml`/`*.config.*` → `chore|ci(...)`
+- **No** "adivinanza" sobre contenido; agrupar por ruta.
 
 ---
 
-## PR Template
+## Step 5 — Plan de commits + confirmación (prop. 3.2)
 
-Use `.github/pull_request_template.md`. The key sections:
+Imprimir tabla con el plan propuesto:
 
-```markdown
-## What changes
-
-<!-- Brief description of changes -->
-
-## Why
-
-<!-- Context and motivation -->
-
-## How to test
-
-1. <!-- Step 1 -->
-2. <!-- Step 2 -->
-
-## OpenSpec Change
-
-<!-- Ticket ID (e.g., SCRUM-42) -->
-
-## Checklist
-
-- [ ] Tests passing
-- [ ] Documentation updated
-- [ ] No breaking changes (or documented)
-- [ ] OpenSpec artifacts updated
 ```
+  #  Archivos                                   Mensaje sugerido
+  1  openspec/...                                chore(specs): archive PROJ-123 (auth-reset)
+  2  tests/...                                   test(auth): add password reset tests
+  3  src/...                                     feat(auth): implement password reset flow
+```
+
+Usar plantilla estructurada (Conventional Commits):
+
+```
+<tipo>(<ámbito>): <asunto en presente>
+
+<cuerpo opcional — qué y por qué, no cómo>
+
+<footer opcional: Closes #TICKET-ID, BREAKING CHANGE: ...>
+```
+
+- **Preguntar al usuario: "¿Aprobás este plan de commits?"**  **Antes** de cualquier `git add`/`git commit`.
 
 ---
 
-## Tips
+## Step 6 — Ejecutar commits (solo tras aprobación)
 
-1. **Atomic commits:** One logical change per commit
-2. **Descriptive subjects:** Start with verb (add, fix, update, remove)
-3. **Scope:** Use module/feature name (auth, orders, api, ui)
-4. **Breaking changes:** Add `BREAKING CHANGE:` in footer
-5. **Reference tickets:** Use `Closes #123` or `Refs #123`
-6. **Don't commit secrets:** Use `.env.example`, never `.env` with real values
+Por cada grupo aprobado:
 
-## Common Mistakes
+```
+git add <archivos>
+git commit -m "<mensaje Conventional Commit>"
 
-| ❌ Wrong | ✅ Correct |
-|----------|-----------|
-| `git commit -m "fixed stuff"` | `fix(auth): prevent duplicate submission` |
-| `feat: Add new feature` | `feat(checkout): add coupon code support` |
-| `Update test.js` | `test(auth): add password reset tests` |
-| Commit with real API keys | Use environment variables |
+Incluir `Closes #{TICKET-ID}` solo en el commit principal (no en todos).
+```
+
+Si el usuario no aprueba algún grupo → omitirlo y seguir con el resto.
+
+---
+
+## Step 7 — Push + PR (confirmación explícita, prop. 3.2/3.6)
+
+- **No** ejecutar `git push` ni `gh pr create` sin confirmación del usuario.
+- Pre-PR: `git fetch origin main` y verificar `git merge-base --is-ancestor origin/main HEAD` → si no, avisar:
+  ```
+  ⚠️ La rama no está actualizada con main
+  ```
+- `gh pr create` solo tras aprobación; usar `.github/pull_request_template.md` si existe; título conventional + cuerpo con referencia al change.

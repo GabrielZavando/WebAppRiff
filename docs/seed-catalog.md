@@ -221,6 +221,6 @@ npm run migrate:productos:imagenes -- --dry-run
 No descarga ni escribe: reporta lo que migraría. Útil para validar el mapa antes
 de tocar Storage/Firestore.
 
-> Nota: el comando no altera `docs/api-spec.yml` (no hay cambio de contrato HTTP).
+> Nota: el comando no altera `docs/api/api-spec.yml` (no hay cambio de contrato HTTP).
 
 

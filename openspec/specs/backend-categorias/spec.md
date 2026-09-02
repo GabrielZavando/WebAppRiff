@@ -82,7 +82,7 @@ The backend-categorias SHALL guarantee a default category with fixed id `sin-cat
 - **AND** re-running bootstrap does not create a duplicate or error
 
 ### Requirement: Backend SHALL serve API routes under the /api/v1 prefix (health excluded)
-The backend-categorias SHALL add a global route prefix `api/v1` (with `/health` excluded) so that API routes such as `/api/v1/users` and `/api/v1/categories` are wrapped by the existing `ResponseInterceptor` (which wraps `/api/v1/**`) and comply with the `{ data, error, meta }` envelope of `docs/api-spec.yml`. `GET /health` SHALL remain at the root path, unwrapped and unthrottled.
+The backend-categorias SHALL add a global route prefix `api/v1` (with `/health` excluded) so that API routes such as `/api/v1/users` and `/api/v1/categories` are wrapped by the existing `ResponseInterceptor` (which wraps `/api/v1/**`) and comply with the `{ data, error, meta }` envelope of `docs/api/api-spec.yml`. `GET /health` SHALL remain at the root path, unwrapped and unthrottled.
 
 #### Scenario: Category response is wrapped in the envelope
 - **WHEN** `GET /api/v1/categories` is requested
