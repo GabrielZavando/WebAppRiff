@@ -34,12 +34,17 @@ module.exports = {
     // SOLID: SRP — a method with cyclomatic complexity > 10 has too many paths (aligned with backend).
     'complexity': ['error', 10],
 
+    // SOLID: SRP — un componente con constructor de más de 5 parámetros indica
+    // que probablemente viola SRP y debería dividirse.
+    '@typescript-eslint/max-params': ['error', 5],
+
     'sonarjs/cognitive-complexity': ['error', 10],
 
-    // SOLID: SRP (smart/dumb) — component-class-size is an indirect signal of responsibility bloat.
+    // SOLID: SRP (smart/dumb) — max-params: un constructor con más de 5 parámetros
+    // indica que la clase probablemente viola SRP y debería dividirse.
     '@angular-eslint/component-class-size': ['error', { maxLineCount: 400 }],
 
-    // SOLID: SRP — inline templates over 60-80 lines should be extracted (Ticket 1 §Umbrales frontend-standards.md L62)
+    // ---- Auxiliary import hygiene ----
     '@angular-eslint/template/conditional-complexity': 'warn',
   },
   ignorePatterns: ['dist/', 'node_modules/', '*.spec.ts'],

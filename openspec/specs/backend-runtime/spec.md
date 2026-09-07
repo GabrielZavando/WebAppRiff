@@ -29,7 +29,7 @@ The backend-runtime SHALL expose a NestJS bootstrap function in `src/main.ts` th
 - **AND** the application binds to an OS-assigned ephemeral port without falling back to `3000`
 
 ### Requirement: Health endpoint SHALL return ok status without authentication
-The backend-runtime SHALL expose a `GET /health` endpoint at the application root (no `/api/v1` prefix) that returns HTTP `200` with a JSON body `{ "status": "ok", "version": <string>, "timestamp": <iso string>, "uptime": <number>, "firebase": "up" | "down" }`, conforming to the contract in `docs/api-spec.yml` (`/health` is marked `security: []`). The endpoint SHALL be implemented in `src/app.controller.ts`, the status string and enriched fields SHALL be produced by `src/app.service.ts`, and the `firebase` field SHALL reflect a best-effort Firestore connectivity check with a short timeout (the endpoint stays `200` even when `firebase` is `"down"`). No request body, query parameters, or headers are required.
+The backend-runtime SHALL expose a `GET /health` endpoint at the application root (no `/api/v1` prefix) that returns HTTP `200` with a JSON body `{ "status": "ok", "version": <string>, "timestamp": <iso string>, "uptime": <number>, "firebase": "up" | "down" }`, conforming to the contract in `docs/api/api-spec.yml` (`/health` is marked `security: []`). The endpoint SHALL be implemented in `src/app.controller.ts`, the status string and enriched fields SHALL be produced by `src/app.service.ts`, and the `firebase` field SHALL reflect a best-effort Firestore connectivity check with a short timeout (the endpoint stays `200` even when `firebase` is `"down"`). No request body, query parameters, or headers are required.
 
 #### Scenario: GET /health returns 200 with enriched ok status
 - **WHEN** a `GET /health` request is made to the running application
@@ -86,7 +86,7 @@ The `AppController` method handling `GET /health` and the `AppService` method re
 #### Scenario: AppController health endpoint returns the status envelope
 - **WHEN** the `AppController.getHealth()` method is invoked
 - **THEN** it returns an object equal to `{ "status": "ok" }`
-- **AND** the returned value matches the body declared in `docs/api-spec.yml` for `/health`
+- **AND** the returned value matches the body declared in `docs/api/api-spec.yml` for `/health`
 
 ### Requirement: Backend SHALL include a Dockerfile producing a runnable production image
 The backend-runtime SHALL include a multi-stage `Dockerfile` in `apps/backend` whose final image is based on `node:22-slim`, exposes port `3000`, and runs `node dist/main.js` as the entrypoint. Building the Dockerfile with `docker build` SHALL succeed and produce an image that, when run, responds to `GET /health` with HTTP `200` and `{ "status": "ok" }`.

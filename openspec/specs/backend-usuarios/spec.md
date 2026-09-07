@@ -49,7 +49,7 @@ The backend-usuarios SHALL, when a user is created, create the Firebase Auth use
 - **AND** the `usuarios/{uid}` document reflects `rol: admin`
 
 ### Requirement: Backend SHALL expose role-gated /users management endpoints
-The backend-usuarios SHALL implement `GET /users`, `POST /users`, `GET /users/{id}`, `PUT /users/{id}`, `PATCH /users/{id}` from `docs/api-spec.yml`. Access control follows `docs/data-model.md`:
+The backend-usuarios SHALL implement `GET /users`, `POST /users`, `GET /users/{id}`, `PUT /users/{id}`, `PATCH /users/{id}` from `docs/api/api-spec.yml`. Access control follows `docs/data-model/data-model.md`:
 - Listing and reading users requires `superadmin` OR `admin`.
 - Creating a user: `rol=superadmin` or `rol=admin` → only `superadmin`; `rol=editor` → `superadmin` OR `admin`.
 - Updating a user: changing `rol` to `superadmin`/`admin` → only `superadmin`; deactivating (`activo=false`) → an `admin` cannot deactivate themselves nor another `admin`; `superadmin` can.

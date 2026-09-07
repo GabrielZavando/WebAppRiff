@@ -115,6 +115,48 @@ export async function rewriteProductStorage(
 }
 
 /**
+ * Copia una sola colección lista de documentos de origen a destino, preservando
+ * los IDs y aplicando `dryRun`. Devuelve los contadores de escritos/omitidos.
+ *
+ * Extraída de `runMigration` para mantener su complejidad ciclomática ≤ 10 (el
+ * procesamiento por-documento y la reescritura de Storage tienen caminos propios).
+ */
+async function writeCollectionDocuments(
+  docs: DocRecord[],
+  writer: CollectionWriter,
+  options: { dryRun: boolean; applyStorage: boolean; storageCopier?: StorageCopier },
+  log: (message: string) => void,
+): Promise<{ written: number; skipped: number; blobsCopied: number }> {
+  let written = 0;
+  let skipped = 0;
+  let blobsCopied = 0;
+
+  for (const doc of docs) {
+    let data = doc.data;
+    if (options.applyStorage && options.storageCopier) {
+      const result = await rewriteProductStorage(data, options.storageCopier, log);
+      data = result.data;
+      blobsCopied += result.blobsCopied;
+    }
+
+    if (options.dryRun) {
+      written += 1;
+      continue;
+    }
+
+    if (await writer.exists(doc.id)) {
+      skipped += 1;
+      continue;
+    }
+
+    await writer.write(doc.id, data);
+    written += 1;
+  }
+
+  return { written, skipped, blobsCopied };
+}
+
+/**
  * Copia las colecciones configuradas del origen al destino preservando los IDs
  * de documento. Omite `exclude`. Es idempotente: si el doc ya existe en destino
  * no lo sobrescribe. En `--dry-run` no escribe y reporta lo que haría.
@@ -142,32 +184,15 @@ export async function runMigration(
     }
 
     const docs = await reader.listAll();
-    let written = 0;
-    let skipped = 0;
-
     const applyStorage = storageCollections.has(collection) && deps.storageCopier !== undefined;
 
-    for (const doc of docs) {
-      let data = doc.data;
-      if (applyStorage && deps.storageCopier) {
-        const result = await rewriteProductStorage(data, deps.storageCopier, log);
-        data = result.data;
-        storageBlobsCopied += result.blobsCopied;
-      }
-
-      if (options.dryRun) {
-        written += 1;
-        continue;
-      }
-
-      if (await writer.exists(doc.id)) {
-        skipped += 1;
-        continue;
-      }
-
-      await writer.write(doc.id, data);
-      written += 1;
-    }
+    const { written, skipped, blobsCopied } = await writeCollectionDocuments(
+      docs,
+      writer,
+      { dryRun: options.dryRun, applyStorage, storageCopier: deps.storageCopier },
+      log,
+    );
+    storageBlobsCopied += blobsCopied;
 
     reports.push({ collection, read: docs.length, written, skipped, excluded: false });
     log(`[done] ${collection}: leídos=${docs.length} escritos=${written} omitidos=${skipped}`);

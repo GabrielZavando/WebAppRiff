@@ -17,8 +17,12 @@
 //   DIP  — `no-orm-or-http-from-domain`  (domain / application must not import typeorm / prisma / mongoose / axios / @nestjs/axios)
 //   DIP  — `no-application-importing-concrete-repository` (application should depend on domain interfaces, not on infrastructure)
 //
+// Mechanically enforceable via lint (ESLint configs in templates/ci/):
+//   SRP — `max-lines` (≤300 backend / ≤400 frontend) and `max-params` (≤5)
+//   enforced in eslintrc.backend.js and eslintrc.frontend.js respectively
+//
 // Not enforceable mechanically (left to Lente Architect Ticket 3 / agents Ticket 2):
-//   SRP, OCP, LSP, ISP
+//   OCP, LSP, ISP
 //
 // How to run from a real project:
 //   npx dependency-cruiser --config templates/ci/.dependency-cruiser.js src/

@@ -153,7 +153,7 @@ describe('getProductBySlug', () => {
 
   it('returns null when the API returns non-2xx', async () => {
     const { getProductBySlug } = await load();
-    const fetchMock = mockFetch({ message: 'boom' }, false, 404);
+    mockFetch({ message: 'boom' }, false, 404);
     const result = await getProductBySlug('missing');
     expect(result).toBeNull();
   });

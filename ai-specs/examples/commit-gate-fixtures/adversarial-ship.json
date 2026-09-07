@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "change": "enforce-commit-gates",
+  "ticket_id": "M-901-903",
+  "verdict": "SHIP",
+  "confidence": 0.9,
+  "timestamp": "2026-09-05T18:00:00Z",
+  "findings": { "total": 2, "critical": 0, "warnings": 1, "info": 1, "discarded": 1 }
+}

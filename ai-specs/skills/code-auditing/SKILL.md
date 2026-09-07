@@ -2,106 +2,146 @@
 
 ## Descripción
 
-Auditoría sistemática de calidad de código en 8 fases. Usar antes de releases importantes, durante revisiones de deuda técnica, o como `/adversarial-review` en el flujo SDD.
+Auditoría adversarial de calidad de código. Ejecútala antes de archivar un cambio para detectar fallos costosos, peligrosos o difíciles de detectar. **No duplica `/verify`** (este se encarga de la cobertura de requisitos y tareas); este paso se enfoca en robustez, seguridad ofensiva, tradeoffs y diseño contextual. **Read-only sobre código**: reporta hallazgos y persiste su veredicto en `openspec/state/adversarial-result.json`, pero nunca modifica código.
 
-## Proceso — 8 fases
+## Paso 1 — Cargar contexto del cambio (token-light)
 
-### Fase 1: Seguridad
+- `ls openspec/changes/` → cambio activo. Si hay varios, pedir al usuario cuál auditar.
+- Leer `proposal.md` (el "por qué" y el "qué" del cambio).
+- `git diff --stat` → lista resumida de archivos modificados.
+- `git status` → árbol de trabajo (archivos modificados/stageados; insumo del Paso 6).
+- **No** leer `scenarios.md`/`requirements.md`/`tasks.md` completos (eso es `/verify`).
 
-- Inputs sin sanitizar o validar
-- Credenciales hardcodeadas o expuestas
-- SQL injection, XSS, CSRF posibles
-- Permisos y autenticación correctamente aplicados
-- Datos sensibles logueados
+## Paso 2 — Ejecutar herramientas automáticas
 
-### Fase 2: Tipos y contratos
+- `npm audit --json` (si existe `package.json`) → parsear vulnerabilidades reales de dependencias.
+- `npx eslint -c templates/ci/eslintrc.backend.js --format json src/` y, según corresponda, `templates/ci/eslintrc.frontend.js` o `templates/ci/eslintrc.astro.js` → parsear violaciones SRP (`max-lines`, `max-params`), DIP, ISP.
+- `npx dependency-cruiser --config templates/ci/.dependency-cruiser.js src/` → validar regla `no-infra-from-domain` (ningún archivo en `domain/` o `application/` importe infraestructura).
+- **Pasar los JSON resultantes al LLM para interpretar y priorizar**, no para leer código línea por línea.
+- Si algún config no existe (`templates/ci/*.js` no presentes), saltar ese paso e informar.
 
-- Tipos `any` o `unknown` sin justificación
-- Props/parámetros sin tipo explícito
-- Contratos de API que no coinciden con `docs/api-spec.yml`
-- Interfaces inconsistentes entre capas
+## Paso 3 — Lente adversarial (red-team)
 
-### Fase 3: Performance
+Prompt único dentro del mismo agente (no subagents paralelos):
 
-- N+1 queries en base de datos
-- Operaciones síncronas bloqueantes en el main thread
-- Recursos sin liberar (listeners, connections, timers)
-- Carga de datos innecesaria (over-fetching)
+> **"Eres reviewer escéptico. Tu único trabajo es encontrar las razones más sólidas por las que este cambio NO debería archivarse. Busca fallos que sean costosos, peligrosos o difíciles de detectar. No busques validar, rompe."**
 
-### Fase 4: Código muerto y duplicación
+Ejes a cubrir (lo que `/verify` NO cubre):
+- **Seguridad ofensiva**: ¿cómo lo atacaría un adversario? (input sin sanitizar, credenciales en logs, bypass de auth).
+- **Robustez ante fallos**: ¿qué pasa si la base de datos cae? Si el servicio externo retorna error? Si el input está vacío.
+- **Tradeoffs**: ¿se consideraron alternativas? ¿por qué se eligió esta solución sobre otras? ¿es la idónea para el dominio de negocio?
+- **SOLID contextual**: usar los outputs de eslint/dependency-cruiser de Step 2 como evidencia; no conteo manual de líneas.
 
-- Funciones, componentes o módulos no referenciados
-- Código duplicado que puede abstraerse
-- Imports no usados
-- Feature flags obsoletos
+**Auto-refutación estructurada (M-501)**: todo hallazgo de severidad `CRITICAL`
+pasa por el protocolo de 4 pasos antes de aparecer en el veredicto final:
 
-### Fase 5: Best practices de librerías
+1. **Hipótesis de refutación**: ¿puede ser falso positivo? Formular qué debería
+   ser cierto en el código/tests para que el hallazgo no lo sea.
+2. **Búsqueda de evidencia contradictoria**: revisar código y tests buscando esa
+   evidencia (no asumir; verificar).
+3. **Decisión final**: mantener o descartar, siempre **con motivo** explícito.
+4. **Registro**: conservar el par hallazgo original + refutación para el reporte.
 
-- Uso desactualizado de APIs de librerías
-- Patrones deprecated
-- Dependencias con vulnerabilidades conocidas (`npm audit`)
+- Solo los hallazgos que **sobreviven** al protocolo aparecen en el veredicto
+  (Paso 5) y en el `summary`.
+- Los hallazgos **descartados** no aparecen en el veredicto: se listan en el
+  anexo "Descartados" del reporte (Paso 5) y alimentan el contador
+  `findings.discarded` del JSON persistido (Paso 7).
 
-### Fase 6: Tests
+## Paso 4 — Diff selectivo
 
-- Casos edge no cubiertos
-- Tests que prueban implementación en vez de comportamiento
-- Mocks que ocultan bugs reales
-- Cobertura por debajo del mínimo definido
+- Para los archivos modificados, leer **solo los hunks** (`git diff -- <file>`), no el archivo entero. Aplicar el lente adversarial ahí.
 
-### Fase 7: OpenSpec Alignment
+## Paso 5 — Veredicto estructurado
 
-- El código implementado coincide con los escenarios en `openspec/changes/<change>/specs/**/scenarios.md`
-- Los requirements en `openspec/changes/<change>/specs/**/requirements.md` están cubiertos
-- Las tareas en `openspec/changes/<change>/tasks.md` están completadas o actualizadas
-- El contrato en `docs/api-spec.yml` refleja los cambios reales
-- El modelo de datos en `docs/data-model.md` está sincronizado
+Imprimir un bloque YAML compacto en pantalla (los mismos datos, en formato JSON versionado, se persisten en el Paso 7):
 
-### Fase 8: SOLID/POO — Lente Architect
-
-Chequeo explícito, ítem por ítem, contra el diff bajo revisión. Umbrales de referencia: `docs/backend-standards.md` sección _Principios de Diseño — Backend (NestJS)_, y `docs/frontend-standards.md` secciones _Principios de Diseño — Frontend (Angular)_ y _Principios de Diseño — Astro_.
-
-#### NestJS / Backend
-
-- ¿Algún archivo en `domain/` o `application/` importa un paquete de infraestructura (TypeORM, Prisma, HTTP client, SDK externo)? → violación de DIP.
-- ¿Algún `@Injectable()` mezcla acceso a datos + lógica de negocio + formateo de respuesta en la misma clase? → violación de SRP.
-- ¿Hay algún `new` de una dependencia dentro de un constructor en vez de recibirla inyectada? → violación de DIP.
-- ¿Se agregó una nueva rama `if/else`/`switch` a un método existente para soportar un nuevo caso, en vez de una Strategy/nueva implementación? → violación de OCP.
-- ¿Alguna interfaz de puerto tiene más de 5 métodos donde el consumidor solo usa 1-2? → violación de ISP.
-- ¿Alguna clase supera 300 líneas o algún método supera complejidad ciclomática 10 (estimar si no hay tooling automático corriendo aún)? → señal de violación de SRP.
-
-#### Angular
-
-- ¿Un componente "dumb" inyecta un servicio de datos o llama HTTP directamente? → violación de SRP/capas.
-- ¿Un componente mezcla lógica de presentación con lógica de negocio no trivial? → violación de SRP.
-
-#### Astro
-
-- ¿El frontmatter contiene lógica de negocio no trivial que debería vivir en un módulo `.ts` separado y testeable? → violación de SRP.
-
-#### Formato de salida obligatorio por hallazgo
-
-Cada hallazgo de esta fase debe reportarse en el formato accionable siguiente — no se acepta salida genérica tipo "viola SRP":
-
-```
-[Principio violado] — [Archivo:línea]
-Qué se observa: [descripción concreta de lo que hace el código]
-Por qué viola el principio: [explicación en 1 línea]
-Refactor sugerido: [acción concreta, ej. "extraer el bloque de acceso a datos a un UserRepository inyectado vía IUserRepository"]
+```yaml
+verdict: SHIP | NO-SHIP
+confidence: 0.0-1.0
+findings:
+  - severity: CRITICAL|WARNING|INFO
+    category: security|robustness|solid|tradeoff|tests
+    file: ruta:línea
+    evidence: "..."
+    recommendation: "..."
+summary:
+  total_findings: N
+  critical: N
+  warnings: N
+  info: N
+  discarded: N
 ```
 
-## Output esperado
+- `summary.discarded` = hallazgos `CRITICAL` refutados por el protocolo del
+  Paso 3. **No** se incluyen en `total_findings` ni en `critical`
+  (invariante: `total_findings = critical + warnings + info`).
 
-```markdown
-## Reporte de auditoría — [módulo/PR]
+Mostrar al usuario solo `verdict` + `summary`; los detalles expandibles están disponibles si se solicita.
 
-### Hallazgos críticos (bloquean el merge)
-- [ ] [descripción del hallazgo]
+**Anexo "Descartados"** — para cada hallazgo `CRITICAL` refutado por el
+protocolo del Paso 3, registrar en el reporte (fuera del veredicto):
 
-### Hallazgos importantes (resolver en siguiente sprint)
-- [ ] [descripción del hallazgo]
-
-### Sugerencias (mejora de calidad)
-- [ ] [descripción de sugerencia]
-
-### Cobertura actual: X%
+```yaml
+discarded_findings:
+  - severity: CRITICAL
+    category: security|robustness|solid|tradeoff|tests
+    file: ruta:línea
+    original_evidence: "hallazgo original tal como fue detectado"
+    refutation: "evidencia contradictoria encontrada en código/tests"
+    reason: "motivo explícito del descarte"
 ```
+
+- Los hallazgos de este anexo **no** aparecen en el bloque del veredicto ni en
+  `summary.total_findings`/`summary.critical`.
+- El conteo del anexo debe coincidir con `summary.discarded` (bloque YAML) y
+  con `findings.discarded` del JSON persistido (Paso 7).
+
+## Paso 6 — Detección de cambios ya stageados por /archive (compatibilidad)
+
+- Si `openspec/state/manifest.json` existe y lista archivos en `openspec/archive/`, **no vuelva a auditarlos**. Reportarlos como *"archivados anteriormente, sin nuevos hallazgos"* y enfocarse solo en código nuevo.
+
+## Paso 7 — Persistencia del veredicto
+
+Escribir `openspec/state/adversarial-result.json` al finalizar **cada** auditoría
+— incluidos veredictos NO-SHIP. Prevalencia **last-write-wins**: cada corrida
+**sobrescribe** el archivo anterior, así que el archivo siempre refleja la
+**corrida más reciente** — el gate de `/commit` lee solo esa corrida (ver
+`commit/SKILL.md`, Step 2). El esquema es versionado (`schema_version: 1`); el ejemplo canónico es
+`ai-specs/examples/adversarial-results-example.json`, autovalidado por
+`tests/adversarial-state-test.sh`:
+
+```json
+{
+  "schema_version": 1,
+  "change": "{change activo de openspec/changes/}",
+  "ticket_id": "{TICKET-ID de proposal.md}",
+  "verdict": "SHIP",
+  "confidence": 0.9,
+  "timestamp": "2026-09-05T15:00:00Z",
+  "findings": {
+    "total": 3,
+    "critical": 0,
+    "warnings": 2,
+    "info": 1,
+    "discarded": 2
+  }
+}
+```
+
+Reglas:
+
+- Escribir vía redirección `cat > openspec/state/adversarial-result.json` (la
+  evidencia es la **única** escritura permitida del reviewer; `edit` permanece
+  denegado). Crear el directorio si falta con `mkdir -p openspec/state`.
+- `total`/`critical`/`warnings`/`info` salen del `summary` del Paso 5;
+  `discarded` del anexo "Descartados". Invariantes: `total = critical +
+  warnings + info` y `critical ≤ total`.
+- `timestamp` en ISO-8601 (ej. `2026-09-05T15:00:00Z`).
+- El archivo queda trackeado en git (no gitignored): evidencia auditable en PRs.
+- Si falla la escritura → advertir pero no abortar (el reporte en pantalla ya se
+  emitió). El gate duro del veredicto vive en `/commit` (activo desde M-901),
+  no en este archivo.
+
+---
+**Eliminado**: la Fase 7 (OpenSpec Alignment) ha sido removida (cubre `/verify`). Esta skill ahora se enfoca únicamente en auditoría adversarial: robustez, seguridad, tradeoffs y diseño contextual.

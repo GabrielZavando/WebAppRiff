@@ -2,275 +2,196 @@
 
 ## Description
 
-Create semantic commits following Conventional Commits and manage Pull Requests when finishing an OpenSpec change.
+Creates semantic commits following Conventional Commits and manages Pull Requests when finishing an OpenSpec change. This skill is **token-light**: uses `git diff --stat` and `git status --short` instead of reading the full diff, and groups changes by path patterns rather than analyzing content.
 
-**Use when:** Executing `/commit` in the SDD workflow, after `/verify` and successful `/adversarial-review`.
+**Use after:** `/verify` con `status: PASS` y `/adversarial-review` con `verdict: SHIP` — sus evidencias persistidas en `openspec/state/` son **gates duros** de este skill (Step 2). Sin ambas evidencias vigentes para el change de referencia, el commit solo es posible con `--force` registrado.
 
----
-
-## Commit Format
-
-```
-<type>(<scope>): <short description in English>
-
-[optional body — what and why, not how]
-
-[optional footer — BREAKING CHANGE, Closes #ticket]
-```
-
-### Allowed Types
-
-| Type | When to Use |
-|------|-------------|
-| `feat` | New functionality for the user |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `refactor` | Refactor with no behavior change |
-| `test` | Add or fix tests |
-| `chore` | Build, dependencies, config |
-| `perf` | Performance improvement |
-| `ci` | CI/CD changes |
-| `revert` | Revert previous commit |
-
-### Examples
-
-```
-feat(auth): add password reset endpoint
-
-fix(orders): prevent duplicate submission on slow connections
-Closes #SCRUM-42
-
-docs(api): update payment endpoint spec with new error codes
-
-refactor(user): extract email validation to shared util
-
-test(auth): add integration tests for password reset flow
-
-chore(deps): upgrade bcrypt from 5.0.1 to 5.1.0
-```
+**Reference:** For Conventional Commits format, allowed types, semver, and commitlint configuration, see `ai-specs/reference/commits.md`.
 
 ---
 
-## Semver and Versioning
+## Step 1 — Extraer contexto del cambio (token-light)
 
-### How Types Map to Version Bumps
+Obtener el cambio activo:
 
-| Type | Version Bump | Example |
-|------|--------------|---------|
-| `feat` | Minor | 1.0.0 → 1.1.0 |
-| `fix` | Patch | 1.0.0 → 1.0.1 |
-| `feat` + `BREAKING CHANGE` | Major | 1.0.0 → 2.0.0 |
-| `refactor` (no feature change) | None | No version bump |
-
-### Version Bump Commands
-
-```bash
-# Automatic (creates commit + tag)
-npm version patch  # 1.0.0 → 1.0.1
-npm version minor  # 1.0.0 → 1.1.0
-npm version major  # 1.0.0 → 2.0.0
-
-# Manual with message
-git tag v1.2.3 -m "Release v1.2.3"
-```
+- `ls openspec/changes/` y tomar el único cambio presente. Si hay varios, listar nombres y pedir al usuario cuál commitear.
+- Resolver el **change de referencia** para el gateway de evidencia: si hay change activo, es ese; si no lo hay (commit tras `/archive`), el **change recién archivado** — tomar la carpeta más reciente de `openspec/changes/archive/` y quitarle el prefijo de fecha `YYYY-MM-DD-` que añade el CLI (ej. `2026-09-05-enforce-commit-gates` → `enforce-commit-gates`).
+- Leer el `TICKET-ID` y el `derived-name` desde `proposal.md` (header `Ticket ID:`). Si no existe, intentar leerlo de `openspec/tickets/{derived-name}-enriched.md` (solo el nombre de archivo, no su contenido).
+- **No** leer `scenarios.md`, `requirements.md` ni `tasks.md` en su contenido completo.
 
 ---
 
-## Process
+## Step 2 — Gateway de evidencia (gates duros, M-901)
 
-### Step 1: Verify Preconditions
+Desde M-401, `/verify` persiste `openspec/state/verify-results.json` tras cada
+ejecución (Step 8 de su skill); desde M-502, `/adversarial-review` persiste
+`openspec/state/adversarial-result.json` (Paso 7 de su skill). Este paso aplica
+esas evidencias como **gates duros**: sin verify `PASS` y adversarial `SHIP`
+vigentes para el change de referencia **no hay commit**. El skill no pregunta a ciegas:
+usa la evidencia cuando es utilizable; cuando es negativa, ausente, inválida o
+ajena, **bloquea y ofrece** ejecutar la herramienta faltante, abortar, o usar
+`--force`.
 
-```bash
-# All tests must pass
-npm test
+**Flag `--force` (escape hatch de emergencia)**: con gates fallidos o sin
+evidencia utilizable, solo el flag `--force` permite continuar, y el bypass
+**queda registrado**: el mensaje de cada commit termina con el trailer git
+`Gate-Bypass: --force (verify=<PASS|PARTIAL|FAIL|missing>; adversarial=<SHIP|NO-SHIP|missing>)` reflejando el estado real de ambos gates. Con gates verdes el trailer **no se emite**.
 
-# No lint errors
-npm run lint
+**Reglas comunes a ambos gateways** (lectura token-light; para extraer campos
+puntuales: `node -e "const d=require('./openspec/state/verify-results.json');console.log(d.status)"`):
 
-# Build succeeds
-npm run build
-```
+1. **Evidencia utilizable** = el archivo existe, es JSON válido y su campo
+   `change` coincide con el change de referencia del Step 1 (el change activo o,
+   tras `/archive`, el change recién archivado por su nombre derivado, tolerando
+   el prefijo de fecha del CLI). Si no se puede resolver un change de referencia,
+   ninguna evidencia es utilizable (el match falla por definición).
+2. **Chequeo de staleness (warn-only, git-based)**: la evidencia es **stale**
+   si existe al menos un commit posterior a su `timestamp` que toca alguna de
+   estas **rutas de código**: `src/`, `app/`, `tests/`, `ai-specs/`, `.opencode/`.
+   Los commits que solo tocan `docs/`, `openspec/` u otras rutas no-code
+   **no ensucian** la evidencia. Si hay staleness, imprimir
+   `⚠️ Evidencia posiblemente desactualizada: existe un commit de código posterior al timestamp de la evidencia ({timestamp}) — considera re-ejecutar la herramienta`
+   y continuar — el staleness no bloquea por sí solo; lo que bloquea es la
+   evidencia negativa o su ausencia.
+3. La auditoría adversarial **deja de ser opcional** en `/commit`: sin veredicto
+   utilizable no hay commit (salvo `--force` registrado).
+4. **Prevalencia last-write-wins**: cada ejecución de `/verify` **sobrescribe**
+   `openspec/state/verify-results.json` y cada ejecución de
+   `/adversarial-review` **sobrescribe** `openspec/state/adversarial-result.json`;
+   este gateway siempre lee la **corrida más reciente**. No hay historial: la
+   corrida previa a una re-ejecución deja de existir como evidencia.
 
-**If any check fails:** Fix before committing.
+### 2a — Gateway de verify
 
-### Step 2: Review Changes
+- `status: "PASS"` → omitir la pregunta y reportar en una línea:
+  `✅ Evidencia de verify: PASS ({timestamp})`. Continuar a 2b.
+- `status: "PARTIAL"` o `"FAIL"` → imprimir
+  `⛔ Gate duro de verify: {status} ({timestamp})` (si además
+  `evidence_mode: "static"`, añadir: *evidencia débil — verificación estática,
+  sin tests ejecutables*), **bloquea y ofrece**: (a) re-ejecutar `/verify` ahora
+  (subproceso), (b) abortar, o (c) usar `--force`. **No continuar sin decisión
+  explícita.**
+- **Evidencia ausente, inválida o ajena** (el archivo no existe, es JSON
+  inválido, o su campo `change` no coincide con el change de referencia) →
+  **bloquea y ofrece**: (a) ejecutar `/verify` ahora, (b) abortar, o (c) usar
+  `--force`. No existe la pregunta a ciegas previa a M-401: ya no se pregunta si
+  se ejecutó verify. **No continuar sin decisión explícita.**
 
-```bash
-# See all changes
-git status
+### 2b — Gateway adversarial
 
-# See diff stats
-git diff --stat
+Tras el gateway de verify, aplicar la misma matriz sobre
+`openspec/state/adversarial-result.json` (extracción token-light de `verdict` y
+`timestamp`: `node -e "const d=require('./openspec/state/adversarial-result.json');console.log(d.verdict, d.timestamp)"`).
 
-# See full diff
-git diff
-```
+- `verdict: "SHIP"` → omitir la confirmación manual de la auditoría y reportar:
+  `✅ Veredicto adversarial: SHIP ({timestamp})`. Continuar a Step 3.
+- `verdict: "NO-SHIP"` → imprimir
+  `⛔ Gate duro adversarial: NO-SHIP ({timestamp})`, **bloquea y ofrece**:
+  (a) re-ejecutar `/adversarial-review` ahora (subproceso), (b) abortar, o
+  (c) usar `--force`. **No continuar sin decisión explícita.**
+- **Veredicto ausente, inválido o ajeno** → **bloquea y ofrece**: (a) ejecutar
+  `/adversarial-review` ahora, (b) abortar, o (c) usar `--force`. La auditoría
+  deja de ser opcional: la ausencia ya no mantiene el flujo de confirmación
+  previo a M-502. **No continuar sin decisión explícita.**
 
-### Step 3: Group Changes
-
-Group into logical commits. One commit = one logical change.
-
-**Commits grouping example for a feature:**
-
-```bash
-# Commit 1: Documentation changes
-git add docs/api-spec.yml docs/data-model.md
-git commit -m "docs(api): update spec with new auth endpoints"
-
-# Commit 2: Tests
-git add tests/unit/auth.test.ts tests/integration/auth.test.ts
-git commit -m "test(auth): add unit and integration tests"
-
-# Commit 3: Implementation
-git add src/
-git commit -m "feat(auth): implement password reset flow"
-```
-
-### Step 4: Push Commits
-
-```bash
-git push origin feature/SCRUM-42
-```
-
-### Step 5: Create Pull Request
-
-Use the template in `.github/pull_request_template.md`:
-
-```bash
-# Create PR with conventional format
-gh pr create \
-  --title "feat(auth): implement password reset" \
-  --body-file .github/pull_request_template.md \
-  --base main \
-  --head feature/SCRUM-42
-```
-
-Or push to remote and create PR via GitHub UI.
-
----
-
-## Automated Changelog
-
-For automated changelog generation, use `standard-version`:
-
-```bash
-# Install
-npm install --save-dev standard-version
-
-# Generate CHANGELOG.md and bump version
-npm run release -- --release-as minor
-
-# Or手动
-npx standard-version --release-as minor
-```
-
-### CHANGELOG.md Format (keep-a-changelog)
-
-```markdown
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-## [1.2.0] - 2024-01-15
-
-### Features
-- **auth**: add password reset endpoint ([#42](link))
-
-### Bug Fixes
-- **orders**: prevent duplicate submission on slow connections
-
-### Documentation
-- **api**: update payment endpoint spec
-```
+Si el usuario eligió `--force`, guardar el estado real observado de ambos gates
+(verify y adversarial, en ese orden) para el trailer `Gate-Bypass` que Step 6
+añadirá a los mensajes de commit.
 
 ---
 
-## commitlint Configuration
+## Step 3 — Validación de rama (solo advertir)
 
-For enforced conventional commits, use `commitlint` with `@commitlint/config-conventional`:
-
-```bash
-npm install --save-dev @commitlint/config-conventional @commitlint/cli
-```
-
-### .commitlintrc.json
-
-```json
-{
-  "extends": ["@commitlint/config-conventional"],
-  "rules": {
-    "type-enum": [
-      2,
-      "always",
-      ["feat", "fix", "docs", "refactor", "test", "chore", "perf", "ci", "revert"]
-    ],
-    "subject-case": [
-      2,
-      "never",
-      ["sentence-case", "start-case", "pascal-case", "upper-case"]
-    ]
-  }
-}
-```
-
-### Git Hook (husky)
-
-```bash
-npm install --save-dev husky
-npx husky init
-
-# Add commitlint to commit-msg hook
-echo 'npx --no -- commitlint --edit $1' > .husky/commit-msg
-```
+- `git branch --show-current`.
+- Si la rama actual **no** coincide con `feature/*` → imprimir advertencia:
+  ```
+  ⚠️ Rama actual '{branch}' no sigue la convención feature/.
+  ¿Continuar de todos modos?
+  ```
+- **Preguntar al usuario**; **no abortar ciegamente** (el proyecto puede usar otra convención).
 
 ---
 
-## PR Template
+## Step 4 — Diff selectivo (prop. 3.7)
 
-Use `.github/pull_request_template.md`. The key sections:
-
-```markdown
-## What changes
-
-<!-- Brief description of changes -->
-
-## Why
-
-<!-- Context and motivation -->
-
-## How to test
-
-1. <!-- Step 1 -->
-2. <!-- Step 2 -->
-
-## OpenSpec Change
-
-<!-- Ticket ID (e.g., SCRUM-42) -->
-
-## Checklist
-
-- [ ] Tests passing
-- [ ] Documentation updated
-- [ ] No breaking changes (or documented)
-- [ ] OpenSpec artifacts updated
-```
+- `git status --short` y `git diff --stat` (stageados + no stageados). **Nunca** `git diff` completo.
+- Detectar grupo ya stageado por `/archive`: archivos bajo `openspec/` → tratar como commit `chore(specs): archive {TICKET-ID} ({derived-name})` (reutilizar el mensaje sugerido por archive Step 6).
+- Agrupación lógica por patrones de ruta:
+  - `tests/` → `test(...)`
+  - `src/`/`app/` → `feat|fix|refactor(...)` 
+  - `docs/` → `docs(...)`
+  - `package.json`/`pyproject.toml`/`*.config.*` → `chore|ci(...)`
+- **No** "adivinanza" sobre contenido; agrupar por ruta.
 
 ---
 
-## Tips
+## Step 5 — Plan de commits + confirmación (prop. 3.2)
 
-1. **Atomic commits:** One logical change per commit
-2. **Descriptive subjects:** Start with verb (add, fix, update, remove)
-3. **Scope:** Use module/feature name (auth, orders, api, ui)
-4. **Breaking changes:** Add `BREAKING CHANGE:` in footer
-5. **Reference tickets:** Use `Closes #123` or `Refs #123`
-6. **Don't commit secrets:** Use `.env.example`, never `.env` with real values
+Imprimir tabla con el plan propuesto:
 
-## Common Mistakes
+```
+  #  Archivos                                   Mensaje sugerido
+  1  openspec/...                                chore(specs): archive PROJ-123 (auth-reset)
+  2  tests/...                                   test(auth): add password reset tests
+  3  src/...                                     feat(auth): implement password reset flow
+```
 
-| ❌ Wrong | ✅ Correct |
-|----------|-----------|
-| `git commit -m "fixed stuff"` | `fix(auth): prevent duplicate submission` |
-| `feat: Add new feature` | `feat(checkout): add coupon code support` |
-| `Update test.js` | `test(auth): add password reset tests` |
-| Commit with real API keys | Use environment variables |
+Usar plantilla estructurada (Conventional Commits):
+
+```
+<tipo>(<ámbito>): <asunto en presente>
+
+<cuerpo opcional — qué y por qué, no cómo>
+
+<footer opcional: Closes #TICKET-ID, BREAKING CHANGE: ...>
+```
+
+- **Preguntar al usuario: "¿Aprobás este plan de commits?"**  **Antes** de cualquier `git add`/`git commit`.
+
+---
+
+## Step 6 — Ejecutar commits (solo tras aprobación)
+
+Por cada grupo aprobado:
+
+```
+git add <archivos>
+git commit -m "<mensaje Conventional Commit>"
+
+Incluir `Closes #{TICKET-ID}` solo en el commit principal (no en todos).
+```
+
+- **Trailer `Gate-Bypass` (solo si Step 2 registró un bypass `--force`)**: el
+  mensaje de cada commit de este skill termina con el trailer usando el estado
+  real observado en Step 2, ej.
+  `Gate-Bypass: --force (verify=PARTIAL; adversarial=missing)`. Con gates
+  verdes el trailer **no se emite**.
+
+  **Gramática formal (EBNF)** — el trailer es un contrato estable para
+  tooling externo; el orden de los campos es fijo (`verify` antes de
+  `adversarial`), el separador es exactamente `; ` y los enums son cerrados:
+
+  ```
+  gate-bypass       = "Gate-Bypass: --force (" verify-state "; " adversarial-state ")"
+  verify-state      = "verify=" ("PASS" | "PARTIAL" | "FAIL" | "missing")
+  adversarial-state = "adversarial=" ("SHIP" | "NO-SHIP" | "missing")
+  ```
+
+  **Regex canónica de parseo** (ancla de línea completa):
+
+  ```
+  ^Gate-Bypass: --force \(verify=(PASS|PARTIAL|FAIL|missing); adversarial=(SHIP|NO-SHIP|missing)\)$
+  ```
+
+Si el usuario no aprueba algún grupo → omitirlo y seguir con el resto.
+
+---
+
+## Step 7 — Push + PR (confirmación explícita, prop. 3.2/3.6)
+
+- **No** ejecutar `git push` ni `gh pr create` sin confirmación del usuario.
+- Pre-PR: `git fetch origin main` y verificar `git merge-base --is-ancestor origin/main HEAD` → si no, avisar:
+  ```
+  ⚠️ La rama no está actualizada con main
+  ```
+- `gh pr create` solo tras aprobación; usar `.github/pull_request_template.md` si existe; título conventional + cuerpo con referencia al change.
