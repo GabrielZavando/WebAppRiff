@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "change": "other-change",
+  "ticket_id": "OTHER-001",
+  "status": "PASS",
+  "evidence_mode": "executable",
+  "timestamp": "2026-09-05T18:00:00Z",
+  "tasks": { "total": 4, "passed": 4, "failed": 0, "untested": 0 },
+  "scenarios": [
+    { "id": "SC-001", "test": "[SC-001] foreign change evidence must never gate this commit", "status": "PASS" }
+  ]
+}

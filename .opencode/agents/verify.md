@@ -1,5 +1,5 @@
 ---
-description: Verification agent — runs tests and checks traceability (read-only)
+description: Verification agent — runs tests, checks traceability, persists verify evidence (read-only over code)
 mode: primary
 permission:
   edit: deny
@@ -15,9 +15,11 @@ permission:
     "npm run test *": allow
     "npx vitest *": allow
     "npx jest *": allow
+    "pytest *": allow
     "rg *": allow
     "ls *": allow
     "cat *": allow
+    "mkdir -p openspec/*": allow
     "*": deny
 ---
 

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "change": "auth-reset",
+  "ticket_id": "PROJ-123",
+  "status": "PASS",
+  "evidence_mode": "executable",
+  "timestamp": "2026-09-04T14:30:00Z",
+  "tasks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "untested": 0
+  },
+  "scenarios": [
+    {
+      "id": "SC-001",
+      "test": "[SC-001] user requests password reset with valid email",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-002",
+      "test": "[SC-002] user requests password reset with unregistered email",
+      "status": "PASS"
+    }
+  ]
+}

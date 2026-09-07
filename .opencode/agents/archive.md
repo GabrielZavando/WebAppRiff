@@ -11,9 +11,15 @@ permission:
     "openspec *": allow
     "git add *": allow
     "git status": allow
+    "git status *": allow
+    "git diff": allow
+    "git diff *": allow
+    "git log": allow
+    "git log *": allow
+    "node -e *": allow
     "ls *": allow
     "cat *": allow
-    "rm -rf openspec/changes/*": allow
+    "rm openspec/tickets/*": allow
     "*": deny
 ---
 

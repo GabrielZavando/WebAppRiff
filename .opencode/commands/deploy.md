@@ -1,5 +1,5 @@
 ---
-description: Release: version bump, build, deploy, smoke tests, rollback
+description: Release: mandatory pre-deploy checklist, version bump, build, deploy, smoke tests, rollback
 agent: build
 ---
 

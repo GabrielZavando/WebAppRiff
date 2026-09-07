@@ -1,5 +1,5 @@
 ---
-description: Adversarial red-team code audit — security, robustness, SOLID, tradeoffs. Emits SHIP/NO-SHIP verdict.
+description: Adversarial red-team code audit — security, robustness, SOLID, tradeoffs. Emits SHIP/NO-SHIP verdict and persists it to openspec/state/adversarial-result.json. Read-only over code.
 mode: subagent
 permission:
   edit: deny
@@ -10,8 +10,9 @@ permission:
     "git diff": allow
     "git diff *": allow
     "git status": allow
-    "git log": allow
-    "git log *": allow
+    "ls *": allow
+    "cat *": allow
+    "mkdir -p openspec/*": allow
     "*": deny
 ---
 

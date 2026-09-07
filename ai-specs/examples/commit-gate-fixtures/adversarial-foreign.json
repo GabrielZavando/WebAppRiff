@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "change": "other-change",
+  "ticket_id": "OTHER-001",
+  "verdict": "SHIP",
+  "confidence": 0.8,
+  "timestamp": "2026-09-05T18:00:00Z",
+  "findings": { "total": 1, "critical": 0, "warnings": 1, "info": 0, "discarded": 0 }
+}

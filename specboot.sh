@@ -124,6 +124,7 @@ FRAMEWORK_ITEMS=(
   "validate-specboot.sh"
   "templates/ci"
   "docs/base-standards.md"
+  "docs/openspec-tasks-mandatory-steps.md"
   "docs/framework-contract.md"
   "docs/docs-standard.md"
   "docs/specboot-json-standard.md"
@@ -506,6 +507,7 @@ UPDATE_ITEMS=(
   "validate-specboot.sh"
   "templates/ci"
   "docs/base-standards.md"
+  "docs/openspec-tasks-mandatory-steps.md"
   "docs/framework-contract.md"
   "docs/docs-standard.md"
   "docs/specboot-json-standard.md"
@@ -603,9 +605,12 @@ replace_framework_files() {
   local src="$1" dst="$2"
   local item src_path dst_path dst_parent
   for item in "${UPDATE_ITEMS[@]}"; do
-    # Never touch docs/ or .github as whole trees.
+    # Never touch docs/ or .github as whole trees. Individual framework docs
+    # (docs/*.md) ARE replaced — archived spec specboot-update requires
+    # overwriting the 6 framework docs — so only whole-tree entries are
+    # skipped here (fix: the legacy docs/* pattern silently dropped ALL docs).
     case "$item" in
-      docs/*|docs|.github) continue ;;
+      docs|.github) continue ;;
     esac
     src_path="$src/$item"
     dst_path="$dst/$item"

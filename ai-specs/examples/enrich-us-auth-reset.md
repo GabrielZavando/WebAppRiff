@@ -27,20 +27,20 @@ Users frequently forget passwords. We need a secure, user-friendly password rese
 
 ### Acceptance Criteria
 
-**Scenario 1: Successful password reset request**
+### SC-001: Successful password reset request
 - Given I am on the login page
 - When I click "Forgot password" and enter my registered email
 - Then I receive an email with a reset link within 2 minutes
 - And I see "Check your email for reset instructions" message
 
-**Scenario 2: Password reset with valid token**
+### SC-002: Password reset with valid token
 - Given I received a reset email with a valid token
 - When I visit the reset link and enter a new password
 - Then my password is updated
 - And I am redirected to login page
 - And I can log in with the new password
 
-**Scenario 3: Reset with expired token**
+### SC-003: Reset with expired token
 - Given I have a reset token that expired (24 hours)
 - When I try to use it
 - Then I see "This link has expired"
@@ -54,6 +54,21 @@ Users frequently forget passwords. We need a secure, user-friendly password rese
 | User already logged in | Redirect to profile, no reset needed |
 | Token used twice | Show error "This link has already been used" |
 | Password same as old | Reject with "New password must be different" |
+
+### Estimación
+Complejidad: M
+Justificación: Requiere integración con proveedor de email (Resend), hashing seguro en BD y gestión de expiración de tokens.
+
+### Riesgo
+Nivel: Medio
+Motivo: Exposición potencial a enumeración de emails si las respuestas de error revelan la existencia del usuario.
+
+### Dependencias
+Tickets relacionados: AUTH-010 (Registro de usuario), INFRA-005 (Integración con Resend)
+
+### Alternativas descartadas
+- Alternativa: Generar enlace con token firmado stateless en JWT sin persistencia en BD
+  Motivo del descarte: No permite invalidar el token inmediatamente una vez utilizado.
 
 ### Technical Considerations
 

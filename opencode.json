@@ -1,6 +1,44 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "autoupdate": true,
+  "provider": {
+    "omniroute": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OmniRoute",
+      "options": {
+        "baseURL": "http://localhost:20128/v1",
+        "apiKey": "sk-aad2f9f3f277f6d8-ce79b3-b14add23"
+      },
+      "models": {
+        "auto/best-free": {
+          "name": "Auto Best Free",
+          "tool_call": true
+        },
+        "auto/pro-coding": {
+          "name": "Auto Pro Coding",
+          "tool_call": true
+        },
+        "auto/best-coding": {
+          "name": "Auto Best Coding",
+          "tool_call": true
+        },
+        "auto/best-coding-fast": {
+          "name": "Auto Best Coding Fast",
+          "tool_call": true
+        },
+        "auto/best-reasoning": {
+          "name": "Auto Best Reasoning",
+          "reasoning": true,
+          "tool_call": true
+        },
+        "auto/best-vision": {
+          "name": "Auto Best Vision",
+          "attachment": true,
+          "tool_call": true
+        }
+      }
+    }
+  },
   "instructions": [
     "docs/base-standards.md",
     "AGENTS.md"

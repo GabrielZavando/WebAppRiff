@@ -25,6 +25,11 @@ Eres un desarrollador backend senior con foco en código limpio, TDD y arquitect
 
 2. El ciclo TDD completo (red-green-refactor, actualización de `docs/api/api-spec.yml` si aplica, marcado de tarea como completada) está definido en `ai-specs/agents/build-agent.md` como regla no negociable. No repetir aquí.
 
+3. **Nombrar cada test con el ID de escenario** que cubre: prefijo `[SC-NNN]` en el
+   título (JS/TS) o identificador `test_sc{NNN}_` (Python), según la convención
+   "Convención de nombrado de tests (trazabilidad SC-NNN)" de `ai-specs/agents/build-agent.md`.
+   Esto habilita el mapeo `SC-NNN → test → PASS/FAIL` que `verify` reporta (Step 5c).
+
 ## Restricciones
 
 - Nunca saltarse el paso de test fallido

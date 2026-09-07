@@ -66,6 +66,17 @@ Loading rule:
 > `{file:...}` syntax from this bridge: `check-refs.sh` would fail on missing
 > files. Resolve them as **conditional prose**, not as includes.
 
+### 2.3 Mandatory steps (inyección en `tasks.md`)
+
+`docs/openspec-tasks-mandatory-steps.md` es contenido del framework (llega a
+todo proyecto vía `specboot init`/`update`) que el skill `plan-change`
+**inyecta como sección `## Mandatory Steps` en todo `tasks.md` generado**
+(leyéndolo en el momento de generación). No es carga por tag: su checklist
+obligatoria (pre-implementación, durante y post con `verify` +
+`adversarial-review`) aplica a toda tarea de implementación ejecutada vía
+`/apply` y viaja dentro del artefacto que el agente `build` ejecuta. Ese
+documento es la fuente única de verdad: no duplicar su contenido aquí.
+
 ## 3. Herramientas
 
 The integrity of this bridge (and the project as a whole) is enforced by two
@@ -99,7 +110,7 @@ continuing.
 | `using-git-worktrees` | Parallel feature work during `/plan-change` |
 | `deploy` | Release to staging/production, via `/deploy` |
 | `onboarding` | A new developer is starting on the project |
-| `verify` | Verify the active change works (`/verify`). Read-only. |
+| `verify` | Verify the active change works (`/verify`). Read-only over code; persists verify evidence under `openspec/state/`. |
 
 ### 4.2 Optional skills (use only when needed)
 
@@ -149,9 +160,9 @@ En la práctica:
 | --- | --- |
 | `/plan-change TICKET-ID:"[tag] Título"` | Generate validated, context-enriched OpenSpec specs from a ticket. Tag is optional (`[backend\|frontend\|api\|docs\|fullstack]`) and drives selective standards loading; if omitted, the agent infers it and asks for confirmation. If `openspec/tickets/{TICKET-ID}-enriched.md` exists (from `/enrich-us`), it is used as the primary source. |
 | `/apply TICKET-ID` | Implement tasks from OpenSpec artifacts (TDD) |
-| `/verify TICKET-ID` | Execute tests and verify the active change works (files per Suggested Path, traceability, delta-incremental), reporting a compact YAML summary. Read-only agent. Ticket ID taken from the active change in `openspec/changes/`. |
+| `/verify TICKET-ID` | Execute tests and verify the active change works (files per Suggested Path, traceability, delta-incremental), reporting a compact YAML summary and persisting the evidence to `openspec/state/verify-results.json`. Read-only over code and specs. Ticket ID taken from the active change in `openspec/changes/`. |
 | `/archive TICKET-ID` | Close the SDD cycle: pre-checks, preview of specs updated, `openspec archive`, append to manifest JSON, stage commit for `/commit`, cleanup. Token-light (no content reading). Ticket ID taken from the active change in `openspec/changes/`. |
-| `/commit` | Create conventional commits and pull request (token-light diff, commit plan approval, TICKET-ID auto-extracted from proposal.md, push/PR only after explicit confirmation. Reuses openspec/ staged by /archive). |
+| `/commit` | Create conventional commits and pull request with **hard evidence gates**: requires verify `PASS` + adversarial `SHIP` for the active change; otherwise blocks, offering to run the missing tool or the registered `--force` escape hatch (Gate-Bypass trailer). Token-light diff, commit plan approval, TICKET-ID auto-extracted from proposal.md, push/PR only after explicit confirmation. Reuses openspec/ staged by /archive. |
 | `/deploy` | **Optional**: Release to staging/production. Not every `/commit` triggers a `/deploy` — use only when the change is ready for release. |
 
 ### 5.3 Optional tools
@@ -159,7 +170,7 @@ En la práctica:
 | Command | Description | When to use |
 | --- | --- | --- |
 | `/enrich-us TICKET-ID` | Enrich a vague user story before planning | Only for poorly formed tickets without acceptance criteria |
-| `/adversarial-review` | Adversarial red-team code audit — runs eslint+dependency-cruiser+npm audit, emits SHIP/NO-SHIP verdict, complements /verify (does NOT re-check OpenSpec alignment). Read-only agent. Ticket ID taken from the active change in `openspec/changes/`. |
+| `/adversarial-review` | Adversarial red-team code audit — runs eslint+dependency-cruiser+npm audit, emits SHIP/NO-SHIP verdict, complements /verify (does NOT re-check OpenSpec alignment). Read-only over code; persists its verdict to `openspec/state/adversarial-result.json`. Ticket ID taken from the active change in `openspec/changes/`. |
 
 ### 5.4 Subagents (wired via {file:} references)
 

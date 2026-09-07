@@ -1,5 +1,5 @@
 ---
-description: Execute tests and verify the active change works (read-only)
+description: Execute tests and verify the active change works (read-only over code; persists verify evidence)
 agent: verify
 ---
 

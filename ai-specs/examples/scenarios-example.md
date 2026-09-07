@@ -5,7 +5,7 @@
 
 ## Feature: User Registration
 
-### Scenario 1: Successful registration with valid data
+### SC-001: Successful registration with valid data
 
 **Given** the email "newuser@example.com" does not exist in the system
 **And** the password meets security requirements (8+ chars, 1 number, 1 uppercase)
@@ -23,7 +23,7 @@
 
 ---
 
-### Scenario 2: Registration fails with duplicate email
+### SC-002: Registration fails with duplicate email
 
 **Given** the email "existing@example.com" already exists in the system
 **When** a visitor attempts to register with:
@@ -39,7 +39,7 @@
 
 ---
 
-### Scenario 3: Registration fails with weak password
+### SC-003: Registration fails with weak password
 
 **Given** the visitor is on the registration page
 **When** they submit the form with:
@@ -54,7 +54,7 @@
 
 ---
 
-### Scenario 4: Registration fails with invalid email format
+### SC-004: Registration fails with invalid email format
 
 **Given** the visitor is on the registration page
 **When** they submit the form with:
@@ -69,7 +69,7 @@
 
 ---
 
-### Scenario 5: Email verification successful
+### SC-005: Email verification successful
 
 **Given** a user "pending@example.com" exists with status "pending_verification"
 **And** the verification token is "abc123validtoken"
@@ -80,7 +80,7 @@
 
 ---
 
-### Scenario 6: Email verification with expired token
+### SC-006: Email verification with expired token
 
 **Given** a user "expired@example.com" exists with status "pending_verification"
 **And** the verification token "expiredtoken" was created more than 24 hours ago
@@ -91,7 +91,7 @@
 
 ---
 
-### Scenario 7: Registration rate limiting
+### SC-007: Registration rate limiting
 
 **Given** the visitor has attempted to register 5 times in the last 10 minutes
 **When** they attempt to register again
@@ -124,3 +124,37 @@
 - [ ] Password requirements enforced client-side and server-side
 - [ ] `docs/api/api-spec.yml` updated with new endpoints
 - [ ] `docs/data-model/data-model.md` updated with user entity changes
+
+---
+
+## Path Convention Examples (M-201)
+
+> Examples of Suggested Path and Test Path in OpenSpec tasks.
+> Use these as templates when creating `openspec/<ticket>/tasks.md`.
+
+### SC-008: Task with explicit Suggested Path and Test Path
+
+- **Task**: Create `PasswordResetUseCase` in domain layer
+- **Layer**: domain
+- **Suggested Path**: `src/domain/use-cases/password-reset.use-case.ts`
+- **Test Path**: `src/domain/use-cases/__tests__/password-reset.use-case.spec.ts`
+- **Priority**: High
+- **Estimate**: S
+
+### SC-009: Task with Suggested Path from .specboot.json services
+
+- **Task**: Create `EmailValidator` service adapter
+- **Layer**: infrastructure
+- **Suggested Path**: `services/auth/src/infrastructure/adapters/email-validator.ts`
+- **Test Path**: `services/auth/src/infrastructure/adapters/__tests__/email-validator.spec.ts`
+- **Priority**: Medium
+- **Estimate**: S
+
+### SC-010: Task with no aplica for paths
+
+- **Task**: Update README documentation for API usage
+- **Layer**: docs
+- **Suggested Path**: no aplica
+- **Test Path**: no aplica
+- **Priority**: Low
+- **Estimate**: XS

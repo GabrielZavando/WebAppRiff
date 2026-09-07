@@ -67,16 +67,16 @@ warn() {
 # Resolve the installed framework version
 # ---------------------------------------------------------------------------
 get_framework_version() {
-  # 1) node_modules package (installed dependency in consumer project)
-  if [ -f "node_modules/@gabrielzavando/specboot/package.json" ] && command -v node >/dev/null 2>&1; then
-    node -e "try{console.log(require('./node_modules/@gabrielzavando/specboot/package.json').version)}catch(e){process.exit(1)}" 2>/dev/null && return 0
-  fi
-  # 2) specboot.sh --version (if available and emits a version - for local framework dev)
+  # 1) specboot.sh --version (if available and emits a version)
   if [ -x "specboot.sh" ] && version_out=$(bash specboot.sh --version 2>/dev/null); then
     if echo "$version_out" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+'; then
       echo "$version_out" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1
       return 0
     fi
+  fi
+  # 2) node_modules package
+  if [ -f "node_modules/@gabrielzavando/specboot/package.json" ] && command -v node >/dev/null 2>&1; then
+    node -e "try{console.log(require('./node_modules/@gabrielzavando/specboot/package.json').version)}catch(e){process.exit(1)}" 2>/dev/null && return 0
   fi
   # 3) repo's own package.json (dogfooding)
   if [ -f "package.json" ] && command -v node >/dev/null 2>&1; then

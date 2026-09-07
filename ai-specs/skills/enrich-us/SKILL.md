@@ -72,15 +72,17 @@ Generate the design declaration that the implementation agents will be held to d
 
 ### Step 5: Add Acceptance Criteria (Gherkin)
 
+Ensure every scenario has a unique stable ID using the format `SC-{NNN}` (e.g., `SC-001`).
+
 ```markdown
 ### Acceptance Criteria
 
-**Scenario 1: [Happy path]**
+### SC-001: [Happy path]
 - Given [context/precondition]
 - When [action performed]
 - Then [expected outcome]
 
-**Scenario 2: [Error case]**
+### SC-002: [Error case]
 - Given [condition]
 - When [action]
 - Then [error handling]
@@ -107,7 +109,26 @@ Generate the design declaration that the implementation agents will be held to d
 - [Third-party integrations]
 ```
 
-### Step 8: Define Done (DoD)
+### Step 8: Strategic Evaluation (Estimación, Riesgo, Dependencias, Alternativas)
+
+```markdown
+### Estimación
+Complejidad: XS | S | M | L | XL
+Justificación: [motivo de la estimación]
+
+### Riesgo
+Nivel: Bajo | Medio | Alto | Crítico
+Motivo: [explicación del riesgo]
+
+### Dependencias
+Tickets relacionados: [M-XXX, TICKET-YYY o ninguna]
+
+### Alternativas descartadas
+- Alternativa: [enfoque descartado]
+  Motivo del descarte: [razón de rechazo]
+```
+
+### Step 9: Define Done (DoD)
 
 ```markdown
 ### Definition of Done
@@ -120,11 +141,11 @@ Generate the design declaration that the implementation agents will be held to d
 - [ ] Data model reflects changes (if applicable)
 ```
 
-### Step 9: Confirm with User
+### Step 10: Confirm with User
 
 Show the enriched story and ask for confirmation before proceeding to `/plan-change`.
 
-### Step 10: Persist Enriched Artifact
+### Step 11: Persist Enriched Artifact
 
 After user confirmation, save the enriched story to:
 
@@ -159,12 +180,12 @@ The persisted file must contain the full output template below, plus a `Capas af
 
 ### Acceptance Criteria
 
-**Scenario 1: [description]**
+### SC-001: [description]
 - Given [context]
 - When [action]
 - Then [result]
 
-**Scenario 2: [description]**
+### SC-002: [description]
 - Given [context]
 - When [action]
 - Then [result]
@@ -174,6 +195,21 @@ The persisted file must contain the full output template below, plus a `Capas af
 | Case | Expected Behavior |
 |------|-------------------|
 | [case] | [behavior] |
+
+### Estimación
+Complejidad: XS | S | M | L | XL
+Justificación: ...
+
+### Riesgo
+Nivel: Bajo | Medio | Alto | Crítico
+Motivo: ...
+
+### Dependencias
+Tickets relacionados: ...
+
+### Alternativas descartadas
+- Alternativa: ...
+  Motivo del descarte: ...
 
 ### Technical Considerations
 

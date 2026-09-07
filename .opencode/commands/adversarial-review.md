@@ -1,5 +1,5 @@
 ---
-description: Adversarial red-team code audit — SHIP/NO-SHIP verdict
+description: Adversarial red-team code audit — SHIP/NO-SHIP verdict, persisted to openspec/state/adversarial-result.json (read-only over code)
 agent: reviewer
 subtask: true
 ---

@@ -39,9 +39,9 @@ ai-specs/
 
 - **plan** (`plan.md`) — generates OpenSpec specs from a ticket (`/plan-change`).
 - **build** (`build.md`) — full-stack implementation agent; reads `tasks.md`, implements one task at a time following TDD. Dispatches to `backend`/`frontend` subagents by domain.
-- **verify** (`verify.md`) — runs tests and checks traceability (read-only).
+- **verify** (`verify.md`) — runs tests, checks traceability, and persists results to `openspec/state/verify-results.json` (read-only over code).
 - **archive** (`archive.md`) — closes the SDD change and stages for commit.
-- **reviewer** (`reviewer.md`) — adversarial red-team audit (`/adversarial-review`).
+- **reviewer** (`reviewer.md`) — adversarial red-team audit (`/adversarial-review`); persists the verdict to `openspec/state/adversarial-result.json` (read-only over code).
 
 ### Subagents (wired via ``file:...``, dispatched by `build`)
 

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "change": "enforce-commit-gates",
+  "ticket_id": "M-901-903",
+  "status": "PARTIAL",
+  "evidence_mode": "executable",
+  "timestamp": "2026-09-05T18:00:00Z",
+  "tasks": { "total": 12, "passed": 9, "failed": 0, "untested": 3 },
+  "scenarios": [
+    { "id": "SC-001", "test": "[SC-001] commit proceeds with fresh matching evidence", "status": "PASS" },
+    { "id": "SC-006", "test": "untested", "status": "UNTESTED" }
+  ]
+}

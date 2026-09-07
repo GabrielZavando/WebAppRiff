@@ -1,30 +1,34 @@
-name: CI
+name: Release
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+  release:
+    types: [published]
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   validate:
-    name: Framework self-check
+    name: Framework self-check + tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
-      - name: Install framework deps
+          registry-url: https://npm.pkg.github.com
+      - name: Install deps
         run: npm install
       - name: check-refs
         run: bash check-refs.sh
       - name: specboot ci (dogfooding)
         run: bash specboot.sh --ci
-      - name: Run framework self-tests (dogfooding)
+      - name: make ci (project gate)
+        run: make ci
+      - name: framework internal tests
         if: ${{ hashFiles('tests/*-test.sh') != '' }}
         run: |
           for t in tests/*-test.sh; do
@@ -32,15 +36,22 @@ jobs:
             bash "$t"
           done
 
-  project-ci:
-    name: Project CI gate
+  publish:
+    name: Publish to GitHub Packages
+    needs: validate
     runs-on: ubuntu-latest
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'release' }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
-      - name: Install framework deps
+          registry-url: https://npm.pkg.github.com
+      - name: Install deps
         run: npm install
-      - name: make ci (refs + solid-lint + lint + test + audit)
-        run: make ci
+      - name: Build package (dry-run check)
+        run: npm pack --dry-run
+      - name: Publish
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
