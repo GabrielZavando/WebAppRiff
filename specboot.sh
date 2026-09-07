@@ -938,6 +938,14 @@ check_refs() {
 
 get_framework_version() {
   local dir="${1:-.}"
+  # require() treats a bare specifier (no "./", "../" or "/" prefix) as a
+  # package-name lookup, which silently fails for dirs like
+  # "node_modules/@gabrielzavando/specboot" (stderr is suppressed below).
+  # Normalize to an explicit filesystem path so every caller resolves.
+  case "$dir" in
+    /*|./*) ;;
+    *) dir="./$dir" ;;
+  esac
   if [ -f "$dir/package.json" ] && command -v node >/dev/null 2>&1; then
     node -e "try{console.log(require('$dir/package.json').version)}catch(e){process.exit(1)}" 2>/dev/null
   fi
@@ -1061,7 +1069,18 @@ show_help() {
 
 show_version() {
   local v
-  v=$(get_framework_version)
+  # Consumer install: the framework lives in node_modules — prefer it over the
+  # script's own directory. In a consumer project SCRIPT_DIR is the repo root,
+  # so get_framework_version "." would report the PROJECT's version (e.g.
+  # riff-catalogo-digital@0.1.0) instead of the framework's. In the framework
+  # repo (dogfooding) the node_modules self-path does not exist and the
+  # SCRIPT_DIR fallback resolves the framework's own package.json correctly.
+  if [ -f "node_modules/@gabrielzavando/specboot/package.json" ]; then
+    v=$(get_framework_version "node_modules/@gabrielzavando/specboot")
+  fi
+  if [ -z "$v" ]; then
+    v=$(get_framework_version "$SCRIPT_DIR")
+  fi
   if [ -n "$v" ]; then
     echo "$v"
   else

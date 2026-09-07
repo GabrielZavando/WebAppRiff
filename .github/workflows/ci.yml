@@ -8,6 +8,13 @@ on:
 
 permissions:
   contents: read
+  packages: read
+
+env:
+  # Consumer auth (Vía A): GITHUB_TOKEN + packages:read downloads
+  # @gabrielzavando/specboot from GitHub Packages (declared in devDependencies).
+  # NOTE: re-apply after `specboot update` — it replaces this intocable file.
+  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   validate:
@@ -18,6 +25,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
+          registry-url: https://npm.pkg.github.com
       - name: Install framework deps
         run: npm install
       - name: check-refs
@@ -40,6 +48,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
+          registry-url: https://npm.pkg.github.com
       - name: Install framework deps
         run: npm install
       - name: make ci (refs + solid-lint + lint + test + audit)
