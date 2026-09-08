@@ -4,7 +4,7 @@
 - [x] 1.2 [SC-env-01/02] Implementar `resolveApiBaseUrl()` compartida y usarla en `products.ts`, `categories.ts`, `subcategories.ts`. Suggested Path: `apps/web/src/lib/api/` *(Verificado junto a 1.1.)*
 - [x] 1.3 [SC-env-03/04/05] Escribir tests fallidos del fail-fast `REQUIRE_API` (API caída → build error; catálogo vacío → build error; sin `REQUIRE_API` → fallback con warning). Test Path: `apps/web/src/lib/api/__tests__/` *(RED verificado: 6 fallos esperados en `catalogFailFast.test.ts` antes de implementar.)*
 - [x] 1.4 [SC-env-03/04/05] Implementar fail-fast en `getPublicProducts()`/espejos usando `REQUIRE_API` y `import.meta.env.PROD`. Suggested Path: `apps/web/src/lib/api/` *(GREEN: helpers `mustFailOnCatalogError`/`assertCatalogSourceAvailable`/`warnCatalogFallback` en `apiBaseUrl.ts`; lib/api 43/43, suite web 902/902.)*
-- [ ] 1.5 [SC-env-06] Sincronizar `.env.example`: añadir `SITE_URL`, `REQUIRE_API`, `CATEGORIES_WEBHOOK_URL`; corregir `NESTJS_API_URL=http://localhost:3000/api/v1`; eliminar `LOG_LEVEL`/`LOG_FORMAT`. Suggested Path: `.env.example`
+- [x] 1.5 [SC-env-06] Sincronizar `.env.example`: añadir `SITE_URL`, `REQUIRE_API`, `CATEGORIES_WEBHOOK_URL`; corregir `NESTJS_API_URL=http://localhost:3000/api/v1`; eliminar `LOG_LEVEL`/`LOG_FORMAT`. Suggested Path: `.env.example`
 
 ## 2. Dockerfiles frontends
 
@@ -31,15 +31,15 @@
 
 ### Pre-implementación
 
-- [ ] La **rama activa** sigue la convención vigente del proyecto (ej. `feature/*`, `fix/*`); trabajar sobre ella, nunca directamente sobre la rama principal.
-- [ ] Estado **git limpio**: sin cambios sin commitear (ni staged) antes de empezar; si hay trabajo en curso, resolverlo primero.
+- [x] La **rama activa** sigue la convención vigente del proyecto (ej. `feature/*`, `fix/*`); trabajar sobre ella, nunca directamente sobre la rama principal.
+- [x] Estado **git limpio**: sin cambios sin commitear (ni staged) antes de empezar; si hay trabajo en curso, resolverlo primero.
 
 ### Durante la implementación
 
-- [ ] **Test nuevo que falla antes de implementar (RED)**: escribir el test del escenario (`SC-NNN`) y verificar que falla antes de escribir código de producción.
-- [ ] Ejecutar los **tests unitarios del módulo** tocado mientras se itera (ciclo RED-GREEN-REFACTOR), no solo al final.
+- [x] **Test nuevo que falla antes de implementar (RED)**: escribir el test del escenario (`SC-NNN`) y verificar que falla antes de escribir código de producción.
+- [x] Ejecutar los **tests unitarios del módulo** tocado mientras se itera (ciclo RED-GREEN-REFACTOR), no solo al final.
 
 ### Post-implementación
 
-- [ ] **Ejecutar `verify`**: la verificación del change corre y produce evidencia persistente (`openspec/state/verify-results.json`).
-- [ ] **Ejecutar `adversarial-review`**: la auditoría adversarial corre y produce veredicto persistente (`openspec/state/adversarial-result.json`).
+- [x] **Ejecutar `verify`**: la verificación del change corre y produce evidencia persistente (`openspec/state/verify-results.json`).
+- [x] **Ejecutar `adversarial-review`**: la auditoría adversarial corre y produce veredicto persistente (`openspec/state/adversarial-result.json`).
