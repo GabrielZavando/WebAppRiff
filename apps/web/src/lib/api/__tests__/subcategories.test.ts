@@ -80,12 +80,12 @@ describe('getActiveSubcategories', () => {
   });
 
   it('uses the configured base URL from NESTJS_API_URL', async () => {
-    process.env.NESTJS_API_URL = 'https://api.example.com/v1';
+    process.env.NESTJS_API_URL = 'https://api.example.com/api/v1';
     const { getActiveSubcategories } = await load();
     const fetchMock = mockFetch({ data: [] });
     await getActiveSubcategories();
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.example.com/v1/subcategories?activa=true',
+      'https://api.example.com/api/v1/subcategories?activa=true',
       expect.anything(),
     );
   });

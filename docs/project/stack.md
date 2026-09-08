@@ -27,7 +27,7 @@ Arquitectura de despliegue aprobada (change `decide-api-deployment-architecture`
 
 - **Firebase (gestionado)**: Firestore, Firebase Authentication (incl. recuperación de contraseña) y Firebase Storage. No se operan servicios de datos en el VPS.
 - **API NestJS (BFF)**: **Google Cloud Run** — la imagen de `apps/backend/Dockerfile` (multi-stage, Node 22) se publica en Artifact Registry y se despliega con `gcloud run deploy` desde GitHub Actions. Secretos Firebase vía Google Secret Manager. Escala a cero; revisar `min-instances` tras medir cold starts en staging.
-- **Frontends (estáticos)**: sitio Astro y panel Angular como **servicios independientes en VPS con Coolify** (build in-situ desde Git en MVP). Cada uno con su propio Dockerfile (pendientes de crear) y servidor estático ligero.
+- **Frontends (estáticos)**: sitio Astro y panel Angular como **servicios independientes en VPS con Coolify** (build in-situ desde Git en MVP). Dockerfiles multi-stage creados (`apps/web/Dockerfile`, `apps/admin/Dockerfile`, runtime nginx + healthcheck).
 - **Rebuild del sitio**: el backend dispara un webhook de Coolify (`CATEGORIES_WEBHOOK_URL`) cuando cambian categorías, para regenerar el sitio estático.
 - **Runtime**: Node.js 22 (alineado a `engines` del monorepo); TypeScript 5+ strict en los tres stacks.
 

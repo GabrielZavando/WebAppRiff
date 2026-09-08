@@ -1,4 +1,9 @@
 import type { SubcategoriaApi } from '@/lib/types/products-page';
+import {
+  assertCatalogSourceAvailable,
+  resolveApiBaseUrl,
+  warnCatalogFallback,
+} from '@/lib/api/apiBaseUrl';
 
 /**
  * Build-time data source for active subcategories.
@@ -16,10 +21,6 @@ import type { SubcategoriaApi } from '@/lib/types/products-page';
 
 let cached: readonly SubcategoriaApi[] | null = null;
 
-function getApiBaseUrl(): string {
-  return process.env.NESTJS_API_URL ?? 'http://localhost:3000/api/v1';
-}
-
 interface SubcategoriaListResponse {
   readonly data: SubcategoriaApi[];
 }
@@ -29,7 +30,7 @@ async function fetchAll(): Promise<readonly SubcategoriaApi[]> {
     return cached;
   }
   try {
-    const response = await fetch(`${getApiBaseUrl()}/subcategories?activa=true`, {
+    const response = await fetch(`${resolveApiBaseUrl()}/subcategories?activa=true`, {
       headers: { accept: 'application/json' },
     });
     if (!response.ok) {
@@ -38,10 +39,8 @@ async function fetchAll(): Promise<readonly SubcategoriaApi[]> {
     const body = (await response.json()) as SubcategoriaListResponse;
     cached = body.data;
   } catch (error) {
-    console.warn(
-      'Failed to load subcategories from API; falling back to an empty list.',
-      error,
-    );
+    assertCatalogSourceAvailable('subcategories', error);
+    warnCatalogFallback('subcategories', error);
     cached = [];
   }
   return cached;

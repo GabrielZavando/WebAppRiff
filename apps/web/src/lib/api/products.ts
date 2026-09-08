@@ -1,5 +1,11 @@
 import type { ProductoApi } from '@/lib/types/products-page';
 import type { CategoriaApi } from '@/lib/types/products-page';
+import {
+  assertCatalogSourceAvailable,
+  mustFailOnCatalogError,
+  resolveApiBaseUrl,
+  warnCatalogFallback,
+} from '@/lib/api/apiBaseUrl';
 
 /**
  * Build-time data source for the public product catalog.
@@ -16,10 +22,6 @@ import type { CategoriaApi } from '@/lib/types/products-page';
 
 let cached: readonly ProductoApi[] | null = null;
 
-function getApiBaseUrl(): string {
-  return process.env.NESTJS_API_URL ?? 'http://localhost:3000/api/v1';
-}
-
 interface ProductsListResponse {
   readonly data: ProductoApi[];
 }
@@ -34,19 +36,20 @@ export async function getPublicProducts(): Promise<readonly ProductoApi[]> {
     return cached;
   }
   try {
-    const response = await fetch(`${getApiBaseUrl()}/products`, {
+    const response = await fetch(`${resolveApiBaseUrl()}/products`, {
       headers: { accept: 'application/json' },
     });
     if (!response.ok) {
       throw new Error(`Products API responded with ${response.status}`);
     }
     const body = (await response.json()) as ProductsListResponse;
+    if (mustFailOnCatalogError() && body.data.length === 0) {
+      throw new Error('Products API returned an empty catalog (SC-env-04).');
+    }
     cached = body.data;
   } catch (error) {
-    console.warn(
-      'Failed to load products from API; falling back to an empty catalog.',
-      error,
-    );
+    assertCatalogSourceAvailable('products', error);
+    warnCatalogFallback('products', error);
     cached = [];
   }
   return cached;
@@ -85,7 +88,7 @@ export async function getProductBySlug(slug: string): Promise<ProductoApi | null
   }
   let product: ProductoApi | null = null;
   try {
-    const response = await fetch(`${getApiBaseUrl()}/products/slug/${slug}`, {
+    const response = await fetch(`${resolveApiBaseUrl()}/products/slug/${slug}`, {
       headers: { accept: 'application/json' },
     });
     if (!response.ok) {
