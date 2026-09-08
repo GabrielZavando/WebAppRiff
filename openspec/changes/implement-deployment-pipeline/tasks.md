@@ -8,9 +8,9 @@
 
 ## 2. Dockerfiles frontends
 
-- [ ] 2.1 Crear `apps/web/Dockerfile` multi-stage (contexto raíz, build args `SITE_URL`/`NESTJS_API_URL`/`REQUIRE_API`, runtime nginx:alpine + healthcheck). Suggested Path: `apps/web/Dockerfile`
-- [ ] 2.2 Crear `apps/admin/Dockerfile` multi-stage (contexto raíz, runtime nginx:alpine con SPA fallback + healthcheck). Suggested Path: `apps/admin/Dockerfile`
-- [ ] 2.3 Verificar builds locales de las tres imágenes (`docker build` backend/web/admin desde la raíz) y smoke de servidor estático con curl.
+- [x] 2.1 Crear `apps/web/Dockerfile` multi-stage (contexto raíz, build args `SITE_URL`/`NESTJS_API_URL`/`REQUIRE_API`, runtime nginx:alpine + healthcheck). Suggested Path: `apps/web/Dockerfile` *(Incluye stage 0 que compila `@riff/html-sanitize` y installs con `--ignore-scripts`; nginx con gzip, caché immutable `/_astro/` y 404.html.)*
+- [x] 2.2 Crear `apps/admin/Dockerfile` multi-stage (contexto raíz, runtime nginx:alpine con SPA fallback + healthcheck). Suggested Path: `apps/admin/Dockerfile`
+- [x] 2.3 Verificar builds locales de las tres imágenes (`docker build` backend/web/admin desde la raíz) y smoke de servidor estático con curl. *(Verificado 2026-09-08: 3 imágenes OK; smoke web 200/404 + healthcheck healthy; admin 200 con SPA fallback + healthy; backend: `require('@riff/html-sanitize')` resuelve en runtime y `dist/main.js` presente.)*
 
 ## 3. Pipeline Cloud Run (reemplazo de deploy.yml)
 

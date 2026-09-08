@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# Multi-stage build para el backend NestJS (apps/backend) del monorepo Riff.
+# Multi-stage build for the NestJS backend (apps/backend) of the Riff monorepo.
 #
 # CONTEXTO DE BUILD: la raíz del monorepo (donde viven package.json,
 # package-lock.json y apps/*). Build con:
@@ -8,6 +8,29 @@
 #
 # No se usa `apps/backend/` como contexto porque npm ci --workspace exige el
 # lockfile raíz y los package.json de todos los workspaces declarados.
+#
+# Stage 0 compila el paquete compartido @riff/html-sanitize (su devDep
+# typescript solo está disponible en un install sin filtrar). El stage del
+# backend instala con --ignore-scripts para que npm nunca ejecute el `prepare`
+# de html-sanitize ahí (typescript no está en un install filtrado); el dist
+# pre-construido se copia al stage. El runtime copia packages/html-sanitize
+# porque node_modules/@riff/html-sanitize es un symlink relativo que apunta
+# fuera de node_modules.
+
+# ---------- Stage 0: build del paquete compartido html-sanitize ----------
+FROM node:22 AS html-sanitize-build
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+COPY packages/html-sanitize/package.json packages/html-sanitize/tsconfig.json packages/html-sanitize/tsconfig.cjs.json ./packages/html-sanitize/
+COPY packages/html-sanitize/src ./packages/html-sanitize/src
+
+# --ignore-scripts: inside Docker no lifecycle script may run (the root
+# `prepare: husky` and html-sanitize's `prepare` need devDeps that filtered
+# installs do not provide). sharp/esbuild ship prebuilt binaries as optional
+# dependencies, so skipping scripts is safe.
+RUN npm ci --workspace=@riff/html-sanitize --include-workspace-root=false --ignore-scripts
+RUN npm run build --workspace=@riff/html-sanitize
 
 # ---------- Stage 1: build ----------
 FROM node:22 AS build
@@ -16,17 +39,17 @@ WORKDIR /app
 # Manifests del monorepo: raíz + los tres workspaces (npm ci --workspace necesita
 # resolver el glob apps/* declarado en el package.json raíz).
 COPY package.json package-lock.json ./
+COPY packages/html-sanitize/package.json ./packages/html-sanitize/package.json
 COPY apps/backend/package.json ./apps/backend/package.json
 COPY apps/web/package.json ./apps/web/package.json
 COPY apps/admin/package.json ./apps/admin/package.json
 
-# Instala SOLO las dependencias del workspace backend (hoisted a /app/node_modules).
-RUN npm ci --workspace=@riff/backend --include-workspace-root=false
+# dist pre-construido del paquete enlazado: npm ci corre con --ignore-scripts
+# (ver cabecera) para que el `prepare` de html-sanitize nunca se ejecute aquí.
+COPY --from=html-sanitize-build /app/packages/html-sanitize/dist ./packages/html-sanitize/dist
 
-# El backend depende del paquete de workspace @riff/html-sanitize (via symlink
-# node_modules/@riff/html-sanitize). Compilarlo ANTES del build del backend:
-# tsc resuelve sus types vía dist/index.d.ts y el runtime requiere dist/index.cjs.
-RUN npm run build --workspace=@riff/html-sanitize
+# Instala SOLO las dependencias del workspace backend (hoisted a /app/node_modules).
+RUN npm ci --workspace=@riff/backend --include-workspace-root=false --ignore-scripts
 
 # Código y configs del backend.
 COPY apps/backend/tsconfig.json apps/backend/tsconfig.build.json apps/backend/nest-cli.json ./apps/backend/
