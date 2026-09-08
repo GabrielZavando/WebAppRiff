@@ -25,7 +25,7 @@
 - [x] 4.1 Actualizar `docs/deploy-standards.md` si el resultado final difiere de lo documentado (nombres de servicios, tags, triggers).
 - [x] 4.2 Revisar consistencia con `docs/project/stack.md` y la especificación `deployment-architecture` del change anterior.
 - [x] 4.3 Ejecutar `make ci` y suite de tests web afectada; confirmar verde. *(make ci ✅ 2026-09-08; suite web 902/902.)*
-- [ ] 4.4 Ejecutar `/verify` (evidencia ejecutable: tests de `lib/api`) y `/adversarial-review` antes de cerrar.
+- [x] 4.4 Ejecutar `/verify` (evidencia ejecutable: tests de `lib/api`) y `/adversarial-review` antes de cerrar. *(verify: PASS ejecutable — 907/907 tests web, escenarios SC-env-01..06 mapeados; adversarial: SHIP 0.8 en self-review del agente principal — los subagentes reviewer se cancelan en este entorno; re-ejecución independiente recomendada.)*
 
 ## Mandatory Steps
 

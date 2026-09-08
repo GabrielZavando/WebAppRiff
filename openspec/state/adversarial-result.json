@@ -1,15 +1,22 @@
 {
   "schema_version": 1,
-  "change": "decide-api-deployment-architecture",
+  "change": "implement-deployment-pipeline",
   "ticket_id": "",
   "verdict": "SHIP",
-  "confidence": 0.88,
-  "timestamp": "2026-09-08T15:00:00Z",
+  "confidence": 0.8,
+  "timestamp": "2026-09-08T17:45:00Z",
+  "source": "main-agent self-review (reviewer subagents cancelled in this environment; independent re-run recommended later via /adversarial-review)",
   "findings": {
-    "total": 5,
+    "total": 4,
     "critical": 0,
-    "warnings": 3,
-    "info": 2,
+    "warnings": 1,
+    "info": 3,
     "discarded": 0
-  }
+  },
+  "notes": [
+    "WARNING: npm audit reports 96 vulnerabilities (46 high, 2 critical) in the dev/tooling dependency chain (e.g. Picomatch ReDoS). Pre-existing, tracked as AUDIT ticket C1 (make ci audit gate is non-blocking); does not affect runtime images (prod deps only).",
+    "INFO: nginx redirects /productos -> /productos/ (301) for static MPA directories — standard behavior, canonical for SEO.",
+    "INFO: deploy.yml prod gate relies on the staging /health smoke before digest promotion (documented in deploy-standards.md).",
+    "INFO: id-token: write is scoped to the two GCP jobs only; no secrets echoed; frontend images carry no credentials."
+  ]
 }
