@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "install:all": "npm ci",
+    "postinstall": "npm run build --workspace=@riff/html-sanitize",
     "lint": "npm run lint --workspaces",
     "test": "npm run test --workspaces",
     "build": "npm run build --workspaces",

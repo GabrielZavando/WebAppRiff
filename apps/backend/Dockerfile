@@ -23,6 +23,11 @@ COPY apps/admin/package.json ./apps/admin/package.json
 # Instala SOLO las dependencias del workspace backend (hoisted a /app/node_modules).
 RUN npm ci --workspace=@riff/backend --include-workspace-root=false
 
+# El backend depende del paquete de workspace @riff/html-sanitize (via symlink
+# node_modules/@riff/html-sanitize). Compilarlo ANTES del build del backend:
+# tsc resuelve sus types vía dist/index.d.ts y el runtime requiere dist/index.cjs.
+RUN npm run build --workspace=@riff/html-sanitize
+
 # Código y configs del backend.
 COPY apps/backend/tsconfig.json apps/backend/tsconfig.build.json apps/backend/nest-cli.json ./apps/backend/
 COPY apps/backend/src ./apps/backend/src
@@ -43,6 +48,9 @@ ENV NODE_ENV=production
 # Solo el bundle compilado + deps de producción.
 COPY --from=build /app/apps/backend/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
+# node_modules/@riff/html-sanitize es un symlink relativo a ../../packages/html-sanitize:
+# copiar el paquete compilado para que el enlace resuelva dentro de esta stage.
+COPY --from=build /app/packages/html-sanitize ./packages/html-sanitize
 
 # No correr como root: la app es read-only y el usuario `node` (uid 1000) de la
 # imagen base puede leer los archivos copiados sin necesidad de chown.

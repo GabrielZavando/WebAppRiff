@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "change": "decide-api-deployment-architecture",
+  "ticket_id": "",
+  "status": "PARTIAL",
+  "evidence_mode": "static",
+  "timestamp": "2026-09-08T17:00:00Z",
+  "tasks": { "total": 22, "passed": 22, "failed": 0, "untested": 0 },
+  "scenarios": [
+    { "id": "services-mapped-to-runtime", "test": "untested", "status": "UNTESTED" },
+    { "id": "frontend-services-independently-deployable", "test": "untested", "status": "UNTESTED" },
+    { "id": "cloud-run-is-selected", "test": "untested", "status": "UNTESTED" },
+    { "id": "coolify-is-selected", "test": "untested", "status": "UNTESTED" },
+    { "id": "the-decision-is-deferred", "test": "untested", "status": "UNTESTED" },
+    { "id": "production-secrets-are-injected", "test": "untested", "status": "UNTESTED" },
+    { "id": "cors-is-configured-for-deployed-frontends", "test": "untested", "status": "UNTESTED" },
+    { "id": "staging-validation-succeeds", "test": "untested", "status": "UNTESTED" },
+    { "id": "staging-validation-fails", "test": "untested", "status": "UNTESTED" },
+    { "id": "production-rollback-is-requested", "test": "untested", "status": "UNTESTED" },
+    { "id": "architecture-documentation-is-audited", "test": "untested", "status": "UNTESTED" },
+    { "id": "current-deploy-workflow-is-reviewed", "test": "untested", "status": "UNTESTED" }
+  ]
+}

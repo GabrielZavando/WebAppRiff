@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "change": "decide-api-deployment-architecture",
+  "ticket_id": "",
+  "verdict": "SHIP",
+  "confidence": 0.88,
+  "timestamp": "2026-09-08T15:00:00Z",
+  "findings": {
+    "total": 5,
+    "critical": 0,
+    "warnings": 3,
+    "info": 2,
+    "discarded": 0
+  }
+}
