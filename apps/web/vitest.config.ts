@@ -11,5 +11,6 @@ export default getViteConfig({
     environment: 'node',
     include: ['src/**/*.test.ts'],
     exclude: ['src/**/e2e/**', '**/node_modules/**', '**/dist/**'],
+    setupFiles: ['./src/testing/snapshot-serializer.ts'],
   },
 });
