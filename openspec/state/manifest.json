@@ -20,6 +20,24 @@
         "lint-compliance",
         "test-runner-consistency"
       ]
+    },
+    {
+      "change_name": "decide-api-deployment-architecture",
+      "ticket_id": "",
+      "archived_at": "2026-09-08T18:55:29.712Z",
+      "specs_applied": [
+        "deployment-architecture"
+      ],
+      "verification": {
+        "status": "PARTIAL",
+        "timestamp": "2026-09-08T17:00:00Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-08T15:00:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }
