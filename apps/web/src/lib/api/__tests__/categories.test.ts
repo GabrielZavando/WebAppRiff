@@ -85,12 +85,12 @@ describe('getSearchFormCategories', () => {
   });
 
   it('uses the configured base URL from NESTJS_API_URL', async () => {
-    process.env.NESTJS_API_URL = 'https://api.example.com/v1';
+    process.env.NESTJS_API_URL = 'https://api.example.com/api/v1';
     const { getSearchFormCategories } = await load();
     const fetchMock = mockFetch({ data: [] });
     await getSearchFormCategories();
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.example.com/v1/categories?activa=true',
+      'https://api.example.com/api/v1/categories?activa=true',
       expect.anything(),
     );
   });

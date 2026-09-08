@@ -1,9 +1,9 @@
 ## 1. Contrato de env del sitio Astro (TDD)
 
-- [ ] 1.1 [SC-env-01/02] Escribir tests fallidos en `apps/web/src/lib/api/__tests__/` para `resolveApiBaseUrl()` (acepta base con y sin `/api/v1`, default `http://localhost:3000/api/v1`). Test Path: `apps/web/src/lib/api/__tests__/*.test.ts`
-- [ ] 1.2 [SC-env-01/02] Implementar `resolveApiBaseUrl()` compartida y usarla en `products.ts`, `categories.ts`, `subcategories.ts`. Suggested Path: `apps/web/src/lib/api/`
-- [ ] 1.3 [SC-env-03/04/05] Escribir tests fallidos del fail-fast `REQUIRE_API` (API caída → build error; catálogo vacío → build error; sin `REQUIRE_API` → fallback con warning). Test Path: `apps/web/src/lib/api/__tests__/`
-- [ ] 1.4 [SC-env-03/04/05] Implementar fail-fast en `getPublicProducts()`/espejos usando `REQUIRE_API` y `import.meta.env.PROD`. Suggested Path: `apps/web/src/lib/api/`
+- [x] 1.1 [SC-env-01/02] Escribir tests fallidos en `apps/web/src/lib/api/__tests__/` para `resolveApiBaseUrl()` (acepta base con y sin `/api/v1`, default `http://localhost:3000/api/v1`). Test Path: `apps/web/src/lib/api/__tests__/*.test.ts` *(Implementado y verificado: `apiBaseUrl.test.ts` con 7 tests de contrato; trabajo originado en sesión de subagente, validado en 16:55 con suite lib/api 34/34 verde.)*
+- [x] 1.2 [SC-env-01/02] Implementar `resolveApiBaseUrl()` compartida y usarla en `products.ts`, `categories.ts`, `subcategories.ts`. Suggested Path: `apps/web/src/lib/api/` *(Verificado junto a 1.1.)*
+- [x] 1.3 [SC-env-03/04/05] Escribir tests fallidos del fail-fast `REQUIRE_API` (API caída → build error; catálogo vacío → build error; sin `REQUIRE_API` → fallback con warning). Test Path: `apps/web/src/lib/api/__tests__/` *(RED verificado: 6 fallos esperados en `catalogFailFast.test.ts` antes de implementar.)*
+- [x] 1.4 [SC-env-03/04/05] Implementar fail-fast en `getPublicProducts()`/espejos usando `REQUIRE_API` y `import.meta.env.PROD`. Suggested Path: `apps/web/src/lib/api/` *(GREEN: helpers `mustFailOnCatalogError`/`assertCatalogSourceAvailable`/`warnCatalogFallback` en `apiBaseUrl.ts`; lib/api 43/43, suite web 902/902.)*
 - [ ] 1.5 [SC-env-06] Sincronizar `.env.example`: añadir `SITE_URL`, `REQUIRE_API`, `CATEGORIES_WEBHOOK_URL`; corregir `NESTJS_API_URL=http://localhost:3000/api/v1`; eliminar `LOG_LEVEL`/`LOG_FORMAT`. Suggested Path: `.env.example`
 
 ## 2. Dockerfiles frontends

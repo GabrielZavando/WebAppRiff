@@ -1,4 +1,9 @@
 import type { CategoryOption } from '@/lib/types/search-form';
+import {
+  assertCatalogSourceAvailable,
+  resolveApiBaseUrl,
+  warnCatalogFallback,
+} from '@/lib/api/apiBaseUrl';
 
 /**
  * Build-time data source for the SearchForm category `<select>`.
@@ -30,14 +35,6 @@ interface CategoriaApi {
 }
 
 /**
- * Reads the backend base URL. Resolved lazily (not at module load) so tests and
- * builds can inject `NESTJS_API_URL` without re-importing the module.
- */
-function getApiBaseUrl(): string {
-  return process.env.NESTJS_API_URL ?? 'http://localhost:3000/api/v1';
-}
-
-/**
  * Maps active categories to `<select>` options: the default "Todas las
  * categorías" first, then the rest ordered by `orden` and then `nombre`.
  */
@@ -49,7 +46,7 @@ export function toCategoryOptions(categorias: readonly CategoriaApi[]): Category
 }
 
 async function fetchActiveCategories(): Promise<CategoriaApi[]> {
-  const response = await fetch(`${getApiBaseUrl()}/categories?activa=true`, {
+  const response = await fetch(`${resolveApiBaseUrl()}/categories?activa=true`, {
     headers: { accept: 'application/json' },
   });
   if (!response.ok) {
@@ -80,7 +77,8 @@ export async function getCategorias(): Promise<CategoriaApi[]> {
   try {
     cachedCategorias = await fetchActiveCategories();
   } catch (error) {
-    console.warn('Failed to load categories from API; falling back to empty list.', error);
+    assertCatalogSourceAvailable('categories', error);
+    warnCatalogFallback('categories', error);
     cachedCategorias = [];
   }
   return cachedCategorias;
@@ -99,10 +97,8 @@ export async function getSearchFormCategories(): Promise<readonly CategoryOption
     const categorias = await fetchActiveCategories();
     cached = toCategoryOptions(categorias);
   } catch (error) {
-    console.warn(
-      'Failed to load categories from API; falling back to default option only.',
-      error,
-    );
+    assertCatalogSourceAvailable('categories', error);
+    warnCatalogFallback('categories', error);
     cached = FALLBACK_CATEGORY_OPTIONS;
   }
   return cached;

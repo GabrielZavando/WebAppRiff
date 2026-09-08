@@ -102,12 +102,12 @@ describe('getPublicProducts', () => {
   });
 
   it('uses the configured base URL from NESTJS_API_URL', async () => {
-    process.env.NESTJS_API_URL = 'https://api.example.com/v1';
+    process.env.NESTJS_API_URL = 'https://api.example.com/api/v1';
     const { getPublicProducts } = await load();
     const fetchMock = mockFetch({ data: [] });
     await getPublicProducts();
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.example.com/v1/products',
+      'https://api.example.com/api/v1/products',
       expect.anything(),
     );
   });
@@ -168,12 +168,12 @@ describe('getProductBySlug', () => {
   });
 
   it('uses the configured base URL from NESTJS_API_URL', async () => {
-    process.env.NESTJS_API_URL = 'https://api.example.com/v1';
+    process.env.NESTJS_API_URL = 'https://api.example.com/api/v1';
     const { getProductBySlug } = await load();
     const fetchMock = mockFetch({ data: SINGLE });
     await getProductBySlug('flujometro-universal');
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.example.com/v1/products/slug/flujometro-universal',
+      'https://api.example.com/api/v1/products/slug/flujometro-universal',
       expect.anything(),
     );
   });
