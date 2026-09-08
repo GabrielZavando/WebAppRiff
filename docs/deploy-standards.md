@@ -35,9 +35,9 @@
 
 | Servicio | Build | Registry | Notas |
 |---|---|---|---|
-| Backend (NestJS) | `apps/backend/Dockerfile` (multi-stage, contexto = raíz del monorepo) vía GitHub Actions | **Artifact Registry** (`REGION-docker.pkg.dev/PROJECT/riff/riff-backend`) | Tags: `vX.Y.Z` + `sha-<commit>`; `latest` prohibido en producción |
-| Web (Astro) | `apps/web/Dockerfile` (pendiente de crear) vía Coolify | build in-situ (MVP); GHCR opcional | Servidor estático ligero (nginx/Caddy) |
-| Admin (Angular) | `apps/admin/Dockerfile` (pendiente de crear) vía Coolify | build in-situ (MVP); GHCR opcional | Ídem |
+| Backend (NestJS) | `apps/backend/Dockerfile` (multi-stage, contexto = raíz del monorepo) vía GitHub Actions | **Artifact Registry** (`REGION-docker.pkg.dev/PROJECT/riff/riff-backend`) | Tag `sha-<commit>` (el tag git `vX.Y.Z` marca el release); `latest` prohibido; la promoción despliega el **digest** validado en staging |
+| Web (Astro) | `apps/web/Dockerfile` (multi-stage → nginx, build args `SITE_URL`/`NESTJS_API_URL`/`REQUIRE_API`) vía Coolify | build in-situ (MVP); GHCR opcional | Healthcheck incluido en la imagen |
+| Admin (Angular) | `apps/admin/Dockerfile` (multi-stage → nginx, SPA fallback) vía Coolify | build in-situ (MVP); GHCR opcional | Healthcheck incluido en la imagen |
 
 ## Deploy Flow
 
@@ -45,9 +45,9 @@
 
 1. Merge a `main` (o tag `v*` para release).
 2. GitHub Actions: build → push a Artifact Registry.
-3. `gcloud run deploy riff-api-staging` (región GCP pendiente) con secretos desde Secret Manager.
+3. `gcloud run deploy riff-api-staging` (región `southamerica-west1`) con secretos desde Secret Manager.
 4. Smoke tests de staging (ver sección siguiente).
-5. Promoción **manual** a producción: deploy de la misma imagen taggeada en `riff-api-prod` + smoke tests de producción.
+5. Promoción a producción: tag git `v*` o `workflow_dispatch` → el workflow re-verifica el smoke de staging, resuelve el **digest** del tag `sha-<commit>` ya validado y lo despliega a `riff-api-prod` + smoke de producción.
 
 ### Lane frontends — Coolify
 
@@ -101,18 +101,27 @@
 - Prohibidas en bundles frontend, argumentos de build Docker, `.env` versionado o variables `PUBLIC_*` de Astro.
 - La identidad de GitHub Actions para GCP debe ser de mínimo privilegio (Workload Identity Federation recomendado, sin JSON keys de service account).
 
-## Estado del workflow actual (`.github/workflows/deploy.yml`)
+## Pipeline (`.github/workflows/deploy.yml`)
 
-El workflow vigente está **obsoleto y debe reemplazarse** (no parchearse): busca un `Dockerfile` en la raíz (el real está en `apps/backend/Dockerfile`), construye sin publicar a registry, hace `docker pull` en el VPS de una imagen nunca pusheada, no inyecta secretos y su rollback referencia un tag `:previous` inexistente. Su reemplazo (lane Cloud Run + lane Coolify, según `Deploy Flow`) se implementará en un change posterior de CI/CD.
+Reemplaza al workflow legacy de SSH/docker (eliminado con este change). Estructura:
+
+- **`docker-build`** (PRs y main): build sin push de las 3 imágenes — una imagen rota nunca llega a staging.
+- **`deploy-staging`** (push a `main`): push del backend a Artifact Registry (`sha-<commit>`) → `riff-api-staging` → smoke `/health` (URL derivada con `gcloud run services describe`).
+- **`deploy-production`** (tag `v*` o `workflow_dispatch`): resuelve el digest del `sha-<commit>` validado en staging, re-ejecuta el smoke de staging como gate, despliega a `riff-api-prod` y fuma producción. Nunca `latest`, nunca build fresco.
+- **`trigger-coolify`** (push a `main`): dispara el rebuild de los frontends vía `COOLIFY_WEBHOOK_URL` (no-op si no está definida).
+- Los jobs GCP quedan **gateados por `vars.GCP_PROJECT`** hasta configurar los recursos cloud (así main permanece verde antes del primer deploy real).
+- Autenticación GCP: **Workload Identity Federation** (sin JSON keys), mínimo privilegio.
+- Rollback: `gcloud run services update-traffic riff-api-prod --to-revisions <previous>=100` (ver `Rollback`).
 
 ## Project-specific stack
 
 ```
 Runtime: Node.js 22 (alineado a engines del monorepo; corregir CI que usa node 24)
 Backend runtime: Google Cloud Run (escala a cero; revisar min-instances tras medir cold starts)
-Frontends: contenedores estáticos en VPS + Coolify (nginx/Caddy)
-Registry backend: Artifact Registry (build por GitHub Actions)
+Frontends: contenedores estáticos en VPS + Coolify (nginx)
+Registry backend: Artifact Registry (build por GitHub Actions, deploy.yml)
 Registry frontends: build in-situ Coolify (MVP); GHCR opcional
+Pipeline: deploy.yml — docker-build en PRs, staging en main, producción por tag v*/dispatch (gated por vars.GCP_PROJECT)
 Smoke tests: npm run test:smoke (backend), npm run test:smoke (web), npm run test:smoke (admin)
 Rollback: Cloud Run revisión anterior / Coolify redeploy anterior
 VPS Provider: pendiente de confirmación (tentativo: Oracle Cloud VPS existente)

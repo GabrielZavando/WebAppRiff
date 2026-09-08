@@ -1,79 +1,196 @@
 name: Deploy
 
+# Deployment pipeline for Riff Catálogo Digital Headless (change:
+# implement-deployment-pipeline; architecture: decide-api-deployment-architecture).
+#
+# - PRs: build-only verification of the three service images (no push).
+# - push to main: backend image -> Artifact Registry (southamerica-west1,
+#   tag sha-<commit>) -> Cloud Run `riff-api-staging` -> smoke `/health`.
+#   Optional Coolify webhook for frontend rebuilds (no-op when unset).
+# - tag v* / manual: production promotion to Cloud Run `riff-api-prod` of the
+#   SAME digest already validated in staging (never a fresh build, never
+#   `latest`), after re-running the staging smoke gate.
+#
+# Frontends (Astro web, Angular admin) are NOT deployed by this workflow:
+# Coolify builds them in-situ from the repo (Git integration).
+#
+# GCP jobs are skipped until the repo variables below are configured, so main
+# stays green before the cloud resources exist:
+#   vars: GCP_PROJECT, GCP_REGION, GCP_WIF_PROVIDER, GCP_DEPLOY_SA
+#   secrets: COOLIFY_WEBHOOK_URL (optional)
+# Rollback: revert the Cloud Run revision (or redeploy the previous sha tag) —
+# see docs/deploy-standards.md.
+
 on:
   push:
+    branches: [main]
     tags: ['v*']
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
+  # 3.1 — Build-only verification of the three service images on every PR.
+  #       A broken image can never reach staging.
+  docker-build:
+    name: Docker build (backend, web, admin)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build backend image
+        run: docker build -f apps/backend/Dockerfile -t riff-backend:pr .
+
+      - name: Build web image
+        run: docker build -f apps/web/Dockerfile -t riff-web:pr .
+
+      - name: Build admin image
+        run: docker build -f apps/admin/Dockerfile -t riff-admin:pr .
+
+  # 3.2 — Staging lane: build/push the backend image and deploy it to
+  #       Cloud Run riff-api-staging, then smoke the /health endpoint.
   deploy-staging:
-    name: Deploy to staging
+    name: Deploy backend to Cloud Run (staging)
     runs-on: ubuntu-latest
-    if: vars.DEPLOY_ENABLED == 'true'
+    needs: docker-build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.GCP_PROJECT != ''
+    permissions:
+      contents: read
+      id-token: write # Workload Identity Federation (no exported JSON keys)
     steps:
-      - uses: actions/checkout@v4
-      - name: Check Dockerfile exists
-        id: dockerfile
-        if: ${{ hashFiles('Dockerfile') != '' }}
-        run: echo "dockerfile-present=true" >> "$GITHUB_OUTPUT"
-      - name: Build image
-        if: steps.dockerfile.outputs.dockerfile-present == 'true'
-        run: docker build -t ${{ vars.DOCKER_REPO }}:staging .
-      - name: Deploy via SSH
-        if: steps.dockerfile.outputs.dockerfile-present == 'true'
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ vars.DEPLOY_HOST }}
-          username: ${{ vars.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            docker pull ${{ vars.DOCKER_REPO }}:staging
-            docker stop app-staging || true
-            docker rm app-staging || true
-            docker run -d --name app-staging ${{ vars.DOCKER_REPO }}:staging
+      - uses: actions/checkout@v5
 
+      - name: Authenticate to GCP (WIF, least privilege)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SA }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Docker auth to Artifact Registry
+        run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push backend image (tag: sha-<commit>)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/backend/Dockerfile
+          push: true
+          tags: |
+            ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/riff/riff-backend:sha-${{ github.sha }}
+
+      - name: Deploy to Cloud Run (staging)
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: riff-api-staging
+          region: ${{ vars.GCP_REGION }}
+          image: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/riff/riff-backend:sha-${{ github.sha }}
+
+      - name: Smoke test (GET /health)
+        run: |
+          URL=$(gcloud run services describe riff-api-staging \
+            --region "${{ vars.GCP_REGION }}" \
+            --project "${{ vars.GCP_PROJECT }}" \
+            --format 'value(status.url)')
+          echo "Staging URL: $URL"
+          curl -fsS --retry 5 --retry-delay 5 "$URL/health" > /dev/null
+          echo "✅ Staging smoke passed"
+
+  # 3.4 — Optional Coolify trigger for the static frontends (web/admin are
+  #       built in-situ by Coolify from the repo; this just nudges a rebuild).
+  #       No-op when the COOLIFY_WEBHOOK_URL secret is unset.
+  trigger-coolify:
+    name: Trigger Coolify frontend rebuild (optional)
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Notify Coolify webhook (no-op when unset)
+        env:
+          WEBHOOK: ${{ secrets.COOLIFY_WEBHOOK_URL }}
+        run: |
+          if [ -z "$WEBHOOK" ]; then
+            echo "COOLIFY_WEBHOOK_URL not set — skipping frontend rebuild trigger (no-op)."
+            exit 0
+          fi
+          curl -fsS --retry 3 --retry-delay 5 -X POST "$WEBHOOK"
+          echo "✅ Coolify rebuild triggered"
+
+  # 3.3 — Production lane: promote the SAME digest validated in staging.
+  #      Manual (workflow_dispatch) or on version tags v*. Never `latest`,
+  #      never a fresh build.
   deploy-production:
-    name: Deploy to production
+    name: Promote to Cloud Run (production)
     runs-on: ubuntu-latest
-    if: vars.DEPLOY_ENABLED == 'true' && startsWith(github.ref, 'refs/tags/v')
+    needs: docker-build
+    if: >-
+      vars.GCP_PROJECT != '' &&
+      (github.event_name == 'workflow_dispatch' ||
+        (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')))
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Check Dockerfile exists
-        id: dockerfile
-        if: ${{ hashFiles('Dockerfile') != '' }}
-        run: echo "dockerfile-present=true" >> "$GITHUB_OUTPUT"
-      - name: Build image
-        if: steps.dockerfile.outputs.dockerfile-present == 'true'
-        run: docker build -t ${{ vars.DOCKER_REPO }}:production .
-      - name: Deploy via SSH
-        if: steps.dockerfile.outputs.dockerfile-present == 'true'
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ vars.DEPLOY_HOST }}
-          username: ${{ vars.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            docker pull ${{ vars.DOCKER_REPO }}:production
-            docker stop app-prod || true
-            docker rm app-prod || true
-            docker run -d --name app-prod ${{ vars.DOCKER_REPO }}:production
+      - uses: actions/checkout@v5
 
-  rollback:
-    name: Rollback production
-    runs-on: ubuntu-latest
-    if: failure() && vars.DEPLOY_ENABLED == 'true' && startsWith(github.ref, 'refs/tags/v')
-    steps:
-      - uses: actions/checkout@v4
-      - name: Rollback via SSH
-        uses: appleboy/ssh-action@v1
+      - name: Authenticate to GCP (WIF, least privilege)
+        uses: google-github-actions/auth@v2
         with:
-          host: ${{ vars.DEPLOY_HOST }}
-          username: ${{ vars.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            docker stop app-prod || true
-            docker rm app-prod || true
-            docker run -d --name app-prod ${{ vars.DOCKER_REPO }}:previous
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SA }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Resolve the validated staging digest
+        run: |
+          IMAGE=${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/riff/riff-backend
+          DIGEST=$(gcloud artifacts docker images describe "$IMAGE:sha-${{ github.sha }}" \
+            --project "${{ vars.GCP_PROJECT }}" \
+            --format 'value(image_summary.digest)')
+          if [ -z "$DIGEST" ]; then
+            echo "❌ No image tag sha-${{ github.sha }} in the registry: this commit was never deployed to staging. Promote only validated digests."
+            exit 1
+          fi
+          echo "IMAGE_WITH_DIGEST=$IMAGE@$DIGEST" >> "$GITHUB_ENV"
+          echo "Promoting $IMAGE@$DIGEST"
+
+      - name: Smoke gate — staging must be healthy before promotion
+        run: |
+          URL=$(gcloud run services describe riff-api-staging \
+            --region "${{ vars.GCP_REGION }}" \
+            --project "${{ vars.GCP_PROJECT }}" \
+            --format 'value(status.url)')
+          curl -fsS --retry 5 --retry-delay 5 "$URL/health" > /dev/null
+          echo "✅ Staging smoke passed — promotion allowed"
+
+      - name: Deploy the validated digest to Cloud Run (production)
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: riff-api-prod
+          region: ${{ vars.GCP_REGION }}
+          image: ${{ env.IMAGE_WITH_DIGEST }}
+
+      - name: Smoke test production (GET /health)
+        run: |
+          URL=$(gcloud run services describe riff-api-prod \
+            --region "${{ vars.GCP_REGION }}" \
+            --project "${{ vars.GCP_PROJECT }}" \
+            --format 'value(status.url)')
+          echo "Production URL: $URL"
+          curl -fsS --retry 5 --retry-delay 5 "$URL/health" > /dev/null
+          echo "✅ Production smoke passed"
+
+      - name: Rollback hint (on failure)
+        if: failure()
+        run: |
+          echo "Promotion failed after the production deploy step may have run."
+          echo "Rollback: gcloud run services update-traffic riff-api-prod --to-revisions <previous>=100 --region ${{ vars.GCP_REGION }}"
+          echo "See docs/deploy-standards.md → Rollback."

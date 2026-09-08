@@ -14,17 +14,17 @@
 
 ## 3. Pipeline Cloud Run (reemplazo de deploy.yml)
 
-- [ ] 3.1 Reescribir `.github/workflows/deploy.yml`: job `docker-build` (PR: build sin push de las 3 imágenes). Suggested Path: `.github/workflows/deploy.yml`
-- [ ] 3.2 Añadir lane backend staging: build/push Artifact Registry `southamerica-west1` (tag `sha-<commit>`) + `gcloud run deploy riff-api-staging` + smoke `/health`, con auth WIF de mínimo privilegio.
-- [ ] 3.3 Añadir lane producción manual (tag `v*` o `workflow_dispatch`): deploy del digest ya validado a `riff-api-prod` + smoke; sin `latest`.
-- [ ] 3.4 Trigger opcional de Coolify vía `COOLIFY_WEBHOOK_URL` (no-op si no está definida) y documentar que los frontends se despliegan por Git-integration de Coolify.
-- [ ] 3.5 Verificar ausencia de lógica legacy (hashFiles raíz, build sin push, `docker pull` VPS, tag `:previous`).
+- [x] 3.1 Reescribir `.github/workflows/deploy.yml`: job `docker-build` (PR: build sin push de las 3 imágenes). Suggested Path: `.github/workflows/deploy.yml`
+- [x] 3.2 Añadir lane backend staging: build/push Artifact Registry `southamerica-west1` (tag `sha-<commit>`) + `gcloud run deploy riff-api-staging` + smoke `/health`, con auth WIF de mínimo privilegio. *(Jobs GCP gated por `vars.GCP_PROJECT` hasta configurar los recursos cloud.)*
+- [x] 3.3 Añadir lane producción manual (tag `v*` o `workflow_dispatch`): deploy del digest ya validado a `riff-api-prod` + smoke; sin `latest`. *(Resuelve el digest vía `gcloud artifacts docker images describe` y aplica smoke-gate de staging antes de promover.)*
+- [x] 3.4 Trigger opcional de Coolify vía `COOLIFY_WEBHOOK_URL` (no-op si no está definida) y documentar que los frontends se despliegan por Git-integration de Coolify.
+- [x] 3.5 Verificar ausencia de lógica legacy (hashFiles raíz, build sin push, `docker pull` VPS, tag `:previous`). *(grep verificado: sin patrones legacy.)*
 
 ## 4. Documentación y cierre
 
-- [ ] 4.1 Actualizar `docs/deploy-standards.md` si el resultado final difiere de lo documentado (nombres de servicios, tags, triggers).
-- [ ] 4.2 Revisar consistencia con `docs/project/stack.md` y la especificación `deployment-architecture` del change anterior.
-- [ ] 4.3 Ejecutar `make ci` y suite de tests web afectada; confirmar verde.
+- [x] 4.1 Actualizar `docs/deploy-standards.md` si el resultado final difiere de lo documentado (nombres de servicios, tags, triggers).
+- [x] 4.2 Revisar consistencia con `docs/project/stack.md` y la especificación `deployment-architecture` del change anterior.
+- [x] 4.3 Ejecutar `make ci` y suite de tests web afectada; confirmar verde. *(make ci ✅ 2026-09-08; suite web 902/902.)*
 - [ ] 4.4 Ejecutar `/verify` (evidencia ejecutable: tests de `lib/api`) y `/adversarial-review` antes de cerrar.
 
 ## Mandatory Steps
