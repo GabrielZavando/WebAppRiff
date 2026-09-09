@@ -51,5 +51,23 @@ jobs:
           registry-url: https://npm.pkg.github.com
       - name: Install framework deps
         run: npm install
-      - name: make ci (refs + solid-lint + lint + test + audit)
-        run: make ci
+      - name: check-refs
+        run: bash check-refs.sh
+      - name: SOLID/DIP static analysis
+        run: make solid-lint
+      - name: lint (no --fix, non-mutating)
+        run: npm run lint --workspaces
+      - name: typecheck (all workspaces, --if-present)
+        run: npm run typecheck --workspaces --if-present
+      - name: build (all workspaces)
+        run: npm run build --workspaces
+      - name: backend tests with coverage (>=90% blocking via jest thresholds)
+        run: npm run test:cov --workspace=apps/backend
+      - name: web tests
+        run: npm run test --workspace=apps/web
+      - name: admin tests
+        run: npm run test --workspace=apps/admin
+      - name: shared package (html-sanitize) tests
+        run: npm run test --workspace=packages/html-sanitize
+      - name: npm audit (non-blocking, reported)
+        run: npm audit --audit-level=high || true
