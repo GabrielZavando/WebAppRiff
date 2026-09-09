@@ -15,7 +15,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.cjs.json && node -e \"require('fs').renameSync('dist/index.js','dist/index.cjs')\" && tsc -p tsconfig.json",
-    "lint": "eslint \"src/**/*.ts\" --fix",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

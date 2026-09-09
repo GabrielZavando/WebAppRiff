@@ -69,7 +69,7 @@ describe('getPublicProducts', () => {
     const fetchMock = mockFetch({ data: SAMPLE });
     const result = await getPublicProducts();
     expect(result).toHaveLength(2);
-    expect(result[0].id).toBe('p1');
+    expect(result[0]!.id).toBe('p1');
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining('/products'),
       expect.objectContaining({ headers: { accept: 'application/json' } }),

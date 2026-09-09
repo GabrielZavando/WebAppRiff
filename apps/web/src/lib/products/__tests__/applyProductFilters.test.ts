@@ -147,7 +147,7 @@ describe('applyProductFilters — pagination', () => {
     expect(items).toHaveLength(9);
     // Default sort is creadoEn desc, so page 2 starts at the 10th newest
     // (id '15' has the 10th-latest date in the fixture).
-    expect(items[0].id).toBe('15');
+    expect(items[0]!.id).toBe('15');
     expect(pagination.page).toBe(2);
   });
 

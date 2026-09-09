@@ -1,22 +1,21 @@
 {
   "schema_version": 1,
-  "change": "implement-deployment-pipeline",
-  "ticket_id": "",
+  "change": "harden-ci-gate",
+  "ticket_id": "C1",
   "verdict": "SHIP",
-  "confidence": 0.8,
-  "timestamp": "2026-09-08T17:45:00Z",
-  "source": "main-agent self-review (reviewer subagents cancelled in this environment; independent re-run recommended later via /adversarial-review)",
+  "confidence": 0.85,
+  "timestamp": "2026-09-09T13:15:00Z",
+  "source": "reviewer /adversarial-review (verdict 0.85); WARNING de regresion de cobertura de html-sanitize corregido en este mismo change antes de persistir",
   "findings": {
-    "total": 4,
+    "total": 3,
     "critical": 0,
     "warnings": 1,
-    "info": 3,
+    "info": 2,
     "discarded": 0
   },
   "notes": [
-    "WARNING: npm audit reports 96 vulnerabilities (46 high, 2 critical) in the dev/tooling dependency chain (e.g. Picomatch ReDoS). Pre-existing, tracked as AUDIT ticket C1 (make ci audit gate is non-blocking); does not affect runtime images (prod deps only).",
-    "INFO: nginx redirects /productos -> /productos/ (301) for static MPA directories — standard behavior, canonical for SEO.",
-    "INFO: deploy.yml prod gate relies on the staging /health smoke before digest promotion (documented in deploy-standards.md).",
-    "INFO: id-token: write is scoped to the two GCP jobs only; no secrets echoed; frontend images carry no credentials."
+    "WARNING (resuelto): el gate project-ci original ejecutaba test solo para apps/{backend,web,admin} y dejaba fuera packages/html-sanitize (frontera XSS compartida, antes cubierta por `npm test --workspaces`). Corregido: se anadio `npm run test --workspace=packages/html-sanitize` al gate (ci.yml) y el escenario SC-108 al spec. Verificado: 12 tests XSS pasan.",
+    "INFO (resuelto): design.md Goal decia que el audit 'bloquee' / 'sin || true', contradiciendo la decision client-confirmada de audit no-bloqueante (deferido a V1/Q2 por 52 high/critical preexistentes incl. astro/vitest/tar). Sincronizado el Goal a 'no bloqueante'.",
+    "INFO (aceptado): admin typecheck = `ng build --configuration development` y el paso build compila admin 2x por corrida. Ineficiencia menor aceptada en este change (alineacion de typecheck a tsc se considera en V1/H6)."
   ]
 }
