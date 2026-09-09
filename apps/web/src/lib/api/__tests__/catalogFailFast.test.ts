@@ -90,7 +90,7 @@ describe('SC-env-04 — empty catalog with REQUIRE_API=true is a hard failure', 
 
 describe('SC-env-05 — without REQUIRE_API the warn-and-fallback is preserved', () => {
   it('products: resolves to an empty catalog with a warning even on a production build', async () => {
-    vi.stubEnv('PROD', 'true');
+    vi.stubEnv('PROD', true);
     delete process.env.REQUIRE_API;
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockFetch({}, false, 503);

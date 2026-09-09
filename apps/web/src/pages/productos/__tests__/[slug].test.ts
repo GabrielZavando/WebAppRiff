@@ -1,5 +1,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
+import ProductPage from '@/pages/productos/[slug].astro';
+
+// Astro types dynamic pages' default export as `(_props: never) => any`, which is
+// not directly assignable to AstroComponentFactory. Derive the container's expected
+// component type from its own signature to keep the cast typed (no `any`).
+type AstroComponentFactory = Parameters<
+  Awaited<ReturnType<typeof AstroContainer.create>>['renderToString']
+>[0];
 
 const product = {
   id: 'prod-041',
@@ -53,10 +61,9 @@ vi.mock('@/lib/api/categories', async (importOriginal) => {
 
 async function render(slug = product.slug): Promise<string> {
   const container = await AstroContainer.create();
-  const pageMod = await import('@/pages/productos/[slug].astro');
-  return container.renderToString(pageMod.default, {
+  return container.renderToString(ProductPage as unknown as AstroComponentFactory, {
     params: { slug },
-    response: new Response(null),
+    request: new Request(`http://localhost/productos/${slug}`),
   });
 }
 
@@ -128,8 +135,7 @@ describe('Product detail page', () => {
 
   it('returns a 404 when the product does not exist', async () => {
     const container = await AstroContainer.create();
-    const pageMod = await import('@/pages/productos/[slug].astro');
-    const response = await container.renderToResponse(pageMod.default, {
+    const response = await container.renderToResponse(ProductPage as unknown as AstroComponentFactory, {
       params: { slug: 'no-existe' },
       request: new Request('http://localhost/productos/no-existe'),
     });

@@ -40,7 +40,7 @@ describe('getCategorias', () => {
     mockFetch({ data: SAMPLE });
     const result = await getCategorias();
     expect(result).toHaveLength(2);
-    expect(result[0].id).toBe('cat-fluidos');
+    expect(result[0]!.id).toBe('cat-fluidos');
   });
 
   it('caches so fetch is called only once across calls', async () => {

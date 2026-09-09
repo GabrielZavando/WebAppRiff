@@ -49,8 +49,8 @@ describe('toCategoryOptions', () => {
       { id: 'a', nombre: 'Alpha', slug: 'alpha', orden: 1, activa: true },
     ];
     const result = toCategoryOptions(sameOrden);
-    expect(result[1].id).toBe('a');
-    expect(result[2].id).toBe('b');
+    expect(result[1]!.id).toBe('a');
+    expect(result[2]!.id).toBe('b');
   });
 });
 
