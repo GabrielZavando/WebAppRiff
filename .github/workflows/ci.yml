@@ -69,5 +69,5 @@ jobs:
         run: npm run test --workspace=apps/admin
       - name: shared package (html-sanitize) tests
         run: npm run test --workspace=packages/html-sanitize
-      - name: npm audit (non-blocking, reported)
-        run: npm audit --audit-level=high || true
+      - name: npm audit (blocking, with suppressions)
+        run: npm run audit

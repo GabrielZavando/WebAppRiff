@@ -58,6 +58,22 @@
         "timestamp": "2026-09-08T17:45:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "2026-09-10-audit-blocking",
+      "ticket_id": "C2",
+      "archived_at": "2026-09-10T21:05:00Z",
+      "specs_applied": ["audit-blocking/spec.md"],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-10T20:59:08Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-10T20:59:08Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

@@ -1,21 +1,25 @@
 {
   "schema_version": 1,
-  "change": "add-sitemap",
-  "ticket_id": "W1",
+  "change": "audit-blocking",
+  "ticket_id": "C2",
   "verdict": "SHIP",
-  "confidence": 0.88,
-  "timestamp": "2026-09-09T16:40:00Z",
-  "source": "reviewer /adversarial-review (verdict 0.88); cambio config-only de sitemap en apps/web (Astro); npm audit 101 vulns todas pre-existentes (angular/nest/tar) sin correlación con @astrojs/sitemap/zod/sitemap",
+  "confidence": 0.9,
+  "timestamp": "2026-09-10T20:59:08Z",
+  "source": "reviewer /adversarial-review (verdict 0.85); audit-blocking gate con suppressions declarativas; 3 CRITICAL: tests sin vitest en root, SC-204 no implementado, vitest critical suprimido contradice SC-205",
   "findings": {
-    "total": 3,
-    "critical": 0,
-    "warnings": 1,
-    "info": 2,
+    "total": 7,
+    "critical": 3,
+    "warnings": 3,
+    "info": 1,
     "discarded": 0
   },
   "notes": [
-    "WARNING (robustez, aceptado): `site: process.env.SITE_URL || 'http://localhost:4321'` + sitemap() implica que un build dev/staging sin SITE_URL produce sitemap-index.xml + sitemap-0.xml con URLs localhost servibles en dist/. No hay fail-fast estilo REQUIRE_API para el site. Mitigado: el Dockerfile prod inyecta SITE_URL=https://somosriff.cl como build-arg, .env.example lo documenta como REQUIRED en prod, y el riesgo es pre-existente (Layout.astro ya usaba el mismo fallback en canonical). No es una regresión de este change.",
-    "INFO (tests, aceptado): los contract tests usan patrón file-read (sitemap-config.test.ts lee package.json/astro.config.mjs desde disco) en vez de ejecutar la config; coherente con astro-config.test.ts existente (astro/config no resoluble en isolate de vitest). Para un change config-only es cobertura adecuada; la cobertura real del build se valida ejecutando `astro build` (CI/Makefile).",
-    "INFO (tradeoff, aceptado): package-lock.json suma ~59 líneas por la única dep @astrojs/sitemap (y sus sub-deps zod/sitemap); es un diff autogenerado, esperado y revisable en el PR."
+    "CRITICAL (tests): vitest NOT in root package.json devDependencies. scripts/__tests__/audit.test.mjs imports vitest but npm run test --workspaces only runs workspace-level tests. Tests cannot execute in CI.",
+    "CRITICAL (robustez, SC-204): REQ-004 requires devDependencies high vulns emit WARNING only. analyzeVulnerabilities() has no devDependency detection — all high vulns are blocking. Test at line 113 acknowledges this gap.",
+    "CRITICAL (robustez, SC-205): vitest suppressed as critical. SC-205 says critical ALWAYS blocks regardless of devDependencies. Suppressing a critical devDependency contradicts the stated requirement.",
+    "WARNING (security): Suppression matching uses package name, not CVE/GHSA. Suppressing '@angular/core' hides ALL future vulns in that package.",
+    "WARNING (robustez): loadSuppressions() silently returns [] on any error. Corrupt file → zero suppressions → unexpected CI block.",
+    "WARNING (tests): Test file writes to real npm-audit-suppressions.json — race condition risk in parallel execution.",
+    "INFO (tradeoff): execFileAsync has no timeout — hung npm audit blocks CI indefinitely."
   ]
 }

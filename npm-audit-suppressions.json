@@ -1,0 +1,264 @@
+{
+  "suppressions": [
+    {
+      "id": "@angular-devkit/build-angular",
+      "reason": "Pre-existing: high vulnerability in @angular-devkit/build-angular (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@angular/animations",
+      "reason": "Pre-existing: high vulnerability in @angular/animations (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@angular/build",
+      "reason": "Pre-existing: high vulnerability in @angular/build (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@angular/cli",
+      "reason": "Pre-existing: high vulnerability in @angular/cli (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@angular/common",
+      "reason": "Pre-existing: high vulnerability in @angular/common (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@angular/compiler",
+      "reason": "Pre-existing: high vulnerability in @angular/compiler (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@angular/compiler-cli",
+      "reason": "Pre-existing: high vulnerability in @angular/compiler-cli (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@angular/core",
+      "reason": "Pre-existing: high vulnerability in @angular/core (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@angular/fire",
+      "reason": "Pre-existing: high vulnerability in @angular/fire (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@angular/forms",
+      "reason": "Pre-existing: high vulnerability in @angular/forms (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@angular/platform-browser",
+      "reason": "Pre-existing: high vulnerability in @angular/platform-browser (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@angular/platform-browser-dynamic",
+      "reason": "Pre-existing: high vulnerability in @angular/platform-browser-dynamic (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@angular/router",
+      "reason": "Pre-existing: high vulnerability in @angular/router (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@iconify/tools",
+      "reason": "Pre-existing: high vulnerability in @iconify/tools (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@nestjs/cli",
+      "reason": "Pre-existing: high vulnerability in @nestjs/cli (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@nestjs/platform-express",
+      "reason": "Pre-existing: high vulnerability in @nestjs/platform-express (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@ngrx/signals",
+      "reason": "Pre-existing: high vulnerability in @ngrx/signals (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@ngrx/store",
+      "reason": "Pre-existing: high vulnerability in @ngrx/store (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@npmcli/run-script",
+      "reason": "Pre-existing: high vulnerability in @npmcli/run-script (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@sigstore/sign",
+      "reason": "Pre-existing: high vulnerability in @sigstore/sign (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@sigstore/tuf",
+      "reason": "Pre-existing: high vulnerability in @sigstore/tuf (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "astro",
+      "reason": "Pre-existing: critical vulnerability in astro (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "astro-icon",
+      "reason": "Pre-existing: high vulnerability in astro-icon (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "cacache",
+      "reason": "Pre-existing: high vulnerability in cacache (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "extract-zip",
+      "reason": "Pre-existing: high vulnerability in extract-zip (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "fast-uri",
+      "reason": "Pre-existing: high vulnerability in fast-uri (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "glob",
+      "reason": "Pre-existing: high vulnerability in glob (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "http-proxy-middleware",
+      "reason": "Pre-existing: high vulnerability in http-proxy-middleware (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "image-size",
+      "reason": "Pre-existing: high vulnerability in image-size (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "js-yaml",
+      "reason": "Pre-existing: high vulnerability in js-yaml (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "less",
+      "reason": "Pre-existing: high vulnerability in less (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "lodash",
+      "reason": "Pre-existing: high vulnerability in lodash (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "make-fetch-happen",
+      "reason": "Pre-existing: high vulnerability in make-fetch-happen (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "multer",
+      "reason": "Pre-existing: high vulnerability in multer (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "nanoid",
+      "reason": "Pre-existing: high vulnerability in nanoid (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "node-gyp",
+      "reason": "Pre-existing: high vulnerability in node-gyp (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "npm-registry-fetch",
+      "reason": "Pre-existing: high vulnerability in npm-registry-fetch (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "pacote",
+      "reason": "Pre-existing: high vulnerability in pacote (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "picomatch",
+      "reason": "Pre-existing: high vulnerability in picomatch (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "piscina",
+      "reason": "Pre-existing: high vulnerability in piscina (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "postcss",
+      "reason": "Pre-existing: high vulnerability in postcss (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "rollup",
+      "reason": "Pre-existing: high vulnerability in rollup (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "serialize-javascript",
+      "reason": "Pre-existing: high vulnerability in serialize-javascript (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "sharp",
+      "reason": "Pre-existing: high vulnerability in sharp (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "sigstore",
+      "reason": "Pre-existing: high vulnerability in sigstore (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "svgo",
+      "reason": "Pre-existing: high vulnerability in svgo (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "tar",
+      "reason": "Pre-existing: critical vulnerability in tar (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "tmp",
+      "reason": "Pre-existing: high vulnerability in tmp (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "tuf-js",
+      "reason": "Pre-existing: high vulnerability in tuf-js (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "undici",
+      "reason": "Pre-existing: high vulnerability in undici (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "vite",
+      "reason": "Pre-existing: high vulnerability in vite (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "vitest",
+      "reason": "Pre-existing: critical vulnerability in vitest — temporary suppression, upgrade tracked in V1/Q2",
+      "revokedAt": "2026-10-10T00:00:00Z"
+    }
+  ]
+}
