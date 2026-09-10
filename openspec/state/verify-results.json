@@ -1,17 +1,51 @@
 {
   "schema_version": 1,
-  "change": "add-sitemap",
-  "ticket_id": "add-sitemap",
+  "change": "audit-blocking",
+  "ticket_id": "C2",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-09T16:35:00Z",
-  "tasks": { "total": 11, "passed": 11, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-10T20:59:08Z",
+  "tasks": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0,
+    "untested": 0
+  },
   "scenarios": [
-    { "id": "SC-201", "test": "astro build SITE_URL → sitemap-index.xml + sitemap-0.xml in dist", "status": "PASS" },
-    { "id": "SC-202", "test": "astro build → 74 locs incl. /productos/<slug> (getStaticPaths)", "status": "PASS" },
-    { "id": "SC-203", "test": "[SC-203]/[SC-206] site derived from process.env.SITE_URL, no hardcoded localhost", "status": "PASS" },
-    { "id": "SC-204", "test": "nginx try_files serves static sitemap-index.xml (application/xml)", "status": "PASS" },
-    { "id": "SC-205", "test": "Layout.astro canonical uses Astro.site = same SITE_URL domain as sitemap loc", "status": "PASS" },
-    { "id": "SC-206", "test": "[SC-206] sitemap-config.test.ts: dep declared + sitemap() wired + prod not localhost", "status": "PASS" }
+    {
+      "id": "SC-201",
+      "test": "[SC-201] Script returns 0 when no high/critical vulns",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-202",
+      "test": "[SC-202] Suppressions allow excluding known vulns",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-203",
+      "test": "[SC-203] Suppressions expire with revokedAt",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-204",
+      "test": "[SC-204] devDependencies have soft path",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-205",
+      "test": "[SC-205] critical always blocks",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-206",
+      "test": "static: Makefile intact, make ci passes",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-207",
+      "test": "static: ci.yml uses npm run audit without || true",
+      "status": "PASS"
+    }
   ]
 }

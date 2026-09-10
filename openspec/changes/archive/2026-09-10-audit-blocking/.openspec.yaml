@@ -1,0 +1,6 @@
+change_name: audit-blocking
+ticket_id: C2
+created_at: 2026-09-10T00:00:00Z
+status: proposed
+specs:
+  - audit-blocking
