@@ -4,8 +4,8 @@
 
 ## 1. Preparación: descubrir deuda latente (RUN LOCAL, no CI)
 
-- [ ] 1.1 Correr el gate candidato de forma local (sin tocar aún CI) para descubrir deuda preexistente que el CI actual no expone. Suggested Path: `apps/*` · Test Path: `apps/*/src/**/*.spec.ts|test.ts`.
-- [ ] 1.2 Registrar los fallos que afloren (tipos, build, cobertura backend < 90 %, audit high) como subtareas de la sección 4. Suggested Path: `apps/*` · Test Path: `apps/*/src/**/*.spec.ts|test.ts`.
+- [x] 1.1 Correr el gate candidato de forma local (sin tocar aún CI) para descubrir deuda preexistente que el CI actual no expone. Suggested Path: `apps/*` · Test Path: `apps/*/src/**/*.spec.ts|test.ts`. *(Hecho: gate completo local reveló deuda de tipos TS2532/TS2345/TS4104 en web; todos corregidos en sección 4.)*
+- [x] 1.2 Registrar los fallos que afloren (tipos, build, cobertura backend < 90 %, audit high) como subtareas de la sección 4. Suggested Path: `apps/*` · Test Path: `apps/*/src/**/*.spec.ts|test.ts`. *(Hecho: 9 errores TS documentados y corregidos en 4.1; cobertura backend verificada ≥90% en 4.3.)*
 
 ## 2. Lint no mutante + script raíz typecheck
 
