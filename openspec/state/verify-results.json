@@ -1,20 +1,17 @@
 {
   "schema_version": 1,
-  "change": "harden-ci-gate",
-  "ticket_id": "C1",
+  "change": "add-sitemap",
+  "ticket_id": "add-sitemap",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-09T13:15:00Z",
-  "tasks": { "total": 18, "passed": 18, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-09T16:35:00Z",
+  "tasks": { "total": 11, "passed": 11, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-101", "test": "typecheck --workspaces --if-present (gate)", "status": "PASS" },
-    { "id": "SC-102", "test": "build --workspaces (gate)", "status": "PASS" },
-    { "id": "SC-103", "test": "test:cov backend >=90% (gate)", "status": "PASS" },
-    { "id": "SC-104", "test": "npm audit --audit-level=high non-blocking (gate)", "status": "PASS" },
-    { "id": "SC-105", "test": "lint --workspaces not mutating (gate)", "status": "PASS" },
-    { "id": "SC-106", "test": "check-refs + solid-lint + make ci intact (gate)", "status": "PASS" },
-    { "id": "SC-101a", "test": "root typecheck script", "status": "PASS" },
-    { "id": "SC-107", "test": "test:cov backend once, web/admin separate (gate)", "status": "PASS" },
-    { "id": "SC-108", "test": "npm run test --workspace=packages/html-sanitize (gate)", "status": "PASS" }
+    { "id": "SC-201", "test": "astro build SITE_URL → sitemap-index.xml + sitemap-0.xml in dist", "status": "PASS" },
+    { "id": "SC-202", "test": "astro build → 74 locs incl. /productos/<slug> (getStaticPaths)", "status": "PASS" },
+    { "id": "SC-203", "test": "[SC-203]/[SC-206] site derived from process.env.SITE_URL, no hardcoded localhost", "status": "PASS" },
+    { "id": "SC-204", "test": "nginx try_files serves static sitemap-index.xml (application/xml)", "status": "PASS" },
+    { "id": "SC-205", "test": "Layout.astro canonical uses Astro.site = same SITE_URL domain as sitemap loc", "status": "PASS" },
+    { "id": "SC-206", "test": "[SC-206] sitemap-config.test.ts: dep declared + sitemap() wired + prod not localhost", "status": "PASS" }
   ]
 }

@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "change": "harden-ci-gate",
-  "ticket_id": "C1",
+  "change": "add-sitemap",
+  "ticket_id": "W1",
   "verdict": "SHIP",
-  "confidence": 0.85,
-  "timestamp": "2026-09-09T13:15:00Z",
-  "source": "reviewer /adversarial-review (verdict 0.85); WARNING de regresion de cobertura de html-sanitize corregido en este mismo change antes de persistir",
+  "confidence": 0.88,
+  "timestamp": "2026-09-09T16:40:00Z",
+  "source": "reviewer /adversarial-review (verdict 0.88); cambio config-only de sitemap en apps/web (Astro); npm audit 101 vulns todas pre-existentes (angular/nest/tar) sin correlación con @astrojs/sitemap/zod/sitemap",
   "findings": {
     "total": 3,
     "critical": 0,
@@ -14,8 +14,8 @@
     "discarded": 0
   },
   "notes": [
-    "WARNING (resuelto): el gate project-ci original ejecutaba test solo para apps/{backend,web,admin} y dejaba fuera packages/html-sanitize (frontera XSS compartida, antes cubierta por `npm test --workspaces`). Corregido: se anadio `npm run test --workspace=packages/html-sanitize` al gate (ci.yml) y el escenario SC-108 al spec. Verificado: 12 tests XSS pasan.",
-    "INFO (resuelto): design.md Goal decia que el audit 'bloquee' / 'sin || true', contradiciendo la decision client-confirmada de audit no-bloqueante (deferido a V1/Q2 por 52 high/critical preexistentes incl. astro/vitest/tar). Sincronizado el Goal a 'no bloqueante'.",
-    "INFO (aceptado): admin typecheck = `ng build --configuration development` y el paso build compila admin 2x por corrida. Ineficiencia menor aceptada en este change (alineacion de typecheck a tsc se considera en V1/H6)."
+    "WARNING (robustez, aceptado): `site: process.env.SITE_URL || 'http://localhost:4321'` + sitemap() implica que un build dev/staging sin SITE_URL produce sitemap-index.xml + sitemap-0.xml con URLs localhost servibles en dist/. No hay fail-fast estilo REQUIRE_API para el site. Mitigado: el Dockerfile prod inyecta SITE_URL=https://somosriff.cl como build-arg, .env.example lo documenta como REQUIRED en prod, y el riesgo es pre-existente (Layout.astro ya usaba el mismo fallback en canonical). No es una regresión de este change.",
+    "INFO (tests, aceptado): los contract tests usan patrón file-read (sitemap-config.test.ts lee package.json/astro.config.mjs desde disco) en vez de ejecutar la config; coherente con astro-config.test.ts existente (astro/config no resoluble en isolate de vitest). Para un change config-only es cobertura adecuada; la cobertura real del build se valida ejecutando `astro build` (CI/Makefile).",
+    "INFO (tradeoff, aceptado): package-lock.json suma ~59 líneas por la única dep @astrojs/sitemap (y sus sub-deps zod/sitemap); es un diff autogenerado, esperado y revisable en el PR."
   ]
 }
