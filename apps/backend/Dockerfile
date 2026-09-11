@@ -18,7 +18,7 @@
 # fuera de node_modules.
 
 # ---------- Stage 0: build del paquete compartido html-sanitize ----------
-FROM node:22 AS html-sanitize-build
+FROM node:24 AS html-sanitize-build
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -33,7 +33,7 @@ RUN npm ci --workspace=@riff/html-sanitize --include-workspace-root=false --igno
 RUN npm run build --workspace=@riff/html-sanitize
 
 # ---------- Stage 1: build ----------
-FROM node:22 AS build
+FROM node:24 AS build
 WORKDIR /app
 
 # Manifests del monorepo: raíz + los tres workspaces (npm ci --workspace necesita
@@ -63,7 +63,7 @@ RUN npm run build --workspace=@riff/backend
 RUN npm prune --omit=dev --workspace=@riff/backend --include-workspace-root=false
 
 # ---------- Stage 2: runtime ----------
-FROM node:22-slim AS runtime
+FROM node:24-slim AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production

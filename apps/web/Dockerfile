@@ -19,7 +19,7 @@
 # empty — no silent empty-catalog publishing).
 
 # ---------- Stage 0: build the shared html-sanitize package ----------
-FROM node:22 AS html-sanitize-build
+FROM node:24 AS html-sanitize-build
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -34,7 +34,7 @@ RUN npm ci --workspace=@riff/html-sanitize --include-workspace-root=false --igno
 RUN npm run build --workspace=@riff/html-sanitize
 
 # ---------- Stage 1: build the Astro site ----------
-FROM node:22 AS build
+FROM node:24 AS build
 WORKDIR /app
 
 ARG SITE_URL=http://localhost:4321
