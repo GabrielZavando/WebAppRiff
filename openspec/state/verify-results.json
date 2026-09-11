@@ -1,35 +1,34 @@
 {
   "schema_version": 1,
-  "change": "align-versions",
-  "ticket_id": "V1",
+  "change": "cleanup-root-seeds",
+  "ticket_id": "C3",
   "status": "PASS",
-  "timestamp": "2026-09-10T22:20:00Z",
+  "timestamp": "2026-09-11T17:36:30Z",
   "summary": {
-    "total_tasks": 12,
-    "completed": 12,
+    "total_tasks": 8,
+    "completed": 8,
     "failed": 0,
     "untested": 0
   },
   "scenarios": {
-    "SC-V01": "PASS",
-    "SC-V02": "PASS",
-    "SC-V03": "PASS",
-    "SC-V04": "PASS",
-    "SC-V05": "PASS",
-    "SC-V06": "PASS",
-    "SC-V07": "PASS",
-    "SC-V08": "PASS",
-    "SC-V09": "PASS",
-    "SC-V10": "PASS",
-    "SC-V11": "PASS",
-    "SC-V12": "PASS"
+    "SC-301": "PASS",
+    "SC-302": "PASS",
+    "SC-303": "PASS",
+    "SC-304": "PASS",
+    "SC-305": "PASS",
+    "SC-306": "PASS",
+    "SC-307": "PASS",
+    "SC-308": "PASS"
   },
-  "deviations": [
-    {
-      "field": "typescript",
-      "expected": "~5.9.0",
-      "actual": "~6.0.0",
-      "reason": "Angular 22 requires typescript >=6.0.0 <6.1.0"
-    }
-  ]
+  "evidence": {
+    "SC-301": "git ls-files data/ returns both seed JSON files",
+    "SC-302": "catalog-seed.loader.ts:28 DEFAULT_SEED_FILENAME = 'data/seed-categorias-subcategorias.json'",
+    "SC-303": "producto-seed.loader.ts:14 DEFAULT_SEED_FILENAME = 'data/seed-productos-71.json'",
+    "SC-304": "seed-image-map.loader.ts:5 DEFAULT_SEED_FILE_NAME = 'data/seed-productos-71.json'",
+    "SC-305": "producto-seed.loader.spec.ts:121 join(process.cwd(), '..', '..', 'data', 'seed-productos-71.json')",
+    "SC-306": "ls: no .specboot-backup-* or dist/ found in repo root",
+    "SC-307": "SEED_FILE_PATH override tested via resolveSeedPath in all 3 loaders; test suite passes (361/361)",
+    "SC-308": "check-refs.sh: 0 errors; specboot.sh --ci: 0 errors, 0 warnings; npm test: 361 passed; grep confirms no stale root paths"
+  },
+  "deviations": []
 }

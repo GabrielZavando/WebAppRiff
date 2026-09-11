@@ -74,6 +74,38 @@
         "timestamp": "2026-09-10T20:59:08Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "2026-09-10-align-versions",
+      "ticket_id": "V1",
+      "archived_at": "2026-09-10T22:25:00Z",
+      "specs_applied": ["align-versions"],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-10T22:20:00Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-10T22:15:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
+    },
+    {
+      "change_name": "2026-09-11-cleanup-root-seeds",
+      "ticket_id": "C3",
+      "archived_at": "2026-09-11T18:00:00Z",
+      "specs_applied": ["cleanup-root-seeds"],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-11T17:36:30Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-11T00:00:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

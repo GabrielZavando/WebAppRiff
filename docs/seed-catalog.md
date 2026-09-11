@@ -20,12 +20,12 @@ nest build && node dist/cli/seed-catalog.js
 
 | Variable         | Descripción                                                                 | Default                          |
 |------------------|-----------------------------------------------------------------------------|----------------------------------|
-| `SEED_FILE_PATH` | Ruta absoluta o relativa (desde `cwd`) al archivo JSON de seed.            | `seed-categorias-subcategorias.json` en la raíz del monorepo (se busca ascendiendo desde `cwd`). |
+| `SEED_FILE_PATH` | Ruta absoluta o relativa (desde `cwd`) al archivo JSON de seed.            | `data/seed-categorias-subcategorias.json` en el monorepo (se busca ascendiendo desde `cwd`). |
 
 ## Fuente de datos
 
-El archivo de seed (por defecto `seed-categorias-subcategorias.json` en la raíz
-del monorepo) define las categorías y subcategorías como objetos keyed por slug:
+El archivo de seed (por defecto `data/seed-categorias-subcategorias.json` en el monorepo)
+define las categorías y subcategorías como objetos keyed por slug:
 
 ```json
 {
@@ -106,11 +106,11 @@ nest build && node dist/cli/seed-productos.js
 
 | Variable         | Descripción                                                                 | Default                          |
 |------------------|-----------------------------------------------------------------------------|----------------------------------|
-| `SEED_FILE_PATH` | Ruta absoluta o relativa (desde `cwd`) al archivo JSON de seed de productos. | `seed-productos-71.json` en la raíz del monorepo (se busca ascendiendo desde `cwd`). |
+| `SEED_FILE_PATH` | Ruta absoluta o relativa (desde `cwd`) al archivo JSON de seed de productos. | `data/seed-productos-71.json` en el monorepo (se busca ascendiendo desde `cwd`). |
 
 ## Fuente de datos
 
-El archivo de seed (por defecto `seed-productos-71.json` en la raíz del monorepo)
+El archivo de seed (por defecto `data/seed-productos-71.json` en el monorepo)
 define los productos como un objeto `productos` keyed por id determinista:
 
 ```json
@@ -187,7 +187,7 @@ nest build && node dist/cli/migrate-imagenes.js
 
 | Variable                 | Descripción                                                              | Default                                |
 |--------------------------|--------------------------------------------------------------------------|----------------------------------------|
-| `SEED_FILE_PATH`         | Ruta al JSON de seed de productos (de donde se lee `_imagenesPendientesMigracion`). | `seed-productos-71.json` en la raíz del monorepo. |
+| `SEED_FILE_PATH`         | Ruta al JSON de seed de productos (de donde se lee `_imagenesPendientesMigracion`). | `data/seed-productos-71.json` en el monorepo. |
 | `MIGRACION_REPORTE_PATH` | Ruta del reporte JSON de salida.                                         | `migracion-imagenes-reporte.json` en `cwd`. |
 
 Requiere las credenciales de Firebase (`FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`,

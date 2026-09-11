@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "change": "align-versions",
-  "ticket_id": "V1",
+  "change": "cleanup-root-seeds",
+  "ticket_id": "C3",
   "verdict": "SHIP",
-  "confidence": 0.88,
-  "timestamp": "2026-09-10T22:15:00Z",
+  "confidence": 0.92,
+  "timestamp": "2026-09-11T00:00:00Z",
   "source": "code-auditing skill adversarial review",
   "findings": {
     "total": 3,
     "critical": 0,
-    "warnings": 2,
-    "info": 1,
-    "discarded": 2
+    "warnings": 1,
+    "info": 2,
+    "discarded": 0
   }
 }
