@@ -1,51 +1,35 @@
 {
   "schema_version": 1,
-  "change": "audit-blocking",
-  "ticket_id": "C2",
+  "change": "align-versions",
+  "ticket_id": "V1",
   "status": "PASS",
-  "evidence_mode": "executable",
-  "timestamp": "2026-09-10T20:59:08Z",
-  "tasks": {
-    "total": 18,
-    "passed": 18,
+  "timestamp": "2026-09-10T22:20:00Z",
+  "summary": {
+    "total_tasks": 12,
+    "completed": 12,
     "failed": 0,
     "untested": 0
   },
-  "scenarios": [
+  "scenarios": {
+    "SC-V01": "PASS",
+    "SC-V02": "PASS",
+    "SC-V03": "PASS",
+    "SC-V04": "PASS",
+    "SC-V05": "PASS",
+    "SC-V06": "PASS",
+    "SC-V07": "PASS",
+    "SC-V08": "PASS",
+    "SC-V09": "PASS",
+    "SC-V10": "PASS",
+    "SC-V11": "PASS",
+    "SC-V12": "PASS"
+  },
+  "deviations": [
     {
-      "id": "SC-201",
-      "test": "[SC-201] Script returns 0 when no high/critical vulns",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-202",
-      "test": "[SC-202] Suppressions allow excluding known vulns",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-203",
-      "test": "[SC-203] Suppressions expire with revokedAt",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-204",
-      "test": "[SC-204] devDependencies have soft path",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-205",
-      "test": "[SC-205] critical always blocks",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-206",
-      "test": "static: Makefile intact, make ci passes",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-207",
-      "test": "static: ci.yml uses npm run audit without || true",
-      "status": "PASS"
+      "field": "typescript",
+      "expected": "~5.9.0",
+      "actual": "~6.0.0",
+      "reason": "Angular 22 requires typescript >=6.0.0 <6.1.0"
     }
   ]
 }
