@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 
 /**
  * Verifies that `apps/admin/src/styles/globals.css` exists and declares
@@ -8,9 +8,7 @@ import { fileURLToPath } from 'node:url';
  * Source of truth: openspec/changes/design-system-revision/tasks.md (1.11).
  */
 function readGlobalsCss(): string {
-  const path = fileURLToPath(
-    new URL('../../../src/styles/globals.css', import.meta.url),
-  );
+  const path = resolve(process.cwd(), 'apps/admin/src/styles/globals.css');
   if (!existsSync(path)) {
     throw new Error(`globals.css not found at ${path}`);
   }

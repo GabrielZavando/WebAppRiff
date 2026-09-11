@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 
 /**
  * Verifies that `apps/admin/src/main.ts` exists and bootstraps an Angular
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
  * Source of truth: openspec/changes/design-system-revision/tasks.md (1.9).
  */
 function readMainTs(): string {
-  const path = fileURLToPath(new URL('../../../src/main.ts', import.meta.url));
+  const path = resolve(process.cwd(), 'apps/admin/src/main.ts');
   if (!existsSync(path)) {
     throw new Error(`main.ts not found at ${path}`);
   }
