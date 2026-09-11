@@ -116,7 +116,7 @@ Reemplaza al workflow legacy de SSH/docker (eliminado con este change). Estructu
 ## Project-specific stack
 
 ```
-Runtime: Node.js 22 (alineado a engines del monorepo; corregir CI que usa node 24)
+Runtime: Node.js 24 (alineado a engines del monorepo)
 Backend runtime: Google Cloud Run (escala a cero; revisar min-instances tras medir cold starts)
 Frontends: contenedores estáticos en VPS + Coolify (nginx)
 Registry backend: Artifact Registry (build por GitHub Actions, deploy.yml)

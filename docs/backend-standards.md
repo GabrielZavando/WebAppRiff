@@ -91,8 +91,8 @@
 ## Stack específico del proyecto
 
 ```
-Runtime: Node.js 20
-Framework: NestJS 10+
+Runtime: Node.js 24
+Framework: NestJS 11+
 Base de datos: Firebase Firestore (via Firebase Admin SDK)
 Storage: Firebase Storage
 Auth: Firebase Auth (Custom Claims para roles)
