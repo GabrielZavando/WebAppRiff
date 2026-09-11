@@ -118,7 +118,7 @@ describe('loadProductoSeed', () => {
   });
 
   it('loads the real seed-productos-71.json yielding exactly 70 products (prod-054 excluded, prod-069 slug de-duplicated)', () => {
-    const repoRootSeed = join(process.cwd(), '..', '..', 'seed-productos-71.json');
+    const repoRootSeed = join(process.cwd(), '..', '..', 'data', 'seed-productos-71.json');
     if (!existsSync(repoRootSeed)) {
       throw new Error(`Seed file not found at ${repoRootSeed}`);
     }

@@ -11,7 +11,7 @@ import {
 export type ProductoSeedItem = ProductoInput & { id: string };
 export type ProductoSeed = { productos: ProductoSeedItem[] };
 
-const DEFAULT_SEED_FILENAME = 'seed-productos-71.json';
+const DEFAULT_SEED_FILENAME = 'data/seed-productos-71.json';
 
 // Productos del seed que son duplicados confirmados y deben excluirse del seed
 // (colisionan en slug con otro producto ya sembrado). Decisión del cliente

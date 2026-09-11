@@ -1,0 +1,215 @@
+{
+  "_readme": {
+    "descripcion": "Seed de categorías y subcategorías basado en la contrapropuesta consolidada (23 subcategorías). Pendiente de aprobación formal del cliente antes de cargar a producción.",
+    "coleccionCategorias": "categorias",
+    "coleccionSubcategorias": "subcategorias",
+    "idDocumentoCategoria": "usar el campo 'slug' como ID del documento en Firestore",
+    "idDocumentoSubcategoria": "usar el patrón '{categoriaSlug}--{subcategoriaSlug}' como ID del documento en Firestore, para evitar colisiones entre subcategorías de distintas categorías con nombres similares",
+    "timestamps": "creadoEn y actualizadoEn deben generarse con serverTimestamp() de Firestore al momento de la escritura, no están incluidos en este archivo"
+  },
+
+  "categorias": {
+    "sin-categoria": {
+      "nombre": "Sin categoría",
+      "slug": "sin-categoria",
+      "orden": 0,
+      "activa": true,
+      "esDefault": true
+    },
+    "medicion-de-fluidos": {
+      "nombre": "Medición de Fluidos",
+      "slug": "medicion-de-fluidos",
+      "orden": 1,
+      "activa": true,
+      "esDefault": false
+    },
+    "tratamiento-de-agua": {
+      "nombre": "Tratamiento de Agua",
+      "slug": "tratamiento-de-agua",
+      "orden": 2,
+      "activa": true,
+      "esDefault": false
+    },
+    "productos-quimicos": {
+      "nombre": "Productos Químicos",
+      "slug": "productos-quimicos",
+      "orden": 3,
+      "activa": true,
+      "esDefault": false
+    },
+    "control-y-accesorios": {
+      "nombre": "Control y Accesorios",
+      "slug": "control-y-accesorios",
+      "orden": 4,
+      "activa": true,
+      "esDefault": false
+    }
+  },
+
+  "subcategorias": {
+    "medicion-de-fluidos--medidores-electromagneticos": {
+      "categoriaId": "medicion-de-fluidos",
+      "nombre": "Medidores Electromagnéticos",
+      "slug": "medidores-electromagneticos",
+      "orden": 1,
+      "activa": true
+    },
+    "medicion-de-fluidos--medidores-ultrasonicos": {
+      "categoriaId": "medicion-de-fluidos",
+      "nombre": "Medidores Ultrasónicos",
+      "slug": "medidores-ultrasonicos",
+      "orden": 2,
+      "activa": true
+    },
+    "medicion-de-fluidos--medidores-mecanicos": {
+      "categoriaId": "medicion-de-fluidos",
+      "nombre": "Medidores Mecánicos",
+      "slug": "medidores-mecanicos",
+      "orden": 3,
+      "activa": true
+    },
+    "medicion-de-fluidos--medidores-masicos": {
+      "categoriaId": "medicion-de-fluidos",
+      "nombre": "Medidores Másicos",
+      "slug": "medidores-masicos",
+      "orden": 4,
+      "activa": true
+    },
+    "medicion-de-fluidos--medidores-de-turbina": {
+      "categoriaId": "medicion-de-fluidos",
+      "nombre": "Medidores de Turbina",
+      "slug": "medidores-de-turbina",
+      "orden": 5,
+      "activa": true
+    },
+    "medicion-de-fluidos--accesorios-para-medidores": {
+      "categoriaId": "medicion-de-fluidos",
+      "nombre": "Accesorios para Medidores",
+      "slug": "accesorios-para-medidores",
+      "orden": 6,
+      "activa": true
+    },
+
+    "tratamiento-de-agua--plantas-de-osmosis-inversa": {
+      "categoriaId": "tratamiento-de-agua",
+      "nombre": "Plantas de Ósmosis Inversa",
+      "slug": "plantas-de-osmosis-inversa",
+      "orden": 1,
+      "activa": true
+    },
+    "tratamiento-de-agua--material-filtrante": {
+      "categoriaId": "tratamiento-de-agua",
+      "nombre": "Material Filtrante",
+      "slug": "material-filtrante",
+      "orden": 2,
+      "activa": true
+    },
+    "tratamiento-de-agua--bombas-dosificadoras": {
+      "categoriaId": "tratamiento-de-agua",
+      "nombre": "Bombas Dosificadoras",
+      "slug": "bombas-dosificadoras",
+      "orden": 3,
+      "activa": true
+    },
+    "tratamiento-de-agua--ablandadores-de-agua": {
+      "categoriaId": "tratamiento-de-agua",
+      "nombre": "Ablandadores de Agua",
+      "slug": "ablandadores-de-agua",
+      "orden": 4,
+      "activa": true
+    },
+    "tratamiento-de-agua--intercambio-ionico": {
+      "categoriaId": "tratamiento-de-agua",
+      "nombre": "Intercambio Iónico",
+      "slug": "intercambio-ionico",
+      "orden": 5,
+      "activa": true
+    },
+    "tratamiento-de-agua--equipos-uv": {
+      "categoriaId": "tratamiento-de-agua",
+      "nombre": "Equipos UV",
+      "slug": "equipos-uv",
+      "orden": 6,
+      "activa": true
+    },
+    "tratamiento-de-agua--equipos-de-dosificacion": {
+      "categoriaId": "tratamiento-de-agua",
+      "nombre": "Equipos de Dosificación",
+      "slug": "equipos-de-dosificacion",
+      "orden": 7,
+      "activa": true
+    },
+    "tratamiento-de-agua--repuestos": {
+      "categoriaId": "tratamiento-de-agua",
+      "nombre": "Repuestos",
+      "slug": "repuestos",
+      "orden": 8,
+      "activa": true
+    },
+
+    "productos-quimicos--antiincrustantes": {
+      "categoriaId": "productos-quimicos",
+      "nombre": "Antiincrustantes",
+      "slug": "antiincrustantes",
+      "orden": 1,
+      "activa": true
+    },
+    "productos-quimicos--quimicos": {
+      "categoriaId": "productos-quimicos",
+      "nombre": "Químicos",
+      "slug": "quimicos",
+      "orden": 2,
+      "activa": true
+    },
+    "productos-quimicos--productos-para-limpieza-cip": {
+      "categoriaId": "productos-quimicos",
+      "nombre": "Productos para Limpieza CIP",
+      "slug": "productos-para-limpieza-cip",
+      "orden": 3,
+      "activa": true
+    },
+    "productos-quimicos--productos-para-lavado-de-membranas": {
+      "categoriaId": "productos-quimicos",
+      "nombre": "Productos para Lavado de Membranas",
+      "slug": "productos-para-lavado-de-membranas",
+      "orden": 4,
+      "activa": true
+    },
+    "productos-quimicos--otros-productos-quimicos": {
+      "categoriaId": "productos-quimicos",
+      "nombre": "Otros Productos Químicos",
+      "slug": "otros-productos-quimicos",
+      "orden": 5,
+      "activa": true
+    },
+
+    "control-y-accesorios--valvulas": {
+      "categoriaId": "control-y-accesorios",
+      "nombre": "Válvulas",
+      "slug": "valvulas",
+      "orden": 1,
+      "activa": true
+    },
+    "control-y-accesorios--instrumentacion": {
+      "categoriaId": "control-y-accesorios",
+      "nombre": "Instrumentación",
+      "slug": "instrumentacion",
+      "orden": 2,
+      "activa": true
+    },
+    "control-y-accesorios--telemetria-y-comunicacion-remota": {
+      "categoriaId": "control-y-accesorios",
+      "nombre": "Telemetría y Comunicación Remota",
+      "slug": "telemetria-y-comunicacion-remota",
+      "orden": 3,
+      "activa": true
+    },
+    "control-y-accesorios--accesorios-y-repuestos": {
+      "categoriaId": "control-y-accesorios",
+      "nombre": "Accesorios y Repuestos",
+      "slug": "accesorios-y-repuestos",
+      "orden": 4,
+      "activa": true
+    }
+  }
+}
