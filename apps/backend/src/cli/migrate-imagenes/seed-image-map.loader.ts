@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'fs';
 import { dirname, isAbsolute, join, resolve } from 'path';
 import { SeedImageMap, SeedImageMapLoader } from './ports';
 
-const DEFAULT_SEED_FILE_NAME = 'seed-productos-71.json';
+const DEFAULT_SEED_FILE_NAME = 'data/seed-productos-71.json';
 
 /**
  * Carga el mapa `_imagenesPendientesMigracion` desde el archivo seed. El mapa

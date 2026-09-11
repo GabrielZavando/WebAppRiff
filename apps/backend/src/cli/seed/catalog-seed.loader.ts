@@ -25,7 +25,7 @@ export type CatalogSeed = {
   subcategorias: CatalogSeedSubcategoria[];
 };
 
-const DEFAULT_SEED_FILENAME = 'seed-categorias-subcategorias.json';
+const DEFAULT_SEED_FILENAME = 'data/seed-categorias-subcategorias.json';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
