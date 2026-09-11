@@ -15,6 +15,7 @@ export class FirebaseStorageUploader implements ImageStoragePort {
   constructor(private readonly bucket: import('@google-cloud/storage').Bucket) {}
 
   static fromApp(app: App, bucketName: string): FirebaseStorageUploader {
+    // @ts-ignore — @google-cloud/storage CJS/ESM dual-package type mismatch (only in jest)
     return new FirebaseStorageUploader(getStorage(app).bucket(bucketName));
   }
 
