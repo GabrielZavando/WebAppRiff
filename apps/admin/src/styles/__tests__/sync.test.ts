@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 /**
@@ -15,12 +15,17 @@ function readCss(filePath: string): string {
   return readFileSync(filePath, 'utf-8');
 }
 
+function repoRoot(): string {
+  const cwd = process.cwd();
+  return existsSync(resolve(cwd, 'apps/admin/package.json')) ? cwd : resolve(cwd, '../..');
+}
+
 function readWebCss(): string {
-  return readCss(resolve(process.cwd(), 'apps/web/src/styles/globals.css'));
+  return readCss(resolve(repoRoot(), 'apps/web/src/styles/globals.css'));
 }
 
 function readAdminCss(): string {
-  return readCss(resolve(process.cwd(), 'apps/admin/src/styles/globals.css'));
+  return readCss(resolve(repoRoot(), 'apps/admin/src/styles/globals.css'));
 }
 
 function extractThemeBlock(css: string): string {

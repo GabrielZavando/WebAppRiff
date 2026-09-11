@@ -7,8 +7,13 @@ import { resolve } from 'node:path';
  * the Tailwind v4 import + a `@theme {}` block with the primary color.
  * Source of truth: openspec/changes/design-system-revision/tasks.md (1.11).
  */
+function adminRoot(): string {
+  const cwd = process.cwd();
+  return existsSync(resolve(cwd, 'apps/admin/package.json')) ? resolve(cwd, 'apps/admin') : cwd;
+}
+
 function readGlobalsCss(): string {
-  const path = resolve(process.cwd(), 'apps/admin/src/styles/globals.css');
+  const path = resolve(adminRoot(), 'src/styles/globals.css');
   if (!existsSync(path)) {
     throw new Error(`globals.css not found at ${path}`);
   }

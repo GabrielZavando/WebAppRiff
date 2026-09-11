@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 /**
@@ -12,8 +12,13 @@ type PackageJson = {
   devDependencies?: Record<string, string>;
 };
 
+function adminRoot(): string {
+  const cwd = process.cwd();
+  return existsSync(resolve(cwd, 'apps/admin/package.json')) ? resolve(cwd, 'apps/admin') : cwd;
+}
+
 function readPackageJson(): PackageJson {
-  const packageJsonPath = resolve(process.cwd(), 'apps/admin/package.json');
+  const packageJsonPath = resolve(adminRoot(), 'package.json');
   const raw = readFileSync(packageJsonPath, 'utf-8');
   return JSON.parse(raw) as PackageJson;
 }

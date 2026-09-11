@@ -7,8 +7,13 @@ import { resolve } from 'node:path';
  * standalone application via `bootstrapApplication(...)`.
  * Source of truth: openspec/changes/design-system-revision/tasks.md (1.9).
  */
+function adminRoot(): string {
+  const cwd = process.cwd();
+  return existsSync(resolve(cwd, 'apps/admin/package.json')) ? resolve(cwd, 'apps/admin') : cwd;
+}
+
 function readMainTs(): string {
-  const path = resolve(process.cwd(), 'apps/admin/src/main.ts');
+  const path = resolve(adminRoot(), 'src/main.ts');
   if (!existsSync(path)) {
     throw new Error(`main.ts not found at ${path}`);
   }

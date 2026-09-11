@@ -29,8 +29,13 @@ type AngularJson = {
   >;
 };
 
+function adminRoot(): string {
+  const cwd = process.cwd();
+  return existsSync(resolve(cwd, 'apps/admin/package.json')) ? resolve(cwd, 'apps/admin') : cwd;
+}
+
 function readAngularJson(): AngularJson {
-  const path = resolve(process.cwd(), 'apps/admin/angular.json');
+  const path = resolve(adminRoot(), 'angular.json');
   if (!existsSync(path)) {
     throw new Error(`angular.json not found at ${path}`);
   }
@@ -39,7 +44,7 @@ function readAngularJson(): AngularJson {
 }
 
 function readPostcssRc(): string {
-  const path = resolve(process.cwd(), 'apps/admin/.postcssrc.json');
+  const path = resolve(adminRoot(), '.postcssrc.json');
   if (!existsSync(path)) {
     throw new Error(`.postcssrc.json not found at ${path}`);
   }
