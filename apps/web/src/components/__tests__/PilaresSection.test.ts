@@ -207,7 +207,7 @@ describe('PilaresSection — right column (eyebrow, h3, description, pillars)', 
   it('renders exactly 4 pillar items with Lucide icons and labels', async () => {
     const html = await render();
     expect(countOccurrences(html, '<svg')).toBe(4);
-    await forEachPillar(html, (item, label) => {
+    forEachPillar(html, (item, label) => {
       expect(item).toContain(label);
       expect(item).toContain('<svg');
     });
@@ -220,7 +220,7 @@ describe('PilaresSection — right column (eyebrow, h3, description, pillars)', 
     for (const svg of svgs) {
       expect(svg).toContain('aria-hidden="true"');
     }
-    await forEachPillar(html, (item, _label, icon) => {
+    forEachPillar(html, (item, _label, icon) => {
       expect(item).toContain(`lucide:${icon}`);
       expect(item).toContain('text-primary');
     });
@@ -228,7 +228,7 @@ describe('PilaresSection — right column (eyebrow, h3, description, pillars)', 
 
   it('each pillar label span carries text-white and font-heading', async () => {
     const html = await render();
-    await forEachPillar(html, (item) => {
+    forEachPillar(html, (item) => {
       const labelSpan = item.match(/<span[^>]*>[\s\S]*?<\/span>/);
       if (!labelSpan) throw new Error('pillar label span not found');
       expect(labelSpan[0]).toContain('text-white');
