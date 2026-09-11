@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { readFileSync, existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 /**
  * Verifies that `apps/admin/src/styles/globals.css` declares the same set
@@ -15,16 +15,17 @@ function readCss(filePath: string): string {
   return readFileSync(filePath, 'utf-8');
 }
 
+function repoRoot(): string {
+  const cwd = process.cwd();
+  return existsSync(resolve(cwd, 'apps/admin/package.json')) ? cwd : resolve(cwd, '../..');
+}
+
 function readWebCss(): string {
-  return readCss(
-    fileURLToPath(new URL('../../../../web/src/styles/globals.css', import.meta.url)),
-  );
+  return readCss(resolve(repoRoot(), 'apps/web/src/styles/globals.css'));
 }
 
 function readAdminCss(): string {
-  return readCss(
-    fileURLToPath(new URL('../globals.css', import.meta.url)),
-  );
+  return readCss(resolve(repoRoot(), 'apps/admin/src/styles/globals.css'));
 }
 
 function extractThemeBlock(css: string): string {

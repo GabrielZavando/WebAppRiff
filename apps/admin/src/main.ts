@@ -21,6 +21,5 @@ export function appConfig(): ReturnType<typeof bootstrapApplication> {
 }
 
 bootstrapApplication(AppComponent).catch((err: unknown) => {
-  // eslint-disable-next-line no-console
   console.error(err);
 });

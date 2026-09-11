@@ -1,14 +1,19 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 
 /**
  * Verifies that `apps/admin/src/main.ts` exists and bootstraps an Angular
  * standalone application via `bootstrapApplication(...)`.
  * Source of truth: openspec/changes/design-system-revision/tasks.md (1.9).
  */
+function adminRoot(): string {
+  const cwd = process.cwd();
+  return existsSync(resolve(cwd, 'apps/admin/package.json')) ? resolve(cwd, 'apps/admin') : cwd;
+}
+
 function readMainTs(): string {
-  const path = fileURLToPath(new URL('../../../src/main.ts', import.meta.url));
+  const path = resolve(adminRoot(), 'src/main.ts');
   if (!existsSync(path)) {
     throw new Error(`main.ts not found at ${path}`);
   }

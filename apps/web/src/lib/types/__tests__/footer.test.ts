@@ -83,12 +83,12 @@ describe('footer.ts types', () => {
 
   it('FooterScheduleEntry.hours accepts a string[] literal but NOT a single string', () => {
     // A string[] literal is assignable to the (readonly) hours array.
-    expectTypeOf<string[]>().toMatchTypeOf<FooterScheduleEntry['hours']>();
+    expectTypeOf<string[]>().toExtend<FooterScheduleEntry['hours']>();
 
     // A single string is NOT assignable — the contract requires an array of
     // hour blocks, removing the previous single-block shape (regression guard
     // for the widening in design.md § Decision 3).
-    expectTypeOf<string>().not.toMatchTypeOf<FooterScheduleEntry['hours']>();
+    expectTypeOf<string>().not.toExtend<FooterScheduleEntry['hours']>();
   });
 
   it('SiteFooterProps exposes the full readonly contract', () => {
@@ -139,7 +139,7 @@ describe('footer.ts types', () => {
   it('SITE_FOOTER_CONTENT is assignable to the updated SiteFooterProps', () => {
     // The config constant must still satisfy the widened `SiteFooterProps`
     // after `scheduleTitle` is added and `hours` is widened to string[].
-    expectTypeOf<typeof SITE_FOOTER_CONTENT>().toMatchTypeOf<SiteFooterProps>();
+    expectTypeOf<typeof SITE_FOOTER_CONTENT>().toExtend<SiteFooterProps>();
   });
 
   it('socialLinks reuses the SocialLink contract from top-header (design.md Decision 4)', () => {

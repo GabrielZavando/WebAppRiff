@@ -2,6 +2,7 @@
   "name": "@riff/admin",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Panel de administración Angular - Riff Catálogo Digital",
   "scripts": {
     "ng": "ng",
@@ -15,18 +16,20 @@
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "typecheck": "ng build --configuration development"
   },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "dependencies": {
-    "@angular/animations": "^18.0.0",
-    "@angular/common": "^18.0.0",
-    "@angular/compiler": "^18.0.0",
-    "@angular/core": "^18.0.0",
-    "@angular/forms": "^18.0.0",
-    "@angular/platform-browser": "^18.0.0",
-    "@angular/platform-browser-dynamic": "^18.0.0",
-    "@angular/router": "^18.0.0",
-    "@angular/fire": "^18.0.0",
-    "@ngrx/signals": "^18.0.0",
-    "@ngrx/store": "^18.0.0",
+    "@angular/animations": "^22.0.0",
+    "@angular/common": "^22.0.0",
+    "@angular/compiler": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/forms": "^22.0.0",
+    "@angular/platform-browser": "^22.0.0",
+    "@angular/platform-browser-dynamic": "^22.0.0",
+    "@angular/router": "^22.0.0",
+    "@angular/fire": "^20.0.0",
+    "@ngrx/signals": "^22.0.0",
     "@fontsource/montserrat": "^5.3.0",
     "@fontsource/open-sans": "^5.3.0",
     "rxjs": "^7.8.0",
@@ -35,16 +38,19 @@
     "zone.js": "^0.14.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^18.0.0",
-    "@angular/cli": "^18.0.0",
-    "@angular/compiler-cli": "^18.0.0",
+    "@angular-devkit/build-angular": "^22.0.0",
+    "@angular/cli": "^22.0.0",
+    "@angular/compiler-cli": "^22.0.0",
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "^20.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
-    "eslint": "^8.56.0",
-    "playwright": "^1.40.0",
-    "typescript": "^5.3.0",
-    "vitest": "^1.0.0"
+    "@types/node": "^24.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "typescript-eslint": "^8.0.0",
+    "@playwright/test": "^1.52.0",
+    "jsdom": "^26.0.0",
+    "playwright": "^1.52.0",
+    "typescript": "~6.0.0",
+    "vitest": "^4.1.10"
   }
 }

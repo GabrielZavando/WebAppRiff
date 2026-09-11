@@ -32,8 +32,8 @@ describe('site-credits.ts types', () => {
   it('SiteCreditsProps requires all three fields (no partial)', () => {
     // A literal missing any field is NOT assignable — the contract requires
     // all three fields.
-    expectTypeOf<{ developerLabel: string }>().not.toMatchTypeOf<SiteCreditsProps>();
-    expectTypeOf<{ developerName: string }>().not.toMatchTypeOf<SiteCreditsProps>();
-    expectTypeOf<{ developerUrl: string }>().not.toMatchTypeOf<SiteCreditsProps>();
+    expectTypeOf<{ developerLabel: string }>().not.toExtend<SiteCreditsProps>();
+    expectTypeOf<{ developerName: string }>().not.toExtend<SiteCreditsProps>();
+    expectTypeOf<{ developerUrl: string }>().not.toExtend<SiteCreditsProps>();
   });
 });

@@ -103,48 +103,70 @@ export class MigrateProductosImagenesUseCase {
       const truncado = urls.length > MAX_GALERIA;
 
       if (options.dryRun) {
-        report.exitosos.push({
-          productoId,
-          titulo,
-          imagenesMigradas: targetUrls.length,
-          imagenesTotales: urls.length,
-        });
-        if (truncado) {
-          report.advertencias.push(this.advertenciaTruncado(productoId, urls.length));
-        }
+        this.processDryRun(productoId, titulo, targetUrls, urls.length, truncado, report);
         continue;
       }
 
-      const { galeria, erroresImagenes } = await this.buildGaleria(productoId, titulo, targetUrls);
-
-      if (erroresImagenes.length > 0) {
-        if (galeria.length > 0) {
-          await this.productRepository.update(productoId, { galeria });
-        }
-        report.fallidos.push({
-          productoId,
-          titulo,
-          imagenesMigradas: galeria.length,
-          imagenesTotales: urls.length,
-          motivo: `${erroresImagenes.length} imagen(es) fallaron al migrar`,
-          erroresImagenes,
-        });
-        continue;
-      }
-
-      if (truncado) {
-        report.advertencias.push(this.advertenciaTruncado(productoId, urls.length));
-      }
-      await this.productRepository.update(productoId, { galeria });
-      report.exitosos.push({
-        productoId,
-        titulo,
-        imagenesMigradas: galeria.length,
-        imagenesTotales: urls.length,
-      });
+      await this.processMigration(productoId, titulo, targetUrls, urls.length, truncado, report);
     }
 
     return report;
+  }
+
+  private processDryRun(
+    productoId: string,
+    titulo: string,
+    targetUrls: string[],
+    totalUrls: number,
+    truncado: boolean,
+    report: MigrationReport,
+  ): void {
+    report.exitosos.push({
+      productoId,
+      titulo,
+      imagenesMigradas: targetUrls.length,
+      imagenesTotales: totalUrls,
+    });
+    if (truncado) {
+      report.advertencias.push(this.advertenciaTruncado(productoId, totalUrls));
+    }
+  }
+
+  private async processMigration(
+    productoId: string,
+    titulo: string,
+    targetUrls: string[],
+    totalUrls: number,
+    truncado: boolean,
+    report: MigrationReport,
+  ): Promise<void> {
+    const { galeria, erroresImagenes } = await this.buildGaleria(productoId, titulo, targetUrls);
+
+    if (erroresImagenes.length > 0) {
+      if (galeria.length > 0) {
+        await this.productRepository.update(productoId, { galeria });
+      }
+      report.fallidos.push({
+        productoId,
+        titulo,
+        imagenesMigradas: galeria.length,
+        imagenesTotales: totalUrls,
+        motivo: `${erroresImagenes.length} imagen(es) fallaron al migrar`,
+        erroresImagenes,
+      });
+      return;
+    }
+
+    if (truncado) {
+      report.advertencias.push(this.advertenciaTruncado(productoId, totalUrls));
+    }
+    await this.productRepository.update(productoId, { galeria });
+    report.exitosos.push({
+      productoId,
+      titulo,
+      imagenesMigradas: galeria.length,
+      imagenesTotales: totalUrls,
+    });
   }
 
   private async buildGaleria(

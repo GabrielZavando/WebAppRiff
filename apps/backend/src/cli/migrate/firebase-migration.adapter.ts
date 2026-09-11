@@ -38,7 +38,6 @@ export function createCollectionReader(fs: Firestore, collection: string): Colle
     async listAll(): Promise<Array<{ id: string; data: Record<string, unknown> }>> {
       const out: Array<{ id: string; data: Record<string, unknown> }> = [];
       let last: QueryDocumentSnapshot | null = null;
-      // eslint-disable-next-line no-constant-condition
       while (true) {
         let query: Query = fs.collection(collection);
         if (last) {

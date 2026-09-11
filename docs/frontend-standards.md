@@ -100,7 +100,7 @@ Deploy: Docker image en VPS (Coolify) — build genera carpeta dist/ estática s
 
 ### Panel Admin (apps/admin)
 ```
-Framework: Angular 18+ (standalone components, signals)
+Framework: Angular 22+ (standalone components, signals)
 CSS: Tailwind CSS v4
 Build: Vite (angular-cli)
 Tests: Vitest + Playwright

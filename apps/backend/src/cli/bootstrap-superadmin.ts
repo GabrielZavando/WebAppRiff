@@ -33,7 +33,6 @@ async function bootstrap(): Promise<void> {
 
 bootstrap().catch((error: unknown) => {
   // La password no se loguea nunca.
-  // eslint-disable-next-line no-console
   console.error('Bootstrap failed:', error instanceof Error ? error.message : String(error));
   process.exit(1);
 });

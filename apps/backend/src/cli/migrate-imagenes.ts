@@ -41,7 +41,6 @@ async function migrate(): Promise<void> {
 
 migrate().catch((error: unknown) => {
   // No exponer secretos (credenciales Firebase) en el log.
-  // eslint-disable-next-line no-console
   console.error('Migration failed:', error instanceof Error ? error.message : String(error));
   process.exit(1);
 });

@@ -11,7 +11,7 @@
 # the admin talks to Firebase Auth and the NestJS API from the browser.
 
 # ---------- Stage 1: build ----------
-FROM node:22 AS build
+FROM node:24 AS build
 WORKDIR /app
 
 # Manifests needed to resolve the workspace graph from the root lockfile.

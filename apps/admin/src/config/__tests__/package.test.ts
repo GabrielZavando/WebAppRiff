@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { readFileSync, existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 /**
  * Verifies that `apps/admin/package.json` declares Tailwind v4 deps.
@@ -12,11 +12,13 @@ type PackageJson = {
   devDependencies?: Record<string, string>;
 };
 
+function adminRoot(): string {
+  const cwd = process.cwd();
+  return existsSync(resolve(cwd, 'apps/admin/package.json')) ? resolve(cwd, 'apps/admin') : cwd;
+}
+
 function readPackageJson(): PackageJson {
-  // apps/admin/src/config/__tests__/package.test.ts -> apps/admin/package.json
-  const packageJsonPath = fileURLToPath(
-    new URL('../../../package.json', import.meta.url),
-  );
+  const packageJsonPath = resolve(adminRoot(), 'package.json');
   const raw = readFileSync(packageJsonPath, 'utf-8');
   return JSON.parse(raw) as PackageJson;
 }

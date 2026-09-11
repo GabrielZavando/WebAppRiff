@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 
 /**
  * Verifies that `apps/admin/angular.json` exists with a build target, plus
@@ -29,10 +29,13 @@ type AngularJson = {
   >;
 };
 
+function adminRoot(): string {
+  const cwd = process.cwd();
+  return existsSync(resolve(cwd, 'apps/admin/package.json')) ? resolve(cwd, 'apps/admin') : cwd;
+}
+
 function readAngularJson(): AngularJson {
-  const path = fileURLToPath(
-    new URL('../../../angular.json', import.meta.url),
-  );
+  const path = resolve(adminRoot(), 'angular.json');
   if (!existsSync(path)) {
     throw new Error(`angular.json not found at ${path}`);
   }
@@ -41,9 +44,7 @@ function readAngularJson(): AngularJson {
 }
 
 function readPostcssRc(): string {
-  const path = fileURLToPath(
-    new URL('../../../.postcssrc.json', import.meta.url),
-  );
+  const path = resolve(adminRoot(), '.postcssrc.json');
   if (!existsSync(path)) {
     throw new Error(`.postcssrc.json not found at ${path}`);
   }
