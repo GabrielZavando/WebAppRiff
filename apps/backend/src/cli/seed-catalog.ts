@@ -38,7 +38,6 @@ async function seed(): Promise<void> {
 
 seed().catch((error: unknown) => {
   // No exponer secrets (credenciales Firebase) en el log.
-  // eslint-disable-next-line no-console
   console.error('Seed failed:', error instanceof Error ? error.message : String(error));
   process.exit(1);
 });
