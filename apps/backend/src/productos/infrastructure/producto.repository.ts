@@ -38,6 +38,25 @@ const DEFAULT_LIMIT = 24;
  */
 const MEMORY_SORT_FIELDS: readonly string[] = ['titulo', 'precio.valor', 'actualizadoEn'];
 
+type WhereClause = { field: string; op: string; value: unknown };
+
+function buildWhereClauses(filter: ProductoFilter): WhereClause[] {
+  const clauses: WhereClause[] = [];
+  if (filter.categoriaId !== undefined) clauses.push({ field: 'categoriaId', op: '==', value: filter.categoriaId });
+  if (filter.subcategoriaId !== undefined) clauses.push({ field: 'subcategoriaId', op: '==', value: filter.subcategoriaId });
+  if (filter.destacado !== undefined) clauses.push({ field: 'destacado', op: '==', value: filter.destacado });
+  if (filter.publicado !== undefined) clauses.push({ field: 'publicado', op: '==', value: filter.publicado });
+  return clauses;
+}
+
+function applyWhereClauses(query: Query, clauses: WhereClause[]): Query {
+  let q = query;
+  for (const c of clauses) {
+    q = q.where(c.field, c.op as FirebaseFirestore.WhereFilterOp, c.value);
+  }
+  return q;
+}
+
 /**
  * Implementación Firestore de los puertos de productos.
  *
@@ -88,7 +107,8 @@ export class ProductoRepository implements IProductRepository, IProductQueryRepo
   async findAll(filter: ProductoFilter): Promise<ProductoListResult> {
     const page = Math.max(1, filter.page ?? 1);
     const effectiveLimit = Math.max(1, filter.limit ?? DEFAULT_LIMIT);
-    const useNativePath = !filter.search && !filter.sortBy;
+    const useNativePath =
+      !filter.search && (!filter.sortBy || !MEMORY_SORT_FIELDS.includes(filter.sortBy));
 
     if (useNativePath) {
       return this.findAllNative(filter, page, effectiveLimit);
@@ -102,43 +122,18 @@ export class ProductoRepository implements IProductRepository, IProductQueryRepo
     page: number,
     effectiveLimit: number,
   ): Promise<ProductoListResult> {
-    let query: Query = this.firestore.collection(COLLECTION);
-    const whereClauses: Array<{ field: string; op: string; value: unknown }> = [];
+    const whereClauses = buildWhereClauses(filter);
+    let query = applyWhereClauses(this.firestore.collection(COLLECTION), whereClauses);
 
-    if (filter.categoriaId !== undefined) {
-      whereClauses.push({ field: 'categoriaId', op: '==', value: filter.categoriaId });
-    }
-    if (filter.subcategoriaId !== undefined) {
-      whereClauses.push({ field: 'subcategoriaId', op: '==', value: filter.subcategoriaId });
-    }
-    if (filter.destacado !== undefined) {
-      whereClauses.push({ field: 'destacado', op: '==', value: filter.destacado });
-    }
-    if (filter.publicado !== undefined) {
-      whereClauses.push({ field: 'publicado', op: '==', value: filter.publicado });
-    }
+    const sortDir = filter.sortDir === 'asc' ? 'asc' : 'desc';
+    query = query.orderBy('creadoEn', sortDir);
 
-    for (const clause of whereClauses) {
-      query = query.where(clause.field, clause.op as FirebaseFirestore.WhereFilterOp, clause.value);
-    }
-
-    query = query.orderBy('creadoEn', 'desc');
-
-    // Apply projection
     if (filter.projection === 'card') {
-      // Firestore .select() accepts string field names (not dot paths for sub-objects — price is a map)
       query = query.select(...CARD_FIELDS.filter((f) => f !== 'id'));
     }
 
     // Count aggregation — same where filters, no orderBy/limit
-    let countQuery: Query = this.firestore.collection(COLLECTION);
-    for (const clause of whereClauses) {
-      countQuery = countQuery.where(
-        clause.field,
-        clause.op as FirebaseFirestore.WhereFilterOp,
-        clause.value,
-      );
-    }
+    const countQuery = applyWhereClauses(this.firestore.collection(COLLECTION), whereClauses);
     const countSnap = await countQuery.count().get();
     const total = countSnap.data().count as number;
 
@@ -164,20 +159,8 @@ export class ProductoRepository implements IProductRepository, IProductQueryRepo
     page: number,
     effectiveLimit: number,
   ): Promise<ProductoListResult> {
-    let query: Query = this.firestore.collection(COLLECTION);
-
-    if (filter.categoriaId !== undefined) {
-      query = query.where('categoriaId', '==', filter.categoriaId);
-    }
-    if (filter.subcategoriaId !== undefined) {
-      query = query.where('subcategoriaId', '==', filter.subcategoriaId);
-    }
-    if (filter.destacado !== undefined) {
-      query = query.where('destacado', '==', filter.destacado);
-    }
-    if (filter.publicado !== undefined) {
-      query = query.where('publicado', '==', filter.publicado);
-    }
+    const whereClauses = buildWhereClauses(filter);
+    const query = applyWhereClauses(this.firestore.collection(COLLECTION), whereClauses);
 
     const snapshot = await query.get();
     let items = snapshot.docs.map((d) => {

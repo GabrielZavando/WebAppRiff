@@ -33,6 +33,44 @@ interface AuthedRequest extends Request {
   user?: DecodedIdToken;
 }
 
+function buildFilter(params: {
+  categoriaId?: string;
+  subcategoriaId?: string;
+  destacado?: string;
+  publicado?: string;
+  search?: string;
+  sortBy?: string;
+  sortDir?: string;
+}): ProductoFilter {
+  const filter: ProductoFilter = {};
+  if (params.categoriaId) filter.categoriaId = params.categoriaId;
+  if (params.subcategoriaId) filter.subcategoriaId = params.subcategoriaId;
+  if (params.destacado !== undefined) filter.destacado = params.destacado === 'true';
+  if (params.publicado !== undefined) filter.publicado = params.publicado === 'true';
+  if (params.search) filter.search = params.search;
+  if (params.sortBy && (ALLOWED_SORT as string[]).includes(params.sortBy)) {
+    filter.sortBy = params.sortBy as ProductoSortField;
+  }
+  if (params.sortDir === 'asc' || params.sortDir === 'desc') {
+    filter.sortDir = params.sortDir;
+  }
+  return filter;
+}
+
+function parsePagination(page?: string, limit?: string): { page: number; limit: number } {
+  const pageNum = page ? parseInt(page, 10) : 1;
+  if (page && isNaN(pageNum)) {
+    throw new BadRequestException('page must be a number');
+  }
+  const limitNum = limit
+    ? Math.min(Math.max(1, parseInt(limit, 10)), MAX_LIMIT)
+    : DEFAULT_LIMIT;
+  if (limit && isNaN(parseInt(limit, 10))) {
+    throw new BadRequestException('limit must be a number');
+  }
+  return { page: pageNum, limit: limitNum };
+}
+
 /**
  * Endpoints de productos bajo `/api/v1/products`. La lectura es pública pero
  * admite un token opcional: un usuario autenticado puede ver también los
@@ -60,32 +98,10 @@ export class ProductoController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ): Promise<ProductoListResult<Producto | ProductoCard>> {
-    const filter: ProductoFilter = {};
-    if (categoriaId) filter.categoriaId = categoriaId;
-    if (subcategoriaId) filter.subcategoriaId = subcategoriaId;
-    if (destacado !== undefined) filter.destacado = destacado === 'true';
-    if (publicado !== undefined) filter.publicado = publicado === 'true';
-    if (search) filter.search = search;
-    if (sortBy && (ALLOWED_SORT as string[]).includes(sortBy)) {
-      filter.sortBy = sortBy as ProductoSortField;
-    }
-    if (sortDir === 'asc' || sortDir === 'desc') {
-      filter.sortDir = sortDir;
-    }
-
-    const pageNum = page ? parseInt(page, 10) : 1;
-    if (page && isNaN(pageNum)) {
-      throw new BadRequestException('page must be a number');
-    }
-    const limitNum = limit
-      ? Math.min(Math.max(1, parseInt(limit, 10)), MAX_LIMIT)
-      : DEFAULT_LIMIT;
-    if (limit && isNaN(parseInt(limit, 10))) {
-      throw new BadRequestException('limit must be a number');
-    }
-
-    filter.page = pageNum;
-    filter.limit = limitNum;
+    const filter = buildFilter({ categoriaId, subcategoriaId, destacado, publicado, search, sortBy, sortDir });
+    const pagination = parsePagination(page, limit);
+    filter.page = pagination.page;
+    filter.limit = pagination.limit;
 
     return this.readService.findAll(filter, !!req.user);
   }
