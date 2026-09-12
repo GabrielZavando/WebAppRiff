@@ -5,6 +5,7 @@ import {
   I_PRODUCT_QUERY_REPOSITORY,
   I_PRODUCT_REPOSITORY,
 } from '@/productos/domain/iproducto.repository';
+import { Producto } from '@/productos/domain/producto.entity';
 import { IHtmlSanitizer, I_HTML_SANITIZER } from '@/productos/domain/ihtml-sanitizer';
 
 export type NormalizeResult = {
@@ -32,7 +33,8 @@ export class NormalizeDescriptionsUseCase {
   ) {}
 
   async execute(dryRun: boolean): Promise<NormalizeResult> {
-    const productos = await this.query.findAll({});
+    const { items } = await this.query.findAll({});
+    const productos = items as Producto[];
     const result: NormalizeResult = { escaneados: 0, modificados: 0, escritos: 0 };
 
     for (const producto of productos) {

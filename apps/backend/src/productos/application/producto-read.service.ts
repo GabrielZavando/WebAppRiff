@@ -1,11 +1,13 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IProductQueryRepository, I_PRODUCT_QUERY_REPOSITORY } from '../domain/iproducto.repository';
-import { Producto, ProductoFilter } from '../domain/producto.entity';
+import { Producto, ProductoCard, ProductoFilter, ProductoListResult } from '../domain/producto.entity';
 
 /**
  * Casos de uso de lectura de productos. Fuerza `publicado: true` para
  * solicitantes anónimos (el catálogo público solo expone publicados); un
  * usuario autenticado (cualquier rol) puede ver también no publicados.
+ *
+ * Para anónimos usa proyección `card` (lean). Para autenticados, `full`.
  */
 @Injectable()
 export class ProductoReadService {
@@ -14,10 +16,16 @@ export class ProductoReadService {
     private readonly queryRepository: IProductQueryRepository,
   ) {}
 
-  async findAll(filter: ProductoFilter, isAuthenticated: boolean): Promise<Producto[]> {
+  async findAll(
+    filter: ProductoFilter,
+    isAuthenticated: boolean,
+  ): Promise<ProductoListResult<Producto | ProductoCard>> {
     const effectiveFilter: ProductoFilter = { ...filter };
     if (!isAuthenticated) {
       effectiveFilter.publicado = true;
+      effectiveFilter.projection = 'card';
+    } else {
+      effectiveFilter.projection = effectiveFilter.projection ?? 'full';
     }
     return this.queryRepository.findAll(effectiveFilter);
   }

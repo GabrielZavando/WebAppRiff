@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -19,11 +20,14 @@ import { RolesGuard } from '../../auth/roles.guard';
 import { Roles } from '../../auth/roles.decorator';
 import { ProductoReadService } from '../application/producto-read.service';
 import { ProductoWriteService } from '../application/producto-write.service';
-import { Producto, ProductoFilter, ProductoSortField } from '../domain/producto.entity';
+import { Producto, ProductoCard, ProductoFilter, ProductoListResult, ProductoSortField } from '../domain/producto.entity';
 import { ProductoCreateDto } from './producto-create.dto';
 import { ProductoUpdateDto } from './producto-update.dto';
 
 const ALLOWED_SORT: ProductoSortField[] = ['creadoEn', 'actualizadoEn', 'titulo', 'precio.valor'];
+
+const DEFAULT_LIMIT = 24;
+const MAX_LIMIT = 100;
 
 interface AuthedRequest extends Request {
   user?: DecodedIdToken;
@@ -53,7 +57,9 @@ export class ProductoController {
     @Query('search') search?: string,
     @Query('sortBy') sortBy?: string,
     @Query('sortDir') sortDir?: string,
-  ): Promise<Producto[]> {
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ): Promise<ProductoListResult<Producto | ProductoCard>> {
     const filter: ProductoFilter = {};
     if (categoriaId) filter.categoriaId = categoriaId;
     if (subcategoriaId) filter.subcategoriaId = subcategoriaId;
@@ -66,6 +72,21 @@ export class ProductoController {
     if (sortDir === 'asc' || sortDir === 'desc') {
       filter.sortDir = sortDir;
     }
+
+    const pageNum = page ? parseInt(page, 10) : 1;
+    if (page && isNaN(pageNum)) {
+      throw new BadRequestException('page must be a number');
+    }
+    const limitNum = limit
+      ? Math.min(Math.max(1, parseInt(limit, 10)), MAX_LIMIT)
+      : DEFAULT_LIMIT;
+    if (limit && isNaN(parseInt(limit, 10))) {
+      throw new BadRequestException('limit must be a number');
+    }
+
+    filter.page = pageNum;
+    filter.limit = limitNum;
+
     return this.readService.findAll(filter, !!req.user);
   }
 

@@ -1,4 +1,10 @@
-import { Producto, ProductoFilter, ProductoInput, ProductoUpdateInput } from './producto.entity';
+import {
+  Producto,
+  ProductoFilter,
+  ProductoInput,
+  ProductoListResult,
+  ProductoUpdateInput,
+} from './producto.entity';
 
 /**
  * Puerto de acceso a datos de productos (ISP, ≤5 métodos).
@@ -19,7 +25,7 @@ export const I_PRODUCT_REPOSITORY = 'I_PRODUCT_REPOSITORY';
  */
 export interface IProductQueryRepository {
   findById(id: string): Promise<Producto | null>;
-  findAll(filter: ProductoFilter): Promise<Producto[]>;
+  findAll(filter: ProductoFilter): Promise<ProductoListResult>;
   findBySlug(slug: string): Promise<Producto | null>;
 }
 
