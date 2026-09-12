@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import type {
   CategoriaApi,
   ProductoApi,
+  ProductoCardApi,
   ProductCardModel,
   ProductsPageFilters,
   SubcategoriaApi,
@@ -87,5 +88,90 @@ describe('products-page types', () => {
   it('exposes a valid ProductCardModel sample', () => {
     expect(SAMPLE_CARD.cotizarHref).toContain('/cotizacion?producto=');
     expect(SAMPLE_CARD.detalleHref).toContain('/productos/');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ProductoCardApi — lean card projection for anonymous users
+// ---------------------------------------------------------------------------
+
+const SAMPLE_CARD_API: ProductoCardApi = {
+  id: 'p1',
+  sku: 'FLJ-001',
+  titulo: 'Flujómetro Universal',
+  slug: 'flujometro-universal',
+  descripcionBreve: 'Medidor electromagnético de alta precisión.',
+  categoriaId: 'cat-fluidos',
+  subcategoriaId: 'sub-caudal',
+  galeria: [{ url: 'https://cdn.example.com/flj-001.webp', alt: 'Flujómetro' }],
+  precio: { valor: 125000, visible: true },
+  creadoEn: '2026-01-15T12:00:00.000Z',
+  // Heavy fields left undefined (optional)
+  descripcionLarga: undefined,
+  atributos: undefined,
+  fichaTecnica: undefined,
+  stock: undefined,
+  actualizadoEn: undefined,
+  idExterno: undefined,
+};
+
+describe('ProductoCardApi type', () => {
+  it('has all required fields present', () => {
+    expect(SAMPLE_CARD_API.id).toBe('p1');
+    expect(SAMPLE_CARD_API.sku).toBe('FLJ-001');
+    expect(SAMPLE_CARD_API.titulo).toBe('Flujómetro Universal');
+    expect(SAMPLE_CARD_API.slug).toBe('flujometro-universal');
+    expect(SAMPLE_CARD_API.descripcionBreve).toBe('Medidor electromagnético de alta precisión.');
+    expect(SAMPLE_CARD_API.categoriaId).toBe('cat-fluidos');
+    expect(SAMPLE_CARD_API.subcategoriaId).toBe('sub-caudal');
+    expect(SAMPLE_CARD_API.precio.valor).toBe(125000);
+    expect(SAMPLE_CARD_API.galeria).toHaveLength(1);
+    expect(SAMPLE_CARD_API.creadoEn).toBe('2026-01-15T12:00:00.000Z');
+  });
+
+  it('allows heavy fields to be undefined', () => {
+    const lean: ProductoCardApi = {
+      id: 'p2',
+      sku: 'MAN-002',
+      titulo: 'Manómetro Beta',
+      slug: 'manometro-beta',
+      descripcionBreve: 'Control de presión.',
+      categoriaId: 'cat-fluidos',
+      subcategoriaId: null,
+      galeria: [],
+      precio: { valor: 80000, visible: true },
+      creadoEn: '2026-01-10T12:00:00.000Z',
+    };
+    expect(lean.descripcionLarga).toBeUndefined();
+    expect(lean.atributos).toBeUndefined();
+    expect(lean.fichaTecnica).toBeUndefined();
+    expect(lean.stock).toBeUndefined();
+    expect(lean.actualizadoEn).toBeUndefined();
+    expect(lean.idExterno).toBeUndefined();
+  });
+
+  it('is structurally compatible: ProductoApi satisfies ProductoCardApi', () => {
+    // A full ProductoApi has all required card fields, so it satisfies
+    // ProductoCardApi. This ensures existing code passing ProductoApi[] to
+    // functions accepting ProductoCardApi[] keeps working.
+    const full: ProductoApi = {
+      id: 'p1',
+      sku: 'FLJ-001',
+      titulo: 'Flujómetro Universal',
+      slug: 'flujometro-universal',
+      descripcionBreve: 'Medidor.',
+      descripcionLarga: '<p>Full.</p>',
+      categoriaId: 'cat-fluidos',
+      subcategoriaId: null,
+      galeria: [],
+      atributos: [],
+      fichaTecnica: null,
+      precio: { valor: 1000, visible: true },
+      creadoEn: '2026-01-01T00:00:00.000Z',
+    };
+    // Assign to ProductoCardApi — should compile without error
+    const card: ProductoCardApi = full;
+    expect(card.id).toBe(full.id);
+    expect(card.titulo).toBe(full.titulo);
   });
 });

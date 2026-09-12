@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyProductFilters } from '@/lib/products/applyProductFilters';
-import type { ProductoApi, ProductsPageFilters } from '@/lib/types/products-page';
+import type { ProductoApi, ProductoCardApi, ProductsPageFilters } from '@/lib/types/products-page';
 
 function makeProduct(overrides: Partial<ProductoApi>): ProductoApi {
   return {
@@ -155,5 +155,60 @@ describe('applyProductFilters — pagination', () => {
     const { items, pagination } = applyProductFilters(many, baseFilters({ pageSize: 9, page: 99 }));
     expect(pagination.page).toBe(3);
     expect(items).toHaveLength(25 - 18); // 25 - 2*9 = 7
+  });
+});
+
+// ---------------------------------------------------------------------------
+// applyProductFilters — works with ProductoCardApi[] (card projection)
+// ---------------------------------------------------------------------------
+
+describe('applyProductFilters — ProductoCardApi compatibility', () => {
+  function makeCardProduct(overrides: Partial<ProductoCardApi>): ProductoCardApi {
+    return {
+      id: overrides.id ?? 'p1',
+      sku: overrides.sku ?? 'SKU-1',
+      titulo: overrides.titulo ?? 'Producto Uno',
+      slug: overrides.slug ?? 'producto-uno',
+      descripcionBreve: overrides.descripcionBreve ?? 'Descripción corta.',
+      categoriaId: overrides.categoriaId ?? 'cat-a',
+      subcategoriaId: overrides.subcategoriaId ?? null,
+      galeria: overrides.galeria ?? [],
+      precio: overrides.precio ?? { valor: 1000, visible: true },
+      creadoEn: overrides.creadoEn ?? '2026-01-01T00:00:00.000Z',
+    };
+  }
+
+  const CARD_PRODUCTS: ProductoCardApi[] = [
+    makeCardProduct({ id: '1', titulo: 'Flujometro Alpha', sku: 'FLJ-001', categoriaId: 'cat-fluidos', subcategoriaId: 'sub-caudal', creadoEn: '2026-03-01T00:00:00.000Z' }),
+    makeCardProduct({ id: '2', titulo: 'Manometro Beta', sku: 'MAN-002', categoriaId: 'cat-fluidos', subcategoriaId: 'sub-presion', creadoEn: '2026-02-01T00:00:00.000Z' }),
+    makeCardProduct({ id: '3', titulo: 'Bomba Gamma', sku: 'BOM-003', categoriaId: 'cat-bombas', subcategoriaId: null, creadoEn: '2026-01-01T00:00:00.000Z' }),
+  ];
+
+  it('filters by titulo on ProductoCardApi[]', () => {
+    const { items } = applyProductFilters(CARD_PRODUCTS, baseFilters({ q: 'bomba' }));
+    expect(items).toHaveLength(1);
+    expect(items[0]!.id).toBe('3');
+  });
+
+  it('filters by categoriaId on ProductoCardApi[]', () => {
+    const { items } = applyProductFilters(CARD_PRODUCTS, baseFilters({ categoriaId: 'cat-fluidos' }));
+    expect(items).toHaveLength(2);
+    expect(items.map((p) => p.id).sort()).toEqual(['1', '2']);
+  });
+
+  it('sorts by titulo on ProductoCardApi[]', () => {
+    const { items } = applyProductFilters(CARD_PRODUCTS, baseFilters({ sortBy: 'titulo', sortDir: 'asc' }));
+    expect(items.map((p) => p.titulo)).toEqual([
+      'Bomba Gamma',
+      'Flujometro Alpha',
+      'Manometro Beta',
+    ]);
+  });
+
+  it('paginates ProductoCardApi[] correctly', () => {
+    const { items, pagination } = applyProductFilters(CARD_PRODUCTS, baseFilters({ pageSize: 2 }));
+    expect(items).toHaveLength(2);
+    expect(pagination.total).toBe(3);
+    expect(pagination.totalPages).toBe(2);
   });
 });

@@ -75,17 +75,6 @@ export async function getProductBySlug(slug: string): Promise<ProductoApi | null
   if (detailCache.has(slug)) {
     return detailCache.get(slug) ?? null;
   }
-  // Reuse the catalog cache populated by `getPublicProducts()` during
-  // `getStaticPaths` so the detail page doesn't issue one extra HTTP call per
-  // product at build time. The standalone fetch below is the fallback for
-  // runtime/SSR usage where the catalog cache is not primed.
-  if (cached) {
-    const found = cached.find((p) => p.slug === slug);
-    if (found) {
-      detailCache.set(slug, found);
-      return found;
-    }
-  }
   let product: ProductoApi | null = null;
   try {
     const response = await fetch(`${resolveApiBaseUrl()}/products/slug/${slug}`, {

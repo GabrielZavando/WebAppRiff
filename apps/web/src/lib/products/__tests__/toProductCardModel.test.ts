@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { toProductCardModel } from '@/lib/products/toProductCardModel';
-import type { CategoriaApi, ProductoApi } from '@/lib/types/products-page';
+import type { CategoriaApi, ProductoApi, ProductoCardApi } from '@/lib/types/products-page';
 
 const CATEGORIES: CategoriaApi[] = [
   { id: 'cat-fluidos', nombre: 'Medición de Fluidos', slug: 'medicion-de-fluidos', orden: 1, activa: true },
@@ -81,5 +81,73 @@ describe('toProductCardModel', () => {
       categories: CATEGORIES,
     });
     expect(model.descripcionBreve).toBe('Medidor simple.');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// toProductCardModel — accepts ProductoCardApi (optional fields undefined)
+// ---------------------------------------------------------------------------
+
+describe('toProductCardModel with ProductoCardApi', () => {
+  it('accepts a ProductoCardApi with optional fields undefined and produces correct model', () => {
+    const cardProduct: ProductoCardApi = {
+      id: 'p2',
+      sku: 'MAN-002',
+      titulo: 'Manómetro Beta',
+      slug: 'manometro-beta',
+      descripcionBreve: 'Control de presión.',
+      categoriaId: 'cat-fluidos',
+      subcategoriaId: null,
+      galeria: [{ url: 'https://cdn.example.com/man-002.webp', alt: 'Manómetro' }],
+      precio: { valor: 80000, visible: true },
+      creadoEn: '2026-01-10T12:00:00.000Z',
+      // Heavy fields intentionally omitted (undefined)
+    };
+    const model = toProductCardModel(cardProduct, { categories: CATEGORIES });
+    expect(model.titulo).toBe('Manómetro Beta');
+    expect(model.slug).toBe('manometro-beta');
+    expect(model.categoriaId).toBe('cat-fluidos');
+    expect(model.subcategoriaId).toBeNull();
+    expect(model.categoriaNombre).toBe('Medición de Fluidos');
+    expect(model.descripcionBreve).toBe('Control de presión.');
+    expect(model.imageUrl).toBe('https://cdn.example.com/man-002.webp');
+    expect(model.imageAlt).toBe('Manómetro');
+    expect(model.cotizarHref).toBe('/cotizacion?producto=manometro-beta');
+    expect(model.detalleHref).toBe('/productos/manometro-beta');
+  });
+
+  it('handles ProductoCardApi with empty galeria', () => {
+    const cardProduct: ProductoCardApi = {
+      id: 'p3',
+      sku: 'BOM-003',
+      titulo: 'Bomba Gamma',
+      slug: 'bomba-gamma',
+      descripcionBreve: 'Bomba centrífuga.',
+      categoriaId: 'cat-fluidos',
+      subcategoriaId: null,
+      galeria: [],
+      precio: { valor: 50000, visible: true },
+      creadoEn: '2026-01-05T12:00:00.000Z',
+    };
+    const model = toProductCardModel(cardProduct, { categories: CATEGORIES });
+    expect(model.imageUrl).toBe('');
+    expect(model.imageAlt).toBe('Bomba Gamma');
+  });
+
+  it('strips HTML from descripcionBreve on ProductoCardApi', () => {
+    const cardProduct: ProductoCardApi = {
+      id: 'p4',
+      sku: 'VAL-004',
+      titulo: 'Válvula Delta',
+      slug: 'valvula-delta',
+      descripcionBreve: '<p><strong>Alta</strong> presión &amp; flujo</p>',
+      categoriaId: 'cat-fluidos',
+      subcategoriaId: null,
+      galeria: [],
+      precio: { valor: 30000, visible: true },
+      creadoEn: '2026-01-02T12:00:00.000Z',
+    };
+    const model = toProductCardModel(cardProduct, { categories: CATEGORIES });
+    expect(model.descripcionBreve).toBe('Alta presión & flujo');
   });
 });

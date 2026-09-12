@@ -62,6 +62,41 @@ export interface ProductoApi {
 }
 
 /**
+ * Lean card projection for anonymous/public catalog listings.
+ *
+ * Heavy fields (`descripcionLarga`, `atributos`, `fichaTecnica`) are optional
+ * because the backend omits them when the caller requests the `card` projection.
+ * The type is structurally compatible with `ProductoApi` — any `ProductoCardApi`
+ * value satisfies `ProductoApi` when the optional fields are provided.
+ *
+ * Extra card-only fields (`stock`, `actualizadoEn`, `idExterno`) may be present
+ * in some responses and are optional here.
+ */
+export interface ProductoCardApi {
+  readonly id: string;
+  readonly sku: string;
+  readonly titulo: string;
+  readonly slug: string;
+  readonly descripcionBreve: string;
+  readonly categoriaId: string;
+  readonly subcategoriaId: string | null;
+  readonly galeria: readonly GaleriaItemApi[];
+  readonly precio: {
+    readonly valor: number;
+    readonly visible: boolean;
+  };
+  readonly creadoEn: string;
+  // Heavy fields — omitted by card projection
+  readonly descripcionLarga?: string;
+  readonly atributos?: readonly AtributoApi[];
+  readonly fichaTecnica?: FichaTecnicaApi | null;
+  // Card-only extras
+  readonly stock?: number;
+  readonly actualizadoEn?: string;
+  readonly idExterno?: string;
+}
+
+/**
  * View-model consumed by the product detail page (`/productos/[slug].astro`).
  * Carries the resolved category name plus the gallery, attributes and
  * technical document, all derived from a `ProductoApi` server-side at build
