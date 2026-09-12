@@ -177,4 +177,22 @@ describe('getProductBySlug', () => {
       expect.anything(),
     );
   });
+
+  it('always fetches from the API by slug (does not reuse catalog cache)', async () => {
+    const mod = await load();
+    // Prime the catalog cache via getPublicProducts
+    mockFetch({ data: SAMPLE });
+    await mod.getPublicProducts();
+
+    // Now call getProductBySlug — it should issue its own fetch, NOT reuse the cache
+    const fetchMock = mockFetch({ data: SINGLE });
+    const result = await mod.getProductBySlug('flujometro-universal');
+    expect(result).not.toBeNull();
+    expect(result?.id).toBe('p1');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/products/slug/flujometro-universal'),
+      expect.objectContaining({ headers: { accept: 'application/json' } }),
+    );
+  });
 });

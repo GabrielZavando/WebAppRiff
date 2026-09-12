@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { ProductoController } from './producto.controller';
 import { ProductoReadService } from '../application/producto-read.service';
 import { ProductoWriteService } from '../application/producto-write.service';
@@ -42,6 +43,8 @@ describe('ProductoController', () => {
           search: 'val',
           sortBy: 'titulo',
           sortDir: 'desc',
+          page: 1,
+          limit: 24,
         },
         false,
       );
@@ -59,7 +62,7 @@ describe('ProductoController', () => {
         undefined,
         undefined,
       );
-      expect(readService.findAll).toHaveBeenCalledWith({ publicado: false }, true);
+      expect(readService.findAll).toHaveBeenCalledWith({ publicado: false, page: 1, limit: 24 }, true);
     });
 
     it('omits an invalid sortBy', async () => {
@@ -78,6 +81,96 @@ describe('ProductoController', () => {
       const filter = readService.findAll.mock.calls[0][0];
       expect(filter.sortBy).toBeUndefined();
       expect(isAuth).toBe(false);
+    });
+
+    it('T6.1 — parses page and limit as numbers and passes them to the service', async () => {
+      readService.findAll.mockResolvedValue({ items: [], total: 0 });
+      await controller.findAll(
+        { user: undefined } as never,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        '2',
+        '10',
+      );
+      const [filter] = readService.findAll.mock.calls[0];
+      expect(filter.page).toBe(2);
+      expect(filter.limit).toBe(10);
+    });
+
+    it('T6.2 — throws BadRequestException when page is not a number', () => {
+      expect(() =>
+        controller.findAll(
+          { user: undefined } as never,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          'abc',
+          '10',
+        ),
+      ).toThrow(BadRequestException);
+    });
+
+    it('throws BadRequestException when limit is not a number', () => {
+      expect(() =>
+        controller.findAll(
+          { user: undefined } as never,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          '1',
+          'abc',
+        ),
+      ).toThrow(BadRequestException);
+    });
+
+    it('T6.3 — clamps limit to MAX_LIMIT (100) when exceeding it', async () => {
+      readService.findAll.mockResolvedValue({ items: [], total: 0 });
+      await controller.findAll(
+        { user: undefined } as never,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        '1',
+        '200',
+      );
+      const [filter] = readService.findAll.mock.calls[0];
+      expect(filter.limit).toBe(100);
+    });
+
+    it('T6.4 — applies defaults (page=1, limit=24) when page/limit are omitted', async () => {
+      readService.findAll.mockResolvedValue({ items: [], total: 0 });
+      await controller.findAll(
+        { user: undefined } as never,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      );
+      const [filter] = readService.findAll.mock.calls[0];
+      expect(filter.page).toBe(1);
+      expect(filter.limit).toBe(24);
     });
   });
 

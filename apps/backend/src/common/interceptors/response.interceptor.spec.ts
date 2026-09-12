@@ -48,4 +48,60 @@ describe('ResponseInterceptor', () => {
       done();
     });
   });
+
+  it('merges handler meta when handler returns { data, meta } shape', (done) => {
+    const context = makeContext('/api/v1/products');
+    const handlerData = {
+      data: [{ id: 1 }, { id: 2 }],
+      meta: { total: 100, page: 1, limit: 24 },
+    };
+    const next: CallHandler = { handle: () => of(handlerData) };
+
+    interceptor.intercept(context, next).subscribe((result) => {
+      expect(result).toEqual({
+        data: [{ id: 1 }, { id: 2 }],
+        error: null,
+        meta: {
+          timestamp: expect.any(String),
+          path: '/api/v1/products',
+          total: 100,
+          page: 1,
+          limit: 24,
+        },
+      });
+      done();
+    });
+  });
+
+  it('keeps current behavior when handler returns plain array (no meta)', (done) => {
+    const context = makeContext('/api/v1/categories');
+    const next: CallHandler = { handle: () => of([{ id: 1 }, { id: 2 }]) };
+
+    interceptor.intercept(context, next).subscribe((result) => {
+      expect(result).toEqual({
+        data: [{ id: 1 }, { id: 2 }],
+        error: null,
+        meta: { timestamp: expect.any(String), path: '/api/v1/categories' },
+      });
+      done();
+    });
+  });
+
+  it('regression: categories endpoint has no pagination fields in meta', (done) => {
+    const context = makeContext('/api/v1/categories');
+    const next: CallHandler = { handle: () => of([]) };
+
+    interceptor.intercept(context, next).subscribe((result) => {
+      expect(result).toEqual({
+        data: [],
+        error: null,
+        meta: { timestamp: expect.any(String), path: '/api/v1/categories' },
+      });
+      // Ensure no pagination keys leaked into meta
+      expect(result.meta).not.toHaveProperty('total');
+      expect(result.meta).not.toHaveProperty('page');
+      expect(result.meta).not.toHaveProperty('limit');
+      done();
+    });
+  });
 });

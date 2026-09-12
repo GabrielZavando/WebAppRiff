@@ -83,6 +83,63 @@ components:
         limit:
           type: integer
 
+    ProductoCard:
+      type: object
+      description: >-
+        Proyección lean para listados públicos (usuarios anónimos). Excluye
+        campos pesados: descripcionLarga, atributos, fichaTecnica, stock,
+        actualizadoEn e idExterno. Para el objeto completo, usar Producto.
+      properties:
+        id:
+          type: string
+          description: "ID de documento Firestore (inmutable, técnico)"
+        sku:
+          type: string
+          description: "Código de producto único"
+        titulo:
+          type: string
+        slug:
+          type: string
+          description: "URL amigable única"
+        descripcionBreve:
+          type: string
+          description: "Plain-text summary for listings. Server strips all HTML on write (stored as text)."
+        categoriaId:
+          type: string
+        subcategoriaId:
+          type: string
+          nullable: true
+        precio:
+          type: object
+          properties:
+            valor:
+              type: integer
+              description: "Precio en CLP sin decimales"
+            visible:
+              type: boolean
+        galeria:
+          type: array
+          maxItems: 10
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                format: uri
+              storagePath:
+                type: string
+              alt:
+                type: string
+              orden:
+                type: integer
+        destacado:
+          type: boolean
+        publicado:
+          type: boolean
+        creadoEn:
+          type: string
+          format: date-time
+
     # === PRODUCTOS ===
     Producto:
       type: object
@@ -323,11 +380,18 @@ components:
 
     ProductoListResponse:
       type: object
+      description: >-
+        Listado paginado de productos. Para usuarios anónimos, cada item es una
+        proyección card (ProductoCard); para usuarios autenticados, el objeto
+        completo (Producto).
       properties:
         data:
           type: array
+          description: >-
+            Usuarios anónimos: array de ProductoCard (campos lean).
+            Usuarios autenticados: array de Producto (objeto completo).
           items:
-            $ref: '#/components/schemas/Producto'
+            $ref: '#/components/schemas/ProductoCard'
         meta:
           $ref: '#/components/schemas/Pagination'
 
@@ -606,7 +670,9 @@ paths:
         `publicado: true` (el catálogo público). Con un token válido, un usuario
         autenticado (cualquier rol) puede ver también los no publicados usando
         `publicado=false`. Filtros por categoría, subcategoría, destacado,
-        búsqueda de texto y ordenamiento. Sin paginación en esta versión.
+        búsqueda de texto y ordenamiento. Soporta paginación (page/limit) y
+        proyección: usuarios anónimos reciben la proyección card (campos lean);
+        usuarios autenticados reciben el objeto Producto completo.
       security: []
       parameters:
         - name: categoriaId
@@ -639,6 +705,19 @@ paths:
           schema:
             type: string
             enum: [asc, desc]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: "Página a retornar (1-indexed)"
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 24
+            maximum: 100
+          description: "Cantidad de items por página (máximo 100)"
       responses:
         "200":
           description: Lista de productos (envuelta en { data, error, meta })
@@ -1119,7 +1198,7 @@ paths:
         "403":
           $ref: '#/components/schemas/Error'
     post:
-      summary: Crear usuario (superadmin: admin/editor; admin: solo editor)
+      summary: "Crear usuario (superadmin: admin/editor; admin: solo editor)"
       security:
         - bearerAuth: []
       requestBody:
@@ -1317,7 +1396,7 @@ paths:
         "404":
           $ref: '#/components/schemas/Error'
     patch:
-      summary: Actualizar estado de cotización (admin: pendiente <-> atendida)
+      summary: "Actualizar estado de cotización (admin: pendiente <-> atendida)"
       security:
         - bearerAuth: []
       parameters:

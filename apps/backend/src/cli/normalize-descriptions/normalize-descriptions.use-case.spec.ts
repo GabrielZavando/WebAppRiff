@@ -56,7 +56,7 @@ describe('NormalizeDescriptionsUseCase', () => {
   ];
 
   it('writes back only the changed documents and reports counts', async () => {
-    query.findAll.mockResolvedValue(productos);
+    query.findAll.mockResolvedValue({ items: productos, total: 3 });
     repository.update.mockResolvedValue({});
 
     const result = await useCase.execute(false);
@@ -74,7 +74,7 @@ describe('NormalizeDescriptionsUseCase', () => {
   });
 
   it('does not write under --dry-run but still reports changes', async () => {
-    query.findAll.mockResolvedValue(productos);
+    query.findAll.mockResolvedValue({ items: productos, total: 3 });
 
     const result = await useCase.execute(true);
 

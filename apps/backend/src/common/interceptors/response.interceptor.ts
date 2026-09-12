@@ -4,13 +4,16 @@ import { map } from 'rxjs/operators';
 
 const API_PREFIX = '/api/v1/';
 
+interface EnvelopeMeta {
+  timestamp: string;
+  path: string;
+  [key: string]: unknown;
+}
+
 interface ResponseEnvelope<T> {
   data: T;
   error: null;
-  meta: {
-    timestamp: string;
-    path: string;
-  };
+  meta: EnvelopeMeta;
 }
 
 /**
@@ -31,14 +34,35 @@ export class ResponseInterceptor<T = unknown> implements NestInterceptor<T, Resp
 
     const path = url;
     return next.handle().pipe(
-      map((data) => ({
-        data,
-        error: null,
-        meta: {
-          timestamp: new Date().toISOString(),
-          path,
-        },
-      })),
+      map((data) => {
+        const hasHandlerMeta =
+          data !== null &&
+          typeof data === 'object' &&
+          'meta' in data &&
+          (data as Record<string, unknown>).meta !== null &&
+          typeof (data as Record<string, unknown>).meta === 'object';
+
+        const handlerMeta: Record<string, unknown> = hasHandlerMeta
+          ? ((data as Record<string, unknown>).meta as Record<string, unknown>)
+          : {};
+
+        const handlerData =
+          data !== null &&
+          typeof data === 'object' &&
+          'data' in data
+            ? (data as Record<string, unknown>).data
+            : data;
+
+        return {
+          data: handlerData,
+          error: null,
+          meta: {
+            timestamp: new Date().toISOString(),
+            path,
+            ...handlerMeta,
+          },
+        };
+      }),
     );
   }
 }

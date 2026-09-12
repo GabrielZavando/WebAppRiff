@@ -16,20 +16,44 @@ describe('ProductoReadService', () => {
   beforeEach(() => jest.clearAllMocks());
 
   describe('findAll', () => {
-    it('forces publicado=true for anonymous callers', async () => {
-      queryRepository.findAll.mockResolvedValue([published]);
+    it('forces publicado=true and projection=card for anonymous callers', async () => {
+      queryRepository.findAll.mockResolvedValue({ items: [published], total: 1 });
       await service.findAll({ categoriaId: 'cat-1' }, false);
       expect(queryRepository.findAll).toHaveBeenCalledWith({
         categoriaId: 'cat-1',
         publicado: true,
+        projection: 'card',
       });
     });
 
-    it('passes the filter as-is for authenticated callers', async () => {
-      queryRepository.findAll.mockResolvedValue([draft]);
+    it('passes the filter as-is with projection=full for authenticated callers', async () => {
+      queryRepository.findAll.mockResolvedValue({ items: [draft], total: 1 });
       const filter = { categoriaId: 'cat-1', publicado: false };
       await service.findAll(filter, true);
-      expect(queryRepository.findAll).toHaveBeenCalledWith(filter);
+      expect(queryRepository.findAll).toHaveBeenCalledWith({
+        categoriaId: 'cat-1',
+        publicado: false,
+        projection: 'full',
+      });
+    });
+
+    it('returns the repository result as-is without additional transformation', async () => {
+      const repoResult = { items: [published], total: 1 };
+      queryRepository.findAll.mockResolvedValue(repoResult);
+      const result = await service.findAll({}, true);
+      expect(result).toBe(repoResult);
+    });
+
+    it('propagates page and limit from filter to repository', async () => {
+      queryRepository.findAll.mockResolvedValue({ items: [], total: 0 });
+      const filter = { page: 3, limit: 10 };
+      await service.findAll(filter, false);
+      expect(queryRepository.findAll).toHaveBeenCalledWith({
+        page: 3,
+        limit: 10,
+        publicado: true,
+        projection: 'card',
+      });
     });
   });
 

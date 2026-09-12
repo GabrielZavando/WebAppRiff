@@ -79,4 +79,36 @@ export type ProductoFilter = {
   search?: string;
   sortBy?: ProductoSortField;
   sortDir?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+  projection?: 'card' | 'full';
 };
+
+/**
+ * Lean projection for public-facing product cards.
+ * Omits heavy fields: descripcionLarga, atributos, fichaTecnica,
+ * stock, actualizadoEn, idExterno.
+ */
+export interface ProductoCard {
+  id: string;
+  sku: string;
+  titulo: string;
+  slug: string;
+  descripcionBreve: string;
+  categoriaId: string;
+  subcategoriaId: string | null;
+  precio: Precio;
+  destacado: boolean;
+  publicado: boolean;
+  creadoEn: Date;
+  galeria: GaleriaItem[];
+}
+
+/**
+ * Paginated list result wrapper.
+ * Defaults to Producto (full) for backward compatibility.
+ */
+export interface ProductoListResult<T = Producto | ProductoCard> {
+  items: T[];
+  total: number;
+}

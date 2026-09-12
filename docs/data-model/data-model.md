@@ -128,3 +128,38 @@ productos --N cotizaciones (NO referenciado directamente en MVP; cotización es 
 - Decisión del proyecto: **modelo anémico** — las entidades (interfaces TypeScript en `domain/`) solo transportan datos y mapean documentos Firestore; la lógica de negocio vive en Domain/Application Services (patrón típico NestJS).
 - Los "decoradores" de Firestore (tipos de datos, conversión timestamps) **no deben mezclarse con validación de negocio compleja** en la misma clase; la validación va en el Service o en value objects dedicados.
 - Repositories en `infrastructure/` implementan interfaces de `domain/` (ej. `IProductRepository`) usando Firebase Admin SDK.
+
+## Índices compuestos (Firestore)
+
+Los listados públicos de productos filtran por `publicado` y ordenan por `creadoEn DESC`. Para soportar los escenarios de listado sin escaneos completos, se declaran los siguientes índices compuestos en la colección `productos`:
+
+| Índice | Campos | Uso |
+|--------|--------|-----|
+| 1 | `publicado` ASC + `creadoEn` DESC | Listado general de productos publicados |
+| 2 | `publicado` ASC + `categoriaId` ASC + `creadoEn` DESC | Filtrado por categoría |
+| 3 | `publicado` ASC + `subcategoriaId` ASC + `creadoEn` DESC | Filtrado por subcategoría |
+| 4 | `publicado` ASC + `destacado` ASC + `creadoEn` DESC | Listado de productos destacados |
+
+Los índices se declaran en `apps/backend/firestore.indexes.json` y se despliegan con `firebase deploy`.
+
+### Conteo con `count()` aggregation
+
+El campo `meta.total` de la respuesta de paginación se obtiene mediante `count()` de Firestore (aggregation query), **sin** `orderBy` ni `limit`. Ejemplo:
+
+```ts
+const snapshot = await collection.where('publicado', '==', true).count().get();
+const total = snapshot.data().count;
+```
+
+Esto evita escanear documentos innecesariamente; el conteo es una operación optimizada en Firestore que no depende del orden de los resultados.
+
+### Tradeoff: paginación por offset
+
+La paginación por offset (`skip = (page - 1) * limit`, `limit`) tiene un costo conocido en Firestore: **cada documento saltado se carga y descarta** (se paga una lectura por documento escaneado hasta el offset). Esto impacta el rendimiento en páginas profundas (ej. página 50 de 24 items = 1176 documentos cargados).
+
+Alternativas viables si el volumen lo exige en el futuro:
+
+- **Cursor-based pagination** (empezar desde el último documento de la página anterior) — evita el escaneo de documentos saltados.
+- **Resolución en memoria**: para `search` y `sortBy` en campos no indexados (`titulo`, `precio.valor`, `actualizadoEn`), el backend realiza un fetch completo del subconjunto filtrado, ordena y pagina en memoria. Esto es aceptable en MVP porque el catálogo es pequeño (~miles de productos, no millones).
+
+En MVP se usa offset por simplicidad. El camino en memoria para búsqueda y sort alternativo mitiga el costo al trabajar sobre el conjunto ya filtrado.

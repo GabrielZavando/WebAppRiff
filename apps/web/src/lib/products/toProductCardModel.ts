@@ -1,4 +1,4 @@
-import type { CategoriaApi, ProductCardModel, ProductoApi } from '@/lib/types/products-page';
+import type { CategoriaApi, ProductCardModel, ProductoCardApi } from '@/lib/types/products-page';
 import { stripHtmlToText } from '@riff/html-sanitize';
 
 export interface ToProductCardModelContext {
@@ -6,8 +6,8 @@ export interface ToProductCardModelContext {
 }
 
 /**
- * Maps a `ProductoApi` to the `ProductCardModel` consumed by the presentational
- * card components.
+ * Maps a `ProductoCardApi` (or full `ProductoApi`) to the `ProductCardModel`
+ * consumed by the presentational card components.
  *
  * The category name is resolved server-side (build time) from the cached
  * categories list — no client lookup, no runtime fetch. When the category is
@@ -18,7 +18,7 @@ export interface ToProductCardModelContext {
  * Pure and deterministic.
  */
 export function toProductCardModel(
-  product: ProductoApi,
+  product: ProductoCardApi,
   context: ToProductCardModelContext,
 ): ProductCardModel {
   const galeriaItem = product.galeria[0];
