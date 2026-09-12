@@ -106,6 +106,27 @@
         "timestamp": "2026-09-11T00:00:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "2026-09-12-products-pagination",
+      "ticket_id": "W2",
+      "archived_at": "2026-09-12T00:00:00Z",
+      "specs_applied": [
+        "api-products-pagination",
+        "firestore-composite-indexes",
+        "response-envelope-meta",
+        "web-product-card-adaptation"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-11T18:20:00-03:00",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-11T21:00:00-03:00",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

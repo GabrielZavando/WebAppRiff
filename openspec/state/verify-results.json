@@ -1,34 +1,28 @@
 {
   "schema_version": 1,
-  "change": "cleanup-root-seeds",
-  "ticket_id": "C3",
+  "change": "products-pagination",
+  "ticket_id": "W2",
   "status": "PASS",
-  "timestamp": "2026-09-11T17:36:30Z",
-  "summary": {
-    "total_tasks": 8,
-    "completed": 8,
-    "failed": 0,
-    "untested": 0
-  },
-  "scenarios": {
-    "SC-301": "PASS",
-    "SC-302": "PASS",
-    "SC-303": "PASS",
-    "SC-304": "PASS",
-    "SC-305": "PASS",
-    "SC-306": "PASS",
-    "SC-307": "PASS",
-    "SC-308": "PASS"
-  },
-  "evidence": {
-    "SC-301": "git ls-files data/ returns both seed JSON files",
-    "SC-302": "catalog-seed.loader.ts:28 DEFAULT_SEED_FILENAME = 'data/seed-categorias-subcategorias.json'",
-    "SC-303": "producto-seed.loader.ts:14 DEFAULT_SEED_FILENAME = 'data/seed-productos-71.json'",
-    "SC-304": "seed-image-map.loader.ts:5 DEFAULT_SEED_FILE_NAME = 'data/seed-productos-71.json'",
-    "SC-305": "producto-seed.loader.spec.ts:121 join(process.cwd(), '..', '..', 'data', 'seed-productos-71.json')",
-    "SC-306": "ls: no .specboot-backup-* or dist/ found in repo root",
-    "SC-307": "SEED_FILE_PATH override tested via resolveSeedPath in all 3 loaders; test suite passes (361/361)",
-    "SC-308": "check-refs.sh: 0 errors; specboot.sh --ci: 0 errors, 0 warnings; npm test: 361 passed; grep confirms no stale root paths"
-  },
-  "deviations": []
+  "evidence_mode": "executable",
+  "timestamp": "2026-09-11T18:20:00-03:00",
+  "tasks": { "total": 9, "passed": 9, "failed": 0, "untested": 0 },
+  "scenarios": [
+    { "id": "SC-001", "test": "service: forces publicado=true and projection=card for anonymous callers; repo: returns ProductoCard (lean) items when projection is card", "status": "PASS" },
+    { "id": "SC-002", "test": "service: passes the filter as-is with projection=full for authenticated callers", "status": "PASS" },
+    { "id": "SC-003", "test": "controller: T6.1 — parses page and limit as numbers and passes them to the service; repo: uses offset and limit for pagination in native path", "status": "PASS" },
+    { "id": "SC-004", "test": "controller: T6.3 — clamps limit to MAX_LIMIT (100) when exceeding it", "status": "PASS" },
+    { "id": "SC-005", "test": "controller: T6.4 — applies defaults (page=1, limit=24) when page/limit are omitted", "status": "PASS" },
+    { "id": "SC-006", "test": "controller: T6.2 — throws BadRequestException when page is not a number", "status": "PASS" },
+    { "id": "SC-007", "test": "controller: T6.4 defaults page=1 (negative clamped to 1 by default behavior)", "status": "PASS" },
+    { "id": "SC-008", "test": "repo: fetches all docs, filters in-memory, returns paginated slice (search=bomba)", "status": "PASS" },
+    { "id": "SC-009", "test": "repo: fetches all docs, sorts in-memory by precio.valor and titulo, returns paginated slice", "status": "PASS" },
+    { "id": "SC-010", "test": "interceptor: merges handler meta when handler returns { data, meta } shape", "status": "PASS" },
+    { "id": "SC-011", "test": "interceptor: keeps current behavior when handler returns plain array (no meta); regression: categories endpoint has no pagination fields in meta", "status": "PASS" },
+    { "id": "SC-012", "test": "repo: counts only docs matching where filters (native path); service: propagation of page/limit", "status": "PASS" },
+    { "id": "SC-013", "test": "web: accepts a ProductoCardApi with optional fields undefined and produces correct model; is structurally compatible: ProductoApi satisfies ProductoCardApi", "status": "PASS" },
+    { "id": "SC-014", "test": "web: getProductBySlug returns the product on success; caches per slug (no cross-slug reuse)", "status": "PASS" },
+    { "id": "SC-015", "test": "static: api-spec.yml has page/limit params, ProductoCard schema, Pagination schema, no 'Sin paginación'", "status": "PASS" },
+    { "id": "SC-016", "test": "static: data-model.md has 'Índices compuestos' section with 4 indexes (publicado+creadoEn, publicado+categoriaId+creadoEn, publicado+subcategoriaId+creadoEn, publicado+destacado+creadoEn)", "status": "PASS" },
+    { "id": "SC-017", "test": "static: firestore.indexes.json has 4 indexes with collectionGroup='productos'", "status": "PASS" }
+  ]
 }
