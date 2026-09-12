@@ -119,6 +119,23 @@ describe('ProductoController', () => {
       ).toThrow(BadRequestException);
     });
 
+    it('throws BadRequestException when limit is not a number', () => {
+      expect(() =>
+        controller.findAll(
+          { user: undefined } as never,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          '1',
+          'abc',
+        ),
+      ).toThrow(BadRequestException);
+    });
+
     it('T6.3 — clamps limit to MAX_LIMIT (100) when exceeding it', async () => {
       readService.findAll.mockResolvedValue({ items: [], total: 0 });
       await controller.findAll(

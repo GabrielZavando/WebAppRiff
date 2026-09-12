@@ -306,6 +306,12 @@ describe('ProductoRepository', () => {
       const result = await repo.findAll({ sortBy: 'unknown' as never });
       expect(result.items).toHaveLength(2);
     });
+
+    it('hits sortValue default branch with search + unknown sortBy (in-memory path)', async () => {
+      store.set('productos/p1', { ...baseProduct(), id: 'p1', titulo: 'Valvula' });
+      const result = await repo.findAll({ search: 'valv', sortBy: 'unknown' as never });
+      expect(result.items).toHaveLength(1);
+    });
   });
 
   describe('timestamp normalization (toDate)', () => {
@@ -510,6 +516,17 @@ describe('ProductoRepository', () => {
       const result = await repo.findAll({ search: 'bomba', sortBy: 'titulo', sortDir: 'asc' });
       expect(result.items.map((i) => i.titulo)).toEqual(['Bomba Alpha', 'Bomba Zeta']);
       expect(result.total).toBe(2);
+    });
+
+    it('returns card projection items via in-memory path when search is present', async () => {
+      store.set('productos/p1', { ...baseProduct(), id: 'p1', titulo: 'Bomba Centrífuga' });
+      store.set('productos/p2', { ...baseProduct(), id: 'p2', titulo: 'Tubo PVC' });
+      const result = await repo.findAll({ search: 'bomba', projection: 'card' });
+      expect(result.items).toHaveLength(1);
+      const card = result.items[0];
+      expect(card).not.toHaveProperty('descripcionLarga');
+      expect(card).not.toHaveProperty('stock');
+      expect(card).not.toHaveProperty('actualizadoEn');
     });
   });
 
