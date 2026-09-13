@@ -93,14 +93,34 @@ jobs:
           region: ${{ vars.GCP_REGION }}
           image: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/riff/riff-backend:sha-${{ github.sha }}
 
-      - name: Smoke test (GET /health)
+      - name: Smoke test (domain endpoints)
         run: |
           URL=$(gcloud run services describe riff-api-staging \
             --region "${{ vars.GCP_REGION }}" \
             --project "${{ vars.GCP_PROJECT }}" \
             --format 'value(status.url)')
           echo "Staging URL: $URL"
+
+          # 1. Health
           curl -fsS --retry 5 --retry-delay 5 "$URL/health" > /dev/null
+          echo "✅ /health OK"
+
+          # 2. Products: 200 + non-empty data
+          PRODUCTS=$(curl -fsS --retry 3 --retry-delay 5 "$URL/api/v1/products")
+          echo "$PRODUCTS" | grep -q '"data":\[\]' && { echo "❌ products list is empty"; exit 1; }
+          echo "$PRODUCTS" | grep -q '"data":\[' || { echo "❌ products has no data array"; exit 1; }
+          echo "✅ /api/v1/products OK (non-empty)"
+
+          # 3. Categories: 200 + data array
+          curl -fsS --retry 3 --retry-delay 5 "$URL/api/v1/categories" | grep -q '"data":\[' || { echo "❌ categories failed"; exit 1; }
+          echo "✅ /api/v1/categories OK"
+
+          # 4. Quote capture: POST /api/v1/quotes → 201
+          CODE=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$URL/api/v1/quotes" \
+            -H 'content-type: application/json' \
+            -d '{"nombre":"deploy smoke","email":"smoke@riff.cl","nombre_empresa":"Smoke SA","mensaje":"smoke test"}')
+          [ "$CODE" = "201" ] || { echo "❌ POST /api/v1/quotes → $CODE"; exit 1; }
+          echo "✅ POST /api/v1/quotes OK (201)"
           echo "✅ Staging smoke passed"
 
   # 3.4 — Optional Coolify trigger for the static frontends (web/admin are
@@ -178,14 +198,34 @@ jobs:
           region: ${{ vars.GCP_REGION }}
           image: ${{ env.IMAGE_WITH_DIGEST }}
 
-      - name: Smoke test production (GET /health)
+      - name: Smoke test production (domain endpoints)
         run: |
           URL=$(gcloud run services describe riff-api-prod \
             --region "${{ vars.GCP_REGION }}" \
             --project "${{ vars.GCP_PROJECT }}" \
             --format 'value(status.url)')
           echo "Production URL: $URL"
+
+          # 1. Health
           curl -fsS --retry 5 --retry-delay 5 "$URL/health" > /dev/null
+          echo "✅ /health OK"
+
+          # 2. Products: 200 + non-empty data
+          PRODUCTS=$(curl -fsS --retry 3 --retry-delay 5 "$URL/api/v1/products")
+          echo "$PRODUCTS" | grep -q '"data":\[\]' && { echo "❌ products list is empty"; exit 1; }
+          echo "$PRODUCTS" | grep -q '"data":\[' || { echo "❌ products has no data array"; exit 1; }
+          echo "✅ /api/v1/products OK (non-empty)"
+
+          # 3. Categories: 200 + data array
+          curl -fsS --retry 3 --retry-delay 5 "$URL/api/v1/categories" | grep -q '"data":\[' || { echo "❌ categories failed"; exit 1; }
+          echo "✅ /api/v1/categories OK"
+
+          # 4. Quote capture: POST /api/v1/quotes → 201
+          CODE=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$URL/api/v1/quotes" \
+            -H 'content-type: application/json' \
+            -d '{"nombre":"deploy smoke","email":"smoke@riff.cl","nombre_empresa":"Smoke SA","mensaje":"smoke test"}')
+          [ "$CODE" = "201" ] || { echo "❌ POST /api/v1/quotes → $CODE"; exit 1; }
+          echo "✅ POST /api/v1/quotes OK (201)"
           echo "✅ Production smoke passed"
 
       - name: Rollback hint (on failure)

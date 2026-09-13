@@ -63,8 +63,14 @@ jobs:
         run: npm run build --workspaces
       - name: backend tests with coverage (>=90% blocking via jest thresholds)
         run: npm run test:cov --workspace=apps/backend
+      - name: backend e2e (supertest, in-memory Firestore fake)
+        run: npm run test:e2e --workspace=apps/backend
       - name: web tests
         run: npm run test --workspace=apps/web
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      - name: web e2e + smoke (playwright, stub API)
+        run: npm run test:smoke --workspace=apps/web
       - name: admin tests
         run: npm run test --workspace=apps/admin
       - name: shared package (html-sanitize) tests
