@@ -66,7 +66,7 @@ describe('CotizacionForm — six fields with labels', () => {
     expect(getInputByName(html, 'nombre')).toContain('type="text"');
     expect(getInputByName(html, 'email')).toContain('type="email"');
     expect(getInputByName(html, 'telefono')).toContain('type="tel"');
-    expect(getInputByName(html, 'empresa')).toContain('type="text"');
+    expect(getInputByName(html, 'nombre_empresa')).toContain('type="text"');
     expect(getInputByName(html, 'rut')).toContain('type="text"');
     const textarea = html.match(/<textarea[^>]*name="mensaje"[^>]*>/);
     expect(textarea, 'textarea name=mensaje').toBeTruthy();
@@ -83,7 +83,7 @@ describe('CotizacionForm — six fields with labels', () => {
       ['nombre', 'cotizacion-nombre', 'NOMBRE COMPLETO'],
       ['email', 'cotizacion-email', 'CORREO ELECTRÓNICO'],
       ['telefono', 'cotizacion-telefono', 'TELÉFONO'],
-      ['empresa', 'cotizacion-empresa', 'NOMBRE DE LA EMPRESA'],
+      ['nombre_empresa', 'cotizacion-empresa', 'NOMBRE DE LA EMPRESA'],
       ['rut', 'cotizacion-rut', 'RUT DE LA EMPRESA'],
     ] as const) {
       const input = getInputByName(html, name);
