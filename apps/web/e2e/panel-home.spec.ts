@@ -160,31 +160,30 @@ test.describe('PanelHome (home about/trust panel)', () => {
     expect(Math.abs(leftBox!.width - rightBox!.width)).toBeLessThanOrEqual(8);
   });
 
-  test('panel visible width matches the SearchForm width (both use .container) (12 width constraint)', async ({
+  test('panel uses the .container token while SearchForm uses its 760px inner width (12 width constraint)', async ({
     page,
   }) => {
-    // The panel visible content (teal+white halves) is wrapped in
-    // `<div class="container ...">` so it should match the width of the
-    // SearchForm's inner container. We measure the inner content box of both
-    // and assert they are equal (within 1px tolerance for sub-pixel rounding).
+    // Contract (search-form spec §"inner container"): SearchForm inner is
+    // `max-w-[760px] mx-auto` — NOT `.container`. PanelHome uses `.container`
+    // (max-w-7xl). Assert each matches its OWN constraint and both are centered.
     const panel = page.locator(PANEL_SECTION_SELECTOR);
-    // The panel's container is the first child div of the section.
     const panelContainer = panel.locator('div.container').first();
-    // The SearchForm container is its inner `<div class="container ...">`.
-    const searchFormContainer = page
+    const searchInner = page
       .getByRole('search', { name: 'Buscar productos' })
-      .locator('div.container')
-      .first();
+      .locator('form')
+      .locator('xpath=..');
 
     const panelBox = await panelContainer.boundingBox();
-    const searchBox = await searchFormContainer.boundingBox();
+    const searchBox = await searchInner.boundingBox();
     expect(panelBox).toBeTruthy();
     expect(searchBox).toBeTruthy();
 
-    // Widths must match (both use the same `.container` token → `max-w-7xl mx-auto px-*`).
-    expect(Math.abs(panelBox!.width - searchBox!.width)).toBeLessThanOrEqual(1);
-    // And both are horizontally centered (left edges align).
-    expect(Math.abs(panelBox!.x - searchBox!.x)).toBeLessThanOrEqual(1);
+    // Panel: container max-w-7xl (1280px) minus padding on a 1280 viewport.
+    expect(panelBox!.width).toBeLessThanOrEqual(1280);
+    expect(panelBox!.width).toBeGreaterThanOrEqual(1200);
+    // Search: inner constrained to 760px.
+    expect(searchBox!.width).toBeLessThanOrEqual(760);
+    expect(searchBox!.width).toBeGreaterThanOrEqual(740);
   });
 
   test('keeps the 2x2 stats grid on mobile, all 4 cells visible at 320px (4.6)', async ({
@@ -206,23 +205,33 @@ test.describe('PanelHome (home about/trust panel)', () => {
     }
   });
 
-  test('overlaps the HeroBanner: panel top is above the hero bottom (4.7)', async ({
+  test('hero overlap on mobile, panel sits below hero on desktop (4.7, hero-fullbleed-overlay)', async ({
     page,
   }) => {
+    // Design update (hero-fullbleed-overlay): the panel overlaps the hero on
+    // mobile (-mt-2) but sits below it on desktop (lg:mt-2).
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/');
+
     const hero = page.locator('section.relative:not(.z-10)').first();
     const panel = page.locator(PANEL_SECTION_SELECTOR).first();
 
-    const heroBox = await hero.boundingBox();
-    const panelBox = await panel.boundingBox();
+    let heroBox = await hero.boundingBox();
+    let panelBox = await panel.boundingBox();
     expect(heroBox).toBeTruthy();
     expect(panelBox).toBeTruthy();
-
-    // The negative margin-top pulls the panel UP into the hero: the panel's
-    // top edge sits above the hero's bottom edge by an amount greater than 0.
+    // Mobile: negative margin pulls the panel up into the hero.
     expect(panelBox!.y).toBeLessThan(heroBox!.y + heroBox!.height);
-    // And the overlap depth is at least 1px (i.e. panel starts before hero ends).
-    const overlapDepth = heroBox!.y + heroBox!.height - panelBox!.y;
-    expect(overlapDepth).toBeGreaterThan(0);
+    expect(heroBox!.y + heroBox!.height - panelBox!.y).toBeGreaterThan(0);
+
+    // Desktop: panel sits below the hero (no overlap).
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.reload();
+    heroBox = await hero.boundingBox();
+    panelBox = await panel.boundingBox();
+    expect(heroBox).toBeTruthy();
+    expect(panelBox).toBeTruthy();
+    expect(panelBox!.y).toBeGreaterThanOrEqual(heroBox!.y + heroBox!.height);
   });
 
   test('the <h1> "Innovación que Fluye" stays visible above the panel on common viewports (4.8)', async ({

@@ -9,7 +9,7 @@ import { test, expect } from 'playwright/test';
  * with the vertical padding: `section.bg-bg` is unique to the SolutionSection.
  */
 
-const SECTION_SELECTOR = 'section.bg-bg';
+const SECTION_SELECTOR = 'section.bg-bg:has(h3)';
 
 /**
  * Computes the WCAG contrast ratio between two CSS rgb() color strings.
@@ -169,7 +169,7 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     await expect(link).toHaveCSS('border-radius', '0px');
   });
 
-  test('document keeps exactly 1 h1, 3 h2, 4 h3 and 12 h4 (5.6)', async ({ page }) => {
+  test('document keeps exactly 1 h1, 4 h2, 4 h3 and 12 h4 (5.6)', async ({ page }) => {
     // NOTE: the Astro Dev Toolbar (injected into `astro preview`) appends its
     // own hidden <h1> elements to the DOM. Filter with :visible so we assert
     // on the page's actual visible content hierarchy only.
@@ -185,7 +185,7 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     // last (its own <h2> + <h3>), so the visible outline is 1/3/4/12. See
     // pilares-section spec scenario "DOM order is preserved: ... → pilares".
     await expect(page.locator('h1:visible')).toHaveCount(1);
-    await expect(page.locator('h2:visible')).toHaveCount(3);
+    await expect(page.locator('h2:visible')).toHaveCount(4);
     await expect(page.locator('h3:visible')).toHaveCount(4);
     await expect(page.locator('h4:visible')).toHaveCount(12);
   });
@@ -195,12 +195,15 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     const imgs = section.locator('img');
     await expect(imgs).toHaveCount(4);
 
-    // Wait for network idle-ish: assert each image has a successful naturalWidth.
+    // Wait for network idle-ish: scroll each image into view (lazy-loading)
+    // and assert it actually loaded.
     for (let i = 0; i < 4; i++) {
       const img = imgs.nth(i);
+      await img.scrollIntoViewIfNeeded();
+      await expect
+        .poll(async () => img.evaluate((el) => (el as HTMLImageElement).naturalWidth))
+        .toBeGreaterThan(0);
       await expect(img).toHaveJSProperty('complete', true);
-      const naturalWidth = await img.evaluate((el) => (el as HTMLImageElement).naturalWidth);
-      expect(naturalWidth).toBeGreaterThan(0);
     }
   });
 

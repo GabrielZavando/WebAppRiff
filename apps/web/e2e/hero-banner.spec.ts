@@ -124,25 +124,23 @@ test.describe('HeroBanner (home hero section)', () => {
   test('h1 font-size scales responsively between mobile and desktop (5.9)', async ({
     page,
   }) => {
-    // Mobile: text-4xl -> ~36px
+    // Mobile: text-5xl -> 3rem = 48px
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
     const h1 = page.locator(`${HERO_SECTION_SELECTOR} h1`);
     let fontSize = await h1.evaluate((el) => parseFloat(window.getComputedStyle(el).fontSize));
-    // Tailwind text-4xl is exactly 2.25rem = 36px (root 16px).
-    expect(fontSize).toBeGreaterThanOrEqual(34);
-    expect(fontSize).toBeLessThanOrEqual(38);
+    expect(fontSize).toBeGreaterThanOrEqual(46);
+    expect(fontSize).toBeLessThanOrEqual(50);
 
-    // Desktop: md:text-6xl -> ~60px
+    // Desktop: md:text-7xl -> 4.5rem = 72px
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.reload();
     const h1Desktop = page.locator(`${HERO_SECTION_SELECTOR} h1`);
     fontSize = await h1Desktop.evaluate((el) =>
       parseFloat(window.getComputedStyle(el).fontSize),
     );
-    // Tailwind text-6xl is exactly 3.75rem = 60px.
-    expect(fontSize).toBeGreaterThanOrEqual(58);
-    expect(fontSize).toBeLessThanOrEqual(62);
+    expect(fontSize).toBeGreaterThanOrEqual(70);
+    expect(fontSize).toBeLessThanOrEqual(74);
   });
 
   test('keyboard Tab cycles through CTAs in DOM order (5.10)', async ({ page }) => {

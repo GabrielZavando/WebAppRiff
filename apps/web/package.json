@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:smoke": "playwright test --project=chromium",
+    "e2e:build": "NESTJS_API_URL=http://localhost:3001/api/v1 REQUIRE_API=true npm run build && npm run preview",
     "typecheck": "astro check && tsc --noEmit"
   },
   "dependencies": {
