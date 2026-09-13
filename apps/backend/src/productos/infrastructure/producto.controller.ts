@@ -86,7 +86,7 @@ export class ProductoController {
 
   @Get()
   @UseGuards(OptionalFirebaseAuthGuard)
-  findAll(
+  async findAll(
     @Req() req: AuthedRequest,
     @Query('categoriaId') categoriaId?: string,
     @Query('subcategoriaId') subcategoriaId?: string,
@@ -97,13 +97,20 @@ export class ProductoController {
     @Query('sortDir') sortDir?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
-  ): Promise<ProductoListResult<Producto | ProductoCard>> {
+  ): Promise<{ data: (Producto | ProductoCard)[]; meta: { page: number; limit: number; total: number } }> {
     const filter = buildFilter({ categoriaId, subcategoriaId, destacado, publicado, search, sortBy, sortDir });
     const pagination = parsePagination(page, limit);
     filter.page = pagination.page;
     filter.limit = pagination.limit;
 
-    return this.readService.findAll(filter, !!req.user);
+    const result = await this.readService.findAll(filter, !!req.user);
+    // Contract (api-products-pagination): envelope `data` is the plain array;
+    // pagination stats ride on the envelope `meta` via the ResponseInterceptor
+    // merge branch.
+    return {
+      data: result.items,
+      meta: { page: pagination.page, limit: pagination.limit, total: result.total },
+    };
   }
 
   @Get('slug/:slug')
