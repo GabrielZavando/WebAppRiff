@@ -20,7 +20,7 @@ import { RolesGuard } from '../../auth/roles.guard';
 import { Roles } from '../../auth/roles.decorator';
 import { ProductoReadService } from '../application/producto-read.service';
 import { ProductoWriteService } from '../application/producto-write.service';
-import { Producto, ProductoCard, ProductoFilter, ProductoListResult, ProductoSortField } from '../domain/producto.entity';
+import { Producto, ProductoCard, ProductoFilter, ProductoSortField } from '../domain/producto.entity';
 import { ProductoCreateDto } from './producto-create.dto';
 import { ProductoUpdateDto } from './producto-update.dto';
 
