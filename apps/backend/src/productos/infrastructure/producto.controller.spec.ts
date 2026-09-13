@@ -102,8 +102,8 @@ describe('ProductoController', () => {
       expect(filter.limit).toBe(10);
     });
 
-    it('T6.2 — throws BadRequestException when page is not a number', () => {
-      expect(() =>
+    it('T6.2 — rejects with BadRequestException when page is not a number', async () => {
+      await expect(
         controller.findAll(
           { user: undefined } as never,
           undefined,
@@ -116,11 +116,11 @@ describe('ProductoController', () => {
           'abc',
           '10',
         ),
-      ).toThrow(BadRequestException);
+      ).rejects.toThrow(BadRequestException);
     });
 
-    it('throws BadRequestException when limit is not a number', () => {
-      expect(() =>
+    it('rejects with BadRequestException when limit is not a number', async () => {
+      await expect(
         controller.findAll(
           { user: undefined } as never,
           undefined,
@@ -133,7 +133,7 @@ describe('ProductoController', () => {
           '1',
           'abc',
         ),
-      ).toThrow(BadRequestException);
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('T6.3 — clamps limit to MAX_LIMIT (100) when exceeding it', async () => {

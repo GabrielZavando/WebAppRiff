@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:smoke": "playwright test --project=chromium",
+    "e2e:build": "npm run build && npm run preview",
     "typecheck": "astro check && tsc --noEmit"
   },
   "dependencies": {

@@ -119,6 +119,9 @@ test.describe('Site header (main navigation)', () => {
     await page.goto('/cotizacion');
 
     await expect(page).toHaveURL(/\/cotizacion$/);
-    await expect(page.getByRole('heading', { name: 'Solicitar cotización' })).toBeVisible();
+    // The cotización page h1 is "Datos del Requerimiento" (cotizacion-page spec).
+    await expect(
+      page.getByRole('heading', { name: 'Datos del Requerimiento' }),
+    ).toBeVisible();
   });
 });

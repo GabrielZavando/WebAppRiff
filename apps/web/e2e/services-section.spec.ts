@@ -6,11 +6,11 @@ import { test, expect } from 'playwright/test';
  * Selector strategy: the ServicesSection is the FOURTH <section> on the page
  * (the first is the HeroBanner `section.relative`, the second is the PanelHome
  * `section.relative.z-10`, the third is the SolutionSection `section.bg-bg`).
- * We target it by its unique class `bg-secondary-dark`: `section.bg-secondary-dark`
+ * We target it by its unique class `bg-primary-deep` (destacados took bg-secondary-dark).
  * is unique to the ServicesSection.
  */
 
-const SECTION_SELECTOR = 'section.bg-secondary-dark';
+const SECTION_SELECTOR = 'section.bg-primary-deep';
 
 /**
  * Computes the WCAG contrast ratio between two CSS rgb() color strings.
@@ -171,7 +171,7 @@ test.describe('ServicesSection (home specialized services)', () => {
     expect(cls).toContain('py-4');
   });
 
-  test('document keeps exactly 1 h1, 3 h2, 4 h3 and 12 h4', async ({ page }) => {
+  test('document keeps exactly 1 h1, 4 h2, 4 h3 and 12 h4', async ({ page }) => {
     // See servicios-section spec scenario "DOM order is preserved": the page
     // outline is now 1/2/2/8 (ServicesSection adds its own <h3> and 4 <h4>).
     // POST-VERIFY UPDATE (destacados-section): the home page renders
@@ -182,7 +182,7 @@ test.describe('ServicesSection (home specialized services)', () => {
     // last (its own <h2> + <h3>), so the visible outline is 1/3/4/12. See
     // pilares-section spec scenario "DOM order is preserved: ... → pilares".
     await expect(page.locator('h1:visible')).toHaveCount(1);
-    await expect(page.locator('h2:visible')).toHaveCount(3);
+    await expect(page.locator('h2:visible')).toHaveCount(4);
     await expect(page.locator('h3:visible')).toHaveCount(4);
     await expect(page.locator('h4:visible')).toHaveCount(12);
   });
@@ -194,11 +194,13 @@ test.describe('ServicesSection (home specialized services)', () => {
 
     for (let i = 0; i < 4; i++) {
       const img = imgs.nth(i);
+      // Images are lazy-loaded: scroll the card into view to trigger load
+      // before asserting completion, otherwise `complete` stays false.
+      await img.scrollIntoViewIfNeeded();
+      await expect
+        .poll(async () => img.evaluate((el) => (el as HTMLImageElement).naturalWidth))
+        .toBeGreaterThan(0);
       await expect(img).toHaveJSProperty('complete', true);
-      const naturalWidth = await img.evaluate(
-        (el) => (el as HTMLImageElement).naturalWidth,
-      );
-      expect(naturalWidth).toBeGreaterThan(0);
     }
   });
 

@@ -1,16 +1,15 @@
-/** @type {import('jest').Config} */
-module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  rootDir: '.',
-  roots: ['<rootDir>/test'],
-  moduleFileExtensions: ['js', 'json', 'ts'],
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "rootDir": ".",
+  "roots": ["<rootDir>/test"],
+  "setupFiles": ["reflect-metadata", "<rootDir>/src/common/test/html-sanitize.mock.ts"],
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/src/$1"
   },
-  testRegex: '.*\\.e2e-spec\\.ts$',
-  transform: {
-    '^.+\\.(t|j)s$': ['ts-jest', { tsconfig: 'tsconfig.json' }],
-  },
-  passWithNoTests: true,
-};
+  "testRegex": ".*\\.e2e-spec\\.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": ["ts-jest", { "tsconfig": "tsconfig.json" }]
+  }
+}

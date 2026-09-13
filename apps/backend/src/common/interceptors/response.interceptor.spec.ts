@@ -73,6 +73,32 @@ describe('ResponseInterceptor', () => {
     });
   });
 
+  it('merges handler meta with a { data, meta } shape (quotes Q3)', (done) => {
+    const context = makeContext('/api/v1/quotes?page=1&limit=20');
+    const next: CallHandler = {
+      handle: () =>
+        of({
+          data: [{ id: 'q1' }],
+          meta: { page: 1, limit: 20, total: 1 },
+        }),
+    };
+
+    interceptor.intercept(context, next).subscribe((result) => {
+      expect(result).toEqual({
+        data: [{ id: 'q1' }],
+        error: null,
+        meta: {
+          timestamp: expect.any(String),
+          path: '/api/v1/quotes?page=1&limit=20',
+          page: 1,
+          limit: 20,
+          total: 1,
+        },
+      });
+      done();
+    });
+  });
+
   it('keeps current behavior when handler returns plain array (no meta)', (done) => {
     const context = makeContext('/api/v1/categories');
     const next: CallHandler = { handle: () => of([{ id: 1 }, { id: 2 }]) };

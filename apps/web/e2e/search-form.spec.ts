@@ -2,9 +2,9 @@ import { test, expect } from 'playwright/test';
 
 const CATEGORIES = [
   'Todas las categorías',
-  'Herramientas',
-  'Seguridad',
-  'Electricidad',
+  'Medición de Fluidos',
+  'Tratamiento de Agua',
+  'Control y Automatización',
 ] as const;
 
 test.describe('SearchForm (global search bar)', () => {
@@ -111,16 +111,16 @@ test.describe('SearchForm (global search bar)', () => {
     await expect(button).toHaveAccessibleName('BUSCAR');
   });
 
-  test('constrains the form container to max-width 860px and centers it', async ({ page }) => {
+  test('constrains the form container to max-width 760px and centers it', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
 
     const search = page.getByRole('search', { name: 'Buscar productos' });
     const form = search.locator('form');
-    // The inner container (direct parent of <form>) must carry max-w-[860px].
+    // The inner container (direct parent of <form>) must carry max-w-[760px].
     const container = form.locator('xpath=..');
     const containerClass = await container.getAttribute('class') ?? '';
-    expect(containerClass).toContain('max-w-[860px]');
+    expect(containerClass).toContain('max-w-[760px]');
     expect(containerClass).toContain('mx-auto');
     expect(containerClass).not.toContain('container');
   });
@@ -183,11 +183,11 @@ test.describe('SearchForm (global search bar)', () => {
 
     const search = page.getByRole('search', { name: 'Buscar productos' });
     await search.getByRole('searchbox').fill('taladro');
-    await search.getByRole('combobox').selectOption('herramientas');
+    await search.getByRole('combobox').selectOption('cat-fluidos');
     await search.getByRole('button', { name: 'BUSCAR' }).click();
 
-    await page.waitForURL('**/productos?q=taladro&categoriaId=herramientas');
-    expect(page.url()).toContain('/productos?q=taladro&categoriaId=herramientas');
+    await page.waitForURL('**/productos?q=taladro&categoriaId=cat-fluidos');
+    expect(page.url()).toContain('/productos?q=taladro&categoriaId=cat-fluidos');
   });
 
   test('omits empty q when only categoriaId is filled', async ({ page }) => {
@@ -196,11 +196,11 @@ test.describe('SearchForm (global search bar)', () => {
 
     const search = page.getByRole('search', { name: 'Buscar productos' });
     // Leave input empty
-    await search.getByRole('combobox').selectOption('herramientas');
+    await search.getByRole('combobox').selectOption('cat-fluidos');
     await search.getByRole('button', { name: 'BUSCAR' }).click();
 
-    await page.waitForURL('**/productos?categoriaId=herramientas');
-    expect(page.url()).toContain('categoriaId=herramientas');
+    await page.waitForURL('**/productos?categoriaId=cat-fluidos');
+    expect(page.url()).toContain('categoriaId=cat-fluidos');
     expect(page.url()).not.toContain('q=');
   });
 
@@ -290,7 +290,7 @@ test.describe('SearchForm (global search bar)', () => {
     await page.setViewportSize({ width: 1280, height: 720 });
     const response = await page.goto('/productos');
     expect(response?.status()).toBe(200);
-    await expect(page.getByRole('heading', { name: 'Resultados de búsqueda' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Catálogo de Productos' })).toBeVisible();
   });
 
   test('preserves a single <header> landmark alongside the search landmark', async ({ page }) => {
@@ -354,7 +354,7 @@ test.describe('Search visibility & variant per page (search-bar-pages-scope)', (
     await expect(search.getByRole('button', { name: 'BUSCAR' })).toBeVisible();
   });
 
-  test('/servicios renders the placeholder page with a navy search bar (select visible)', async ({
+  test('/servicios renders the services page with the search bar (select visible)', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
@@ -363,12 +363,12 @@ test.describe('Search visibility & variant per page (search-bar-pages-scope)', (
 
     const search = page.getByRole('search', { name: 'Buscar productos' });
     await expect(search).toBeVisible();
-    const wrapperClass = (await search.getAttribute('class')) ?? '';
-    expect(wrapperClass).toContain('bg-linear-to-r');
-    expect(wrapperClass).toContain('from-secondary');
 
-    // The category <select> IS visible on /servicios.
+    // The category <select> IS visible on /servicios (Layout defaults).
     await expect(search.getByRole('combobox')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Servicios especializados' }).first(),
+    ).toBeVisible();
   });
 
   test('/marcas renders the placeholder page WITHOUT a search bar', async ({ page }) => {
@@ -378,24 +378,22 @@ test.describe('Search visibility & variant per page (search-bar-pages-scope)', (
     await expect(page.getByRole('search')).toHaveCount(0);
   });
 
-  test('/cotizacion shows a navy search bar WITH the category select', async ({ page }) => {
+  test('/cotizacion renders WITHOUT a search bar (focused form page)', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     const response = await page.goto('/cotizacion');
     expect(response?.status()).toBe(200);
 
-    const search = page.getByRole('search', { name: 'Buscar productos' });
-    await expect(search).toBeVisible();
-    const wrapperClass = (await search.getAttribute('class')) ?? '';
-    expect(wrapperClass).toContain('bg-linear-to-r');
-    expect(wrapperClass).toContain('from-secondary');
-
-    // The category <select> IS visible on /cotizacion.
-    await expect(search.getByRole('combobox')).toBeVisible();
+    // cotizacion.astro sets showSearch={false}: the search landmark is omitted.
+    await expect(page.getByRole('search')).toHaveCount(0);
+    // The form heading anchors the page.
+    await expect(
+      page.getByRole('heading', { name: 'Datos del Requerimiento' }),
+    ).toBeVisible();
   });
 
   test('/productos/{slug} shows a navy search bar WITH the category select', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
-    const response = await page.goto('/productos/ablandador-para-agua');
+    const response = await page.goto('/productos/mwn-medidor-industrial-agua-fria');
     expect(response?.status()).toBe(200);
 
     const search = page.getByRole('search', { name: 'Buscar productos' });

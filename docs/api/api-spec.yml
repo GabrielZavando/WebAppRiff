@@ -601,12 +601,17 @@ components:
           type: string
         nombre_empresa:
           type: string
+        rut:
+          type: string
         mensaje:
           type: string
         estado:
           type: string
           enum: [pendiente, atendida]
         creadoEn:
+          type: string
+          format: date-time
+        actualizadoEn:
           type: string
           format: date-time
 
@@ -622,6 +627,8 @@ components:
         telefono:
           type: string
         nombre_empresa:
+          type: string
+        rut:
           type: string
         mensaje:
           type: string
