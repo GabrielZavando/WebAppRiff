@@ -25,6 +25,11 @@
     "node": ">=24.0.0"
   },
   "packageManager": "npm@10.9.8",
+  "overrides": {
+    "@nestjs/platform-express": {
+      "multer": "^2.3.0"
+    }
+  },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
