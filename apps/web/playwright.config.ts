@@ -32,6 +32,12 @@ export default defineConfig({
   // e2e fixture on port 3001) and the Astro build+preview of the site itself,
   // built against the stub with REQUIRE_API=true so the build fails if the
   // catalog ever comes back empty (silent-empty regression guard).
+  //
+  // The site contact bar is public, env-driven content (PRIMARY_PHONE and the
+  // SOCIAL_* URLs). CI has no .env file, so the e2e build injects the public
+  // values here — without them the TopHeader phone/social links simply don't
+  // render and the DOM-order specs fail (CI-only, works locally because of the
+  // developer's .env).
   webServer: [
     {
       command: 'node e2e/support/api-stub.mjs',
@@ -44,6 +50,15 @@ export default defineConfig({
       url: 'http://localhost:4321',
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,
+      env: {
+        NESTJS_API_URL: 'http://localhost:3001/api/v1',
+        REQUIRE_API: 'true',
+        PRIMARY_PHONE: '+56 2 29079067',
+        SOCIAL_FACEBOOK_URL: 'https://facebook.com/riff',
+        SOCIAL_X_URL: 'https://x.com/riff',
+        SOCIAL_INSTAGRAM_URL: 'https://instagram.com/riff',
+        SOCIAL_LINKEDIN_URL: 'https://linkedin.com/company/riff',
+      },
     },
   ],
 });
