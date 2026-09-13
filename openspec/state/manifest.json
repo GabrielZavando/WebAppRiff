@@ -63,7 +63,9 @@
       "change_name": "2026-09-10-audit-blocking",
       "ticket_id": "C2",
       "archived_at": "2026-09-10T21:05:00Z",
-      "specs_applied": ["audit-blocking/spec.md"],
+      "specs_applied": [
+        "audit-blocking/spec.md"
+      ],
       "verification": {
         "status": "PASS",
         "timestamp": "2026-09-10T20:59:08Z",
@@ -79,7 +81,9 @@
       "change_name": "2026-09-10-align-versions",
       "ticket_id": "V1",
       "archived_at": "2026-09-10T22:25:00Z",
-      "specs_applied": ["align-versions"],
+      "specs_applied": [
+        "align-versions"
+      ],
       "verification": {
         "status": "PASS",
         "timestamp": "2026-09-10T22:20:00Z",
@@ -95,7 +99,9 @@
       "change_name": "2026-09-11-cleanup-root-seeds",
       "ticket_id": "C3",
       "archived_at": "2026-09-11T18:00:00Z",
-      "specs_applied": ["cleanup-root-seeds"],
+      "specs_applied": [
+        "cleanup-root-seeds"
+      ],
       "verification": {
         "status": "PASS",
         "timestamp": "2026-09-11T17:36:30Z",
@@ -125,6 +131,27 @@
       "adversarial": {
         "verdict": "SHIP",
         "timestamp": "2026-09-11T21:00:00-03:00",
+        "source": "openspec/state/adversarial-result.json"
+      }
+    },
+    {
+      "change_name": "ampliar-e2e",
+      "ticket_id": "Q3",
+      "archived_at": "2026-09-13T01:37:46Z",
+      "specs_applied": [
+        "quotes-api",
+        "backend-e2e-suite",
+        "web-e2e-critical-flows",
+        "ci-deploy-smoke-gate"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-13T00:12:22Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-13T00:05:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
     }

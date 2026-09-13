@@ -1,28 +1,76 @@
 {
   "schema_version": 1,
-  "change": "products-pagination",
-  "ticket_id": "W2",
+  "change": "ampliar-e2e",
+  "ticket_id": "Q3",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-11T18:20:00-03:00",
-  "tasks": { "total": 9, "passed": 9, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-13T00:12:22Z",
+  "tasks": {
+    "total": 62,
+    "passed": 62,
+    "failed": 0,
+    "untested": 0
+  },
   "scenarios": [
-    { "id": "SC-001", "test": "service: forces publicado=true and projection=card for anonymous callers; repo: returns ProductoCard (lean) items when projection is card", "status": "PASS" },
-    { "id": "SC-002", "test": "service: passes the filter as-is with projection=full for authenticated callers", "status": "PASS" },
-    { "id": "SC-003", "test": "controller: T6.1 — parses page and limit as numbers and passes them to the service; repo: uses offset and limit for pagination in native path", "status": "PASS" },
-    { "id": "SC-004", "test": "controller: T6.3 — clamps limit to MAX_LIMIT (100) when exceeding it", "status": "PASS" },
-    { "id": "SC-005", "test": "controller: T6.4 — applies defaults (page=1, limit=24) when page/limit are omitted", "status": "PASS" },
-    { "id": "SC-006", "test": "controller: T6.2 — throws BadRequestException when page is not a number", "status": "PASS" },
-    { "id": "SC-007", "test": "controller: T6.4 defaults page=1 (negative clamped to 1 by default behavior)", "status": "PASS" },
-    { "id": "SC-008", "test": "repo: fetches all docs, filters in-memory, returns paginated slice (search=bomba)", "status": "PASS" },
-    { "id": "SC-009", "test": "repo: fetches all docs, sorts in-memory by precio.valor and titulo, returns paginated slice", "status": "PASS" },
-    { "id": "SC-010", "test": "interceptor: merges handler meta when handler returns { data, meta } shape", "status": "PASS" },
-    { "id": "SC-011", "test": "interceptor: keeps current behavior when handler returns plain array (no meta); regression: categories endpoint has no pagination fields in meta", "status": "PASS" },
-    { "id": "SC-012", "test": "repo: counts only docs matching where filters (native path); service: propagation of page/limit", "status": "PASS" },
-    { "id": "SC-013", "test": "web: accepts a ProductoCardApi with optional fields undefined and produces correct model; is structurally compatible: ProductoApi satisfies ProductoCardApi", "status": "PASS" },
-    { "id": "SC-014", "test": "web: getProductBySlug returns the product on success; caches per slug (no cross-slug reuse)", "status": "PASS" },
-    { "id": "SC-015", "test": "static: api-spec.yml has page/limit params, ProductoCard schema, Pagination schema, no 'Sin paginación'", "status": "PASS" },
-    { "id": "SC-016", "test": "static: data-model.md has 'Índices compuestos' section with 4 indexes (publicado+creadoEn, publicado+categoriaId+creadoEn, publicado+subcategoriaId+creadoEn, publicado+destacado+creadoEn)", "status": "PASS" },
-    { "id": "SC-017", "test": "static: firestore.indexes.json has 4 indexes with collectionGroup='productos'", "status": "PASS" }
+    {
+      "id": "SC-101",
+      "test": "e2e: POST /api/v1/quotes \u2192 201 with pendiente estado (app.e2e-spec) + unit cotizacion.service/repository",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-102",
+      "test": "e2e: POST /api/v1/quotes missing required \u2192 400; whitelist extra field \u2192 400; unit cotizacion-create.dto.spec (rut optional)",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-103",
+      "test": "e2e: GET /api/v1/quotes sin token \u2192 401; editor \u2192 403; admin \u2192 200 con envelope {data, meta:{page,limit,total}}",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-104",
+      "test": "e2e app.e2e-spec: /health, products envelope, slug detail, categories activa, subcategories activa, quotes 201/400, 401/403 \u2014 11/11",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-105",
+      "test": "static: package.json test:smoke = jest --config jest-e2e.json; npm run test:smoke ejecuta la suite e2e",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-106",
+      "test": "executable: REQUIRE_API=true astro build sin stub falla (npm error code 1); con stub bakes cat\u00e1logo fixture",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-107",
+      "test": "e2e web: catalog-flow.spec.ts \u2014 4/4 PASS (grid cards, click card\u2192detalle h1, CTA href, CTA\u2192cotizacion con form)",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-108",
+      "test": "e2e web: cotizacion-flow.spec.ts \u2014 3/3 PASS (campos visibles, payload urlencoded con nombre_empresa+rut, HTML5 bloquea vac\u00edos)",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-109",
+      "test": "e2e web: 103/103 \u2014 96 landing rehabilitadas (rotos preexistentes) + 7 flow nuevas",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-110",
+      "test": "static: ci.yml project-ci incluye test:e2e backend + playwright install + test:smoke web; admin smoke ausente",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-111",
+      "test": "static: deploy.yml staging+prod smoke = /health + products (non-empty) + categories + POST quotes 201",
+      "status": "PASS"
+    },
+    {
+      "id": "SC-112",
+      "test": "static: api-spec.yml Cotizacion/CotizacionCreate incluyen rut (optional); data-model.md documenta colecci\u00f3n cotizaciones",
+      "status": "PASS"
+    }
   ]
 }
