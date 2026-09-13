@@ -35,6 +35,9 @@ export class ResponseInterceptor<T = unknown> implements NestInterceptor<T, Resp
     const path = url;
     return next.handle().pipe(
       map((data) => {
+        // If the handler returns a paginated shape `{ data, meta }`, merge its
+        // meta into the envelope instead of nesting the whole object as `data`
+        // (so list endpoints expose pagination as top-level `meta`).
         const hasHandlerMeta =
           data !== null &&
           typeof data === 'object' &&
