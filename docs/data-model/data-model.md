@@ -80,11 +80,13 @@ Captura de solicitudes de cotización desde el sitio público (formulario sin au
 |-------|------|-------------|
 | nombre | string | Nombre del solicitante. |
 | email | string | Email de contacto. |
-| telefono | string | Teléfono (opcional). |
+| telefono | string \| null | Teléfono (opcional). |
 | nombre_empresa | string | Nombre de la empresa. |
+| rut | string \| null | RUT de la empresa (opcional). |
 | mensaje | string | Mensaje / detalle de la cotización. |
 | estado | "pendiente" \| "atendida" | Estado de gestión por el admin. Default: "pendiente". |
 | creadoEn | timestamp | Fecha de creación. |
+| actualizadoEn | timestamp | Fecha de última actualización. |
 
 ## Relaciones
 
