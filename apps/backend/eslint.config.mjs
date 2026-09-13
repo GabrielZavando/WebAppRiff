@@ -18,7 +18,9 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        project: './tsconfig.json',
+        // tsconfig.eslint.json extends tsconfig.json with include=[src,test] so
+        // typed-ESLint can parse the e2e suite under apps/backend/test/.
+        project: './tsconfig.eslint.json',
       },
     },
     rules: {
