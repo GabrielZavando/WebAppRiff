@@ -17,6 +17,7 @@ describe('SubcategoriaService', () => {
     hasAssociatedProducts: jest.Mock;
   };
   let categoriaRepository: { findById: jest.Mock };
+  let notifier: { notifyChange: jest.Mock };
 
   beforeEach(() => {
     repository = {
@@ -33,10 +34,12 @@ describe('SubcategoriaService', () => {
       hasAssociatedProducts: jest.fn(),
     };
     categoriaRepository = { findById: jest.fn() };
+    notifier = { notifyChange: jest.fn() };
     service = new SubcategoriaService(
       repository as never,
       integrity as never,
       categoriaRepository as never,
+      notifier as never,
     );
   });
 
@@ -183,6 +186,51 @@ describe('SubcategoriaService', () => {
       integrity.hasAssociatedProducts.mockResolvedValue(false);
       await service.remove('s1');
       expect(repository.remove).toHaveBeenCalledWith('s1');
+    });
+  });
+
+  describe('change notifications', () => {
+    it('notifies with entityType subcategory and action created after create', async () => {
+      categoriaRepository.findById.mockResolvedValue({ id: 'cat-1' });
+      integrity.findByCategoriaAndSlug.mockResolvedValue(null);
+      repository.create.mockResolvedValue({ id: 's1' });
+      await service.create({ categoriaId: 'cat-1', nombre: 'Válvulas' } as never);
+      expect(notifier.notifyChange).toHaveBeenCalledWith({
+        entityType: 'subcategory',
+        id: 's1',
+        action: 'created',
+        occurredAt: expect.any(String),
+      });
+    });
+
+    it('notifies with entityType subcategory and action updated after update', async () => {
+      repository.findById.mockResolvedValue({ id: 's1', categoriaId: 'cat-1', slug: 'a' });
+      repository.update.mockResolvedValue({ id: 's1', nombre: 'X' });
+      await service.update('s1', { nombre: 'X' } as never);
+      expect(notifier.notifyChange).toHaveBeenCalledWith({
+        entityType: 'subcategory',
+        id: 's1',
+        action: 'updated',
+        occurredAt: expect.any(String),
+      });
+    });
+
+    it('notifies with entityType subcategory and action deleted after remove', async () => {
+      repository.findById.mockResolvedValue({ id: 's1' });
+      integrity.hasAssociatedProducts.mockResolvedValue(false);
+      await service.remove('s1');
+      expect(notifier.notifyChange).toHaveBeenCalledWith({
+        entityType: 'subcategory',
+        id: 's1',
+        action: 'deleted',
+        occurredAt: expect.any(String),
+      });
+    });
+
+    it('does not notify when a mutation fails', async () => {
+      repository.findById.mockResolvedValue(null);
+      await expect(service.remove('missing')).rejects.toThrow(NotFoundException);
+      expect(notifier.notifyChange).not.toHaveBeenCalled();
     });
   });
 });

@@ -13,10 +13,10 @@ import {
   I_CATEGORIA_REPOSITORY,
 } from '../domain/icategoria.repository';
 import {
-  CategoryChangeEvent,
-  ICategoryChangeNotifier,
-  I_CATEGORY_CHANGE_NOTIFIER,
-} from '../domain/icategory-change-notifier';
+  CatalogChangeEvent,
+  ICatalogChangeNotifier,
+  I_CATALOG_CHANGE_NOTIFIER,
+} from '../../catalog/domain/icatalog-change-notifier';
 import { Categoria } from '../domain/categoria.entity';
 import { CategoriaCreateDto } from '../infrastructure/categoria-create.dto';
 import { CategoriaUpdateDto } from '../infrastructure/categoria-update.dto';
@@ -28,12 +28,13 @@ export class CategoriaService {
     @Inject(I_CATEGORIA_REPOSITORY) private readonly repository: ICategoriaRepository,
     @Inject(I_CATEGORIA_INTEGRITY_REPOSITORY)
     private readonly integrity: ICategoriaIntegrityRepository,
-    @Inject(I_CATEGORY_CHANGE_NOTIFIER)
-    private readonly notifier: ICategoryChangeNotifier,
+    @Inject(I_CATALOG_CHANGE_NOTIFIER)
+    private readonly notifier: ICatalogChangeNotifier,
   ) {}
 
-  private emitChange(id: string, action: CategoryChangeEvent['action']): void {
+  private emitChange(id: string, action: CatalogChangeEvent['action']): void {
     this.notifier.notifyChange({
+      entityType: 'category',
       id,
       action,
       occurredAt: new Date().toISOString(),

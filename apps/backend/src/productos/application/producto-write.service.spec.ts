@@ -20,11 +20,13 @@ describe('ProductoWriteService', () => {
       ...d,
     })),
   };
+  const notifier = { notifyChange: jest.fn() };
 
   const service = new ProductoWriteService(
     repository as never,
     integrity as never,
     consistency as never,
+    notifier as never,
   );
 
   const baseProduct = {
@@ -69,6 +71,12 @@ describe('ProductoWriteService', () => {
           subcategoriaId: null,
         }),
       );
+      expect(notifier.notifyChange).toHaveBeenCalledWith({
+        entityType: 'product',
+        id: 'p1',
+        action: 'created',
+        occurredAt: expect.any(String),
+      });
     });
 
     it('rejects duplicate SKU with 409', async () => {
@@ -154,6 +162,45 @@ describe('ProductoWriteService', () => {
       const result = await service.update('p1', dto);
       expect(repository.update).toHaveBeenCalledWith('p1', dto);
       expect(result.publicado).toBe(false);
+      expect(notifier.notifyChange).toHaveBeenCalledWith({
+        entityType: 'product',
+        id: 'p1',
+        action: 'unpublished',
+        occurredAt: expect.any(String),
+      });
+    });
+
+    it('notifies published when publicado toggles from false to true', async () => {
+      repository.findById.mockResolvedValue({ ...baseProduct, publicado: false });
+      repository.update.mockResolvedValue({ ...baseProduct, publicado: true });
+      await service.update('p1', { publicado: true } as ProductoUpdateDto);
+      expect(notifier.notifyChange).toHaveBeenCalledWith({
+        entityType: 'product',
+        id: 'p1',
+        action: 'published',
+        occurredAt: expect.any(String),
+      });
+    });
+
+    it('notifies updated when a non-publicado field changes', async () => {
+      repository.findById.mockResolvedValue(baseProduct);
+      repository.update.mockResolvedValue({ ...baseProduct, titulo: 'Nuevo' });
+      await service.update('p1', { titulo: 'Nuevo',
+      } as ProductoUpdateDto);
+      expect(notifier.notifyChange).toHaveBeenCalledWith({
+        entityType: 'product',
+        id: 'p1',
+        action: 'updated',
+        occurredAt: expect.any(String),
+      });
+    });
+
+    it('does not notify when the update fails', async () => {
+      repository.findById.mockResolvedValue(null);
+      await expect(service.update('x', {} as ProductoUpdateDto)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+      expect(notifier.notifyChange).not.toHaveBeenCalled();
     });
 
     it('rejects updating a missing product with 404', async () => {
@@ -229,6 +276,12 @@ describe('ProductoWriteService', () => {
       repository.remove.mockResolvedValue(undefined);
       await service.remove('p1');
       expect(repository.remove).toHaveBeenCalledWith('p1');
+      expect(notifier.notifyChange).toHaveBeenCalledWith({
+        entityType: 'product',
+        id: 'p1',
+        action: 'deleted',
+        occurredAt: expect.any(String),
+      });
     });
 
     it('rejects removing a missing product with 404', async () => {

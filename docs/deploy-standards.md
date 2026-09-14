@@ -95,6 +95,8 @@
 | `GCP_PROJECT` | GitHub Actions / gcloud | Project ID de GCP para registry y Cloud Run | `riff-catalogo` |
 | `COOLIFY_API_TOKEN` | Coolify (si se usa API) | Token para Coolify CLI/API | `coolify_xxx` |
 | `SLACK_WEBHOOK` | GitHub Actions | Notification webhook | `https://hooks.slack.com/...` |
+| `CATALOG_REBUILD_WEBHOOK_URL` | Cloud Run (backend — **secreto NestJS en Secret Manager**, ops-managed) | URL del webhook que el backend dispara cuando cambia cualquier entidad pública del catálogo (categoría, subcategoría, producto) para que Coolify regenere el sitio Astro. `POST` fire-and-forget con `Authorization: Bearer <token>` y timeout de 5s. No-op si no está configurado | `https://coolify.example.com/deploy` |
+| `CATALOG_REBUILD_WEBHOOK_TOKEN` | Cloud Run (backend — **secreto NestJS en Secret Manager**, ops-managed) | Token Bearer con el que se autentica el rebuild webhook del catálogo. **Nunca se loguea ni se envía en el body**. Reemplaza a la antigua variable de webhook de categorías (sin auth) | `secret-token` |
 
 **Reglas de secretos**:
 
