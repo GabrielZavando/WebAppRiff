@@ -1,18 +1,21 @@
 {
   "schema_version": 1,
-  "change": "use-adc-firebase-admin",
+  "change": "fix-deploy-pipeline-gates",
   "ticket_id": "RIFF-DEPLOY-01",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-14T01:45:23Z",
-  "tasks": { "total": 6, "passed": 6, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-14T12:41:23Z",
+  "tasks": { "total": 5, "passed": 5, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "initializes with ADC and required config when no app exists", "status": "PASS" },
-    { "id": "SC-002", "test": "reuses the existing app when one is already initialized", "status": "PASS" },
-    { "id": "SC-003", "test": "fails fast when FIREBASE_PROJECT_ID is missing", "status": "PASS" },
-    { "id": "SC-004", "test": "fails fast when FIREBASE_STORAGE_BUCKET is missing", "status": "PASS" },
-    { "id": "SC-005", "test": "firebase-migration.adapter / firebase.config normalizePrivateKey (CLI SA unchanged)", "status": "PASS" },
-    { "id": "SC-006", "test": "static: .env.example + deploy-standards.md contract", "status": "PASS" },
-    { "id": "SC-007", "test": "backend suite lint/typecheck/cov/e2e green", "status": "PASS" }
+    { "id": "SC-001", "test": "workflow_run + conclusion==success + repo guard", "status": "PASS" },
+    { "id": "SC-002", "test": "deploy via workflow_run on CI success", "status": "PASS" },
+    { "id": "SC-003", "test": "--build-arg REQUIRE_API=false in validation build", "status": "PASS" },
+    { "id": "SC-004", "test": "no REQUIRE_API=false forced for real builds", "status": "PASS" },
+    { "id": "SC-005", "test": "curl Bearer authed webhooks x4", "status": "PASS" },
+    { "id": "SC-006", "test": "staging jobs use only staging webhooks", "status": "PASS" },
+    { "id": "SC-007", "test": "production jobs use only production webhooks (dispatch)", "status": "PASS" },
+    { "id": "SC-008", "test": "deploy-frontends-staging needs deploy-backend-staging", "status": "PASS" },
+    { "id": "SC-009", "test": "no-op exit 0 on missing secret", "status": "PASS" },
+    { "id": "SC-010", "test": "PRs do not trigger deploy (workflow_run/dispatch only)", "status": "PASS" }
   ]
 }

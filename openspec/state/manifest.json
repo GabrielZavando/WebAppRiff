@@ -172,6 +172,24 @@
         "timestamp": "2026-09-14T01:52:11Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "fix-deploy-pipeline-gates",
+      "ticket_id": "RIFF-DEPLOY-01",
+      "archived_at": "2026-09-14T12:54:35Z",
+      "specs_applied": [
+        "fix-deploy-pipeline-gates"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-14T12:41:23Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-14T12:54:35Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }
