@@ -190,6 +190,24 @@
         "timestamp": "2026-09-14T12:54:35Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "generalize-catalog-rebuild-webhook",
+      "ticket_id": "RIFF-DEPLOY-01",
+      "archived_at": "2026-09-14T16:10:00Z",
+      "specs_applied": [
+        "generalize-catalog-rebuild-webhook"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-14T16:05:00Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-14T16:10:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }
