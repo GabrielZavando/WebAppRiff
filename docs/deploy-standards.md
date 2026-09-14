@@ -82,9 +82,10 @@
 
 | Variable | Dónde vive | Description | Example |
 |----------|------------|-------------|---------|
-| `FIREBASE_PROJECT_ID` | Cloud Run (Secret Manager) | Project ID de Firebase para el Admin SDK | `riff-catalogo` |
-| `FIREBASE_CLIENT_EMAIL` | Cloud Run (Secret Manager) | Service account email | `firebase-adminsdk@...` |
-| `FIREBASE_PRIVATE_KEY` | Cloud Run (Secret Manager) | Service account private key | `-----BEGIN PRIVATE KEY-----...` |
+| `FIREBASE_PROJECT_ID` | Cloud Run (variable de entorno, no secreto de clave privada) | Project ID de Firebase para el Admin SDK | `riff-catalogo` |
+| `FIREBASE_STORAGE_BUCKET` | Cloud Run (variable de entorno, no secreto de clave privada) | Bucket por defecto de Firebase Storage para el Admin SDK (requerido en runtime) | `webappriff.firebasestorage.app` |
+| `FIREBASE_CLIENT_EMAIL` | **Solo CLI raw `migrate:firestore`** (fuera de NestJS) | Service account email — no se usa en runtime ni en CLIs NestJS | `firebase-adminsdk@...` |
+| `FIREBASE_PRIVATE_KEY` | **Solo CLI raw `migrate:firestore`** (fuera de NestJS) | Service account private key — no se usa en runtime ni en CLIs NestJS | `-----BEGIN PRIVATE KEY-----...` |
 | `NESTJS_API_URL` | Build de Astro (y runtime de admin) | Base URL del API. **Contrato: debe incluir `/api/v1`** (los clientes construyen `${base}/products`, etc.) | `https://api.somosriff.cl/api/v1` |
 | `SITE_URL` | Build de Astro | URL pública del sitio (canonical, sitemap) — **no debe quedar en `localhost` en producción** | `https://somosriff.cl` |
 | `API_URL` | Runtime de Angular admin | Base URL del API para el panel (definir forma exacta en el ticket del admin) | `https://api.somosriff.cl/api/v1` |
@@ -97,7 +98,9 @@
 
 **Reglas de secretos**:
 
-- Credenciales Firebase Admin **solo** en el runtime del backend (Secret Manager → montadas como env vars de Cloud Run).
+- El runtime de Cloud Run autentica contra Firebase Admin mediante **Application Default Credentials (ADC)**: usa la service account de runtime del servicio (`riff-api-runtime`, vía Workload Identity) **sin JSON keys ni secretos de clave privada**.
+- Los CLIs de NestJS que reusan `FirebaseModule` (seed, migrate-imagenes, bootstrap, normalize-descriptions) autentican **también con ADC** igual que el runtime (en local: `gcloud auth application-default login` o `GOOGLE_APPLICATION_CREDENTIALS`).
+- `FIREBASE_CLIENT_EMAIL`/`FIREBASE_PRIVATE_KEY` son credenciales del service account **solo para el CLI raw `migrate:firestore`** (conecta origen/destino con un SA JSON explícito) y **no se montan en Cloud Run**.
 - Prohibidas en bundles frontend, argumentos de build Docker, `.env` versionado o variables `PUBLIC_*` de Astro.
 - La identidad de GitHub Actions para GCP debe ser de mínimo privilegio (Workload Identity Federation recomendado, sin JSON keys de service account).
 
