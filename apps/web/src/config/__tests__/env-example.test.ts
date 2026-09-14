@@ -25,8 +25,10 @@ describe('SC-env-06 — .env.example stays synchronized with the code contract',
     expect(content).toMatch(/^REQUIRE_API=/m);
   });
 
-  it('declares CATEGORIES_WEBHOOK_URL for the Astro rebuild webhook', () => {
-    expect(content).toMatch(/^CATEGORIES_WEBHOOK_URL=/m);
+  it('declares CATALOG_REBUILD_WEBHOOK_URL and TOKEN for the Astro rebuild webhook', () => {
+    expect(content).toMatch(/^CATALOG_REBUILD_WEBHOOK_URL=/m);
+    expect(content).toMatch(/^CATALOG_REBUILD_WEBHOOK_TOKEN=/m);
+    expect(content).not.toMatch(/^CATEGORIES_WEBHOOK_URL=/m);
   });
 
   it('does not declare variables with no consumers (LOG_LEVEL, LOG_FORMAT)', () => {

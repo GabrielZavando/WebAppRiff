@@ -1,21 +1,22 @@
 {
   "schema_version": 1,
-  "change": "fix-deploy-pipeline-gates",
+  "change": "generalize-catalog-rebuild-webhook",
   "ticket_id": "RIFF-DEPLOY-01",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-14T12:41:23Z",
-  "tasks": { "total": 5, "passed": 5, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-14T16:05:00Z",
+  "tasks": { "total": 7, "passed": 7, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "workflow_run + conclusion==success + repo guard", "status": "PASS" },
-    { "id": "SC-002", "test": "deploy via workflow_run on CI success", "status": "PASS" },
-    { "id": "SC-003", "test": "--build-arg REQUIRE_API=false in validation build", "status": "PASS" },
-    { "id": "SC-004", "test": "no REQUIRE_API=false forced for real builds", "status": "PASS" },
-    { "id": "SC-005", "test": "curl Bearer authed webhooks x4", "status": "PASS" },
-    { "id": "SC-006", "test": "staging jobs use only staging webhooks", "status": "PASS" },
-    { "id": "SC-007", "test": "production jobs use only production webhooks (dispatch)", "status": "PASS" },
-    { "id": "SC-008", "test": "deploy-frontends-staging needs deploy-backend-staging", "status": "PASS" },
-    { "id": "SC-009", "test": "no-op exit 0 on missing secret", "status": "PASS" },
-    { "id": "SC-010", "test": "PRs do not trigger deploy (workflow_run/dispatch only)", "status": "PASS" }
+    { "id": "SC-001", "test": "categoria.service notifies category events", "status": "PASS" },
+    { "id": "SC-002", "test": "subcategoria.service notifies subcategory events", "status": "PASS" },
+    { "id": "SC-003", "test": "producto-write.service notifies product events (incl. publish/unpublish)", "status": "PASS" },
+    { "id": "SC-004", "test": "webhook sends Authorization: Bearer <token>", "status": "PASS" },
+    { "id": "SC-005", "test": "webhook uses AbortSignal.timeout(5000)", "status": "PASS" },
+    { "id": "SC-006", "test": "webhook no-op when URL/token unset", "status": "PASS" },
+    { "id": "SC-007", "test": "webhook failure does not throw to mutation", "status": "PASS" },
+    { "id": "SC-008", "test": "logs without token/URL (entityType/action only)", "status": "PASS" },
+    { "id": "SC-009", "test": ".env.example + deploy-standards use CATALOG_REBUILD_*", "status": "PASS" },
+    { "id": "SC-010", "test": "backend suite green (458 tests, cov>=90%, e2e 18)", "status": "PASS" },
+    { "id": "SC-011", "test": "HTTP non-OK (response.ok=false) logged with status; 2xx silent", "status": "PASS" }
   ]
 }

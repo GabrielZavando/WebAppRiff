@@ -28,7 +28,7 @@ Arquitectura de despliegue aprobada (change `decide-api-deployment-architecture`
 - **Firebase (gestionado)**: Firestore, Firebase Authentication (incl. recuperación de contraseña) y Firebase Storage. No se operan servicios de datos en el VPS.
 - **API NestJS (BFF)**: **Google Cloud Run** — la imagen de `apps/backend/Dockerfile` (multi-stage, Node 24) se publica en Artifact Registry y se despliega con `gcloud run deploy` desde GitHub Actions. Secretos Firebase vía Google Secret Manager. Escala a cero; revisar `min-instances` tras medir cold starts en staging.
 - **Frontends (estáticos)**: sitio Astro y panel Angular como **servicios independientes en VPS con Coolify** (build in-situ desde Git en MVP). Dockerfiles multi-stage creados (`apps/web/Dockerfile`, `apps/admin/Dockerfile`, runtime nginx + healthcheck).
-- **Rebuild del sitio**: el backend dispara un webhook de Coolify (`CATEGORIES_WEBHOOK_URL`) cuando cambian categorías, para regenerar el sitio estático.
+- **Rebuild del sitio**: el backend dispara un webhook de Coolify cuando cambia cualquier dato público del catálogo (categorías, subcategorías, productos), usando `CATALOG_REBUILD_WEBHOOK_URL` + `CATALOG_REBUILD_WEBHOOK_TOKEN` (Bearer), para regenerar el sitio estático.
 - **Runtime**: Node.js 24 (alineado a `engines` del monorepo); TypeScript 5+ strict en los tres stacks.
 
 Definido (2026-09-08): región GCP **`southamerica-west1`**; dominios **`somosriff.cl`** (sitio Astro), **`admin.somosriff.cl`** (panel Angular) y **`api.somosriff.cl`** (API); proyecto Firebase de staging separado (**`riff-catalogo-staging`**). Detalle operativo en `docs/deploy-standards.md` y `AUDIT.md`.

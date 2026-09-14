@@ -5,6 +5,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  CatalogChangeEvent,
+  ICatalogChangeNotifier,
+  I_CATALOG_CHANGE_NOTIFIER,
+} from '../../catalog/domain/icatalog-change-notifier';
+import {
   ICategoriaRepository,
   I_CATEGORIA_REPOSITORY,
 } from '../../categorias/domain/icategoria.repository';
@@ -30,7 +35,18 @@ export class SubcategoriaService {
     private readonly integrity: ISubcategoriaIntegrityRepository,
     @Inject(I_CATEGORIA_REPOSITORY)
     private readonly categoriaRepository: ICategoriaRepository,
+    @Inject(I_CATALOG_CHANGE_NOTIFIER)
+    private readonly notifier: ICatalogChangeNotifier,
   ) {}
+
+  private emitChange(id: string, action: CatalogChangeEvent['action']): void {
+    this.notifier.notifyChange({
+      entityType: 'subcategory',
+      id,
+      action,
+      occurredAt: new Date().toISOString(),
+    });
+  }
 
   findAll(filter?: SubcategoriaFilter): Promise<Subcategoria[]> {
     return this.repository.findAll(filter);
@@ -61,7 +77,9 @@ export class SubcategoriaService {
       orden: dto.orden ?? 0,
       activa: dto.activa ?? true,
     };
-    return this.repository.create(input);
+    const subcategoria = await this.repository.create(input);
+    this.emitChange(subcategoria.id, 'created');
+    return subcategoria;
   }
 
   async update(id: string, dto: SubcategoriaUpdateDto): Promise<Subcategoria> {
@@ -77,7 +95,9 @@ export class SubcategoriaService {
       await this.assertParentExists(dto.categoriaId, current.categoriaId);
       await this.assertSlugUniqueWithinCategory(id, effectiveCategoriaId, effectiveSlug);
     }
-    return this.repository.update(id, dto);
+    const updated = await this.repository.update(id, dto);
+    this.emitChange(id, 'updated');
+    return updated;
   }
 
   private async assertParentExists(
@@ -114,5 +134,6 @@ export class SubcategoriaService {
       throw new ConflictException('Cannot delete a subcategoria with associated products');
     }
     await this.repository.remove(id);
+    this.emitChange(id, 'deleted');
   }
 }

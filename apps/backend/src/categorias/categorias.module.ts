@@ -8,8 +8,8 @@ import {
   I_CATEGORIA_INTEGRITY_REPOSITORY,
   I_CATEGORIA_REPOSITORY,
 } from './domain/icategoria.repository';
-import { I_CATEGORY_CHANGE_NOTIFIER } from './domain/icategory-change-notifier';
-import { WebhookCategoryChangeNotifier } from './infrastructure/webhook-category-change-notifier';
+import { I_CATALOG_CHANGE_NOTIFIER } from '../catalog/domain/icatalog-change-notifier';
+import { WebhookCatalogChangeNotifier } from '../catalog/infrastructure/webhook-catalog-change-notifier';
 
 @Module({
   imports: [AuthModule, FirebaseModule],
@@ -18,9 +18,13 @@ import { WebhookCategoryChangeNotifier } from './infrastructure/webhook-category
     CategoriaService,
     { provide: I_CATEGORIA_REPOSITORY, useClass: CategoriaRepository },
     { provide: I_CATEGORIA_INTEGRITY_REPOSITORY, useClass: CategoriaRepository },
-    { provide: I_CATEGORY_CHANGE_NOTIFIER, useClass: WebhookCategoryChangeNotifier },
+    { provide: I_CATALOG_CHANGE_NOTIFIER, useClass: WebhookCatalogChangeNotifier },
   ],
-  exports: [I_CATEGORIA_REPOSITORY, I_CATEGORIA_INTEGRITY_REPOSITORY],
+  exports: [
+    I_CATEGORIA_REPOSITORY,
+    I_CATEGORIA_INTEGRITY_REPOSITORY,
+    I_CATALOG_CHANGE_NOTIFIER,
+  ],
 })
 export class CategoriasModule implements OnModuleInit {
   constructor(private readonly service: CategoriaService) {}

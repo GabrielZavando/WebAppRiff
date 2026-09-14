@@ -7,9 +7,9 @@ import {
   I_CATEGORIA_INTEGRITY_REPOSITORY,
 } from '../domain/icategoria.repository';
 import {
-  ICategoryChangeNotifier,
-  I_CATEGORY_CHANGE_NOTIFIER,
-} from '../domain/icategory-change-notifier';
+  ICatalogChangeNotifier,
+  I_CATALOG_CHANGE_NOTIFIER,
+} from '../../catalog/domain/icatalog-change-notifier';
 import { Categoria } from '../domain/categoria.entity';
 import { CategoriaCreateDto } from '../infrastructure/categoria-create.dto';
 import { CategoriaUpdateDto } from '../infrastructure/categoria-update.dto';
@@ -59,7 +59,7 @@ describe('CategoriaService', () => {
     service = new CategoriaService(
       repository as unknown as ICategoriaRepository,
       integrity as unknown as ICategoriaIntegrityRepository,
-      notifier as unknown as ICategoryChangeNotifier,
+      notifier as unknown as ICatalogChangeNotifier,
     );
   });
 
@@ -216,6 +216,7 @@ describe('CategoriaService', () => {
       repository.create.mockResolvedValue(makeCategoria({ id: 'new-id' }));
       await service.create(dto);
       expect(notifier.notifyChange).toHaveBeenCalledWith({
+        entityType: 'category',
         id: 'new-id',
         action: 'created',
         occurredAt: expect.any(String),
@@ -228,6 +229,7 @@ describe('CategoriaService', () => {
       repository.update.mockResolvedValue(makeCategoria());
       await service.update('c1', { nombre: 'X' });
       expect(notifier.notifyChange).toHaveBeenCalledWith({
+        entityType: 'category',
         id: 'c1',
         action: 'updated',
         occurredAt: expect.any(String),
@@ -240,6 +242,7 @@ describe('CategoriaService', () => {
       repository.remove.mockResolvedValue(undefined);
       await service.remove('c1');
       expect(notifier.notifyChange).toHaveBeenCalledWith({
+        entityType: 'category',
         id: 'c1',
         action: 'deleted',
         occurredAt: expect.any(String),

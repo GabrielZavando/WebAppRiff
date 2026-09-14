@@ -6,6 +6,11 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import {
+  CatalogChangeAction,
+  ICatalogChangeNotifier,
+  I_CATALOG_CHANGE_NOTIFIER,
+} from '../../catalog/domain/icatalog-change-notifier';
+import {
   IProductIntegrityRepository,
   IProductRepository,
   I_PRODUCT_INTEGRITY_REPOSITORY,
@@ -47,9 +52,8 @@ const UPDATE_PASSTHROUGH: Array<Exclude<keyof ProductoUpdateInput, 'id'>> = [
 /**
  * Casos de uso de escritura de productos. Centraliza todas las reglas de
  * negocio del dominio (unicidad SKU/slug, categoría por defecto, consistencia
- * categoría/subcategoría, galería ≤10, ficha técnica PDF). Inyecta 3
- * dependencias (repository + integrity + consistency service), dentro del
- * límite de 3 del estándar de backend.
+ * categoría/subcategoría, galería ≤10, ficha técnica PDF). Inyecta
+ * repository + integrity + consistency service + catalog notifier.
  */
 @Injectable()
 export class ProductoWriteService {
@@ -59,7 +63,18 @@ export class ProductoWriteService {
     @Inject(I_PRODUCT_INTEGRITY_REPOSITORY)
     private readonly integrity: IProductIntegrityRepository,
     private readonly consistency: ProductoConsistencyService,
+    @Inject(I_CATALOG_CHANGE_NOTIFIER)
+    private readonly notifier: ICatalogChangeNotifier,
   ) {}
+
+  private emitChange(id: string, action: CatalogChangeAction): void {
+    this.notifier.notifyChange({
+      entityType: 'product',
+      id,
+      action,
+      occurredAt: new Date().toISOString(),
+    });
+  }
 
   async create(dto: ProductoCreateDto): Promise<Producto> {
     if (await this.integrity.existsBySku(dto.sku)) {
@@ -78,7 +93,9 @@ export class ProductoWriteService {
 
     const input = this.buildCreateInput(dto, slug, categoriaId);
     this.consistency.sanitizeDescriptions(input);
-    return this.repository.create(input);
+    const product = await this.repository.create(input);
+    this.emitChange(product.id, 'created');
+    return product;
   }
 
   async update(id: string, dto: ProductoUpdateDto): Promise<Producto> {
@@ -107,7 +124,9 @@ export class ProductoWriteService {
 
     const input = this.buildUpdateInput(dto, sku.value, slug.value);
     this.consistency.sanitizeDescriptions(input);
-    return this.repository.update(id, input);
+    const updated = await this.repository.update(id, input);
+    this.emitChange(id, this.resolveUpdateAction(dto, current));
+    return updated;
   }
 
   async remove(id: string): Promise<void> {
@@ -116,6 +135,14 @@ export class ProductoWriteService {
       throw new NotFoundException('Producto not found');
     }
     await this.repository.remove(id);
+    this.emitChange(id, 'deleted');
+  }
+
+  private resolveUpdateAction(dto: ProductoUpdateDto, current: Producto): CatalogChangeAction {
+    if (dto.publicado !== undefined && dto.publicado !== current.publicado) {
+      return dto.publicado ? 'published' : 'unpublished';
+    }
+    return 'updated';
   }
 
   private buildCreateInput(
