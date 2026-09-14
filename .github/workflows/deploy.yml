@@ -1,69 +1,96 @@
 name: Deploy
 
 # Deployment pipeline for Riff Catálogo Digital Headless (change:
-# implement-deployment-pipeline; architecture: decide-api-deployment-architecture).
+# fix-deploy-pipeline-gates; architecture: decide-api-deployment-architecture).
 #
-# - PRs: build-only verification of the three service images (no push).
-# - push to main: backend image -> Artifact Registry (southamerica-west1,
-#   tag sha-<commit>) -> Cloud Run `riff-api-staging` -> smoke `/health`.
-#   Optional Coolify webhook for frontend rebuilds (no-op when unset).
-# - tag v* / manual: production promotion to Cloud Run `riff-api-prod` of the
-#   SAME digest already validated in staging (never a fresh build, never
-#   `latest`), after re-running the staging smoke gate.
+# GATING (AC2): this workflow runs as a `workflow_run` on the `CI` workflow and
+# only proceeds when CI concluded with `success` for the same commit. If CI
+# fails, deployment never starts. `workflow_dispatch` remains as the explicit
+# manual path for production (releases). PRs do NOT trigger deployment.
 #
-# Frontends (Astro web, Angular admin) are NOT deployed by this workflow:
-# Coolify builds them in-situ from the repo (Git integration).
+# Lanes:
+# - staging (push to main validated by CI): backend image -> Artifact Registry
+#   (tag sha-<commit>) -> Cloud Run `riff-api-staging` -> smoke /health and
+#   domain endpoints -> then frontends (web + admin) via Coolify webhooks.
+# - production (manual dispatch, after staging smoke passes): promote the SAME
+#   digest validated in staging (never a fresh build, never `latest`), after
+#   re-running the staging smoke gate, then deploy production frontends.
 #
-# GCP jobs are skipped until the repo variables below are configured, so main
-# stays green before the cloud resources exist:
+# NOTE on tags: `workflow_run` only fires when CI completes, and CI runs on
+# push-to-main and PRs — not on tag pushes. Production is therefore reached via
+# `workflow_dispatch` (manual), not via tag-triggered workflow_run.
+#
+# Frontends (Astro web, Angular admin) are NOT built by this workflow: Coolify
+# builds them in-situ from the repo (Git integration). This workflow only
+# triggers their deploy via per-environment, Bearer-authenticated webhooks.
+#
+# GCP jobs are skipped until the repo variables below are configured:
 #   vars: GCP_PROJECT, GCP_REGION, GCP_WIF_PROVIDER, GCP_DEPLOY_SA
-#   secrets: COOLIFY_WEBHOOK_URL (optional)
+# Coolify secrets are created as ops (not this change); when missing, their
+# jobs print a clear notice and no-op (exit 0) so main stays green.
 # Rollback: revert the Cloud Run revision (or redeploy the previous sha tag) —
 # see docs/deploy-standards.md.
 
 on:
-  push:
-    branches: [main]
-    tags: ['v*']
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: deploy-${{ github.ref }}
+  group: deploy-${{ github.event.workflow_run.head_sha || github.sha }}
   cancel-in-progress: false
 
 jobs:
-  # 3.1 — Build-only verification of the three service images on every PR.
-  #       A broken image can never reach staging.
+  # 3.1 — Build-only verification of the three service images. A broken image
+  #       can never reach staging.
   docker-build:
     name: Docker build (backend, web, admin)
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Build backend image
         run: docker build -f apps/backend/Dockerfile -t riff-backend:pr .
 
-      - name: Build web image
-        run: docker build -f apps/web/Dockerfile -t riff-web:pr .
+      - name: Build web image (validation build, REQUIRE_API=false)
+        # AC4: the CI/validation build must not depend on a live API. Real
+        # Coolify builds keep REQUIRE_API=true via their Build Variables, so a
+        # real deploy still fails when the API is down or the catalog is empty.
+        run: docker build --build-arg REQUIRE_API=false -f apps/web/Dockerfile -t riff-web:pr .
 
       - name: Build admin image
         run: docker build -f apps/admin/Dockerfile -t riff-admin:pr .
 
-  # 3.2 — Staging lane: build/push the backend image and deploy it to
-  #       Cloud Run riff-api-staging, then smoke the /health endpoint.
-  deploy-staging:
+  # 3.2 — Staging lane (CI success on main): build/push the backend image and
+  #       deploy it to Cloud Run riff-api-staging, then smoke /health + domain
+  #       endpoints. Frontends for staging run AFTER this job (AC3).
+  deploy-backend-staging:
     name: Deploy backend to Cloud Run (staging)
     runs-on: ubuntu-latest
     needs: docker-build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.GCP_PROJECT != ''
+    if: >-
+      vars.GCP_PROJECT != '' &&
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
     permissions:
       contents: read
       id-token: write # Workload Identity Federation (no exported JSON keys)
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Authenticate to GCP (WIF, least privilege)
         uses: google-github-actions/auth@v2
@@ -77,21 +104,21 @@ jobs:
       - name: Docker auth to Artifact Registry
         run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
 
-      - name: Build and push backend image (tag: sha-<commit>)
+      - name: "Build and push backend image (tag: sha-<commit>)"
         uses: docker/build-push-action@v6
         with:
           context: .
           file: apps/backend/Dockerfile
           push: true
           tags: |
-            ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/riff/riff-backend:sha-${{ github.sha }}
+            ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/riff/riff-backend:sha-${{ github.event.workflow_run.head_sha }}
 
       - name: Deploy to Cloud Run (staging)
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: riff-api-staging
           region: ${{ vars.GCP_REGION }}
-          image: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/riff/riff-backend:sha-${{ github.sha }}
+          image: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/riff/riff-backend:sha-${{ github.event.workflow_run.head_sha }}
 
       - name: Smoke test (domain endpoints)
         run: |
@@ -123,42 +150,66 @@ jobs:
           echo "✅ POST /api/v1/quotes OK (201)"
           echo "✅ Staging smoke passed"
 
-  # 3.4 — Optional Coolify trigger for the static frontends (web/admin are
-  #       built in-situ by Coolify from the repo; this just nudges a rebuild).
-  #       No-op when the COOLIFY_WEBHOOK_URL secret is unset.
-  trigger-coolify:
-    name: Trigger Coolify frontend rebuild (optional)
-    runs-on: ubuntu-latest
-    needs: docker-build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - name: Notify Coolify webhook (no-op when unset)
-        env:
-          WEBHOOK: ${{ secrets.COOLIFY_WEBHOOK_URL }}
+      - name: Rollback hint (on failure)
+        if: failure()
         run: |
-          if [ -z "$WEBHOOK" ]; then
-            echo "COOLIFY_WEBHOOK_URL not set — skipping frontend rebuild trigger (no-op)."
+          echo "Staging deploy failed after the Cloud Run deploy step may have run."
+          echo "Rollback: gcloud run services update-traffic riff-api-staging --to-revisions <previous>=100 --region ${{ vars.GCP_REGION }}"
+          echo "See docs/deploy-standards.md → Rollback."
+
+  # 3.4a — Trigger the frontends for staging (web + admin). Runs only after the
+  #        staging backend is deployed and smoke-tested (AC3, AC7). Per-env
+  #        webhook + Bearer auth (AC6); no-op when secrets are unset.
+  deploy-frontends-staging:
+    name: Trigger Coolify frontend rebuild (staging)
+    runs-on: ubuntu-latest
+    needs: deploy-backend-staging
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    steps:
+      - name: Trigger Astro web (staging)
+        env:
+          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          URL: ${{ secrets.COOLIFY_WEB_STAGING_WEBHOOK_URL }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$TOKEN" ]; then
+            echo "❌ COOLIFY_WEB_STAGING_WEBHOOK_URL / COOLIFY_API_TOKEN not set — skipping (no-op)."
             exit 0
           fi
-          curl -fsS --retry 3 --retry-delay 5 -X POST "$WEBHOOK"
-          echo "✅ Coolify rebuild triggered"
+          curl --fail --silent --show-error --request GET "$URL" \
+            -H "Authorization: Bearer $TOKEN"
+          echo "✅ Coolify web (staging) rebuild triggered"
 
-  # 3.3 — Production lane: promote the SAME digest validated in staging.
-  #      Manual (workflow_dispatch) or on version tags v*. Never `latest`,
-  #      never a fresh build.
-  deploy-production:
+      - name: Trigger Angular admin (staging)
+        env:
+          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          URL: ${{ secrets.COOLIFY_ADMIN_STAGING_WEBHOOK_URL }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$TOKEN" ]; then
+            echo "❌ COOLIFY_ADMIN_STAGING_WEBHOOK_URL / COOLIFY_API_TOKEN not set — skipping (no-op)."
+            exit 0
+          fi
+          curl --fail --silent --show-error --request GET "$URL" \
+            -H "Authorization: Bearer $TOKEN"
+          echo "✅ Coolify admin (staging) rebuild triggered"
+
+  # 3.3 — Production lane (manual dispatch): promote the SAME digest validated
+  #       in staging. Never `latest`, never a fresh build.
+  deploy-backend-production:
     name: Promote to Cloud Run (production)
     runs-on: ubuntu-latest
     needs: docker-build
-    if: >-
-      vars.GCP_PROJECT != '' &&
-      (github.event_name == 'workflow_dispatch' ||
-        (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')))
+    if: vars.GCP_PROJECT != '' && github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
 
       - name: Authenticate to GCP (WIF, least privilege)
         uses: google-github-actions/auth@v2
@@ -188,8 +239,29 @@ jobs:
             --region "${{ vars.GCP_REGION }}" \
             --project "${{ vars.GCP_PROJECT }}" \
             --format 'value(status.url)')
+          echo "Staging gate URL: $URL"
+
+          # Health
           curl -fsS --retry 5 --retry-delay 5 "$URL/health" > /dev/null
-          echo "✅ Staging smoke passed — promotion allowed"
+          echo "✅ /health OK"
+
+          # Products: 200 + non-empty data
+          PRODUCTS=$(curl -fsS --retry 3 --retry-delay 5 "$URL/api/v1/products")
+          echo "$PRODUCTS" | grep -q '"data":\[\]' && { echo "❌ products list is empty"; exit 1; }
+          echo "$PRODUCTS" | grep -q '"data":\[' || { echo "❌ products has no data array"; exit 1; }
+          echo "✅ /api/v1/products OK (non-empty)"
+
+          # Categories: 200 + data array
+          curl -fsS --retry 3 --retry-delay 5 "$URL/api/v1/categories" | grep -q '"data":\[' || { echo "❌ categories failed"; exit 1; }
+          echo "✅ /api/v1/categories OK"
+
+          # Quote capture: POST /api/v1/quotes → 201
+          CODE=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$URL/api/v1/quotes" \
+            -H 'content-type: application/json' \
+            -d '{"nombre":"deploy smoke","email":"smoke@riff.cl","nombre_empresa":"Smoke SA","mensaje":"smoke test"}')
+          [ "$CODE" = "201" ] || { echo "❌ POST /api/v1/quotes → $CODE"; exit 1; }
+          echo "✅ POST /api/v1/quotes OK (201)"
+          echo "✅ Staging promotion gate passed"
 
       - name: Deploy the validated digest to Cloud Run (production)
         uses: google-github-actions/deploy-cloudrun@v2
@@ -234,3 +306,39 @@ jobs:
           echo "Promotion failed after the production deploy step may have run."
           echo "Rollback: gcloud run services update-traffic riff-api-prod --to-revisions <previous>=100 --region ${{ vars.GCP_REGION }}"
           echo "See docs/deploy-standards.md → Rollback."
+
+  # 3.4b — Trigger the frontends for production (web + admin). Runs only in the
+  #        production lane (manual dispatch), AFTER the production backend job
+  #        succeeds. Per-env webhook + Bearer auth (AC6/AC7); no-op when secrets
+  #        are unset.
+  deploy-frontends-production:
+    name: Trigger Coolify frontend rebuild (production)
+    runs-on: ubuntu-latest
+    needs: deploy-backend-production
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Trigger Astro web (production)
+        env:
+          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          URL: ${{ secrets.COOLIFY_WEB_PRODUCTION_WEBHOOK_URL }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$TOKEN" ]; then
+            echo "❌ COOLIFY_WEB_PRODUCTION_WEBHOOK_URL / COOLIFY_API_TOKEN not set — skipping (no-op)."
+            exit 0
+          fi
+          curl --fail --silent --show-error --request GET "$URL" \
+            -H "Authorization: Bearer $TOKEN"
+          echo "✅ Coolify web (production) rebuild triggered"
+
+      - name: Trigger Angular admin (production)
+        env:
+          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          URL: ${{ secrets.COOLIFY_ADMIN_PRODUCTION_WEBHOOK_URL }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$TOKEN" ]; then
+            echo "❌ COOLIFY_ADMIN_PRODUCTION_WEBHOOK_URL / COOLIFY_API_TOKEN not set — skipping (no-op)."
+            exit 0
+          fi
+          curl --fail --silent --show-error --request GET "$URL" \
+            -H "Authorization: Bearer $TOKEN"
+          echo "✅ Coolify admin (production) rebuild triggered"
