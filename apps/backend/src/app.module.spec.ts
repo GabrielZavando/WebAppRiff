@@ -5,7 +5,7 @@ import { AppController } from './app.controller';
 const mockInitializeApp = jest.fn();
 const mockGetApp = jest.fn();
 const mockGetApps = jest.fn();
-const mockCert = jest.fn();
+const mockApplicationDefault = jest.fn();
 const mockGetFirestore = jest.fn();
 const mockGetAuth = jest.fn();
 
@@ -13,7 +13,7 @@ jest.mock('firebase-admin/app', () => ({
   initializeApp: (...args: unknown[]) => mockInitializeApp(...args),
   getApp: (...args: unknown[]) => mockGetApp(...args),
   getApps: (...args: unknown[]) => mockGetApps(...args),
-  cert: (...args: unknown[]) => mockCert(...args),
+  applicationDefault: (...args: unknown[]) => mockApplicationDefault(...args),
 }));
 
 jest.mock('firebase-admin/firestore', () => ({
@@ -26,15 +26,14 @@ jest.mock('firebase-admin/auth', () => ({
 
 const FIREBASE_ENV = {
   FIREBASE_PROJECT_ID: 'riff-catalogo',
-  FIREBASE_CLIENT_EMAIL: 'admin@riff.iam.gserviceaccount.com',
-  FIREBASE_PRIVATE_KEY: '-----BEGIN PRIVATE KEY-----\nxxx\n-----END PRIVATE KEY-----\n',
+  FIREBASE_STORAGE_BUCKET: 'webappriff.firebasestorage.app',
 };
 
 describe('AppModule', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetApps.mockReturnValue([]);
-    mockCert.mockReturnValue({ projectId: FIREBASE_ENV.FIREBASE_PROJECT_ID });
+    mockApplicationDefault.mockReturnValue({} as never);
     mockInitializeApp.mockReturnValue({ name: '[DEFAULT]' });
     mockGetFirestore.mockReturnValue({
       collection: () => undefined,
@@ -49,6 +48,7 @@ describe('AppModule', () => {
 
   afterEach(() => {
     delete process.env.FIREBASE_PROJECT_ID;
+    delete process.env.FIREBASE_STORAGE_BUCKET;
     delete process.env.FIREBASE_CLIENT_EMAIL;
     delete process.env.FIREBASE_PRIVATE_KEY;
   });

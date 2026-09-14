@@ -1,76 +1,18 @@
 {
   "schema_version": 1,
-  "change": "ampliar-e2e",
-  "ticket_id": "Q3",
+  "change": "use-adc-firebase-admin",
+  "ticket_id": "RIFF-DEPLOY-01",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-13T03:40:34Z",
-  "tasks": {
-    "total": 62,
-    "passed": 62,
-    "failed": 0,
-    "untested": 0
-  },
+  "timestamp": "2026-09-14T01:45:23Z",
+  "tasks": { "total": 6, "passed": 6, "failed": 0, "untested": 0 },
   "scenarios": [
-    {
-      "id": "SC-101",
-      "test": "e2e: POST /api/v1/quotes \u2192 201 with pendiente estado (app.e2e-spec) + unit cotizacion.service/repository",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-102",
-      "test": "e2e: POST /api/v1/quotes missing required \u2192 400; whitelist extra field \u2192 400; unit cotizacion-create.dto.spec (rut optional)",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-103",
-      "test": "e2e: GET /api/v1/quotes sin token \u2192 401; editor \u2192 403; admin \u2192 200 con envelope {data, meta:{page,limit,total}}",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-104",
-      "test": "e2e app.e2e-spec: /health, products envelope, slug detail, categories activa, subcategories activa, quotes 201/400, 401/403 \u2014 11/11",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-105",
-      "test": "static: package.json test:smoke = jest --config jest-e2e.json; npm run test:smoke ejecuta la suite e2e",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-106",
-      "test": "executable: REQUIRE_API=true astro build sin stub falla (npm error code 1); con stub bakes cat\u00e1logo fixture",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-107",
-      "test": "e2e web: catalog-flow.spec.ts \u2014 4/4 PASS (grid cards, click card\u2192detalle h1, CTA href, CTA\u2192cotizacion con form)",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-108",
-      "test": "e2e web: cotizacion-flow.spec.ts \u2014 3/3 PASS (campos visibles, payload urlencoded con nombre_empresa+rut, HTML5 bloquea vac\u00edos)",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-109",
-      "test": "e2e web: 103/103 \u2014 96 landing rehabilitadas (rotos preexistentes) + 7 flow nuevas",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-110",
-      "test": "static: ci.yml project-ci incluye test:e2e backend + playwright install + test:smoke web; admin smoke ausente",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-111",
-      "test": "static: deploy.yml staging+prod smoke = /health + products (non-empty) + categories + POST quotes 201",
-      "status": "PASS"
-    },
-    {
-      "id": "SC-112",
-      "test": "static: api-spec.yml Cotizacion/CotizacionCreate incluyen rut (optional); data-model.md documenta colecci\u00f3n cotizaciones",
-      "status": "PASS"
-    }
+    { "id": "SC-001", "test": "initializes with ADC and required config when no app exists", "status": "PASS" },
+    { "id": "SC-002", "test": "reuses the existing app when one is already initialized", "status": "PASS" },
+    { "id": "SC-003", "test": "fails fast when FIREBASE_PROJECT_ID is missing", "status": "PASS" },
+    { "id": "SC-004", "test": "fails fast when FIREBASE_STORAGE_BUCKET is missing", "status": "PASS" },
+    { "id": "SC-005", "test": "firebase-migration.adapter / firebase.config normalizePrivateKey (CLI SA unchanged)", "status": "PASS" },
+    { "id": "SC-006", "test": "static: .env.example + deploy-standards.md contract", "status": "PASS" },
+    { "id": "SC-007", "test": "backend suite lint/typecheck/cov/e2e green", "status": "PASS" }
   ]
 }

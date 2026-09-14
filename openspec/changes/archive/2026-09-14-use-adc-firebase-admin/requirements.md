@@ -1,0 +1,10 @@
+# Requirements — use-adc-firebase-admin
+
+1. **R1 — Inicialización ADC en runtime.** `FirebaseModule` debe inicializar Firebase Admin con `applicationDefault()` y `projectId`/`storageBucket` desde `ConfigService.getOrThrow()`, sin leer `FIREBASE_CLIENT_EMAIL` ni `FIREBASE_PRIVATE_KEY`. (SC-001, SC-003, SC-004)
+2. **R2 — Singleton preservado.** Si ya existe una app Firebase inicializada, `FIREBASE_APP` resuelve a `getApp()` sin reinicializar. (SC-002)
+3. **R3 — CLIs intactos.** Los CLIs locales (`migrate:firestore`, `migrate:productos:imagenes`, `bootstrap:superadmin`, seeds) mantienen su autenticación actual con service account explícito; `normalizePrivateKey()` sigue exportada desde `firebase.config.ts`. (SC-005)
+4. **R4 — Limpieza deliberada de `firebase.config.ts`.** Si `buildServiceAccountFromEnv()` queda sin consumidores tras R1, se elimina junto con sus specs dedicados (`firebase.config.spec.ts` se reduce a cubrir `normalizePrivateKey`, o se conserva archivando la función deprecated con justificación — la decisión se documenta en el PR). (SC-005)
+5. **R5 — Contrato de env actualizado.** `.env.example` raíz y `apps/backend/.env.example` documentan: (`a`) runtime = `FIREBASE_PROJECT_ID` + `FIREBASE_STORAGE_BUCKET` + ADC local (`gcloud auth application-default login` o `GOOGLE_APPLICATION_CREDENTIALS`); (`b`) `FIREBASE_CLIENT_EMAIL`/`FIREBASE_PRIVATE_KEY` solo para CLIs locales. (SC-006)
+6. **R6 — Docs de deploy sincronizadas.** La tabla de Environment Variables de `docs/deploy-standards.md` refleja que Cloud Run ya no monta secretos de clave privada y menciona la service account de runtime como mecanismo de autenticación. (SC-006)
+7. **R7 — Suite verde sin credenciales.** `npm run lint`, `typecheck`, `test`, `test:cov` (umbral 90 % intacto) y `test:e2e` del workspace `apps/backend` pasan en CI sin credenciales Firebase reales. (SC-007)
+8. **R8 — Tipado y estándares.** Sin `any` nuevo; comentarios y nombres en inglés; el cambio respeta la estructura `domain/application/infrastructure` (el proveedor vive en `infrastructure/firebase/`). (Transversal a todos los escenarios)

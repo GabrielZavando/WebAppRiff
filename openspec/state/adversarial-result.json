@@ -1,25 +1,9 @@
 {
   "schema_version": 1,
-  "change": "ampliar-e2e",
-  "ticket_id": "Q3",
+  "change": "use-adc-firebase-admin",
+  "ticket_id": "RIFF-DEPLOY-01",
   "verdict": "SHIP",
-  "confidence": 0.85,
-  "timestamp": "2026-09-13T03:40:34Z",
-  "source": "code-auditing skill adversarial review",
-  "findings": {
-    "total": 8,
-    "critical": 0,
-    "warnings": 4,
-    "info": 4,
-    "discarded": 2
-  },
-  "notes": [
-    "WARNING throttle: POST /api/v1/quotes tightened to 10/min via @Throttle (100/min global was too generous for a public lead form) \u2014 resolved",
-    "WARNING pagination: cotizaciones findAll slices in memory; acceptable at quote volume, documented tradeoff (O(N) read cost per page)",
-    "WARNING interceptor unwrap: only gated when handler returns {data, meta}; no existing handler returns top-level 'data' \u2014 swept, safe; unit test covers both branches",
-    "WARNING e2e gaps: added GET /api/v1/quotes/:id (200/404/401), PATCH estado (editor 200, anon 401, invalid 400) and live {data,meta} envelope-merge assertion \u2014 resolved",
-    "INFO stub 400 path: stub now mirrors DTO validation (missing required \u2192 400) \u2014 resolved",
-    "INFO hardcoded ports 3001/4321: acceptable; STUB_API_PORT env knob exists in stub but config uses fixed port \u2014 deferred",
-    "multer high (overridden to 2.3.0 via root package.json overrides); uuid moderate suppressed (breaking firebase-admin@14 upgrade deferred)"
-  ]
+  "confidence": 0.75,
+  "timestamp": "2026-09-14T01:52:11Z",
+  "findings": { "total": 2, "critical": 0, "warnings": 1, "info": 1, "discarded": 0 }
 }
