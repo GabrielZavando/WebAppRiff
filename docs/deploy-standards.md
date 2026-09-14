@@ -43,11 +43,11 @@
 
 ### Lane backend — Cloud Run
 
-1. Merge a `main` (o tag `v*` para release).
+1. Merge a `main` (trigger staging tras CI en verde; el release se dispara por `workflow_dispatch` manual).
 2. GitHub Actions: build → push a Artifact Registry.
 3. `gcloud run deploy riff-api-staging` (región `southamerica-west1`) con secretos desde Secret Manager.
 4. Smoke tests de staging (ver sección siguiente).
-5. Promoción a producción: tag git `v*` o `workflow_dispatch` → el workflow re-verifica el smoke de staging, resuelve el **digest** del tag `sha-<commit>` ya validado y lo despliega a `riff-api-prod` + smoke de producción.
+5. Promoción a producción: `workflow_dispatch` manual → el workflow re-verifica el smoke de staging, resuelve el **digest** del tag `sha-<commit>` ya validado y lo despliega a `riff-api-prod` + smoke de producción. *(Nota: `workflow_run` solo se dispara cuando CI corre (push a main/PRs), no en pushes de tag; la promoción a producción se hace por dispatch manual.)*
 
 ### Lane frontends — Coolify
 
@@ -108,12 +108,38 @@
 
 Reemplaza al workflow legacy de SSH/docker (eliminado con este change). Estructura:
 
-- **`docker-build`** (PRs y main): build sin push de las 3 imágenes — una imagen rota nunca llega a staging.
-- **`deploy-staging`** (push a `main`): push del backend a Artifact Registry (`sha-<commit>`) → `riff-api-staging` → smoke `/health` (URL derivada con `gcloud run services describe`).
-- **`deploy-production`** (tag `v*` o `workflow_dispatch`): resuelve el digest del `sha-<commit>` validado en staging, re-ejecuta el smoke de staging como gate, despliega a `riff-api-prod` y fuma producción. Nunca `latest`, nunca build fresco.
-- **`trigger-coolify`** (push a `main`): dispara el rebuild de los frontends vía `COOLIFY_WEBHOOK_URL` (no-op si no está definida).
-- Los jobs GCP quedan **gateados por `vars.GCP_PROJECT`** hasta configurar los recursos cloud (así main permanece verde antes del primer deploy real).
-- Autenticación GCP: **Workload Identity Federation** (sin JSON keys), mínimo privilegio.
+- **Gating por CI (AC2)**: `deploy.yml` es un `workflow_run` sobre el workflow
+  `CI` (`types: completed`). Solo procede si `conclusion == 'success'` para el
+  mismo commit; si CI falla, no se despliega nada. `workflow_dispatch` es la
+  excepción manual explícita (vía de producción). Los PRs no activan deploy; CI
+  (typecheck/build/test/audit/docker) protege PRs.
+- **`docker-build`**: build sin push de las 3 imágenes. La imagen de validación
+  de Astro se construye con `--build-arg REQUIRE_API=false` (el runner no tiene
+  API viva); los builds reales de Coolify mantienen `REQUIRE_API=true` via sus
+  Build Variables, así un deploy real falla si la API está caída o el catálogo
+  viene vacío (AC4).
+- **`deploy-backend-staging`** (CI success en `main`): push del backend a
+  Artifact Registry (`sha-<commit>`) → `riff-api-staging` → smoke `/health` (URL
+  derivada con `gcloud run services describe`).
+- **`deploy-frontends-staging`**: dispara los frontends de staging (web y admin)
+  tras el smoke de Cloud Run, vía `COOLIFY_WEB_STAGING_WEBHOOK_URL` y
+  `COOLIFY_ADMIN_STAGING_WEBHOOK_URL`, con
+  `curl --fail --silent --show-error --request GET "$URL" -H "Authorization: Bearer $COOLIFY_API_TOKEN"`.
+  No-op con aviso si los secrets no están configurados (AC3/AC6/AC7).
+- **`deploy-backend-production`** (manual dispatch): resuelve el digest del
+  `sha-<commit>` validado en staging, re-ejecuta el smoke de staging como gate,
+  despliega a `riff-api-prod` y fuma producción. Nunca `latest`, nunca build
+  fresco (AC8).
+- **`deploy-frontends-production`**: tras el deploy de producción, dispara los
+  frontends de producción (web y admin) vía `COOLIFY_WEB_PRODUCTION_WEBHOOK_URL`
+  y `COOLIFY_ADMIN_PRODUCTION_WEBHOOK_URL` con el mismo patrón Bearer (AC6/AC7).
+- **Secrets Coolify** (creados como ops): `COOLIFY_API_TOKEN` +
+  `COOLIFY_WEB_STAGING_WEBHOOK_URL` + `COOLIFY_ADMIN_STAGING_WEBHOOK_URL` +
+  `COOLIFY_WEB_PRODUCTION_WEBHOOK_URL` + `COOLIFY_ADMIN_PRODUCTION_WEBHOOK_URL`.
+- Los jobs GCP quedan **gateados por `vars.GCP_PROJECT`** hasta configurar los
+  recursos cloud (así main permanece verde antes del primer deploy real).
+- Autenticación GCP: **Workload Identity Federation** (sin JSON keys), mínimo
+  privilegio.
 - Rollback: `gcloud run services update-traffic riff-api-prod --to-revisions <previous>=100` (ver `Rollback`).
 
 ## Project-specific stack
