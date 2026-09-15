@@ -69,9 +69,71 @@
 
 ## Rollback
 
-- **Backend**: rollback de revisión en Cloud Run (revert a la revisión anterior o `gcloud run services update-traffic` hacia el revision tag previo).
-- **Frontends**: redeploy de la imagen/build anterior en Coolify.
-- Verificar `/health` y endpoints clave después de cualquier rollback.
+> **Quién autoriza la promoción a producción**: **Gabriel** (aprobación manual). No se promociona a producción con health checks o smoke en rojo.
+
+### Identificar la última revisión sana
+
+- Listar revisiones de un servicio Cloud Run y ver su estado/tráfico:
+  ```bash
+  gcloud run revisions list --service riff-api-prod --region southamerica-west1 \
+    --project riff-catalogo --format yaml --limit 5
+  ```
+- La **última sana** es la revisión más reciente que pasó el smoke completo (API
+  `/health` + products/categories/subcategories). En el historial de deploys de
+  GitHub o en los estados del pipeline se identifica el último `deploy` en verde.
+- Anotar el nombre exacto de esa revisión (formato `riff-api-prod-<hash>`).
+
+### Backend — revertir revisión en Cloud Run
+
+- Dirigir el 100 % del tráfico a la revisión sana conocida:
+  ```bash
+  gcloud run services update-traffic riff-api-prod \
+    --to-revisions=<REVISION_SANA>=100 \
+    --region southamerica-west1 --project riff-catalogo
+  ```
+- O, si solo se conoce "la anterior", revertir a la revisión previa por nombre.
+- La URL del servicio no cambia (mismo domain mapping/URL `*.run.app`).
+
+### Frontends — redesplegar el commit previo en Coolify
+
+- Desde el panel Coolify, en cada recurso afectado (web/admin, staging o prod):
+  1. Rebuild **deploy** con la referencia del commit/etiqueta anterior
+     (redeploy del build previo) — Coolify permite "redeploy" de la imagen/build
+     anterior.
+  2. El build in-situ usa la misma referencia git del commit que se quiere
+     restaurar.
+- Verificar que el redeploy termina en verde en Coolify antes de continuar.
+
+### Smoke tras el rollback
+
+- API: `npm run smoke:api` contra la URL del servicio (`SMOKE_API_URL`).
+- Astro: `npm run smoke:web` (`SMOKE_WEB_URL`).
+- Angular: `npm run smoke:admin` (`SMOKE_ADMIN_URL`).
+- Confirmar `/health` y los endpoints clave (`/api/v1/products`, categories,
+  subcategories) y las páginas públicas del frontend.
+
+## URLs provisionales → definitivas
+
+> Hasta que existan los dominios definitivos (`somosriff.cl`, `admin.somosriff.cl`,
+> `staging.somosriff.cl`, `admin-staging.somosriff.cl`, `api.somosriff.cl`), los
+> ambientes se sirven con URLs **temporales**: Cloud Run `*.run.app` para la API, y
+> dominios wildcard de Coolify (p. ej. `*.sslip.io`) para web/admin. Al existir el
+> DNS, aplicar este checklist de migración:
+
+1. **DNS**: crear los registros A/CNAME para los dominios definitivos hacia el VPS
+   de Coolify (web/admin) y el domain mapping de `api.somosriff.cl` → Cloud Run.
+2. **Coolify Build Variables** (web staging/prod): actualizar `SITE_URL` y
+   `NESTJS_API_URL` a las URLs definitivas (p. ej. `https://somosriff.cl` y
+   `https://api.somosriff.cl/api/v1`). Redeploy de web y admin.
+3. **Coolify dominios**: asignar los dominios definitivos a los 4 recursos
+   (reemplazando las URLs wildcard temporales); Coolify emite TLS vía Let's
+   Encrypt.
+4. **Cloud Run CORS**: actualizar `ASTRO_SITE_URL` y `ANGULAR_ADMIN_URL` en los
+   servicios Cloud Run para incluir los orígenes definitivos (`https://somosriff.cl`
+   y `https://admin.somosriff.cl`).
+5. **Domain mapping de la API**: crear el mapping `api.somosriff.cl` → `riff-api-prod`.
+6. **Smoke**: re-ejecutar `smoke:api`, `smoke:web`, `smoke:admin` contra las URLs
+   definitivas.
 
 ## Notifications
 
@@ -97,6 +159,9 @@
 | `SLACK_WEBHOOK` | GitHub Actions | Notification webhook | `https://hooks.slack.com/...` |
 | `CATALOG_REBUILD_WEBHOOK_URL` | Cloud Run (backend — **secreto NestJS en Secret Manager**, ops-managed) | URL del webhook que el backend dispara cuando cambia cualquier entidad pública del catálogo (categoría, subcategoría, producto) para que Coolify regenere el sitio Astro. `POST` fire-and-forget con `Authorization: Bearer <token>` y timeout de 5s. No-op si no está configurado | `https://coolify.example.com/deploy` |
 | `CATALOG_REBUILD_WEBHOOK_TOKEN` | Cloud Run (backend — **secreto NestJS en Secret Manager**, ops-managed) | Token Bearer con el que se autentica el rebuild webhook del catálogo. **Nunca se loguea ni se envía en el body**. Reemplaza a la antigua variable de webhook de categorías (sin auth) | `secret-token` |
+| `SMOKE_API_URL` | GitHub Actions (post-deploy smoke) | URL base de la API para el smoke test post-deploy (`/health`, products, categories, subcategories). No-op si no está | `https://<run>.run.app` |
+| `SMOKE_WEB_URL` | GitHub Actions (post-deploy smoke) | URL del sitio Astro para `smoke:web`. No-op si no está | `https://staging.somosriff.cl` |
+| `SMOKE_ADMIN_URL` | GitHub Actions (post-deploy smoke) | URL del panel Angular para `smoke:admin`. No-op si no está | `https://admin.somosriff.cl` |
 
 **Reglas de secretos**:
 
