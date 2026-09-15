@@ -1,21 +1,22 @@
 {
   "schema_version": 1,
-  "change": "add-frontend-smoke-and-nginx-hardening",
-  "ticket_id": "RIFF-DEPLOY-01",
+  "change": "fix-cloud-run-runtime-configuration",
+  "ticket_id": "RIFF-DEPLOY-02",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-14T19:35:00Z",
-  "tasks": { "total": 8, "passed": 8, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-15T16:54:08Z",
+  "tasks": { "total": 5, "passed": 5, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "smoke:api validates /health + products/categories/subcategories", "status": "PASS" },
-    { "id": "SC-002", "test": "smoke:web validates home, /productos, slug, /_astro assets", "status": "PASS" },
-    { "id": "SC-003", "test": "smoke:admin validates root, SPA fallback, app-root, /assets", "status": "PASS" },
-    { "id": "SC-004", "test": "deploy.yml invokes smoke post-deploy with polling (staging+prod, 4 poll steps)", "status": "PASS" },
-    { "id": "SC-005", "test": "smoke scripts no-op when env URL unset", "status": "PASS" },
-    { "id": "SC-006", "test": "web nginx: /_astro immutable, HTML no-cache, 404 static", "status": "PASS" },
-    { "id": "SC-007", "test": "admin nginx: /assets immutable, index no-cache, SPA fallback", "status": "PASS" },
-    { "id": "SC-008", "test": "security headers + CSP repeated in each nginx location (3 per conf; none lost)", "status": "PASS" },
-    { "id": "SC-009", "test": "deploy-standards.md rollback procedure documented", "status": "PASS" },
-    { "id": "SC-010", "test": "deploy-standards.md provisional-to-definitive URL migration documented", "status": "PASS" }
+    { "id": "SC-001", "test": "deploy-cloudrun service from vars.CLOUD_RUN_SERVICE (creates service)", "status": "PASS" },
+    { "id": "SC-002", "test": "--service-account=${{ vars.GCP_RUNTIME_SA }}", "status": "PASS" },
+    { "id": "SC-003", "test": "ADC kept; no FIREBASE_CLIENT_EMAIL/PRIVATE_KEY in workflow", "status": "PASS" },
+    { "id": "SC-004", "test": "env_vars FIREBASE_* + NODE_ENV=production + CORS from SMOKE staging, no PORT", "status": "PASS" },
+    { "id": "SC-005", "test": "--allow-unauthenticated present", "status": "PASS" },
+    { "id": "SC-006", "test": "CATALOG_REBUILD_* secrets from Secret Manager :latest", "status": "PASS" },
+    { "id": "SC-007", "test": "image path uses vars.GCP_ARTIFACT_REPOSITORY; no riff/riff-backend literal", "status": "PASS" },
+    { "id": "SC-008", "test": "staging uses staging-specific vars (SMOKE_*_STAGING_URL)", "status": "PASS" },
+    { "id": "SC-009", "test": "production gated on *_PRODUCTION vars (blocked until set)", "status": "PASS" },
+    { "id": "SC-010", "test": "CI gate + backend-staging-before-frontends preserved", "status": "PASS" },
+    { "id": "SC-011", "test": "docs: Acciones humanas + env table updated", "status": "PASS" }
   ]
 }
