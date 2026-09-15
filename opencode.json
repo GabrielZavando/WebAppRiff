@@ -7,7 +7,7 @@
       "name": "OmniRoute",
       "options": {
         "baseURL": "http://localhost:20128/v1",
-        "apiKey": "sk-aad2f9f3f277f6d8-ce79b3-b14add23"
+        "apiKey": "XXXXXXX"
       },
       "models": {
         "auto/best-free": {
