@@ -596,9 +596,14 @@ describe('ProductoRepository', () => {
     });
 
     it('clamps page to last valid page', async () => {
-      store.set('productos/p1', baseProduct());
-      store.set('productos/p2', { ...baseProduct(), id: 'p2' });
-      store.set('productos/p3', { ...baseProduct(), id: 'p3' });
+      // Same `creadoEn` for all three so ordering is insertion-stable and
+      // deterministic: Firestore defines no order for equal sort keys without a
+      // tie-break, and `baseProduct()` used to set `creadoEn: new Date()`, which
+      // made this test flaky under CI load (timestamps split across ms).
+      const sameInstant = new Date('2025-01-01');
+      store.set('productos/p1', { ...baseProduct(), id: 'p1', creadoEn: sameInstant });
+      store.set('productos/p2', { ...baseProduct(), id: 'p2', creadoEn: sameInstant });
+      store.set('productos/p3', { ...baseProduct(), id: 'p3', creadoEn: sameInstant });
       // 3 items, limit 2 → 2 pages; page 5 should clamp to page 2
       const result = await repo.findAll({ projection: 'card', page: 5, limit: 2 });
       expect(result.items).toHaveLength(1); // page 2 has 1 item

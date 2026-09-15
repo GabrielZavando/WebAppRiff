@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+
+  // Angular application build (referenced by angular.json). The Vitest test
+  // files under src/**/__tests__ use Node APIs (`node:fs`, `node:path`,
+  // `process`) and are run by Vitest, not by the Angular build — they must be
+  // excluded here so `ng build` does not type-check them against the browser
+  // tsconfig (which lacks Node types and fails with TS2591).
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts", "src/**/__tests__/**"],
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}
