@@ -23,7 +23,7 @@ COPY apps/admin/package.json ./apps/admin/package.json
 # and any workspace prepare need deps that filtered installs do not provide).
 RUN npm ci --workspace=@riff/admin --include-workspace-root=false --ignore-scripts
 
-COPY apps/admin/package.json apps/admin/angular.json apps/admin/tsconfig.json ./apps/admin/
+COPY apps/admin/package.json apps/admin/angular.json apps/admin/tsconfig.json apps/admin/tsconfig.app.json ./apps/admin/
 COPY apps/admin/src ./apps/admin/src
 
 RUN npm run build --workspace=@riff/admin
