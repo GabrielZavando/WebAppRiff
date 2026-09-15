@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "change": "generalize-catalog-rebuild-webhook",
+  "change": "add-frontend-smoke-and-nginx-hardening",
   "ticket_id": "RIFF-DEPLOY-01",
   "verdict": "SHIP",
-  "confidence": 0.9,
-  "timestamp": "2026-09-14T16:10:00Z",
-  "findings": { "total": 0, "critical": 0, "warnings": 0, "info": 0, "discarded": 0 }
+  "confidence": 0.85,
+  "timestamp": "2026-09-14T19:40:00Z",
+  "findings": { "total": 1, "critical": 0, "warnings": 0, "info": 1, "discarded": 0 }
 }

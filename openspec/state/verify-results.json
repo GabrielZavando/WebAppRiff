@@ -1,22 +1,21 @@
 {
   "schema_version": 1,
-  "change": "generalize-catalog-rebuild-webhook",
+  "change": "add-frontend-smoke-and-nginx-hardening",
   "ticket_id": "RIFF-DEPLOY-01",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-14T16:05:00Z",
-  "tasks": { "total": 7, "passed": 7, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-14T19:35:00Z",
+  "tasks": { "total": 8, "passed": 8, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "categoria.service notifies category events", "status": "PASS" },
-    { "id": "SC-002", "test": "subcategoria.service notifies subcategory events", "status": "PASS" },
-    { "id": "SC-003", "test": "producto-write.service notifies product events (incl. publish/unpublish)", "status": "PASS" },
-    { "id": "SC-004", "test": "webhook sends Authorization: Bearer <token>", "status": "PASS" },
-    { "id": "SC-005", "test": "webhook uses AbortSignal.timeout(5000)", "status": "PASS" },
-    { "id": "SC-006", "test": "webhook no-op when URL/token unset", "status": "PASS" },
-    { "id": "SC-007", "test": "webhook failure does not throw to mutation", "status": "PASS" },
-    { "id": "SC-008", "test": "logs without token/URL (entityType/action only)", "status": "PASS" },
-    { "id": "SC-009", "test": ".env.example + deploy-standards use CATALOG_REBUILD_*", "status": "PASS" },
-    { "id": "SC-010", "test": "backend suite green (458 tests, cov>=90%, e2e 18)", "status": "PASS" },
-    { "id": "SC-011", "test": "HTTP non-OK (response.ok=false) logged with status; 2xx silent", "status": "PASS" }
+    { "id": "SC-001", "test": "smoke:api validates /health + products/categories/subcategories", "status": "PASS" },
+    { "id": "SC-002", "test": "smoke:web validates home, /productos, slug, /_astro assets", "status": "PASS" },
+    { "id": "SC-003", "test": "smoke:admin validates root, SPA fallback, app-root, /assets", "status": "PASS" },
+    { "id": "SC-004", "test": "deploy.yml invokes smoke post-deploy with polling (staging+prod, 4 poll steps)", "status": "PASS" },
+    { "id": "SC-005", "test": "smoke scripts no-op when env URL unset", "status": "PASS" },
+    { "id": "SC-006", "test": "web nginx: /_astro immutable, HTML no-cache, 404 static", "status": "PASS" },
+    { "id": "SC-007", "test": "admin nginx: /assets immutable, index no-cache, SPA fallback", "status": "PASS" },
+    { "id": "SC-008", "test": "security headers + CSP repeated in each nginx location (3 per conf; none lost)", "status": "PASS" },
+    { "id": "SC-009", "test": "deploy-standards.md rollback procedure documented", "status": "PASS" },
+    { "id": "SC-010", "test": "deploy-standards.md provisional-to-definitive URL migration documented", "status": "PASS" }
   ]
 }

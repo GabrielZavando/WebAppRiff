@@ -208,6 +208,24 @@
         "timestamp": "2026-09-14T16:10:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "add-frontend-smoke-and-nginx-hardening",
+      "ticket_id": "RIFF-DEPLOY-01",
+      "archived_at": "2026-09-14T19:40:00Z",
+      "specs_applied": [
+        "add-frontend-smoke-and-nginx-hardening"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-14T19:35:00Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-14T19:40:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }
