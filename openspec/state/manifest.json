@@ -226,6 +226,24 @@
         "timestamp": "2026-09-14T19:40:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "fix-cloud-run-runtime-configuration",
+      "ticket_id": "RIFF-DEPLOY-02",
+      "archived_at": "2026-09-15T17:00:00Z",
+      "specs_applied": [
+        "fix-cloud-run-runtime-configuration"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-15T16:54:08Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-09-15T17:00:00Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

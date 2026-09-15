@@ -135,6 +135,64 @@
 6. **Smoke**: re-ejecutar `smoke:api`, `smoke:web`, `smoke:admin` contra las URLs
    definitivas.
 
+## Acciones humanas pendientes antes del primer deploy de staging
+
+> El deploy-cloudrun de staging ya está programado para entregar runtime SA,
+> env vars, secrets y acceso público. Pero **el primer deploy requiere que el
+> operador realice estas acciones en GCP** antes de mergear a `main` (o el deploy
+> fallará al arrancar el contenedor).
+
+### 1. Secretos en Secret Manager (proyecto infra `webappriff`)
+
+Crear con versión `latest`:
+
+```bash
+gcloud secrets create CATALOG_REBUILD_WEBHOOK_URL --project=webappriff
+gcloud secrets versions add CATALOG_REBUILD_WEBHOOK_URL \
+  --data-file=<valor> --project=webappriff
+gcloud secrets create CATALOG_REBUILD_WEBHOOK_TOKEN --project=webappriff
+gcloud secrets versions add CATALOG_REBUILD_WEBHOOK_TOKEN \
+  --data-file=<valor> --project=webappriff
+```
+
+> ⚠️ Si faltan, el `deploy-cloudrun` de staging **falla** (el action resuelve el
+> secret en el deploy); no es silencioso. La URL/token del webhook de catálogo
+> **nunca** se escriben en el workflow, `.env` ni logs.
+
+### 2. IAM del runtime service account (`GCP_RUNTIME_SA`)
+
+Service account de runtime: `riff-api-runtime@webappriff.iam.gserviceaccount.com`.
+
+En el proyecto infra **`webappriff`**:
+- `roles/secretmanager.secretAccessor` sobre los secrets de catálogo.
+
+En el proyecto Firebase **`riff-catalogo-staging`** (acceso cross-project para el
+Admin SDK / Firestore / Storage):
+- `roles/datastore.user` (Firestore nativo read/write).
+- Roles de Storage adecuados (p. ej. `roles/storage.objectViewer`/`objectAdmin`)
+  sobre el bucket de staging.
+
+### 3. Permisos del deploy service account (GitHub → Cloud Run)
+
+El deploy SA (`GCP_DEPLOY_SA` = `github-webappriff-deployer@webappriff.iam.gserviceaccount.com`)
+debe poder:
+- Desplegar Cloud Run: `roles/run.admin` sobre `webappriff`.
+- Asumir el runtime SA al pasar `--service-account=...`:
+  `roles/iam.serviceAccountUser` sobre `riff-api-runtime@webappriff.iam.gserviceaccount.com`.
+
+### 4. Datos mínimos en Firestore staging
+
+Para que el smoke de catálogo no vacío pase (`/api/v1/products` con `data` no `[]`),
+cargar un seed mínimo en `riff-catalogo-staging`:
+
+```bash
+# desde apps/backend, apuntando a staging (ADC / GOOGLE_APPLICATION_CREDENTIALS)
+npm run seed:catalog
+npm run seed:productos
+```
+
+> Sin esto, `/products` devuelve `data: []` y el smoke de staging falla.
+
 ## Notifications
 
 - Notify success/failure to team channel (Slack/Discord webhook — **pendiente: configurar webhook**)
@@ -154,7 +212,12 @@
 | `ASTRO_SITE_URL` | Cloud Run (backend) | Origen del sitio Astro para la allowlist CORS en producción | `https://somosriff.cl` |
 | `ANGULAR_ADMIN_URL` | Cloud Run (backend) | Origen del admin para la allowlist CORS en producción | `https://admin.somosriff.cl` |
 | `GCP_REGION` | GitHub Actions / gcloud | Región de Artifact Registry y Cloud Run — **aprobada: `southamerica-west1`** | `southamerica-west1` |
-| `GCP_PROJECT` | GitHub Actions / gcloud | Project ID de GCP para registry y Cloud Run | `riff-catalogo` |
+| `GCP_PROJECT` | GitHub Actions / gcloud | Project ID de GCP de **infraestructura** (Artifact Registry + Cloud Run + Secret Manager) | `webappriff` |
+| `GCP_RUNTIME_SA` | Cloud Run (runtime service account) | Service account con la que corre el servicio Cloud Run (staging). ADC lee de aquí | `riff-api-runtime@webappriff.iam.gserviceaccount.com` |
+| `GCP_ARTIFACT_REPOSITORY` | GitHub Actions / gcloud | Repositorio de Artifact Registry (sin la imagen). Ruta completa: `${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_ARTIFACT_REPOSITORY}/riff-backend` | `riff` |
+| `CLOUD_RUN_SERVICE` | GitHub Actions / Cloud Run | Nombre del servicio Cloud Run de staging | `riff-api-staging` |
+| `SMOKE_WEB_STAGING_URL` | GitHub Actions (vars) | URL temporal del sitio Astro staging (también `ASTRO_SITE_URL` inyectada al backend para CORS) | `http://<sub>.sslip.io` |
+| `SMOKE_ADMIN_STAGING_URL` | GitHub Actions (vars) | URL temporal del panel Angular staging (también `ANGULAR_ADMIN_URL` para CORS) | `http://<sub>.sslip.io` |
 | `COOLIFY_API_TOKEN` | Coolify (si se usa API) | Token para Coolify CLI/API | `coolify_xxx` |
 | `SLACK_WEBHOOK` | GitHub Actions | Notification webhook | `https://hooks.slack.com/...` |
 | `CATALOG_REBUILD_WEBHOOK_URL` | Cloud Run (backend — **secreto NestJS en Secret Manager**, ops-managed) | URL del webhook que el backend dispara cuando cambia cualquier entidad pública del catálogo (categoría, subcategoría, producto) para que Coolify regenere el sitio Astro. `POST` fire-and-forget con `Authorization: Bearer <token>` y timeout de 5s. No-op si no está configurado | `https://coolify.example.com/deploy` |
@@ -162,6 +225,24 @@
 | `SMOKE_API_URL` | GitHub Actions (post-deploy smoke) | URL base de la API para el smoke test post-deploy (`/health`, products, categories, subcategories). No-op si no está | `https://<run>.run.app` |
 | `SMOKE_WEB_URL` | GitHub Actions (post-deploy smoke) | URL del sitio Astro para `smoke:web`. No-op si no está | `https://staging.somosriff.cl` |
 | `SMOKE_ADMIN_URL` | GitHub Actions (post-deploy smoke) | URL del panel Angular para `smoke:admin`. No-op si no está | `https://admin.somosriff.cl` |
+
+**Variables de producción (aún vacías — el deploy de producción solo desbloquea cuando TODAS existan):**
+
+| Variable | Dónde vive | Description |
+|----------|------------|-------------|
+| `CLOUD_RUN_SERVICE_PRODUCTION` | GitHub Actions / Cloud Run | Nombre del servicio Cloud Run de producción (p. ej. `riff-api-prod`) |
+| `FIREBASE_PROJECT_ID_PRODUCTION` | GitHub Actions / Cloud Run | Project ID de Firebase de producción |
+| `FIREBASE_STORAGE_BUCKET_PRODUCTION` | GitHub Actions / Cloud Run | Bucket de Firebase Storage de producción |
+| `SMOKE_WEB_PRODUCTION_URL` | GitHub Actions (vars) | URL del sitio Astro producción (también `ASTRO_SITE_URL` para CORS) |
+| `SMOKE_ADMIN_PRODUCTION_URL` | GitHub Actions (vars) | URL del panel Angular producción (también `ANGULAR_ADMIN_URL` para CORS) |
+| `GCP_RUNTIME_SA_PRODUCTION` | Cloud Run (runtime service account) | Service account de runtime de producción (si difiere de la de staging) |
+| `COOLIFY_WEB_PRODUCTION_WEBHOOK_URL` | GitHub Actions (secret) | Webhook de deploy de Astro producción |
+| `COOLIFY_ADMIN_PRODUCTION_WEBHOOK_URL` | GitHub Actions (secret) | Webhook de deploy de Angular producción |
+
+> ⚠️ **Regla dura**: el deploy de producción se omite por completo mientras falte
+> cualquiera de las variables `*_PRODUCTION` obligatorias. **Nunca** despliega con
+> valores vacíos ni reutiliza valores de staging. La lane de producción promueve la
+> **misma imagen y digest** validados en staging (mismo `GCP_ARTIFACT_REPOSITORY`).
 
 **Reglas de secretos**:
 
