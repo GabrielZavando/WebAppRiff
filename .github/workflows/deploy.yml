@@ -10,7 +10,7 @@ name: Deploy
 #
 # Lanes:
 # - staging (push to main validated by CI): backend image -> Artifact Registry
-#   (tag sha-<commit>) -> Cloud Run `riff-api-staging` -> smoke /health and
+#   (tag sha-<commit>) -> Cloud Run (service via vars.CLOUD_RUN_SERVICE) -> smoke /health and
 #   domain endpoints -> then frontends (web + admin) via Coolify webhooks.
 # - production (manual dispatch, after staging smoke passes): promote the SAME
 #   digest validated in staging (never a fresh build, never `latest`), after
@@ -72,7 +72,7 @@ jobs:
         run: docker build -f apps/admin/Dockerfile -t riff-admin:pr .
 
   # 3.2 — Staging lane (CI success on main): build/push the backend image and
-  #       deploy it to Cloud Run riff-api-staging, then smoke /health + domain
+  #       deploy it to Cloud Run staging (vars.CLOUD_RUN_SERVICE), then smoke /health + domain
   #       endpoints. Frontends for staging run AFTER this job (AC3).
   deploy-backend-staging:
     name: Deploy backend to Cloud Run (staging)
@@ -80,6 +80,8 @@ jobs:
     needs: docker-build
     if: >-
       vars.GCP_PROJECT != '' &&
+      vars.GCP_RUNTIME_SA != '' &&
+      vars.FIREBASE_PROJECT_ID != '' &&
       github.event_name == 'workflow_run' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'main' &&
@@ -111,18 +113,30 @@ jobs:
           file: apps/backend/Dockerfile
           push: true
           tags: |
-            ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/riff/riff-backend:sha-${{ github.event.workflow_run.head_sha }}
+            ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/${{ vars.GCP_ARTIFACT_REPOSITORY }}/riff-backend:sha-${{ github.event.workflow_run.head_sha }}
 
       - name: Deploy to Cloud Run (staging)
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          service: riff-api-staging
+          service: ${{ vars.CLOUD_RUN_SERVICE }}
           region: ${{ vars.GCP_REGION }}
-          image: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/riff/riff-backend:sha-${{ github.event.workflow_run.head_sha }}
+          image: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/${{ vars.GCP_ARTIFACT_REPOSITORY }}/riff-backend:sha-${{ github.event.workflow_run.head_sha }}
+          env_vars: |
+            FIREBASE_PROJECT_ID=${{ vars.FIREBASE_PROJECT_ID }}
+            FIREBASE_STORAGE_BUCKET=${{ vars.FIREBASE_STORAGE_BUCKET }}
+            NODE_ENV=production
+            ASTRO_SITE_URL=${{ vars.SMOKE_WEB_STAGING_URL }}
+            ANGULAR_ADMIN_URL=${{ vars.SMOKE_ADMIN_STAGING_URL }}
+          secrets: |
+            CATALOG_REBUILD_WEBHOOK_URL=CATALOG_REBUILD_WEBHOOK_URL:latest
+            CATALOG_REBUILD_WEBHOOK_TOKEN=CATALOG_REBUILD_WEBHOOK_TOKEN:latest
+          flags: |
+            --service-account=${{ vars.GCP_RUNTIME_SA }}
+            --allow-unauthenticated
 
       - name: Smoke test (domain endpoints)
         run: |
-          URL=$(gcloud run services describe riff-api-staging \
+          URL=$(gcloud run services describe ${{ vars.CLOUD_RUN_SERVICE }} \
             --region "${{ vars.GCP_REGION }}" \
             --project "${{ vars.GCP_PROJECT }}" \
             --format 'value(status.url)')
@@ -154,7 +168,7 @@ jobs:
         if: failure()
         run: |
           echo "Staging deploy failed after the Cloud Run deploy step may have run."
-          echo "Rollback: gcloud run services update-traffic riff-api-staging --to-revisions <previous>=100 --region ${{ vars.GCP_REGION }}"
+          echo "Rollback: gcloud run services update-traffic ${{ vars.CLOUD_RUN_SERVICE }} --to-revisions <previous>=100 --region ${{ vars.GCP_REGION }}"
           echo "See docs/deploy-standards.md → Rollback."
 
   # 3.4a — Trigger the frontends for staging (web + admin). Runs only after the
@@ -206,7 +220,7 @@ jobs:
             echo "ℹ️ GCP not configured — skipping API URL resolution."
             exit 0
           fi
-          URL=$(gcloud run services describe riff-api-staging \
+          URL=$(gcloud run services describe ${{ vars.CLOUD_RUN_SERVICE }} \
             --region "$GCP_REGION" \
             --project "$GCP_PROJECT" \
             --format 'value(status.url)')
@@ -251,7 +265,17 @@ jobs:
     name: Promote to Cloud Run (production)
     runs-on: ubuntu-latest
     needs: docker-build
-    if: vars.GCP_PROJECT != '' && github.event_name == 'workflow_dispatch'
+    # Production stays blocked until its own resources exist. Never deploy with
+    # empty values and never reuse staging vars. All *_PRODUCTION vars must be set.
+    if: >-
+      vars.GCP_PROJECT != '' &&
+      vars.CLOUD_RUN_SERVICE_PRODUCTION != '' &&
+      vars.FIREBASE_PROJECT_ID_PRODUCTION != '' &&
+      vars.FIREBASE_STORAGE_BUCKET_PRODUCTION != '' &&
+      vars.GCP_RUNTIME_SA_PRODUCTION != '' &&
+      vars.SMOKE_WEB_PRODUCTION_URL != '' &&
+      vars.SMOKE_ADMIN_PRODUCTION_URL != '' &&
+      github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       id-token: write
@@ -271,7 +295,7 @@ jobs:
 
       - name: Resolve the validated staging digest
         run: |
-          IMAGE=${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/riff/riff-backend
+          IMAGE=${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/${{ vars.GCP_ARTIFACT_REPOSITORY }}/riff-backend
           DIGEST=$(gcloud artifacts docker images describe "$IMAGE:sha-${{ github.sha }}" \
             --project "${{ vars.GCP_PROJECT }}" \
             --format 'value(image_summary.digest)')
@@ -284,7 +308,7 @@ jobs:
 
       - name: Smoke gate — staging must be healthy before promotion
         run: |
-          URL=$(gcloud run services describe riff-api-staging \
+          URL=$(gcloud run services describe ${{ vars.CLOUD_RUN_SERVICE }} \
             --region "${{ vars.GCP_REGION }}" \
             --project "${{ vars.GCP_PROJECT }}" \
             --format 'value(status.url)')
@@ -315,13 +339,25 @@ jobs:
       - name: Deploy the validated digest to Cloud Run (production)
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          service: riff-api-prod
+          service: ${{ vars.CLOUD_RUN_SERVICE_PRODUCTION }}
           region: ${{ vars.GCP_REGION }}
           image: ${{ env.IMAGE_WITH_DIGEST }}
+          env_vars: |
+            FIREBASE_PROJECT_ID=${{ vars.FIREBASE_PROJECT_ID_PRODUCTION }}
+            FIREBASE_STORAGE_BUCKET=${{ vars.FIREBASE_STORAGE_BUCKET_PRODUCTION }}
+            NODE_ENV=production
+            ASTRO_SITE_URL=${{ vars.SMOKE_WEB_PRODUCTION_URL }}
+            ANGULAR_ADMIN_URL=${{ vars.SMOKE_ADMIN_PRODUCTION_URL }}
+          secrets: |
+            CATALOG_REBUILD_WEBHOOK_URL=CATALOG_REBUILD_WEBHOOK_URL:latest
+            CATALOG_REBUILD_WEBHOOK_TOKEN=CATALOG_REBUILD_WEBHOOK_TOKEN:latest
+          flags: |
+            --service-account=${{ vars.GCP_RUNTIME_SA_PRODUCTION }}
+            --allow-unauthenticated
 
       - name: Smoke test production (domain endpoints)
         run: |
-          URL=$(gcloud run services describe riff-api-prod \
+          URL=$(gcloud run services describe ${{ vars.CLOUD_RUN_SERVICE_PRODUCTION }} \
             --region "${{ vars.GCP_REGION }}" \
             --project "${{ vars.GCP_PROJECT }}" \
             --format 'value(status.url)')
@@ -353,7 +389,7 @@ jobs:
         if: failure()
         run: |
           echo "Promotion failed after the production deploy step may have run."
-          echo "Rollback: gcloud run services update-traffic riff-api-prod --to-revisions <previous>=100 --region ${{ vars.GCP_REGION }}"
+          echo "Rollback: gcloud run services update-traffic ${{ vars.CLOUD_RUN_SERVICE_PRODUCTION }} --to-revisions <previous>=100 --region ${{ vars.GCP_REGION }}"
           echo "See docs/deploy-standards.md → Rollback."
 
   # 3.4b — Trigger the frontends for production (web + admin). Runs only in the
@@ -364,7 +400,8 @@ jobs:
     name: Trigger Coolify frontend rebuild (production)
     runs-on: ubuntu-latest
     needs: deploy-backend-production
-    if: github.event_name == 'workflow_dispatch'
+    # Skips when the production backend job is skipped (production vars unset).
+    if: github.event_name == 'workflow_dispatch' && needs.deploy-backend-production.result == 'success'
     steps:
       - name: Trigger Astro web (production)
         env:
@@ -402,7 +439,7 @@ jobs:
             echo "ℹ️ GCP not configured — skipping API URL resolution."
             exit 0
           fi
-          URL=$(gcloud run services describe riff-api-prod \
+          URL=$(gcloud run services describe ${{ vars.CLOUD_RUN_SERVICE_PRODUCTION }} \
             --region "$GCP_REGION" \
             --project "$GCP_PROJECT" \
             --format 'value(status.url)')
