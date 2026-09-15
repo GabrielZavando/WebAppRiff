@@ -22,7 +22,7 @@
             "outputPath": "dist/admin",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "tsConfig": "tsconfig.json",
+            "tsConfig": "tsconfig.app.json",
             "assets": [],
             "styles": ["src/styles/globals.css"]
           },
