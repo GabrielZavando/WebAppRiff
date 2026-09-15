@@ -18,6 +18,9 @@
     "dev:web": "npm run dev --workspace=apps/web",
     "dev:admin": "npm run start --workspace=apps/admin",
     "test:smoke": "npm run test:smoke --workspaces",
+    "smoke:api": "node scripts/smoke/api.mjs",
+    "smoke:web": "node scripts/smoke/web.mjs",
+    "smoke:admin": "node scripts/smoke/admin.mjs",
     "audit": "node scripts/audit.mjs",
     "prepare": "husky"
   },
