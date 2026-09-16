@@ -272,7 +272,7 @@ Reemplaza al workflow legacy de SSH/docker (eliminado con este change). Estructu
 - **`deploy-frontends-staging`**: dispara los frontends de staging (web y admin)
   tras el smoke de Cloud Run, vía `COOLIFY_WEB_STAGING_WEBHOOK_URL` y
   `COOLIFY_ADMIN_STAGING_WEBHOOK_URL`, con
-  `curl --fail --silent --show-error --request GET "$URL" -H "Authorization: Bearer $COOLIFY_API_TOKEN"`.
+  `curl --fail --silent --show-error --request POST "$URL" -H "Authorization: Bearer $COOLIFY_API_TOKEN"`.
   No-op con aviso si los secrets no están configurados (AC3/AC6/AC7).
 - **`deploy-backend-production`** (manual dispatch): resuelve el digest del
   `sha-<commit>` validado en staging, re-ejecuta el smoke de staging como gate,

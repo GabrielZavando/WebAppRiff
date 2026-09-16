@@ -193,7 +193,7 @@ jobs:
             echo "❌ COOLIFY_WEB_STAGING_WEBHOOK_URL / COOLIFY_API_TOKEN not set — skipping (no-op)."
             exit 0
           fi
-          curl --fail --silent --show-error --request GET "$URL" \
+          curl --fail --silent --show-error --request POST "$URL" \
             -H "Authorization: Bearer $TOKEN"
           echo "✅ Coolify web (staging) rebuild triggered"
 
@@ -206,7 +206,7 @@ jobs:
             echo "❌ COOLIFY_ADMIN_STAGING_WEBHOOK_URL / COOLIFY_API_TOKEN not set — skipping (no-op)."
             exit 0
           fi
-          curl --fail --silent --show-error --request GET "$URL" \
+          curl --fail --silent --show-error --request POST "$URL" \
             -H "Authorization: Bearer $TOKEN"
           echo "✅ Coolify admin (staging) rebuild triggered"
 
@@ -412,7 +412,7 @@ jobs:
             echo "❌ COOLIFY_WEB_PRODUCTION_WEBHOOK_URL / COOLIFY_API_TOKEN not set — skipping (no-op)."
             exit 0
           fi
-          curl --fail --silent --show-error --request GET "$URL" \
+          curl --fail --silent --show-error --request POST "$URL" \
             -H "Authorization: Bearer $TOKEN"
           echo "✅ Coolify web (production) rebuild triggered"
 
@@ -425,7 +425,7 @@ jobs:
             echo "❌ COOLIFY_ADMIN_PRODUCTION_WEBHOOK_URL / COOLIFY_API_TOKEN not set — skipping (no-op)."
             exit 0
           fi
-          curl --fail --silent --show-error --request GET "$URL" \
+          curl --fail --silent --show-error --request POST "$URL" \
             -H "Authorization: Bearer $TOKEN"
           echo "✅ Coolify admin (production) rebuild triggered"
 
