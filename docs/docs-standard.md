@@ -11,6 +11,7 @@ la frontera global intocable/del proyecto.
 docs/
 ├── base-standards.md          # INTOCABLE (framework) — principios SDD/TDD/SOLID
 ├── openspec-tasks-mandatory-steps.md  # INTOCABLE (framework) — checklist obligatoria inyectada por plan-change en todo tasks.md
+├── tdd-failure-protocol.md   # INTOCABLE (framework) — fuente canónica del TDD Failure Protocol (3 intentos, reporte, stop)
 ├── project/                   # DEL PROYECTO
 │   ├── domain.md              # descripción del dominio
 │   ├── stack.md               # stack técnico
@@ -37,6 +38,7 @@ docs/
 | --- | --- |
 | `docs/base-standards.md` | `docs/backend-standards.md` |
 | `docs/openspec-tasks-mandatory-steps.md` | |
+| `docs/tdd-failure-protocol.md` | |
 | | `docs/frontend-standards.md` |
 | | `docs/ci-standards.md` |
 | | `docs/deploy-standards.md` |

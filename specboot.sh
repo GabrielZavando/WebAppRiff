@@ -120,11 +120,13 @@ FRAMEWORK_ITEMS=(
   ".opencode/agents"
   "ai-specs"
   "check-refs.sh"
+  "release-bump.sh"
   "specboot.sh"
   "validate-specboot.sh"
   "templates/ci"
   "docs/base-standards.md"
   "docs/openspec-tasks-mandatory-steps.md"
+  "docs/tdd-failure-protocol.md"
   "docs/framework-contract.md"
   "docs/docs-standard.md"
   "docs/specboot-json-standard.md"
@@ -206,7 +208,9 @@ json_array() {
 create_initial_specboot_json() {
   local dst="$1" interactive="$2"
   local fw_version
-  fw_version="$(get_framework_version || true)"
+  # Consumer-safe: always write the FRAMEWORK's version (resolve_framework_version),
+  # never the project's root package.json version (the old bare call read CWD).
+  fw_version="$(resolve_framework_version || true)"
   [ -z "$fw_version" ] && fw_version="0.0.0"
 
   local name="." services_json='["."]' stack_json='"framework"'
@@ -503,11 +507,13 @@ UPDATE_ITEMS=(
   ".opencode/agents"
   "ai-specs"
   "check-refs.sh"
+  "release-bump.sh"
   "specboot.sh"
   "validate-specboot.sh"
   "templates/ci"
   "docs/base-standards.md"
   "docs/openspec-tasks-mandatory-steps.md"
+  "docs/tdd-failure-protocol.md"
   "docs/framework-contract.md"
   "docs/docs-standard.md"
   "docs/specboot-json-standard.md"
@@ -938,10 +944,9 @@ check_refs() {
 
 get_framework_version() {
   local dir="${1:-.}"
-  # require() treats a bare specifier (no "./", "../" or "/" prefix) as a
-  # package-name lookup, which silently fails for dirs like
-  # "node_modules/@gabrielzavando/specboot" (stderr is suppressed below).
-  # Normalize to an explicit filesystem path so every caller resolves.
+  # require() treats a bare specifier as a package-name lookup, not a file path:
+  # "node_modules/..." would fail silently under 2>/dev/null. Force an explicit
+  # filesystem path for anything that is not already rooted (/* or ./*).
   case "$dir" in
     /*|./*) ;;
     *) dir="./$dir" ;;
@@ -949,6 +954,25 @@ get_framework_version() {
   if [ -f "$dir/package.json" ] && command -v node >/dev/null 2>&1; then
     node -e "try{console.log(require('$dir/package.json').version)}catch(e){process.exit(1)}" 2>/dev/null
   fi
+}
+
+# Resolve the framework's own version, consumer-safe. Precedence:
+#   1) node_modules/@gabrielzavando/specboot (consumer install, CWD-relative)
+#   2) the package.json next to the script ($SCRIPT_DIR — dogfooding repo root)
+# In a consumer running the root-copied specboot.sh, the package.json next to
+# the script is the PROJECT's — hence the node_modules-first precedence. This is
+# harmless in dogfooding: the framework repo does not self-depend, so the
+# fallback resolves exactly as before the fix. Shared by show_version and
+# create_initial_specboot_json so init writes the framework version too.
+resolve_framework_version() {
+  local v=""
+  if [ -f "node_modules/@gabrielzavando/specboot/package.json" ]; then
+    v="$(get_framework_version "node_modules/@gabrielzavando/specboot")"
+  fi
+  if [ -z "$v" ]; then
+    v="$(get_framework_version "$SCRIPT_DIR")"
+  fi
+  echo "$v"
 }
 
 check_specboot_json() {
@@ -1069,18 +1093,10 @@ show_help() {
 
 show_version() {
   local v
-  # Consumer install: the framework lives in node_modules — prefer it over the
-  # script's own directory. In a consumer project SCRIPT_DIR is the repo root,
-  # so get_framework_version "." would report the PROJECT's version (e.g.
-  # riff-catalogo-digital@0.1.0) instead of the framework's. In the framework
-  # repo (dogfooding) the node_modules self-path does not exist and the
-  # SCRIPT_DIR fallback resolves the framework's own package.json correctly.
-  if [ -f "node_modules/@gabrielzavando/specboot/package.json" ]; then
-    v=$(get_framework_version "node_modules/@gabrielzavando/specboot")
-  fi
-  if [ -z "$v" ]; then
-    v=$(get_framework_version "$SCRIPT_DIR")
-  fi
+  # Consumer-safe resolution: prefer the installed framework package over the
+  # script's neighbor package.json (which is the PROJECT's root package.json in
+  # a consumer running the root-copied specboot.sh).
+  v=$(resolve_framework_version)
   if [ -n "$v" ]; then
     echo "$v"
   else

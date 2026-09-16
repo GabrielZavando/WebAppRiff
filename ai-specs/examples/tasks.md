@@ -147,7 +147,7 @@ Each task follows this structure:
 
 ## TDD Failure Report Example
 
-When a task fails TDD for 3 consecutive attempts (see the **TDD Failure Protocol** in `.opencode/commands/apply.md`), the agent emits this report and **stops** — the task is NOT marked complete and no further task is started:
+When a task fails TDD for 3 consecutive attempts (see the **TDD Failure Protocol**, canonical source: `docs/tdd-failure-protocol.md`), the agent emits this report and **stops** — the task is NOT marked complete and no further task is started:
 
 ```
 TDD Failure Report

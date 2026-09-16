@@ -108,6 +108,11 @@ comportamiento ante el salto de versión se define aquí:
    obligatorio en `.specboot.json`, re-mapeo de `docs/`).
 3. El release (Fase 7) debe hacer coincidir `package.json` con esa entrada y el dogfooding
    debe pasar por el flujo SDD antes de publicar.
+4. La escritura del número de versión **nunca se hace a mano ni con `npm version`**:
+   se ejecuta `bash release-bump.sh X.Y.Z` (script raíz, TICKET-AUDIT-3), que actualiza
+   atómicamente `package.json` (`version`) y `.specboot.json` (`frameworkVersion`), valida
+   semver y exige que la sección `## [X.Y.Z]` ya exista en el CHANGELOG. El script no crea
+   tags ni commits — eso pertenece a `/commit`.
 
 ## Release automático
 

@@ -37,11 +37,12 @@ ai-specs/
 
 ### Native agents (`.opencode/agents/`)
 
-- **plan** (`plan.md`) — generates OpenSpec specs from a ticket (`/plan-change`).
+- **sdd-plan** (`sdd-plan.md`) — generates OpenSpec specs from a ticket (`/plan-change`). Renamed from `plan` (TICKET-AUDIT-3): `plan` is a reserved OpenCode built-in agent name that forces the editor's read-only plan mode.
 - **build** (`build.md`) — full-stack implementation agent; reads `tasks.md`, implements one task at a time following TDD. Dispatches to `backend`/`frontend` subagents by domain.
 - **verify** (`verify.md`) — runs tests, checks traceability, and persists results to `openspec/state/verify-results.json` (read-only over code).
 - **archive** (`archive.md`) — closes the SDD change and stages for commit.
 - **reviewer** (`reviewer.md`) — adversarial red-team audit (`/adversarial-review`); persists the verdict to `openspec/state/adversarial-result.json` (read-only over code).
+- **commit** (`commit.md`) — dedicated agent for `/commit`; hard evidence gates, `edit: deny`, bash limited to git/gh, `git push --force` structurally denied (sdd-cycle-hardening).
 
 ### Subagents (wired via ``file:...``, dispatched by `build`)
 

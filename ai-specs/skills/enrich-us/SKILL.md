@@ -17,16 +17,11 @@ Analyzes and enriches a vague user story or ticket into an actionable descriptio
 
 ### Step 1: Gather Information
 
-Read the ticket or description provided (or fetch via Jira MCP if ticket ID is given):
-
-```bash
-# If Jira MCP is configured
-jira ticket get TICKET-ID
-
-# Or fetch via API
-curl -H "Authorization: Bearer $JIRA_TOKEN" \
-  https://your-domain.atlassian.net/rest/api/3/issue/TICKET-ID
-```
+Read the ticket provided as direct text from the user (pasted in the chat or
+passed as the command argument). If the ticket is only an ID with no
+description, or the description is too vague to extract the items below, ask
+the user to paste the full description before continuing — this skill does not
+fetch tickets from external systems.
 
 Identify:
 - **Who** is the user/actor?

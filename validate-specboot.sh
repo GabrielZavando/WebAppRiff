@@ -175,13 +175,15 @@ else
   cmp_result=$(semver_cmp "$FRAMEWORK_VERSION" "$INSTALLED")
   case "$cmp_result" in
     gt)
-      fail "frameworkVersion ($FRAMEWORK_VERSION) es mayor que la versión instalada ($INSTALLED): proyecto requiere versión más nueva del framework."
+      # Pinned message text preserved; the installation hint covers the ironic
+      # case where the "versión más nueva" claim stems from a broken install.
+      fail "frameworkVersion ($FRAMEWORK_VERSION) es mayor que la versión instalada ($INSTALLED): proyecto requiere versión más nueva del framework. Si tu instalación está al día, verifícala con 'npm ls @gabrielzavando/specboot'."
       echo ""
       echo -e "  ${RED}✗${NC} Validación fallida."
       exit 1
       ;;
     lt)
-      warn "frameworkVersion ($FRAMEWORK_VERSION) es menor que la instalada ($INSTALLED): framework desactualizado, corre 'specboot update'."
+      warn "frameworkVersion ($FRAMEWORK_VERSION) es menor que la instalada ($INSTALLED): framework desactualizado, corre 'specboot update'. Verifica la instalación con 'npm ls @gabrielzavando/specboot' si no cuadra."
       ;;
     eq)
       pass "frameworkVersion ($FRAMEWORK_VERSION) coincide con la instalada ($INSTALLED)."

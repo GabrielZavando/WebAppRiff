@@ -4,7 +4,6 @@ mode: primary
 permission:
   edit:
     "openspec/**": allow
-    "CHANGELOG.md": allow
     "*": deny
   bash:
     "openspec archive *": allow

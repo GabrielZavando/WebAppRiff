@@ -32,6 +32,29 @@ Extract three parts from the argument:
 
 If the ticket ID or title is missing, stop and show the expected input format.
 
+### Step 1½ — Create the ticket branch
+
+Branch creation is part of this skill (convention: `docs/git-workflow-standards.md`
+§1). Execute **before loading any context or writing artifacts**:
+
+1. **Clean git state**: run `git status --porcelain`. If there are uncommitted
+   or staged changes, abort listing the dirty files and ask the user to
+   commit or stash them first. Never create the branch over a dirty tree.
+2. **Derive the branch name**: `feature/{ticket-id-lowercase}-{short-name}`
+   (kebab-case, short description — e.g. `feature/proj-123-auth-reset`).
+   The provisional name is confirmed with the user together with the change
+   name (Step 4 output) or earlier if the user's flow requires it.
+3. **Create from HEAD**: `git checkout -b feature/...` (the new branch carries
+   the current history, per the accumulation rule in
+   `docs/git-workflow-standards.md`).
+4. **If the branch already exists**: ask the user whether to switch to it
+   (`git checkout feature/...`) or create a different one — never reuse it
+   silently.
+
+The plan agent's bash permissions (`git checkout/switch/branch/status/log`)
+already cover this step; `git commit` and `git push` stay denied (ownership
+of `/commit`).
+
 ### Step 2 — Resolve Context
 
 Load **only** the standards files indicated by the tag. `docs/base-standards.md` and `AGENTS.md` are always pre-loaded via `instructions[]` — never re-read them.
@@ -83,14 +106,14 @@ Examples:
 
 ### Step 4½ — Validación de coherencia de diseño (Opcional pero recomendado)
 
-Ejecutar validación preliminar antes de generar tareas, verificando consistencia con la arquitectura existente:
+Ejecutar validación preliminar antes de generar tareas, verificando consistencia con la arquitectura existente. La fuente de escenarios es el artefacto enriquecido (`openspec/tickets/{TICKET-ID}-enriched.md`) cuando existe, o los escenarios derivables del título cuando no — nunca un `scenarios.md` del change (todavía no existe; se genera en el Step 5):
 
 1. **Verificar entidades** en `docs/data-model/data-model.md`:
    - Cada tabla/entidad mencionada en los escenarios debe existir en el data model
    - Si no → advertir y no generar tareas hasta clarificar
 
 2. **Verificar endpoints** en `docs/api/api-spec.yml`:
-   - Cada endpoint referenciado en scenarios.md debe existir en el API spec
+   - Cada endpoint referenciado en los escenarios (del artefacto enriquecido o derivados del título) debe existir en el API spec
    - Si no → advertir y no generar tareas hasta clarificar
 
 3. **Documentar conflictos** en sección `Design Validation` del output:

@@ -28,7 +28,7 @@ Eres un desarrollador full-stack senior que implementa features siguiendo TDD y 
 7. **Marcar tarea como completada** en `tasks.md`
 8. **Detener y reportar** — tras marcar la tarea como completada, reporta el resultado (con la evidencia TDD que lo respalda) y **espera una instrucción explícita del usuario** antes de continuar. Nunca avances automáticamente a la siguiente tarea pendiente.
 
-> **Extensión del ciclo TDD — límite de intentos**: si un test falla repetidamente durante los pasos 2-4, aplica el **TDD Failure Protocol** definido en `.opencode/commands/apply.md`: máximo **3 intentos consecutivos**; al 3er fallo genera el `TDD Failure Report` (campos: `Task`, `Attempt`, `Error`, `Suggested investigation`) y **detente** — no marques la tarea como completada sin evidencia TDD ni continúes con la siguiente tarea.
+> **Extensión del ciclo TDD — límite de intentos**: si un test falla repetidamente durante los pasos 2-4, aplica el **TDD Failure Protocol** (fuente canónica: `docs/tdd-failure-protocol.md`): máximo **3 intentos consecutivos**; al 3er fallo genera el `TDD Failure Report` y **detente** — no marques la tarea como completada sin evidencia TDD ni continúes con la siguiente tarea.
 
 ## Convención de nombrado de tests (trazabilidad SC-NNN)
 
