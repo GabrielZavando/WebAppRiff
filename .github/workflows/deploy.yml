@@ -95,19 +95,19 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Authenticate to GCP (WIF, least privilege)
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
           service_account: ${{ vars.GCP_DEPLOY_SA }}
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Docker auth to Artifact Registry
         run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
 
       - name: "Build and push backend image (tag: sha-<commit>)"
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: apps/backend/Dockerfile
@@ -116,7 +116,7 @@ jobs:
             ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/${{ vars.GCP_ARTIFACT_REPOSITORY }}/riff-backend:sha-${{ github.event.workflow_run.head_sha }}
 
       - name: Deploy to Cloud Run (staging)
-        uses: google-github-actions/deploy-cloudrun@v2
+        uses: google-github-actions/deploy-cloudrun@v3
         with:
           service: ${{ vars.CLOUD_RUN_SERVICE }}
           region: ${{ vars.GCP_REGION }}
@@ -218,13 +218,13 @@ jobs:
           echo "✅ Coolify admin (staging) rebuild triggered"
 
       - name: Authenticate to GCP (WIF, least privilege)
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
           service_account: ${{ vars.GCP_DEPLOY_SA }}
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Resolve staging API URL for smoke
         id: staging-url
@@ -301,13 +301,13 @@ jobs:
           ref: ${{ github.sha }}
 
       - name: Authenticate to GCP (WIF, least privilege)
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
           service_account: ${{ vars.GCP_DEPLOY_SA }}
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Resolve the validated staging digest
         run: |
@@ -353,7 +353,7 @@ jobs:
           echo "✅ Staging promotion gate passed"
 
       - name: Deploy the validated digest to Cloud Run (production)
-        uses: google-github-actions/deploy-cloudrun@v2
+        uses: google-github-actions/deploy-cloudrun@v3
         with:
           service: ${{ vars.CLOUD_RUN_SERVICE_PRODUCTION }}
           region: ${{ vars.GCP_REGION }}
@@ -451,13 +451,13 @@ jobs:
           echo "✅ Coolify admin (production) rebuild triggered"
 
       - name: Authenticate to GCP (WIF, least privilege)
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
           service_account: ${{ vars.GCP_DEPLOY_SA }}
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Resolve production API URL for smoke
         id: prod-url
