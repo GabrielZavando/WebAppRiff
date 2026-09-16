@@ -185,6 +185,11 @@ manually.
 | `frontend` | `{file:.opencode/agents/frontend.md}` → `{file:ai-specs/agents/frontend-developer.md}` | Frontend tasks (Angular, Astro, UI) |
 | `reviewer` | `{file:.opencode/agents/reviewer.md}` | Adversarial red-team audit (`/adversarial-review`) |
 
+> **Dedicated `commit` agent** (primary, not a subagent): `/commit` runs under
+> `.opencode/agents/commit.md` — `edit: deny`, bash limited to git/gh, and
+> `git push --force` structurally denied. It carries its own minimal role and
+> never loads the build-agent role.
+
 ## 6. Non-negotiable rules
 
 1. One task at a time. Never skip ahead.

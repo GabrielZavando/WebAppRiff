@@ -34,7 +34,7 @@ en el tarball; cualquier archivo no listado queda fuera.
 
 - **Se publican**: comandos (`.opencode/commands/`), agentes (`.opencode/agents/`),
   `ai-specs/`, scripts de validación (`check-refs.sh`, `specboot.sh`,
-  `validate-specboot.sh`), `templates/ci/`, los **6 documentos estándar**
+  `validate-specboot.sh`), `templates/ci/`, los **7 documentos estándar**
   (`docs/base-standards.md`, `docs/framework-contract.md`, `docs/docs-standard.md`,
   `docs/specboot-json-standard.md`, `docs/versioning-standard.md`,
   `docs/openspec-tasks-mandatory-steps.md`), `opencode.json`,
@@ -153,9 +153,9 @@ Specboot sigue la **opción A**: `specboot update` reemplaza los archivos del fr
 2. **Resolución del origen**: el comando resuelve la ubicación de los archivos del framework en este orden:
    - `--template <dir>` (si se pasa).
    - El directorio del propio `specboot.sh` (el paquete instalado en `node_modules/@gabrielzavando/specboot`, o el repo del framework en dogfooding).
-3. **Copia de archivos intocables**: copia los archivos del allowlist `files` de `package.json` (`.opencode/`, `ai-specs/`, `check-refs.sh`, `specboot.sh`, `validate-specboot.sh`, `templates/ci/`, los 6 documentos estándar, `opencode.json`, `AGENTS.md`, `Makefile`, `.github/`, `LICENSE`, `README.md`) al directorio actual. Los archivos que ya existen en el proyecto **no se sobrescriben** (se omiten con advertencia).
+3. **Copia de archivos intocables**: copia los archivos del allowlist `files` de `package.json` (`.opencode/`, `ai-specs/`, `check-refs.sh`, `specboot.sh`, `validate-specboot.sh`, `templates/ci/`, los 7 documentos estándar, `opencode.json`, `AGENTS.md`, `Makefile`, `.github/`, `LICENSE`, `README.md`) al directorio actual. Los archivos que ya existen en el proyecto **no se sobrescriben** (se omiten con advertencia).
 4. **Creación de `.specboot.json`**: genera `.specboot.json` con `frameworkVersion` (la versión del framework), `services: ["."]` y `stack: "framework"` por defecto; si se pasa `--interactive`, solicita nombre, stack y services al usuario.
-5. **Esqueleto de `docs/`**: crea las plantillas del proyecto (propiedad del dev) que no existan — `backend-standards.md`, `frontend-standards.md`, `ci-standards.md`, `deploy-standards.md`, `documentation-standards.md`, `project/{domain,stack,client}.md`, `api/api-spec.yml`, `data-model/data-model.md` — sin sobrescribir las existentes. Los 6 documentos intocables ya fueron copiados en el paso 3 (incluido `openspec-tasks-mandatory-steps.md`, la checklist obligatoria que `plan-change` inyecta en todo `tasks.md`).
+5. **Esqueleto de `docs/`**: crea las plantillas del proyecto (propiedad del dev) que no existan — `backend-standards.md`, `frontend-standards.md`, `ci-standards.md`, `deploy-standards.md`, `documentation-standards.md`, `project/{domain,stack,client}.md`, `api/api-spec.yml`, `data-model/data-model.md` — sin sobrescribir las existentes. Los 7 documentos intocables ya fueron copiados en el paso 3 (incluido `openspec-tasks-mandatory-steps.md`, la checklist obligatoria que `plan-change` inyecta en todo `tasks.md`).
 
 ### Uso
 
@@ -183,7 +183,7 @@ Después de `init`, el proyecto ya tiene el puente `AGENTS.md`, los agentes/skil
 3. **Comparación de versiones**: lee `frameworkVersion` de `.specboot.json` y lo compara con la versión instalada del framework. Si la instalada es **menor**, rechaza con exit 1 (no se permite retroceder).
 4. **Salto major**: imprime `⚠️ Breaking change. Lee CHANGELOG/release notes de vX.Y.Z` y pide confirmación (o procede con `--yes`). En **minor/patch** el reemplazo es **silencioso**, sin advertencia.
 5. **Backup**: antes de reemplazar, copia los archivos actuales a `.specboot-backup-<timestamp>/` (salvo `--no-backup`) y añade el patrón `.specboot-backup-*` a `.gitignore` si existe.
-6. **Reemplazo sin piedad (opción A)** de `UPDATE_ITEMS[]`: `.opencode/commands`, `.opencode/agents`, `ai-specs`, `check-refs.sh`, `specboot.sh`, `validate-specboot.sh`, `templates/ci`, los 6 documentos estándar, `opencode.json`, `AGENTS.md`, `Makefile`, y los `.github/workflows/*` del framework (archivo por archivo). **Exclusiones deliberadas**: `README.md` y `LICENSE` del proyecto nunca se tocan; `.github/` se trata archivo por archivo para no borrar workflows del proyecto.
+6. **Reemplazo sin piedad (opción A)** de `UPDATE_ITEMS[]`: `.opencode/commands`, `.opencode/agents`, `ai-specs`, `check-refs.sh`, `specboot.sh`, `validate-specboot.sh`, `templates/ci`, los 7 documentos estándar, `opencode.json`, `AGENTS.md`, `Makefile`, y los `.github/workflows/*` del framework (archivo por archivo). **Exclusiones deliberadas**: `README.md` y `LICENSE` del proyecto nunca se tocan; `.github/` se trata archivo por archivo para no borrar workflows del proyecto.
 7. **Nunca toca `docs/` del proyecto** (salvo los 5 estándares) ni el código (`backend/`, `frontend/`…).
 8. **Reescritura de `.specboot.json`**: si la versión cambió, actualiza `frameworkVersion` preservando el resto de campos; si es igual, el archivo queda intacto (modo reparación de intocables editados a mano).
 9. **Post-validación**: corre `check-refs.sh` (estricto: exit 1 si hay referencia rota) y `specboot.sh --ci` (sólo avisa: la completitud del proyecto consumidor no bloquea).
@@ -271,7 +271,13 @@ de GitHub (repo `vars` + `secrets`).
   step condicional (gated por `hashFiles('tests/*-test.sh')` a nivel de step), en
   loop idéntico al de `release.yml`. En un proyecto consumidor ese job es
   inofensivo y los self-tests se saltan limpiamente porque `tests/` no se publica
-  en el paquete npm.
+  en el paquete npm. El `ci.yml` incluye además el **wiring de autenticación de
+  GitHub Packages para consumidores** (`permissions: packages: read`, `env:
+  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` y `registry-url:
+  https://npm.pkg.github.com` en ambos jobs): en dogfooding es inerte (el repo no
+  instala dependencias de GitHub Packages) y en consumidores evita el E401 de
+  `npm install` — y como el archivo es intocable-reemplazable, cada `specboot
+  update` reinstala el wiring correcto en vez de reintroducir la regresión.
 - **`deploy.yml`**: gated por `if: vars.DEPLOY_ENABLED == 'true'`. Lee
   `vars.DOCKER_REPO`, `vars.DEPLOY_HOST`, `vars.DEPLOY_USER` y
   `secrets.DEPLOY_SSH_KEY`. El proyecto declara su infraestructura en GitHub, no

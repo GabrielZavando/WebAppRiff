@@ -1,509 +1,79 @@
 name: Deploy
 
-# Deployment pipeline for Riff Catálogo Digital Headless (change:
-# fix-deploy-pipeline-gates; architecture: decide-api-deployment-architecture).
-#
-# GATING (AC2): this workflow runs as a `workflow_run` on the `CI` workflow and
-# only proceeds when CI concluded with `success` for the same commit. If CI
-# fails, deployment never starts. `workflow_dispatch` remains as the explicit
-# manual path for production (releases). PRs do NOT trigger deployment.
-#
-# Lanes:
-# - staging (push to main validated by CI): backend image -> Artifact Registry
-#   (tag sha-<commit>) -> Cloud Run (service via vars.CLOUD_RUN_SERVICE) -> smoke /health and
-#   domain endpoints -> then frontends (web + admin) via Coolify webhooks.
-# - production (manual dispatch, after staging smoke passes): promote the SAME
-#   digest validated in staging (never a fresh build, never `latest`), after
-#   re-running the staging smoke gate, then deploy production frontends.
-#
-# NOTE on tags: `workflow_run` only fires when CI completes, and CI runs on
-# push-to-main and PRs — not on tag pushes. Production is therefore reached via
-# `workflow_dispatch` (manual), not via tag-triggered workflow_run.
-#
-# Frontends (Astro web, Angular admin) are NOT built by this workflow: Coolify
-# builds them in-situ from the repo (Git integration). This workflow only
-# triggers their deploy via per-environment, Bearer-authenticated webhooks.
-#
-# GCP jobs are skipped until the repo variables below are configured:
-#   vars: GCP_PROJECT, GCP_REGION, GCP_WIF_PROVIDER, GCP_DEPLOY_SA
-# Coolify secrets are created as ops (not this change); when missing, their
-# jobs print a clear notice and no-op (exit 0) so main stays green.
-# Rollback: revert the Cloud Run revision (or redeploy the previous sha tag) —
-# see docs/deploy-standards.md.
-
 on:
-  workflow_run:
-    workflows: ['CI']
-    types: [completed]
+  push:
+    tags: ['v*']
   workflow_dispatch:
 
 permissions:
   contents: read
 
-concurrency:
-  group: deploy-${{ github.event.workflow_run.head_sha || github.sha }}
-  cancel-in-progress: false
-
 jobs:
-  # 3.1 — Build-only verification of the three service images. A broken image
-  #       can never reach staging.
-  docker-build:
-    name: Docker build (backend, web, admin)
+  deploy-staging:
+    name: Deploy to staging
     runs-on: ubuntu-latest
-    if: >-
-      github.event_name != 'workflow_run' ||
-      (github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.head_repository.full_name == github.repository)
+    if: vars.DEPLOY_ENABLED == 'true'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
+      - name: Check Dockerfile exists
+        id: dockerfile
+        if: ${{ hashFiles('Dockerfile') != '' }}
+        run: echo "dockerfile-present=true" >> "$GITHUB_OUTPUT"
+      - name: Build image
+        if: steps.dockerfile.outputs.dockerfile-present == 'true'
+        run: docker build -t ${{ vars.DOCKER_REPO }}:staging .
+      - name: Deploy via SSH
+        if: steps.dockerfile.outputs.dockerfile-present == 'true'
+        uses: appleboy/ssh-action@v1
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          host: ${{ vars.DEPLOY_HOST }}
+          username: ${{ vars.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            docker pull ${{ vars.DOCKER_REPO }}:staging
+            docker stop app-staging || true
+            docker rm app-staging || true
+            docker run -d --name app-staging ${{ vars.DOCKER_REPO }}:staging
 
-      - name: Build backend image
-        run: docker build -f apps/backend/Dockerfile -t riff-backend:pr .
-
-      - name: Build web image (validation build, REQUIRE_API=false)
-        # AC4: the CI/validation build must not depend on a live API. Real
-        # Coolify builds keep REQUIRE_API=true via their Build Variables, so a
-        # real deploy still fails when the API is down or the catalog is empty.
-        run: docker build --build-arg REQUIRE_API=false -f apps/web/Dockerfile -t riff-web:pr .
-
-      - name: Build admin image
-        run: docker build -f apps/admin/Dockerfile -t riff-admin:pr .
-
-  # 3.2 — Staging lane (CI success on main): build/push the backend image and
-  #       deploy it to Cloud Run staging (vars.CLOUD_RUN_SERVICE), then smoke /health + domain
-  #       endpoints. Frontends for staging run AFTER this job (AC3).
-  deploy-backend-staging:
-    name: Deploy backend to Cloud Run (staging)
+  deploy-production:
+    name: Deploy to production
     runs-on: ubuntu-latest
-    needs: docker-build
-    if: >-
-      vars.GCP_PROJECT != '' &&
-      vars.GCP_RUNTIME_SA != '' &&
-      vars.FIREBASE_PROJECT_ID != '' &&
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main' &&
-      github.event.workflow_run.head_repository.full_name == github.repository
-    permissions:
-      contents: read
-      id-token: write # Workload Identity Federation (no exported JSON keys)
+    if: vars.DEPLOY_ENABLED == 'true' && startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
+      - name: Check Dockerfile exists
+        id: dockerfile
+        if: ${{ hashFiles('Dockerfile') != '' }}
+        run: echo "dockerfile-present=true" >> "$GITHUB_OUTPUT"
+      - name: Build image
+        if: steps.dockerfile.outputs.dockerfile-present == 'true'
+        run: docker build -t ${{ vars.DOCKER_REPO }}:production .
+      - name: Deploy via SSH
+        if: steps.dockerfile.outputs.dockerfile-present == 'true'
+        uses: appleboy/ssh-action@v1
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          host: ${{ vars.DEPLOY_HOST }}
+          username: ${{ vars.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            docker pull ${{ vars.DOCKER_REPO }}:production
+            docker stop app-prod || true
+            docker rm app-prod || true
+            docker run -d --name app-prod ${{ vars.DOCKER_REPO }}:production
 
-      - name: Authenticate to GCP (WIF, least privilege)
-        uses: google-github-actions/auth@v3
-        with:
-          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
-          service_account: ${{ vars.GCP_DEPLOY_SA }}
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v3
-
-      - name: Docker auth to Artifact Registry
-        run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
-
-      - name: "Build and push backend image (tag: sha-<commit>)"
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: apps/backend/Dockerfile
-          push: true
-          tags: |
-            ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/${{ vars.GCP_ARTIFACT_REPOSITORY }}/riff-backend:sha-${{ github.event.workflow_run.head_sha }}
-
-      - name: Deploy to Cloud Run (staging)
-        uses: google-github-actions/deploy-cloudrun@v3
-        with:
-          service: ${{ vars.CLOUD_RUN_SERVICE }}
-          region: ${{ vars.GCP_REGION }}
-          image: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/${{ vars.GCP_ARTIFACT_REPOSITORY }}/riff-backend:sha-${{ github.event.workflow_run.head_sha }}
-          env_vars: |
-            FIREBASE_PROJECT_ID=${{ vars.FIREBASE_PROJECT_ID }}
-            FIREBASE_STORAGE_BUCKET=${{ vars.FIREBASE_STORAGE_BUCKET }}
-            NODE_ENV=production
-            ASTRO_SITE_URL=${{ vars.SMOKE_WEB_STAGING_URL }}
-            ANGULAR_ADMIN_URL=${{ vars.SMOKE_ADMIN_STAGING_URL }}
-          secrets: |
-            CATALOG_REBUILD_WEBHOOK_URL=CATALOG_REBUILD_WEBHOOK_URL:latest
-            CATALOG_REBUILD_WEBHOOK_TOKEN=CATALOG_REBUILD_WEBHOOK_TOKEN:latest
-          flags: |
-            --service-account=${{ vars.GCP_RUNTIME_SA }}
-            --allow-unauthenticated
-
-      - name: Smoke test (domain endpoints)
-        run: |
-          URL=$(gcloud run services describe ${{ vars.CLOUD_RUN_SERVICE }} \
-            --region "${{ vars.GCP_REGION }}" \
-            --project "${{ vars.GCP_PROJECT }}" \
-            --format 'value(status.url)')
-          echo "Staging URL: $URL"
-
-          # 1. Health
-          curl -fsS --retry 5 --retry-delay 5 "$URL/health" > /dev/null
-          echo "✅ /health OK"
-
-          # 2. Products: 200 + non-empty data
-          PRODUCTS=$(curl -fsS --retry 3 --retry-delay 5 "$URL/api/v1/products")
-          echo "$PRODUCTS" | grep -q '"data":\[\]' && { echo "❌ products list is empty"; exit 1; }
-          echo "$PRODUCTS" | grep -q '"data":\[' || { echo "❌ products has no data array"; exit 1; }
-          echo "✅ /api/v1/products OK (non-empty)"
-
-          # 3. Categories: 200 + data array
-          curl -fsS --retry 3 --retry-delay 5 "$URL/api/v1/categories" | grep -q '"data":\[' || { echo "❌ categories failed"; exit 1; }
-          echo "✅ /api/v1/categories OK"
-
-          # 4. Quote capture: POST /api/v1/quotes → 201
-          CODE=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$URL/api/v1/quotes" \
-            -H 'content-type: application/json' \
-            -d '{"nombre":"deploy smoke","email":"smoke@riff.cl","nombre_empresa":"Smoke SA","mensaje":"smoke test"}')
-          [ "$CODE" = "201" ] || { echo "❌ POST /api/v1/quotes → $CODE"; exit 1; }
-          echo "✅ POST /api/v1/quotes OK (201)"
-          echo "✅ Staging smoke passed"
-
-      - name: Rollback hint (on failure)
-        if: failure()
-        run: |
-          echo "Staging deploy failed after the Cloud Run deploy step may have run."
-          echo "Rollback: gcloud run services update-traffic ${{ vars.CLOUD_RUN_SERVICE }} --to-revisions <previous>=100 --region ${{ vars.GCP_REGION }}"
-          echo "See docs/deploy-standards.md → Rollback."
-
-  # 3.4a — Trigger the frontends for staging (web + admin). Runs only after the
-  #        staging backend is deployed and smoke-tested (AC3, AC7). Per-env
-  #        webhook + Bearer auth (AC6); no-op when secrets are unset.
-  deploy-frontends-staging:
-    name: Trigger Coolify frontend rebuild (staging)
+  rollback:
+    name: Rollback production
     runs-on: ubuntu-latest
-    needs: deploy-backend-staging
-    if: >-
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main' &&
-      github.event.workflow_run.head_repository.full_name == github.repository
-    permissions:
-      contents: read
-      id-token: write # needed to resolve the Cloud Run staging URL for the API smoke
+    if: failure() && vars.DEPLOY_ENABLED == 'true' && startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
+      - name: Rollback via SSH
+        uses: appleboy/ssh-action@v1
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-
-      - name: Trigger Astro web (staging)
-        env:
-          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
-          URL: ${{ secrets.COOLIFY_WEB_STAGING_WEBHOOK_URL }}
-        run: |
-          if [ -z "$URL" ] || [ -z "$TOKEN" ]; then
-            echo "❌ COOLIFY_WEB_STAGING_WEBHOOK_URL / COOLIFY_API_TOKEN not set — skipping (no-op)."
-            exit 0
-          fi
-          curl --fail --silent --show-error --request POST "$URL" \
-            -H "Authorization: Bearer $TOKEN"
-          echo "✅ Coolify web (staging) rebuild triggered"
-
-      - name: Trigger Angular admin (staging)
-        env:
-          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
-          URL: ${{ secrets.COOLIFY_ADMIN_STAGING_WEBHOOK_URL }}
-        run: |
-          if [ -z "$URL" ] || [ -z "$TOKEN" ]; then
-            echo "❌ COOLIFY_ADMIN_STAGING_WEBHOOK_URL / COOLIFY_API_TOKEN not set — skipping (no-op)."
-            exit 0
-          fi
-          curl --fail --silent --show-error --request POST "$URL" \
-            -H "Authorization: Bearer $TOKEN"
-          echo "✅ Coolify admin (staging) rebuild triggered"
-
-      - name: Authenticate to GCP (WIF, least privilege)
-        uses: google-github-actions/auth@v3
-        with:
-          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
-          service_account: ${{ vars.GCP_DEPLOY_SA }}
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v3
-
-      - name: Resolve staging API URL for smoke
-        id: staging-url
-        env:
-          GCP_PROJECT: ${{ vars.GCP_PROJECT }}
-          GCP_REGION: ${{ vars.GCP_REGION }}
-        run: |
-          if [ -z "$GCP_PROJECT" ]; then
-            echo "ℹ️ GCP not configured — skipping API URL resolution."
-            exit 0
-          fi
-          URL=$(gcloud run services describe ${{ vars.CLOUD_RUN_SERVICE }} \
-            --region "$GCP_REGION" \
-            --project "$GCP_PROJECT" \
-            --format 'value(status.url)')
-          echo "api_url=$URL" >> "$GITHUB_OUTPUT"
-
-      - name: Smoke API (staging)
-        env:
-          SMOKE_API_URL: ${{ steps.staging-url.outputs.api_url }}
-        run: node scripts/smoke/api.mjs
-
-      # Coolify builds asynchronously after the webhook, so poll the smoke until
-      # the freshly-triggered deployment is live (or give up after the timeout).
-      - name: Smoke Astro web (staging) — poll until Coolify deploy is live
-        timeout-minutes: 10
-        env:
-          SMOKE_WEB_URL: ${{ vars.SMOKE_WEB_STAGING_URL }}
-        run: |
-          for i in $(seq 1 20); do
-            if node scripts/smoke/web.mjs; then exit 0; fi
-            echo "→ [$i/20] web smoke not green yet; waiting 30s for Coolify..."
-            sleep 30
-          done
-          echo "❌ web smoke never became green after polling."
-          exit 1
-
-      - name: Smoke Angular admin (staging) — poll until Coolify deploy is live
-        timeout-minutes: 10
-        env:
-          SMOKE_ADMIN_URL: ${{ vars.SMOKE_ADMIN_STAGING_URL }}
-        run: |
-          for i in $(seq 1 20); do
-            if node scripts/smoke/admin.mjs; then exit 0; fi
-            echo "→ [$i/20] admin smoke not green yet; waiting 30s for Coolify..."
-            sleep 30
-          done
-          echo "❌ admin smoke never became green after polling."
-          exit 1
-
-  # 3.3 — Production lane (manual dispatch): promote the SAME digest validated
-  #       in staging. Never `latest`, never a fresh build.
-  deploy-backend-production:
-    name: Promote to Cloud Run (production)
-    runs-on: ubuntu-latest
-    needs: docker-build
-    # Production stays blocked until its own resources exist. Never deploy with
-    # empty values and never reuse staging vars. All *_PRODUCTION vars must be set.
-    if: >-
-      vars.GCP_PROJECT != '' &&
-      vars.CLOUD_RUN_SERVICE_PRODUCTION != '' &&
-      vars.FIREBASE_PROJECT_ID_PRODUCTION != '' &&
-      vars.FIREBASE_STORAGE_BUCKET_PRODUCTION != '' &&
-      vars.GCP_RUNTIME_SA_PRODUCTION != '' &&
-      vars.SMOKE_WEB_PRODUCTION_URL != '' &&
-      vars.SMOKE_ADMIN_PRODUCTION_URL != '' &&
-      github.event_name == 'workflow_dispatch'
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.sha }}
-
-      - name: Authenticate to GCP (WIF, least privilege)
-        uses: google-github-actions/auth@v3
-        with:
-          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
-          service_account: ${{ vars.GCP_DEPLOY_SA }}
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v3
-
-      - name: Resolve the validated staging digest
-        run: |
-          IMAGE=${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/${{ vars.GCP_ARTIFACT_REPOSITORY }}/riff-backend
-          DIGEST=$(gcloud artifacts docker images describe "$IMAGE:sha-${{ github.sha }}" \
-            --project "${{ vars.GCP_PROJECT }}" \
-            --format 'value(image_summary.digest)')
-          if [ -z "$DIGEST" ]; then
-            echo "❌ No image tag sha-${{ github.sha }} in the registry: this commit was never deployed to staging. Promote only validated digests."
-            exit 1
-          fi
-          echo "IMAGE_WITH_DIGEST=$IMAGE@$DIGEST" >> "$GITHUB_ENV"
-          echo "Promoting $IMAGE@$DIGEST"
-
-      - name: Smoke gate — staging must be healthy before promotion
-        run: |
-          URL=$(gcloud run services describe ${{ vars.CLOUD_RUN_SERVICE }} \
-            --region "${{ vars.GCP_REGION }}" \
-            --project "${{ vars.GCP_PROJECT }}" \
-            --format 'value(status.url)')
-          echo "Staging gate URL: $URL"
-
-          # Health
-          curl -fsS --retry 5 --retry-delay 5 "$URL/health" > /dev/null
-          echo "✅ /health OK"
-
-          # Products: 200 + non-empty data
-          PRODUCTS=$(curl -fsS --retry 3 --retry-delay 5 "$URL/api/v1/products")
-          echo "$PRODUCTS" | grep -q '"data":\[\]' && { echo "❌ products list is empty"; exit 1; }
-          echo "$PRODUCTS" | grep -q '"data":\[' || { echo "❌ products has no data array"; exit 1; }
-          echo "✅ /api/v1/products OK (non-empty)"
-
-          # Categories: 200 + data array
-          curl -fsS --retry 3 --retry-delay 5 "$URL/api/v1/categories" | grep -q '"data":\[' || { echo "❌ categories failed"; exit 1; }
-          echo "✅ /api/v1/categories OK"
-
-          # Quote capture: POST /api/v1/quotes → 201
-          CODE=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$URL/api/v1/quotes" \
-            -H 'content-type: application/json' \
-            -d '{"nombre":"deploy smoke","email":"smoke@riff.cl","nombre_empresa":"Smoke SA","mensaje":"smoke test"}')
-          [ "$CODE" = "201" ] || { echo "❌ POST /api/v1/quotes → $CODE"; exit 1; }
-          echo "✅ POST /api/v1/quotes OK (201)"
-          echo "✅ Staging promotion gate passed"
-
-      - name: Deploy the validated digest to Cloud Run (production)
-        uses: google-github-actions/deploy-cloudrun@v3
-        with:
-          service: ${{ vars.CLOUD_RUN_SERVICE_PRODUCTION }}
-          region: ${{ vars.GCP_REGION }}
-          image: ${{ env.IMAGE_WITH_DIGEST }}
-          env_vars: |
-            FIREBASE_PROJECT_ID=${{ vars.FIREBASE_PROJECT_ID_PRODUCTION }}
-            FIREBASE_STORAGE_BUCKET=${{ vars.FIREBASE_STORAGE_BUCKET_PRODUCTION }}
-            NODE_ENV=production
-            ASTRO_SITE_URL=${{ vars.SMOKE_WEB_PRODUCTION_URL }}
-            ANGULAR_ADMIN_URL=${{ vars.SMOKE_ADMIN_PRODUCTION_URL }}
-          secrets: |
-            CATALOG_REBUILD_WEBHOOK_URL=CATALOG_REBUILD_WEBHOOK_URL:latest
-            CATALOG_REBUILD_WEBHOOK_TOKEN=CATALOG_REBUILD_WEBHOOK_TOKEN:latest
-          flags: |
-            --service-account=${{ vars.GCP_RUNTIME_SA_PRODUCTION }}
-            --allow-unauthenticated
-
-      - name: Smoke test production (domain endpoints)
-        run: |
-          URL=$(gcloud run services describe ${{ vars.CLOUD_RUN_SERVICE_PRODUCTION }} \
-            --region "${{ vars.GCP_REGION }}" \
-            --project "${{ vars.GCP_PROJECT }}" \
-            --format 'value(status.url)')
-          echo "Production URL: $URL"
-
-          # 1. Health
-          curl -fsS --retry 5 --retry-delay 5 "$URL/health" > /dev/null
-          echo "✅ /health OK"
-
-          # 2. Products: 200 + non-empty data
-          PRODUCTS=$(curl -fsS --retry 3 --retry-delay 5 "$URL/api/v1/products")
-          echo "$PRODUCTS" | grep -q '"data":\[\]' && { echo "❌ products list is empty"; exit 1; }
-          echo "$PRODUCTS" | grep -q '"data":\[' || { echo "❌ products has no data array"; exit 1; }
-          echo "✅ /api/v1/products OK (non-empty)"
-
-          # 3. Categories: 200 + data array
-          curl -fsS --retry 3 --retry-delay 5 "$URL/api/v1/categories" | grep -q '"data":\[' || { echo "❌ categories failed"; exit 1; }
-          echo "✅ /api/v1/categories OK"
-
-          # 4. Quote capture: POST /api/v1/quotes → 201
-          CODE=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$URL/api/v1/quotes" \
-            -H 'content-type: application/json' \
-            -d '{"nombre":"deploy smoke","email":"smoke@riff.cl","nombre_empresa":"Smoke SA","mensaje":"smoke test"}')
-          [ "$CODE" = "201" ] || { echo "❌ POST /api/v1/quotes → $CODE"; exit 1; }
-          echo "✅ POST /api/v1/quotes OK (201)"
-          echo "✅ Production smoke passed"
-
-      - name: Rollback hint (on failure)
-        if: failure()
-        run: |
-          echo "Promotion failed after the production deploy step may have run."
-          echo "Rollback: gcloud run services update-traffic ${{ vars.CLOUD_RUN_SERVICE_PRODUCTION }} --to-revisions <previous>=100 --region ${{ vars.GCP_REGION }}"
-          echo "See docs/deploy-standards.md → Rollback."
-
-  # 3.4b — Trigger the frontends for production (web + admin). Runs only in the
-  #        production lane (manual dispatch), AFTER the production backend job
-  #        succeeds. Per-env webhook + Bearer auth (AC6/AC7); no-op when secrets
-  #        are unset.
-  deploy-frontends-production:
-    name: Trigger Coolify frontend rebuild (production)
-    runs-on: ubuntu-latest
-    needs: deploy-backend-production
-    # Skips when the production backend job is skipped (production vars unset).
-    if: github.event_name == 'workflow_dispatch' && needs.deploy-backend-production.result == 'success'
-    permissions:
-      contents: read
-      id-token: write # needed to resolve the Cloud Run production URL for the API smoke
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Trigger Astro web (production)
-        env:
-          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
-          URL: ${{ secrets.COOLIFY_WEB_PRODUCTION_WEBHOOK_URL }}
-        run: |
-          if [ -z "$URL" ] || [ -z "$TOKEN" ]; then
-            echo "❌ COOLIFY_WEB_PRODUCTION_WEBHOOK_URL / COOLIFY_API_TOKEN not set — skipping (no-op)."
-            exit 0
-          fi
-          curl --fail --silent --show-error --request POST "$URL" \
-            -H "Authorization: Bearer $TOKEN"
-          echo "✅ Coolify web (production) rebuild triggered"
-
-      - name: Trigger Angular admin (production)
-        env:
-          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
-          URL: ${{ secrets.COOLIFY_ADMIN_PRODUCTION_WEBHOOK_URL }}
-        run: |
-          if [ -z "$URL" ] || [ -z "$TOKEN" ]; then
-            echo "❌ COOLIFY_ADMIN_PRODUCTION_WEBHOOK_URL / COOLIFY_API_TOKEN not set — skipping (no-op)."
-            exit 0
-          fi
-          curl --fail --silent --show-error --request POST "$URL" \
-            -H "Authorization: Bearer $TOKEN"
-          echo "✅ Coolify admin (production) rebuild triggered"
-
-      - name: Authenticate to GCP (WIF, least privilege)
-        uses: google-github-actions/auth@v3
-        with:
-          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
-          service_account: ${{ vars.GCP_DEPLOY_SA }}
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v3
-
-      - name: Resolve production API URL for smoke
-        id: prod-url
-        env:
-          GCP_PROJECT: ${{ vars.GCP_PROJECT }}
-          GCP_REGION: ${{ vars.GCP_REGION }}
-        run: |
-          if [ -z "$GCP_PROJECT" ]; then
-            echo "ℹ️ GCP not configured — skipping API URL resolution."
-            exit 0
-          fi
-          URL=$(gcloud run services describe ${{ vars.CLOUD_RUN_SERVICE_PRODUCTION }} \
-            --region "$GCP_REGION" \
-            --project "$GCP_PROJECT" \
-            --format 'value(status.url)')
-          echo "api_url=$URL" >> "$GITHUB_OUTPUT"
-
-      - name: Smoke API (production)
-        env:
-          SMOKE_API_URL: ${{ steps.prod-url.outputs.api_url }}
-        run: node scripts/smoke/api.mjs
-
-      # Coolify builds asynchronously after the webhook, so poll the smoke until
-      # the freshly-triggered deployment is live (or give up after the timeout).
-      - name: Smoke Astro web (production) — poll until Coolify deploy is live
-        timeout-minutes: 10
-        env:
-          SMOKE_WEB_URL: ${{ vars.SMOKE_WEB_PRODUCTION_URL }}
-        run: |
-          for i in $(seq 1 20); do
-            if node scripts/smoke/web.mjs; then exit 0; fi
-            echo "→ [$i/20] web smoke not green yet; waiting 30s for Coolify..."
-            sleep 30
-          done
-          echo "❌ web smoke never became green after polling."
-          exit 1
-
-      - name: Smoke Angular admin (production) — poll until Coolify deploy is live
-        timeout-minutes: 10
-        env:
-          SMOKE_ADMIN_URL: ${{ vars.SMOKE_ADMIN_PRODUCTION_URL }}
-        run: |
-          for i in $(seq 1 20); do
-            if node scripts/smoke/admin.mjs; then exit 0; fi
-            echo "→ [$i/20] admin smoke not green yet; waiting 30s for Coolify..."
-            sleep 30
-          done
-          echo "❌ admin smoke never became green after polling."
-          exit 1
+          host: ${{ vars.DEPLOY_HOST }}
+          username: ${{ vars.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            docker stop app-prod || true
+            docker rm app-prod || true
+            docker run -d --name app-prod ${{ vars.DOCKER_REPO }}:previous

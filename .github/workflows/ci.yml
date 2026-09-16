@@ -10,10 +10,12 @@ permissions:
   contents: read
   packages: read
 
+# Consumer auth for GitHub Packages (fix-consumer-mode / SC-004): setup-node's
+# registry-url writes ~/.npmrc with `_authToken=${NODE_AUTH_TOKEN}` on the
+# runner; without this env the consumer's `npm install` hits E401 on
+# npm.pkg.github.com. Inert in dogfooding: this repo installs no GitHub
+# Packages dependencies, and its own GITHUB_TOKEN can read its own packages.
 env:
-  # Consumer auth (Vía A): GITHUB_TOKEN + packages:read downloads
-  # @gabrielzavando/specboot from GitHub Packages (declared in devDependencies).
-  # NOTE: re-apply after `specboot update` — it replaces this intocable file.
   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -51,29 +53,5 @@ jobs:
           registry-url: https://npm.pkg.github.com
       - name: Install framework deps
         run: npm install
-      - name: check-refs
-        run: bash check-refs.sh
-      - name: SOLID/DIP static analysis
-        run: make solid-lint
-      - name: lint (no --fix, non-mutating)
-        run: npm run lint --workspaces
-      - name: typecheck (all workspaces, --if-present)
-        run: npm run typecheck --workspaces --if-present
-      - name: build (all workspaces)
-        run: npm run build --workspaces
-      - name: backend tests with coverage (>=90% blocking via jest thresholds)
-        run: npm run test:cov --workspace=apps/backend
-      - name: backend e2e (supertest, in-memory Firestore fake)
-        run: npm run test:e2e --workspace=apps/backend
-      - name: web tests
-        run: npm run test --workspace=apps/web
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-      - name: web e2e + smoke (playwright, stub API)
-        run: npm run test:smoke --workspace=apps/web
-      - name: admin tests
-        run: npm run test --workspace=apps/admin
-      - name: shared package (html-sanitize) tests
-        run: npm run test --workspace=packages/html-sanitize
-      - name: npm audit (blocking, with suppressions)
-        run: npm run audit
+      - name: make ci (refs + solid-lint + lint + test + audit)
+        run: make ci

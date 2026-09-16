@@ -13,27 +13,26 @@ Each subagent loads its own standards and role through its file reference, so do
 backend-developer.md / frontend-developer.md manually — dispatch and let it work the
 first pending task following TDD as defined in its documentation.
 
+## Pre-flight Preconditions (mandatory)
+
+Before dispatching any task, verify both conditions and **abort** if either fails:
+
+1. **Active branch matches the project convention** (e.g. `feature/*` — see
+   `docs/git-workflow-standards.md`). Run `git branch --show-current`. If the
+   branch does not match, abort with an explicit message listing the current
+   branch and suggesting `/plan-change` as the step that creates the ticket
+   branch.
+2. **Clean git state**: no uncommitted or staged changes (`git status --porcelain`
+   empty). If dirty, abort listing the dirty files and ask the user to commit
+   or stash them first.
+
+Never implement a task on the main branch or over a dirty tree — that is how
+untraceable changes slip outside the SDD cycle.
+
 ## TDD Failure Protocol
 
-When a test fails during task implementation, the agent follows this mandatory protocol. It **extends** the existing RED-GREEN-REFACTOR cycle defined in `ai-specs/agents/build-agent.md` — it does not replace it.
-
-### Limit: 3 consecutive attempts
-
-1. **Detect** — A failing test stops the GREEN step. Analyze the error before touching code again.
-2. **Attempt** — Fix the minimum code needed and re-run the failing test. Each failed re-run counts as one attempt. Maximum **3 consecutive attempts** per task.
-3. **Report** — If the 3rd consecutive attempt fails, generate a `TDD Failure Report` containing the fields: `Task`, `Attempt`, `Error`, `Suggested investigation`.
-4. **Stop** — After reporting, stop immediately: do **not** mark the task as complete, do **not** continue with the next task, and wait for explicit user instruction.
-
-An explicit user instruction to retry resets the attempt counter, and the protocol applies again from step 1.
-
-### TDD Failure Report template
-
-Emit the report verbatim using this template:
-
-```
-TDD Failure Report
-Task: <task id and short description from tasks.md>
-Attempt: <1 | 2 | 3>
-Error: <condensed error summary — no full traceback>
-Suggested investigation: <one concrete next step to diagnose the failure>
-```
+When a test fails during task implementation, follow the **TDD Failure
+Protocol** — canonical source: `docs/tdd-failure-protocol.md` (3 consecutive
+attempts max, `TDD Failure Report` on the 3rd failure, then full stop; user
+retry resets the counter). It **extends** the RED-GREEN-REFACTOR cycle defined
+in `ai-specs/agents/build-agent.md` — it does not replace it.

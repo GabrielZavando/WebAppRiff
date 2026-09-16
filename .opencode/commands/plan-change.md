@@ -1,6 +1,6 @@
 ---
 description: Generate validated, context-enriched OpenSpec specs from a ticket
-agent: plan
+agent: sdd-plan
 ---
 
 {file:ai-specs/skills/plan-change/SKILL.md}

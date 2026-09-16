@@ -16,6 +16,7 @@ permission:
     "npx vitest *": allow
     "npx jest *": allow
     "pytest *": allow
+    "npm test": allow
     "rg *": allow
     "ls *": allow
     "cat *": allow
