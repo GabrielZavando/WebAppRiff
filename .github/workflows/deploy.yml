@@ -187,6 +187,10 @@ jobs:
       contents: read
       id-token: write # needed to resolve the Cloud Run staging URL for the API smoke
     steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
       - name: Trigger Astro web (staging)
         env:
           TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
@@ -418,6 +422,8 @@ jobs:
       contents: read
       id-token: write # needed to resolve the Cloud Run production URL for the API smoke
     steps:
+      - uses: actions/checkout@v5
+
       - name: Trigger Astro web (production)
         env:
           TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
