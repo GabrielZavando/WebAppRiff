@@ -38,6 +38,22 @@ describe('ContactBar — phone and email', () => {
 });
 
 describe('ContactBar — social links', () => {
+  it('renders official Riff social links (Facebook, Instagram, LinkedIn) and omits X (SC-003)', async () => {
+    const officialSocial: TopHeaderSocialLink[] = [
+      { name: 'Facebook', href: 'https://www.facebook.com/share/1DL9drgCDU/?mibextid=wwXIfr' },
+      { name: 'Instagram', href: 'https://www.instagram.com/somosriff.cl?igsi=MTU2YXhqaThoNnFydA%3D%3D&utm_source=qr' },
+      { name: 'LinkedIn', href: 'https://www.linkedin.com/company/100252590' },
+    ];
+    const html = await render({ ...baseProps, socialLinks: officialSocial });
+    expect(html).toContain('aria-label="Redes sociales"');
+    const nav = html.match(/<nav[^>]*aria-label="Redes sociales"[\s\S]*?<\/nav>/);
+    expect(nav, 'social nav').toBeTruthy();
+    expect(nav![0]).toContain('href="https://www.facebook.com/share/1DL9drgCDU/?mibextid=wwXIfr"');
+    expect(nav![0]).toMatch(/href="https:\/\/www\.instagram\.com\/somosriff\.cl\?igsi=MTU2YXhqaThoNnFydA%3D%3D&(amp;)?utm_source=qr"/);
+    expect(nav![0]).toContain('href="https://www.linkedin.com/company/100252590"');
+    expect(nav![0]).not.toContain('aria-label="X"');
+  });
+
   it('renders a social nav with one anchor per configured link', async () => {
     const html = await render({ ...baseProps, socialLinks: SAMPLE_SOCIAL });
     expect(html).toContain('aria-label="Redes sociales"');

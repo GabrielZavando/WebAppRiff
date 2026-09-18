@@ -280,6 +280,19 @@
         "timestamp": "2026-09-18T01:45:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "configure-social-links",
+      "ticket_id": "RIFF-WEB-01",
+      "archived_at": "2026-09-18T23:59:00Z",
+      "specs_applied": [
+        "configure-social-links"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-09-18T23:58:00Z",
+        "source": "openspec/state/verify-results.json"
+      }
     }
   ]
 }
