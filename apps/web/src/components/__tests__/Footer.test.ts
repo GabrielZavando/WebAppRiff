@@ -87,6 +87,27 @@ describe('Footer — brand column (logo + tagline + social)', () => {
     }
   });
 
+  it('renders EXACTLY the 3 official social links (Facebook, Instagram, LinkedIn) and omits X (SC-002)', async () => {
+    const officialProps: SiteFooterProps = {
+      ...SITE_FOOTER_CONTENT,
+      socialLinks: [
+        { name: 'Facebook', href: 'https://www.facebook.com/share/1DL9drgCDU/?mibextid=wwXIfr' },
+        { name: 'Instagram', href: 'https://www.instagram.com/somosriff.cl?igsi=MTU2YXhqaThoNnFydA%3D%3D&utm_source=qr' },
+        { name: 'LinkedIn', href: 'https://www.linkedin.com/company/100252590' },
+      ],
+    };
+    const html = await render(officialProps);
+    const socialAnchors = html.match(
+      /<a[^>]*aria-label="(?:Facebook|X|Instagram|LinkedIn)"[^>]*>/g,
+    );
+    expect(socialAnchors).toHaveLength(3);
+    const labels = socialAnchors?.map((a) =>
+      a.match(/aria-label="([^"]+)"/)?.[1],
+    );
+    expect(labels).toEqual(['Facebook', 'Instagram', 'LinkedIn']);
+    expect(html).not.toContain('aria-label="X"');
+  });
+
   it('renders EXACTLY the configured social links (2 of 4 → 2 anchors)', async () => {
     const twoSocialProps: SiteFooterProps = {
       ...SITE_FOOTER_CONTENT,

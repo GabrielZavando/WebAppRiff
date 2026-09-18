@@ -208,6 +208,11 @@ npm run seed:productos
 | `FIREBASE_PRIVATE_KEY` | **Solo CLI raw `migrate:firestore`** (fuera de NestJS) | Service account private key — no se usa en runtime ni en CLIs NestJS | `-----BEGIN PRIVATE KEY-----...` |
 | `NESTJS_API_URL` | Build de Astro (y runtime de admin) | Base URL del API. **Contrato: debe incluir `/api/v1`** (los clientes construyen `${base}/products`, etc.) | `https://api.somosriff.cl/api/v1` |
 | `SITE_URL` | Build de Astro | URL pública del sitio (canonical, sitemap) — **no debe quedar en `localhost` en producción** | `https://somosriff.cl` |
+| `PRIMARY_PHONE` | Build de Astro | Teléfono de contacto público de Riff para TopHeader/Layout | `+56 2 29079067` |
+| `SOCIAL_FACEBOOK_URL` | Build de Astro (Coolify Build Variable) | URL pública de la página oficial de Facebook. Inyectada en build time SSG | `https://www.facebook.com/share/1DL9drgCDU/?mibextid=wwXIfr` |
+| `SOCIAL_INSTAGRAM_URL` | Build de Astro (Coolify Build Variable) | URL pública de la cuenta oficial de Instagram. Inyectada en build time SSG | `https://www.instagram.com/somosriff.cl?igsi=MTU2YXhqaThoNnFydA%3D%3D&utm_source=qr` |
+| `SOCIAL_LINKEDIN_URL` | Build de Astro (Coolify Build Variable) | URL pública del perfil oficial de LinkedIn. Inyectada en build time SSG | `https://www.linkedin.com/company/100252590` |
+| `SOCIAL_X_URL` | Build de Astro (Coolify Build Variable) | URL pública de X (Twitter). Permanecer vacía mientras Riff no entregue cuenta; omite el icono/enlace | `` |
 | `API_URL` | Runtime de Angular admin | Base URL del API para el panel (definir forma exacta en el ticket del admin) | `https://api.somosriff.cl/api/v1` |
 | `ASTRO_SITE_URL` | Cloud Run (backend) | Origen del sitio Astro para la allowlist CORS en producción | `https://somosriff.cl` |
 | `ANGULAR_ADMIN_URL` | Cloud Run (backend) | Origen del admin para la allowlist CORS en producción | `https://admin.somosriff.cl` |

@@ -43,6 +43,29 @@ describe('TopHeader', () => {
     expect(html.match(/class="h-4 border-l border-white\/20"/g)).toHaveLength(3);
   });
 
+  it('renders the official Riff social links (Facebook, Instagram, LinkedIn) and omits X when SOCIAL_X_URL is empty (SC-001, SC-004)', async () => {
+    const officialContact: ContactInfo = {
+      phone: '+56 2 29079067',
+      social: {
+        facebook: 'https://www.facebook.com/share/1DL9drgCDU/?mibextid=wwXIfr',
+        x: '',
+        instagram: 'https://www.instagram.com/somosriff.cl?igsi=MTU2YXhqaThoNnFydA%3D%3D&utm_source=qr',
+        linkedin: 'https://www.linkedin.com/company/100252590',
+      },
+    };
+    const html = await render(officialContact);
+
+    expect(html).toContain('href="https://www.facebook.com/share/1DL9drgCDU/?mibextid=wwXIfr"');
+    expect(html).toMatch(/href="https:\/\/www\.instagram\.com\/somosriff\.cl\?igsi=MTU2YXhqaThoNnFydA%3D%3D&(amp;)?utm_source=qr"/);
+    expect(html).toContain('href="https://www.linkedin.com/company/100252590"');
+    expect(html).not.toContain('aria-label="X"');
+    expect(html).not.toContain('simple-icons:x');
+
+    const socialLabels = html.match(/aria-label="(Facebook|X|Instagram|LinkedIn)"/g);
+    expect(socialLabels).toHaveLength(3);
+    expect(socialLabels).toEqual(['aria-label="Facebook"', 'aria-label="Instagram"', 'aria-label="LinkedIn"']);
+  });
+
   it('renders only social links that have a configured URL', async () => {
     const html = await render({
       phone: '+56 2 29079067',

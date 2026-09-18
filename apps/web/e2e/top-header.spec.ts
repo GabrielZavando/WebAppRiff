@@ -12,7 +12,9 @@ test.describe('TopHeader (utility bar)', () => {
     const socialNav = bar.getByRole('navigation', { name: 'Redes sociales' });
     await expect(socialNav).toBeVisible();
     await expect(socialNav.getByRole('link', { name: 'Facebook' })).toBeVisible();
-    await expect(socialNav.getByRole('link', { name: 'X' })).toBeVisible();
+    await expect(socialNav.getByRole('link', { name: 'Instagram' })).toBeVisible();
+    await expect(socialNav.getByRole('link', { name: 'LinkedIn' })).toBeVisible();
+    await expect(socialNav.getByRole('link', { name: 'X' })).toHaveCount(0);
   });
 
   test('is hidden on mobile viewport', async ({ page }) => {
