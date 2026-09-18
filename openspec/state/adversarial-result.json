@@ -1,20 +1,16 @@
 {
   "schema_version": 1,
-  "change": "remove-release-workflow",
-  "ticket_id": "C4",
+  "change": "configure-social-links",
+  "ticket_id": "RIFF-WEB-01",
   "verdict": "SHIP",
   "confidence": 0.95,
-  "timestamp": "2026-09-18T01:45:00Z",
-  "findings": { "total": 2, "critical": 0, "warnings": 0, "info": 2, "discarded": 2 },
+  "timestamp": "2026-09-18T23:58:30Z",
+  "findings": { "total": 2, "critical": 0, "warnings": 0, "info": 2, "discarded": 0 },
   "notes": {
-    "discarded_findings": [
-      { "candidate": "CRITICAL — losing main-branch validation by deleting release.yml validate job", "refutation": "ci.yml runs the exact same steps (npm install, check-refs, specboot --ci, make ci, framework self-tests) on push to main + PRs; zero coverage regression" },
-      { "candidate": "CRITICAL — breaking tag-based deploy flow", "refutation": "deploy.yml (tags v*, workflow_dispatch) is independent of release.yml; untouched, verified via git diff" }
-    ],
     "info_findings": [
-      { "finding": "GitHub 'release published' events no longer trigger any workflow", "detail": "intended: releases in this repo are v* tags handled by deploy.yml; nothing publishes npm packages anymore (root package is private)" },
-      { "finding": "delta spec placed as new capability 'ci-release-workflow' although requirement already exists under 'specboot-framework-sync'", "detail": "cosmetic artifact duplication; this change ENFORCES the existing SHALL-NOT-CONTAIN release.yml requirement and closes AUDIT.md H5/V2" }
+      { "finding": "Env vars (SOCIAL_*_URL) passed directly without protocol validation in contact.ts" },
+      { "finding": "Official social URLs duplicated in playwright.config.ts for E2E determinism" }
     ],
-    "positives": ["reduces CI noise (publish job always failed on private package)", "removes packages:write permission surface", "brings repo into compliance with specboot-framework-sync spec"]
+    "positives": ["Security attributes target=_blank and rel=noopener noreferrer present across all social links", "Phone links sanitized to E.164", "Single source of truth preserved"]
   }
 }
