@@ -1,22 +1,21 @@
 {
   "schema_version": 1,
-  "change": "fix-cloud-run-runtime-configuration",
-  "ticket_id": "RIFF-DEPLOY-02",
+  "change": "migrate-product-images",
+  "ticket_id": "upload-images",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-15T16:54:08Z",
-  "tasks": { "total": 5, "passed": 5, "failed": 0, "untested": 0 },
+  "timestamp": "2026-09-17T21:10:00Z",
+  "tasks": { "total": 7, "passed": 6, "failed": 0, "untested": 1 },
   "scenarios": [
-    { "id": "SC-001", "test": "deploy-cloudrun service from vars.CLOUD_RUN_SERVICE (creates service)", "status": "PASS" },
-    { "id": "SC-002", "test": "--service-account=${{ vars.GCP_RUNTIME_SA }}", "status": "PASS" },
-    { "id": "SC-003", "test": "ADC kept; no FIREBASE_CLIENT_EMAIL/PRIVATE_KEY in workflow", "status": "PASS" },
-    { "id": "SC-004", "test": "env_vars FIREBASE_* + NODE_ENV=production + CORS from SMOKE staging, no PORT", "status": "PASS" },
-    { "id": "SC-005", "test": "--allow-unauthenticated present", "status": "PASS" },
-    { "id": "SC-006", "test": "CATALOG_REBUILD_* secrets from Secret Manager :latest", "status": "PASS" },
-    { "id": "SC-007", "test": "image path uses vars.GCP_ARTIFACT_REPOSITORY; no riff/riff-backend literal", "status": "PASS" },
-    { "id": "SC-008", "test": "staging uses staging-specific vars (SMOKE_*_STAGING_URL)", "status": "PASS" },
-    { "id": "SC-009", "test": "production gated on *_PRODUCTION vars (blocked until set)", "status": "PASS" },
-    { "id": "SC-010", "test": "CI gate + backend-staging-before-frontends preserved", "status": "PASS" },
-    { "id": "SC-011", "test": "docs: Acciones humanas + env table updated", "status": "PASS" }
-  ]
+    { "id": "SC-001", "test": "MigrateProductosImagenesUseCase suite (T1/T6 galeria population, max-10, absolute URLs)", "status": "PASS" },
+    { "id": "SC-002", "test": "url-accessibility.adapter.spec.ts + use-case accessibility gate", "status": "PASS" },
+    { "id": "SC-003", "test": "T4 idempotency/retry suite (migrate-imagenes.use-case.spec.ts)", "status": "PASS" },
+    { "id": "SC-004", "test": "T4/T6 report classification + accessibility validation suites", "status": "PASS" },
+    { "id": "SC-005", "test": "RebuildNotifier integration suite (SC-005)", "status": "PASS" },
+    { "id": "SC-006", "test": "resolveImageStorageUploader fail-fast suite (migrate-imagenes.module.spec.ts)", "status": "PASS" }
+  ],
+  "notes": {
+    "evidence_level": "suite-level (describe blocks grouped by SC-0xx; IDs not embedded in individual it() names per strict build-agent convention)",
+    "untested_task": "T7 (operational staging rebuild + visual check) — pending merge, out of code verify scope"
+  }
 }
