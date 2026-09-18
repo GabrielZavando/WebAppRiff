@@ -9,8 +9,13 @@ import {
   IMAGE_STORAGE_PORT,
   ImageSourcePort,
   ImageStoragePort,
+  REBUILD_NOTIFIER_PORT,
+  RebuildNotifierPort,
+  RebuildNotifierResult,
   SEED_IMAGE_MAP_LOADER,
   SeedImageMapLoader,
+  URL_ACCESSIBILITY_PORT,
+  UrlAccessibilityPort,
 } from './ports';
 
 export const MAX_GALERIA = 10;
@@ -49,6 +54,8 @@ export interface MigrationReport {
   fallidos: ProductoFallido[];
   omitidos: ProductoOmitido[];
   advertencias: Advertencia[];
+  /** Resultado de la notificación de rebuild; `null` si no se disparó webhook. */
+  rebuild: RebuildNotifierResult | null;
 }
 
 /**
@@ -67,6 +74,8 @@ export class MigrateProductosImagenesUseCase {
     @Inject(IMAGE_SOURCE_PORT) private readonly imageSource: ImageSourcePort,
     @Inject(IMAGE_STORAGE_PORT) private readonly imageStorage: ImageStoragePort,
     @Inject(SEED_IMAGE_MAP_LOADER) private readonly seedLoader: SeedImageMapLoader,
+    @Inject(URL_ACCESSIBILITY_PORT) private readonly urlAccessibility: UrlAccessibilityPort,
+    @Inject(REBUILD_NOTIFIER_PORT) private readonly rebuildNotifier: RebuildNotifierPort,
   ) {}
 
   async execute(
@@ -80,6 +89,7 @@ export class MigrateProductosImagenesUseCase {
       fallidos: [],
       omitidos: [],
       advertencias: [],
+      rebuild: null,
     };
 
     for (const [productoId, urls] of Object.entries(imageMap)) {
@@ -108,6 +118,13 @@ export class MigrateProductosImagenesUseCase {
       }
 
       await this.processMigration(productoId, titulo, targetUrls, urls.length, truncado, report);
+    }
+
+    // R4: disparar el rebuild del sitio estático solo si hubo cambios reales
+    // (al menos un producto migrado) y no estamos en dry-run. El webhook es
+    // best-effort: un fallo se reporta en `report.rebuild` sin abortar.
+    if (!options.dryRun && report.exitosos.length > 0) {
+      report.rebuild = await this.rebuildNotifier.notifyRebuild();
     }
 
     return report;
@@ -180,10 +197,29 @@ export class MigrateProductosImagenesUseCase {
     for (let i = 0; i < targetUrls.length; i += 1) {
       const url = targetUrls[i];
       const orden = i + 1;
+      // R6: el dominio no admite URLs relativas en `galeria`. Rechazar la fuente
+      // relativa antes de cualquier descarga/subida para no persistirla jamás.
+      if (!this.isAbsoluteHttpUrl(url)) {
+        erroresImagenes.push({
+          orden,
+          url,
+          error: 'Relative URL rejected: source is not absolute (must start with http:// or https://)',
+        });
+        continue;
+      }
       try {
         const optimized = await this.imageSource.downloadAndOptimize(url);
         const storagePath = `productos/${productoId}/${orden}.webp`;
         const publicUrl = await this.imageStorage.upload(optimized, storagePath);
+        const accessible = await this.urlAccessibility.isAccessible(publicUrl);
+        if (!accessible) {
+          erroresImagenes.push({
+            orden,
+            url: publicUrl,
+            error: 'URL not accessible (HEAD request failed: 403/404 or timeout)',
+          });
+          continue;
+        }
         galeria.push({ url: publicUrl, storagePath, alt: titulo, orden });
       } catch (err) {
         erroresImagenes.push({ orden, url, error: (err as Error).message });
@@ -191,6 +227,15 @@ export class MigrateProductosImagenesUseCase {
     }
 
     return { galeria, erroresImagenes };
+  }
+
+  /**
+   * Valida que la URL de origen sea absoluta y use un esquema http(s) (regla de
+   * dominio: galeria solo admite URLs absolutas). Las URLs relativas legacy como
+   * `old/galeria/foo.jpg` se rechazan y se registran como fallo sin persistir.
+   */
+  private isAbsoluteHttpUrl(url: string): boolean {
+    return /^https?:\/\//i.test(url);
   }
 
   private advertenciaTruncado(productoId: string, totalUrls: number): Advertencia {
