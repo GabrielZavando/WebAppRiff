@@ -5,7 +5,9 @@ import { join } from 'path';
 import {
   IMAGE_SOURCE_PORT,
   IMAGE_STORAGE_PORT,
+  REBUILD_NOTIFIER_PORT,
   SEED_IMAGE_MAP_LOADER,
+  URL_ACCESSIBILITY_PORT,
 } from './migrate-imagenes/ports';
 import { I_PRODUCT_REPOSITORY } from '@/productos/domain/iproducto.repository';
 import { MigrateProductosImagenesUseCase } from './migrate-imagenes/migrate-imagenes.use-case';
@@ -25,9 +27,13 @@ describe('migrate:productos:imagenes CLI wiring', () => {
   };
   const imageSource = { downloadAndOptimize: jest.fn() };
   const imageStorage = { upload: jest.fn() };
+  const urlAccessibility = { isAccessible: jest.fn() };
+  const rebuildNotifier = { notifyRebuild: jest.fn() };
 
   beforeEach(() => {
     jest.clearAllMocks();
+    urlAccessibility.isAccessible.mockResolvedValue(true);
+    rebuildNotifier.notifyRebuild.mockResolvedValue({ ok: true });
     productoRepo.findById.mockImplementation((id: string) =>
       id === 'prod-054'
         ? Promise.resolve(null)
@@ -60,6 +66,8 @@ describe('migrate:productos:imagenes CLI wiring', () => {
         { provide: I_PRODUCT_REPOSITORY, useValue: productoRepo },
         { provide: IMAGE_SOURCE_PORT, useValue: imageSource },
         { provide: IMAGE_STORAGE_PORT, useValue: imageStorage },
+        { provide: URL_ACCESSIBILITY_PORT, useValue: urlAccessibility },
+        { provide: REBUILD_NOTIFIER_PORT, useValue: rebuildNotifier },
       ],
     }).compile();
 

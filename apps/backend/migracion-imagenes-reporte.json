@@ -1,6 +1,258 @@
 {
-  "fecha": "2026-08-16T20:46:13.546Z",
+  "fecha": "2026-09-17T20:33:20.233Z",
   "exitosos": [
+    {
+      "productoId": "prod-001",
+      "titulo": "MWN - Medidor Industrial para Agua Fría Limpia - Medidor Tipo Woltman",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-002",
+      "titulo": "MWN 130 - Medidor Industrial para Agua Caliente",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-003",
+      "titulo": "WI - Medidor Industrial para Agua Fría, Agua de Riego y Riles Pre Filtrados",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-004",
+      "titulo": "Medidor JS90 NK",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-005",
+      "titulo": "Medidor MeiStream",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-008",
+      "titulo": "Medidor Fullsonic Pro Compact",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-009",
+      "titulo": "FULLSONIC Canal Abierto - Medidor Ultrasónico de Canal Abierto",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-010",
+      "titulo": "Medidor Fullsonic Wall Mounted",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-011",
+      "titulo": "FULLSONIC Portable - Medidor Ultrasónico Portable",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-012",
+      "titulo": "FULLMASS Vortex - Medidor Másico Tipo Vortex",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-013",
+      "titulo": "FULLMAS Thermal – Medidor Másico Térmico",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-014",
+      "titulo": "P-Level - Medidor de Nivel Freático",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-015",
+      "titulo": "Flujómetro Sanitario Fullmag",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-016",
+      "titulo": "INPRO – Flujómetro de Inserción",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-019",
+      "titulo": "JS90 – Medidor Domiciliario para Agua Caliente",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-020",
+      "titulo": "JS130 – Medidor Industrial para Agua Caliente Conexión Hilo",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-021",
+      "titulo": "K24 - Medidor Contador de Litros para Diesel",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-022",
+      "titulo": "K24 - Medidor Contador de Litros para Agua",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-023",
+      "titulo": "K40 - Medidor Contador de Litros",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-024",
+      "titulo": "K33 / K44 - Medidor Contador de Litros para Diesel/Aceite",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-025",
+      "titulo": "K150 - Medidor Contador de Litros para Diesel/Aceite",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-026",
+      "titulo": "K400 - Medidor Contador de Litros Electrónico",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-027",
+      "titulo": "K600/4 - Medidor Contador de Litros Electrónico",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-029",
+      "titulo": "NEXT/2 - Medidor Contador de Litros Electrónico",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-030",
+      "titulo": "BR -  Medidor Contador de Litros para Aceite",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-033",
+      "titulo": "N30O – Contador de Pulso Digital Programable",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-034",
+      "titulo": "Antiincrustante para Agua Salobre",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-035",
+      "titulo": "Toberas Filtrantes Acero Inoxidable Tipo HTC",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-036",
+      "titulo": "Toberas Filtrantes Polipropileno Tipo P7",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-037",
+      "titulo": "Toberas Filtrantes Polipropileno Tipo T",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-038",
+      "titulo": "Arena Silícea Filtrante",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-039",
+      "titulo": "Arena Cuarzosa Filtrante, Ocre-Amarilla",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-040",
+      "titulo": "Carbón Activado de Concha de Coco",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-041",
+      "titulo": "Ablandador para Agua",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-042",
+      "titulo": "Ablandador para Agua Domiciliario",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-043",
+      "titulo": "Válvula de Bola, Construcción en Latón",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-044",
+      "titulo": "Válvula de Compuerta, Modelo Ecoline, desde PN16",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-045",
+      "titulo": "Válvula de Globo, Modelo ECO-VA",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-047",
+      "titulo": "Conjunto de Flanges PVC",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-048",
+      "titulo": "Conjunto Flanges Acero/Hilo",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-049",
+      "titulo": "Válvula de Aire Cinética",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
+    {
+      "productoId": "prod-050",
+      "titulo": "Sistema AMR de Lectura Remota",
+      "imagenesMigradas": 1,
+      "imagenesTotales": 1
+    },
     {
       "productoId": "prod-051",
       "titulo": "Datalogger 3G",
@@ -173,177 +425,13 @@
   "fallidos": [],
   "omitidos": [
     {
-      "productoId": "prod-001",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-002",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-003",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-004",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-005",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-008",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-009",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-010",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-011",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-012",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-013",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-014",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-015",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-016",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-019",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-020",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-021",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-022",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-023",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-024",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-025",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-026",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-027",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-029",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-030",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-033",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-034",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-035",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-036",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-037",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-038",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-039",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-040",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-041",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-042",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-043",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-044",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-045",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-047",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-048",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-049",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
-      "productoId": "prod-050",
-      "motivo": "Ya migrado completamente (idempotencia)."
-    },
-    {
       "productoId": "prod-054",
       "motivo": "El documento no existe en Firestore (probablemente excluido del seed)."
     }
   ],
-  "advertencias": []
+  "advertencias": [],
+  "rebuild": {
+    "ok": false,
+    "reason": "CATALOG_REBUILD_WEBHOOK_URL not configured; manual rebuild required"
+  }
 }
