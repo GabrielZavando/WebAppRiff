@@ -1,9 +1,20 @@
 {
   "schema_version": 1,
-  "change": "migrate-product-images",
-  "ticket_id": "upload-images",
+  "change": "remove-release-workflow",
+  "ticket_id": "C4",
   "verdict": "SHIP",
-  "confidence": 0.8,
-  "timestamp": "2026-09-17T12:00:00Z",
-  "findings": { "total": 6, "critical": 0, "warnings": 3, "info": 3, "discarded": 2 }
+  "confidence": 0.95,
+  "timestamp": "2026-09-18T01:45:00Z",
+  "findings": { "total": 2, "critical": 0, "warnings": 0, "info": 2, "discarded": 2 },
+  "notes": {
+    "discarded_findings": [
+      { "candidate": "CRITICAL — losing main-branch validation by deleting release.yml validate job", "refutation": "ci.yml runs the exact same steps (npm install, check-refs, specboot --ci, make ci, framework self-tests) on push to main + PRs; zero coverage regression" },
+      { "candidate": "CRITICAL — breaking tag-based deploy flow", "refutation": "deploy.yml (tags v*, workflow_dispatch) is independent of release.yml; untouched, verified via git diff" }
+    ],
+    "info_findings": [
+      { "finding": "GitHub 'release published' events no longer trigger any workflow", "detail": "intended: releases in this repo are v* tags handled by deploy.yml; nothing publishes npm packages anymore (root package is private)" },
+      { "finding": "delta spec placed as new capability 'ci-release-workflow' although requirement already exists under 'specboot-framework-sync'", "detail": "cosmetic artifact duplication; this change ENFORCES the existing SHALL-NOT-CONTAIN release.yml requirement and closes AUDIT.md H5/V2" }
+    ],
+    "positives": ["reduces CI noise (publish job always failed on private package)", "removes packages:write permission surface", "brings repo into compliance with specboot-framework-sync spec"]
+  }
 }

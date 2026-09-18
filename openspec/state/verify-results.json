@@ -1,21 +1,19 @@
 {
   "schema_version": 1,
-  "change": "migrate-product-images",
-  "ticket_id": "upload-images",
+  "change": "remove-release-workflow",
+  "ticket_id": "C4",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-17T21:10:00Z",
-  "tasks": { "total": 7, "passed": 6, "failed": 0, "untested": 1 },
+  "timestamp": "2026-09-17T23:55:00Z",
+  "tasks": { "total": 1, "passed": 1, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "MigrateProductosImagenesUseCase suite (T1/T6 galeria population, max-10, absolute URLs)", "status": "PASS" },
-    { "id": "SC-002", "test": "url-accessibility.adapter.spec.ts + use-case accessibility gate", "status": "PASS" },
-    { "id": "SC-003", "test": "T4 idempotency/retry suite (migrate-imagenes.use-case.spec.ts)", "status": "PASS" },
-    { "id": "SC-004", "test": "T4/T6 report classification + accessibility validation suites", "status": "PASS" },
-    { "id": "SC-005", "test": "RebuildNotifier integration suite (SC-005)", "status": "PASS" },
-    { "id": "SC-006", "test": "resolveImageStorageUploader fail-fast suite (migrate-imagenes.module.spec.ts)", "status": "PASS" }
+    { "id": "SC-001", "test": "inline-assertion: .github/workflows/release.yml absent (ls .github/workflows → ci.yml, deploy.yml only)", "status": "PASS" },
+    { "id": "SC-002", "test": "framework gates executed: bash check-refs.sh (0 errors, 18 refs) + bash specboot.sh --ci (0 errors, 0 warnings); ci.yml present", "status": "PASS" },
+    { "id": "SC-003", "test": "inline-assertion: git diff HEAD -- .github/workflows/ shows only release.yml deletion; deploy.yml untouched", "status": "PASS" }
   ],
   "notes": {
-    "evidence_level": "suite-level (describe blocks grouped by SC-0xx; IDs not embedded in individual it() names per strict build-agent convention)",
-    "untested_task": "T7 (operational staging rebuild + visual check) — pending merge, out of code verify scope"
+    "evidence_kind": "inline shell assertions + framework gate scripts (change has no unit-testable code; Test Path marked 'no aplica' in tasks.md)",
+    "spec_alignment": "removal also satisfies existing spec openspec/specs/specboot-framework-sync/spec.md (SHALL NOT contain release.yml) and closes AUDIT.md finding H5/V2",
+    "final_sc_check": "SC-001 post-merge confirmation (no 'Publish to GitHub Packages' run in Actions) happens after PR merge"
   }
 }
