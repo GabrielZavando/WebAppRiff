@@ -253,6 +253,10 @@ framework), nunca `jq`.
 **Customización del proyecto:** el proyecto declara `services` y `stack` en
 `.specboot.json`. No edita el Makefile. Para infraestructura específica (VPS, Docker,
 etc.) usa variables de entorno de GitHub + configuración propia del proyecto.
+Para la estrategia Git, el proyecto consumidor puede adoptar la recomendación
+opcional de [`docs/consumer-git-workflow.md`](consumer-git-workflow.md) (GitHub
+Flow) — el estándar interno que gobierna el desarrollo del propio Specboot es
+`docs/git-workflow-standards.md` y tiene un alcance distinto.
 
 **Relación con `specboot update` / `update.sh`:** `specboot update` reemplaza el
 `Makefile` del framework como archivo intocable (opción A); `update.sh` mantiene solo
@@ -297,6 +301,16 @@ de GitHub (repo `vars` + `secrets`).
 **Customización:** el proyecto usa variables de entorno (GitHub vars/secrets) para
 adaptar el despliegue. Para infraestructura específica (VPS, Docker, repo distinto),
 se setea en GitHub, no en el archivo.
+
+**Trust model de la allowlist del primario (`opencode.json`):** los patrones
+`node *` y `python3 *` en allow permiten ejecución de código arbitrario
+(ej. `node -e "fs.rmSync(...)"`); es la misma superficie de confianza que ya
+ofrecen `npm *` y `npx *` (ejecutan scripts arbitrarios vía `package.json`).
+La decisión del mantenedor es **aceptarla y documentarla**: en un entorno
+dev-only con `edit: allow` ya permitido, acotar `node`/`python3` solo movería
+el riesgo a otro runner igual de capaz. Lo que permanece restringido son los
+comandos destructivos/exploratorios (`rm -rf *`, `find`, `sed -i` en `ask`), que
+sí generan confirmación puntual.
 
 **Relación con `update.sh`:** `update.sh` no toca workflows. `specboot update`
 reemplaza los workflows del framework como archivos intocables (archivo por archivo,

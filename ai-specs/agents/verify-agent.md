@@ -16,6 +16,10 @@ El flujo completo de `/verify` (trazabilidad, contexto selectivo, detección de 
   - `git diff`, `git status`, `git log`, `git merge-base` — solo lectura.
   - `npm test`, `npm run test`, `npx vitest`, `npx jest` — tests Node.
   - `pytest` — tests Python.
+  - `bash tests/...` — guards bash del propio framework (dogfooding: en Specboot los self-tests son scripts bash, no pytest/jest).
+  - `bash scripts/...` — scripts de verificación del framework (ej. `dogfood-check.sh`).
+  - `node -e` — lecturas token-light de evidencias JSON (convención del framework: `node -e`, nunca `jq`).
+  - `date` — timestamps ISO-8601 de la evidencia.
   - `rg`, `ls`, `cat` — búsqueda y lectura (la escritura de la evidencia se hace vía redirección de `cat`).
   - `mkdir -p openspec/*` — crear el directorio de estado para la evidencia (Step 8).
 - **Bash prohibido**: builds completas, `install`, `dev` servers, comandos destructivos. El smoke check e2e del Step 5d del skill solo se ejecuta si el change lo declara explícitamente y el entorno lo soporta.

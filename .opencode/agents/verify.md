@@ -17,6 +17,10 @@ permission:
     "npx jest *": allow
     "pytest *": allow
     "npm test": allow
+    "bash tests/*": allow
+    "bash scripts/*": allow
+    "node -e *": allow
+    "date *": allow
     "rg *": allow
     "ls *": allow
     "cat *": allow

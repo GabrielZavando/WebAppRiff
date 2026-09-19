@@ -47,8 +47,14 @@ puntuales: `node -e "const d=require('./openspec/state/verify-results.json');con
    ninguna evidencia es utilizable (el match falla por definición).
 2. **Chequeo de staleness (warn-only, git-based)**: la evidencia es **stale**
    si existe al menos un commit posterior a su `timestamp` que toca alguna de
-   estas **rutas de código**: `src/`, `app/`, `tests/`, `ai-specs/`, `.opencode/`.
-   Los commits que solo tocan `docs/`, `openspec/` u otras rutas no-code
+   las **rutas de código** configuradas. Las rutas se resuelven **token-light**
+   leyendo el campo opcional `stalenessPaths` de `.specboot.json` con
+   `node -e` (ej. `node -e "const c=require('./.specboot.json');console.log((c.stalenessPaths||['src','app','tests','ai-specs','.opencode']).join(' '))"`);
+   si el campo no existe, aplica el **fallback al default**
+   `src/`, `app/`, `tests/`, `ai-specs/`, `.opencode/` (comportamiento
+   idéntico al de la primera versión de esta regla). El cómputo canónico es:
+   `git log --format="%H %ad" --date=iso -5 -- <stalenessPaths>`. Los commits
+   que solo tocan `docs/`, `openspec/` u otras rutas no-code
    **no ensucian** la evidencia. Si hay staleness, imprimir
    `⚠️ Evidencia posiblemente desactualizada: existe un commit de código posterior al timestamp de la evidencia ({timestamp}) — considera re-ejecutar la herramienta`
    y continuar — el staleness no bloquea por sí solo; lo que bloquea es la

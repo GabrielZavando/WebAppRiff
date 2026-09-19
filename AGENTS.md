@@ -121,6 +121,7 @@ continuing.
 | `show-spec-working` | Debug command registered in `opencode.json` | **Debug tool**: use `/show-spec-working` when the agent is confused about current tasks, the user wants to see progress, verification fails, or before `/apply` to confirm the right task. Read-only. |
 | `explain` | User asks "why did you do X?" or needs decision context | **On-demand**: use when explaining technical decisions, tradeoffs, or rationale. Not part of standard cycle. |
 | `archive` | Skill folder present in `ai-specs/skills/archive/` | Reserved for archive-related helpers. |
+| `sync-specs` | Main specs went stale during a long change | **On demand**: use `/sync-specs` to apply the active change's spec deltas into `openspec/specs/` without archiving. Token-light; never touches the manifest. |
 
 For extended detail (phases, full descriptions, examples) see
 `ai-specs/README.md` — that file is for humans and is not auto-loaded, so it
@@ -171,6 +172,7 @@ En la práctica:
 | --- | --- | --- |
 | `/enrich-us TICKET-ID` | Enrich a vague user story before planning | Only for poorly formed tickets without acceptance criteria |
 | `/adversarial-review` | Adversarial red-team code audit — runs eslint+dependency-cruiser+npm audit, emits SHIP/NO-SHIP verdict, complements /verify (does NOT re-check OpenSpec alignment). Read-only over code; persists its verdict to `openspec/state/adversarial-result.json`. Ticket ID taken from the active change in `openspec/changes/`. |
+| `/sync-specs` | Sync the active change's spec deltas into `openspec/specs/` without archiving. Token-light; never touches `openspec/state/manifest.json`. |
 
 ### 5.4 Subagents (wired via {file:} references)
 
