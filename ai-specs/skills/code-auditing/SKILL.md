@@ -141,6 +141,10 @@ Reglas:
 - El archivo queda trackeado en git (no gitignored): evidencia auditable en PRs.
 - Si falla la escritura → advertir pero no abortar (el reporte en pantalla ya se
   emitió). El gate duro del veredicto vive en `/commit` (activo desde M-901),
+- **Handoff del tick del Mandatory Steps**: el reviewer es **read-only** y no
+  edita `tasks.md`; la checkbox del paso post (`adversarial-review`) la marca
+  `[x]` (vía edit tool) el **agente orquestador** (build/primario) al validar el
+  veredicto persistido (ver `ai-specs/agents/build-agent.md`).
   no en este archivo.
 
 ---

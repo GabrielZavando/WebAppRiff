@@ -18,7 +18,9 @@ permission:
     "node -e *": allow
     "ls *": allow
     "cat *": allow
+    "mkdir -p openspec/*": allow
     "rm openspec/tickets/*": allow
+    "rm -f openspec/tickets/*": allow
     "*": deny
 ---
 

@@ -65,4 +65,19 @@ console.log('package.json → ' + v);
 console.log('.specboot.json → frameworkVersion ' + v);
 " "$VERSION" || err "bump aborted: $VERSION not applied (see error above)"
 
-echo "✅ Bump complete: $VERSION (tagging and committing belong to /commit)"
+# --- After the files are written, create the local git tag (M-912). ---
+# Tagging is part of the bump contract: the tag records the version in git
+# history next to the bump commit. Push of the tag is the maintainer's action
+# after merging to main. Non-git dirs (unit-test fixtures) skip with a warning
+# and do NOT fail the bump.
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null 2>&1; then
+    echo "⚠️ tag v$VERSION already exists — leaving as is"
+  else
+    git tag "v$VERSION" && echo "✅ Tag v$VERSION created (push it after merging to main)"
+  fi
+else
+  echo "⚠️ not a git repository — tag v$VERSION skipped"
+fi
+
+echo "✅ Bump complete: $VERSION (committing belongs to /commit)"

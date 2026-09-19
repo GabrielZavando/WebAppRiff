@@ -244,6 +244,23 @@ if [ "$LAYERS_JSON" != "null" ] && [ -n "$LAYERS_JSON" ]; then
   pass "layers es un objeto válido."
 fi
 
+# Case 7: stalenessPaths (if present) must be an array of strings
+if node -e "
+  const j=JSON.parse(require('fs').readFileSync('$CONFIG_FILE','utf8'));
+  const s=j.stalenessPaths;
+  if(s===undefined||s===null){process.exit(0);}
+  if(!Array.isArray(s)){process.exit(1);}
+  for(const x of s){ if(typeof x!=='string') process.exit(1); }
+  process.exit(0);
+" 2>/dev/null; then
+  pass "stalenessPaths es un array de strings válido (si está presente)."
+else
+  fail "stalenessPaths debe ser un array de strings."
+  echo ""
+  echo -e "  ${RED}✗${NC} Validación fallida."
+  exit 1
+fi
+
 echo ""
 echo "================================"
 echo "📊 Resumen"

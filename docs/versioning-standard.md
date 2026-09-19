@@ -110,9 +110,10 @@ comportamiento ante el salto de versión se define aquí:
    debe pasar por el flujo SDD antes de publicar.
 4. La escritura del número de versión **nunca se hace a mano ni con `npm version`**:
    se ejecuta `bash release-bump.sh X.Y.Z` (script raíz, TICKET-AUDIT-3), que actualiza
-   atómicamente `package.json` (`version`) y `.specboot.json` (`frameworkVersion`), valida
-   semver y exige que la sección `## [X.Y.Z]` ya exista en el CHANGELOG. El script no crea
-   tags ni commits — eso pertenece a `/commit`.
+    atómicamente `package.json` (`version`) y `.specboot.json` (`frameworkVersion`), valida
+    semver y exige que la sección `## [X.Y.Z]` ya exista en el CHANGELOG. El script **crea
+    el tag local** `v{X.Y.Z}` al finalizar (ver §Release automático → Política de tags);
+    los commits pertenecen a `/commit`.
 
 ## Release automático
 
@@ -147,6 +148,21 @@ on:
 ruptura en §3) antes del merge. El release workflow **NO** hace bump automático; el
 `update.sh --bump` del mantenedor es sólo una conveniencia local y no es invocado por el
 workflow.
+
+**Política de tags (desde M-912):** el bump crea siempre un **tag local** `v{version}`
+— `release-bump.sh` lo crea al finalizar el bump (después de escribir
+`package.json` + `.specboot.json`; si no es repo git, avisa y sigue) y
+`update.sh --bump` lo crea del mismo modo — y el mantenedor pushea el tag **tras
+el merge a `main`** (`git push origin v{version}`). Un push de tags
+**no dispara** `release.yml` (sus triggers son `push: branches: [main]` y
+`release: types: [published]`), por lo que el push del tag es siempre seguro.
+El **GitHub Release** correspondiente se crea desde la UI
+(`github.com/.../releases/new` → "Choose a tag" → seleccionar el tag → pegar la
+sección `## [X.Y.Z]` del CHANGELOG como notas). El publicado en GitHub Packages
+(`npm publish`) lo hace `release.yml` en push a `main` con idempotencia
+(`npm view` check): no requiere el GitHub Release para publicar, pero sí que la
+versión de `package.json` sea nueva. Los tags retroactivos (backfill) son
+recuperables apuntando al commit del bump correspondiente.
 
 ## 7. Relación con el contrato del framework
 

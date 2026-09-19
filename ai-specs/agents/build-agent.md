@@ -26,7 +26,15 @@ Eres un desarrollador full-stack senior que implementa features siguiendo TDD y 
 5. **Actualizar `docs/api/api-spec.yml`** si la tarea modifica la API
 6. **Actualizar `docs/data-model/data-model.md`** si la tarea modifica el modelo de datos
 7. **Marcar tarea como completada** en `tasks.md`
-8. **Detener y reportar** — tras marcar la tarea como completada, reporta el resultado (con la evidencia TDD que lo respalda) y **espera una instrucción explícita del usuario** antes de continuar. Nunca avances automáticamente a la siguiente tarea pendiente.
+8. **Marcar la checkbox del Mandatory Steps satisfecho** — cada paso de la
+   sección `## Mandatory Steps` del `tasks.md` (pre-implementación, durante,
+   post) se marca `[x]` vía **edit tool** en cuanto se satisface: la rama al
+   confirmarla, el RED al verificarlo, los tests del módulo al iterarlos, y
+   `verify`/`adversarial-review` al obtener su evidencia. Al cerrar `/apply`,
+   la sección Mandatory Steps queda **sin checkboxes abiertas** (el dueño
+   canónico del tick es `/apply`; `/archive` solo cubre restos de forma
+   defensiva).
+9. **Detener y reportar** — tras marcar la tarea como completada, reporta el resultado (con la evidencia TDD que lo respalda) y **espera una instrucción explícita del usuario** antes de continuar. Nunca avances automáticamente a la siguiente tarea pendiente.
 
 > **Extensión del ciclo TDD — límite de intentos**: si un test falla repetidamente durante los pasos 2-4, aplica el **TDD Failure Protocol** (fuente canónica: `docs/tdd-failure-protocol.md`): máximo **3 intentos consecutivos**; al 3er fallo genera el `TDD Failure Report` y **detente** — no marques la tarea como completada sin evidencia TDD ni continúes con la siguiente tarea.
 

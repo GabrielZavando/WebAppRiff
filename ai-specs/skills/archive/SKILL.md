@@ -11,7 +11,9 @@ Listar `openspec/changes/` y tomar el único cambio presente. Si hay varios, lis
 ## Step 2 — Pre-checks ligeros (sin leer contenido completo)
 
 - Ejecutar `git status --porcelain openspec/` y registrar si hay archivos modificados o untracked distintos de `openspec/changes/` y `openspec/state/`. Si los hay, imprimir *"⚠️ Hay cambios sin commitear en openspec/: [lista]"* (advertir, no abortar).
-- Parsear `tasks.md` en busca de checkboxes abiertos (`- [ ]`). **Sólo** contar líneas con `- [ ]` (no escanee el archivo completo). Si quedan pendientes → abortar con *"❌ El cambio tiene tareas pendientes en tasks.md. Complete `/apply` o ejecute los pending tasks antes de archivar."*.
+- Parsear `tasks.md` en busca de checkboxes abiertos (`- [ ]`). **Sólo** contar líneas con `- [ ]` (no escanee el archivo completo). El **dueño canónico del tick** del Mandatory Steps es `/apply` (ver `ai-specs/agents/build-agent.md`): si el flujo estándar se siguió, no quedan checkboxes de esa sección abiertas y no se necesita `--yes`. Si quedan pendientes:
+  - Si corresponden a la sección `## Mandatory Steps` y su cumplimiento está confirmado (rama correcta, evidencia de `verify` y `adversarial-review` presente), marcarlas de forma **defensiva** vía **edit tool** (el agente archive tiene `edit: openspec/**` allow) — **nunca con `sed -i`** (permanece gated por ser edición vía bash).
+  - Si son tareas de implementación genuinas pendientes → abortar con *"❌ El cambio tiene tareas pendientes en tasks.md. Complete `/apply` o ejecute los pending tasks antes de archivar."*.
 - Detectar el `TICKET-ID` leyendo el header `Ticket ID:` de `proposal.md`. Si no existe, intentar leerlo de `openspec/tickets/{derived-name}-enriched.md` (solo el nombre de archivo, no su contenido).
 
 ## Step 3 — Preview (solo nombres, sin contenido)

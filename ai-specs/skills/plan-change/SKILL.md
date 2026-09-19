@@ -127,6 +127,11 @@ Ejecutar validación preliminar antes de generar tareas, verificando consistenci
 Create the folder `openspec/changes/{derived-name}/` and write, enriched with the loaded context (not generic templates):
 
 1. **`proposal.md`** — origin ticket ID, title, tag, summary and motivation.
+   The template MUST carry the two sections `openspec archive` expects:
+   `## Why` (context and motivation, from the audit/enriched source) and
+   `## What Changes` (scope summary: what is included and what is out of
+   scope). Omitting either section triggers a non-blocking proposal warning on
+   every `openspec archive` run.
 
 2. **`scenarios.md`** — Gherkin scenarios that:
    - Must assign or preserve a unique stable ID formatted as `### SC-{NNN}: [Scenario Title]` for every scenario (e.g., `### SC-001: Usuario recupera contraseña`).
@@ -167,6 +172,7 @@ Checklist (apply before reporting):
 - [ ] Every task has subtasks, priority, layer, and estimate
 - [ ] **Every task has `Suggested Path` or marked `no aplica` explicitly**
 - [ ] **Every task has `Test Path` or marked `no aplica` explicitly**
+- [ ] **`proposal.md` includes `## Why` and `## What Changes` sections** (required by `openspec archive`; absence triggers a proposal warning)
 - [ ] **tasks.md includes the `## Mandatory Steps` section** (injected per Step 5 from `docs/openspec-tasks-mandatory-steps.md`)
 - [ ] **Validación de diseño completada (Step 4½)**
 - [ ] **No hay conflictos críticos sin reportar**

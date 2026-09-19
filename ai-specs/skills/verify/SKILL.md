@@ -176,6 +176,12 @@ Consumidores de este archivo (no lo re-ejecutan):
   (bypass registrado como trailer `Gate-Bypass`).
 - `archive` copia `{status, timestamp, source}` al manifiesto (Step 5 de su skill).
 
+**Handoff del tick del Mandatory Steps**: este skill es **read-only** — el
+subagente `verify` no edita `tasks.md`. La checkbox del paso post (`verify`) de
+la sección `## Mandatory Steps` del change se marca `[x]` (vía edit tool) por el
+**agente orquestador** (build/primario) al validar la evidencia persistida, en
+cuanto esta existe (ver `ai-specs/agents/build-agent.md`).
+
 ## Stack Notes
 
 - Sin asumir `pytest` ni `jest` a priori.

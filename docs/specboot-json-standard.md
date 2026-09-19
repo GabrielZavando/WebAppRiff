@@ -56,6 +56,7 @@ validación.
 | `description` | string | Descripción libre del proyecto. Solo metadato. |
 | `extraStandards` | array de strings | Rutas relativas (desde la raíz) de archivos `docs/` adicionales que el agente debe cargar según la tarea. Deben vivir bajo `docs/` (ver `docs/docs-standard.md`). |
 | `layers` | object | **Opt-in, del proyecto.** Mapa donde cada clave es una entrada de `services` y cada valor es un array de etiquetas de capa (o un string separado por ` | `). Documenta la nomenclatura de capas por servicio para que el skill `plan-change` etiquete tareas y `Suggested Path`/`Test Path`. Si se omite, `plan-change` usa las etiquetas por defecto según `stack` (backend: `domain | application | infrastructure`; frontend: `smart | dumb`). El validador solo exige que, de estar presente, sea un objeto; no valida profundamente su contenido. |
+| `stalenessPaths` | array de strings | **Opt-in, del proyecto.** Rutas de código usadas por el gate de staleness de `/commit` (Step 2 del skill `commit`): la evidencia de tests es stale si existe un commit posterior a su `timestamp` que toque alguna de estas rutas. Si se omite, el default es `["src", "app", "tests", "ai-specs", ".opencode"]`. Proyectos con otras layouts (ej. `lib/`, `server/`) lo declaran aquí para recibir staleness detection. El validador solo exige que, de estar presente, sea un array de strings. |
 
 ## 3. Semántica por campo (detalle)
 
