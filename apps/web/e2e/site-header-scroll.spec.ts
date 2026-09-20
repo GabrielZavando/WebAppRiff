@@ -54,7 +54,9 @@ test.describe('Site header compact scroll state', () => {
     await expect(page.locator('body')).not.toHaveAttribute('data-scrolled', 'true');
   });
 
-  test('on scroll: sticky shell, logo shrinks to 200px and background becomes navy', async ({ page }) => {
+  test('[SC-001] on scroll: logo shrinks to a 100px-tall cap on desktop and background becomes navy', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
 
@@ -69,8 +71,9 @@ test.describe('Site header compact scroll state', () => {
     const box = await shell.boundingBox();
     expect(box?.y).toBeLessThan(2);
 
-    // Logo shrinks from 300px to 200px on desktop
-    await expect(getLogo(page)).toHaveCSS('max-width', '200px');
+    // Desktop compact logo: capped by height (100px) with automatic width,
+    // preserving the 330×134 aspect ratio (~246px wide) — contract LOGO-SIZE.
+    await expect(getLogo(page)).toHaveCSS('height', '100px');
 
     // Search wrapper background transitions to solid secondary (#1F2D40)
     await expect(getSearchWrapper(page)).toHaveCSS('background-color', SECONDARY_RGB);
@@ -84,7 +87,8 @@ test.describe('Site header compact scroll state', () => {
     // Smooth 300ms transitions on the animated properties
     await expect(await getPseudoStyle(page, 'header.site-header', 'transition-duration')).toBe('0.3s');
     await expect(getSearchWrapper(page)).toHaveCSS('transition-duration', '0.3s');
-    await expect(getLogo(page)).toHaveCSS('transition-duration', '0.3s');
+    // Logo now transitions two properties (max-width + height) — one 0.3s each.
+    await expect(getLogo(page)).toHaveCSS('transition-duration', '0.3s, 0.3s');
 
     // TopHeader is outside the sticky shell and scrolls out of view
     const topHeader = page.getByRole('region', { name: 'Barra de contacto' });
@@ -92,7 +96,21 @@ test.describe('Site header compact scroll state', () => {
     expect(thBox?.y ?? 0).toBeLessThan(0);
   });
 
-  test('back at the top: everything reverts to the original state', async ({ page }) => {
+  test('[SC-001] desktop band 640–1023px keeps the logo at 100px (not capped by max-h-full)', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 800, height: 720 });
+    await page.goto('/');
+
+    await scrollTo(page, 400);
+
+    await expect(page.locator('body')).toHaveAttribute('data-scrolled', 'true');
+    // Regression for adversarial F1: at 800px the logo must be 100px tall even
+    // though the anchor is h-20 (80px) below lg — sm:max-h-none lifts the cap.
+    await expect(getLogo(page)).toHaveCSS('height', '100px');
+  });
+
+  test('[SC-002] back at the top: everything reverts to the original state', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
     await scrollTo(page, 400);
@@ -111,7 +129,7 @@ test.describe('Site header compact scroll state', () => {
     await expect(await getPseudoStyle(page, 'header.site-header', 'opacity')).toBe('0');
   });
 
-  test('on mobile: logo shrinks to 150px and the mobile menu opens above the compact header', async ({
+  test('[SC-003] on mobile: logo shrinks to 150px and the mobile menu opens above the compact header', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 375, height: 667 });
@@ -135,7 +153,7 @@ test.describe('Site header compact scroll state', () => {
     await expect(mobileNav).toHaveCSS('z-index', '40');
   });
 
-  test('respects reduced motion: transitions are disabled', async ({ page }) => {
+  test('[SC-004] respects reduced motion: transitions are disabled', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
