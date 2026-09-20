@@ -52,9 +52,16 @@ body[data-scrolled='true'] .site-search {
   background-color: var(--color-secondary);
 }
 
-/* Logo: shrink on scroll — 300px → 200px (desktop ≥640px), 200px → 150px (mobile). */
+/* Logo: shrink on scroll — 300px → 200px (mobile caps by width).
+ * Desktop (≥640px) caps by HEIGHT instead: minimum 100px tall with automatic
+ * width (ticket LOGO-SIZE). The asset is 330×134, so 100px tall renders as
+ * ~246px wide (aspect ratio preserved); a bare `max-width` cap rendered only
+ * ~81px tall and weakened brand presence. We do not add `min-height` on top of
+ * a `max-width` cap — that would distort the image. */
 .site-logo {
-  transition: max-width 300ms ease-in-out;
+  transition:
+    max-width 300ms ease-in-out,
+    height 300ms ease-in-out;
 }
 
 body[data-scrolled='true'] .site-logo {
@@ -63,7 +70,9 @@ body[data-scrolled='true'] .site-logo {
 
 @media (min-width: 640px) {
   body[data-scrolled='true'] .site-logo {
-    max-width: 200px;
+    max-width: none;
+    height: 100px;
+    width: auto;
   }
 }
 
