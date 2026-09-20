@@ -38,15 +38,17 @@ const logoAltText = logoAlt ?? 'Riff';
            on mobile, 300px cap from the sm breakpoint upward. `w-full` lets it
            fill available width up to the cap while the `width`/`height` attrs
            (330×134) preserve the aspect ratio for CLS. The wrapper is
-           `h-20 lg:h-24 overflow-visible`; `max-h-full` (dropped at `lg:max-h-none`)
-           caps the logo to the header height on small screens so it can never
-           grow the header, restoring the 2× overflow only on desktop. -->
+           `h-20 lg:h-24 overflow-visible`. `max-h-full` caps the logo to the
+           header height on small screens so it can never grow the header;
+           dropped at `sm:max-h-none` (≥640px) so the desktop compact state can
+           keep the logo at its 100px-tall contract (LOGO-SIZE) across the whole
+           ≥640px range — the header may then visually overflow (2× pattern). -->
       <Image
         src={logoImage}
         alt={logoAltText}
         width={330}
         height={134}
-        class="site-logo block h-auto w-full max-w-[200px] sm:max-w-[300px] max-h-full lg:max-h-none"
+        class="site-logo block h-auto w-full max-w-[200px] sm:max-w-[300px] sm:max-h-none"
       />
     </a>
 
