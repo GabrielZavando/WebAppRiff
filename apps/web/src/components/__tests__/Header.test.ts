@@ -56,7 +56,11 @@ describe('Header', () => {
     expect(html).toContain('h-20');
     expect(html).toContain('lg:h-24');
     expect(html).toContain('max-h-full');
-    expect(html).toContain('lg:max-h-none');
+    // The height cap is lifted from sm (640px) upward so the desktop compact
+    // state can hold the logo at its 100px-tall contract (LOGO-SIZE), instead
+    // of only at lg (1024px) as before.
+    expect(html).toContain('sm:max-h-none');
+    expect(html).not.toContain('lg:max-h-none');
     // The <a> wrapper constrains height with overflow-visible so the
     // oversized logo may visually overflow without growing the header container.
     expect(html).toContain('overflow-visible');
