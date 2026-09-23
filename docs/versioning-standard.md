@@ -89,6 +89,27 @@ comportamiento ante el salto de versión se define aquí:
 - Si el salto es **minor** o **patch**: reemplazo **silencioso**, sin advertencia de ruptura.
 - En ningún caso `specboot update` toca `docs/` del desarrollador ni el código del proyecto.
 
+### 5.1 Protección y respaldo del `ci.yml` de consumidores
+
+`specboot update` aplica sobre `.github/workflows/ci.yml` una política
+tri-estado segura (SPECBOOT-HARDEN-04): instala la plantilla actual si falta;
+si hay una variante histórica conocida distribuida por Specboot la respalda
+(`cp -p`, conservando metadatos, en `.specboot-backup-<timestamp>/`) ANTES de
+reemplazarla; y ante contenido modificado o ajeno la preserva byte-for-byte
+exigiendo resolución explícita (nunca sobrescritura automática). Tanto el
+respaldo como el reemplazo/instalación se verifican explícitamente: si
+fallan o el archivo final no coincide con la plantilla esperada, el `update`
+devuelve estado no exitoso y emite un error claro — un write parcial nunca se
+presenta como actualización exitosa.
+
+La opción **`--no-backup`** es un **opt-out explícito** de la creación de
+cualquier respaldo (tanto del `ci.yml` como de los archivos del framework).
+No es una excepción silenciosa a la promesa "respaldo antes de reemplazo":
+solo cuando el usuario declara explícitamente `--no-backup` se omite el
+respaldo; la verificación del reemplazo (que el `ci.yml` final coincida con
+la plantilla esperada) **sigue aplicando** en ese modo. Por defecto (sin la
+bandera) el respaldo verificable de SC-013/SC-015 se aplica íntegramente.
+
 ## 6. Formato de CHANGELOG / Release notes
 
 - El `CHANGELOG.md` del repo Specboot sigue [Keep a Changelog](https://keepachangelog.com/)
@@ -110,10 +131,14 @@ comportamiento ante el salto de versión se define aquí:
    debe pasar por el flujo SDD antes de publicar.
 4. La escritura del número de versión **nunca se hace a mano ni con `npm version`**:
    se ejecuta `bash release-bump.sh X.Y.Z` (script raíz, TICKET-AUDIT-3), que actualiza
-    atómicamente `package.json` (`version`) y `.specboot.json` (`frameworkVersion`), valida
-    semver y exige que la sección `## [X.Y.Z]` ya exista en el CHANGELOG. El script **crea
-    el tag local** `v{X.Y.Z}` al finalizar (ver §Release automático → Política de tags);
-    los commits pertenecen a `/commit`.
+   **atómicamente** los tres archivos de versión — `package.json` (`version`),
+   `package-lock.json` (versión raíz y entrada principal `packages[""]`) y
+   `.specboot.json` (`frameworkVersion`) — en una sola operación: parsea y valida TODOS
+   los archivos ANTES de escribir cualquiera (un fallo — p. ej. un `package-lock.json`
+   corrupto — aborta sin escribir nada; si el lock no existe, se omite con una nota).
+   El bump **nunca crea tags** (ni locales ni remotos) y no commitea: la creación del
+   tag `v{X.Y.Z}` pertenece a la fase **post-merge** del mantenedor (ver §Release
+   automático → Política de tags); los commits pertenecen a `/commit`.
 
 ## Release automático
 
@@ -144,23 +169,27 @@ on:
 `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` con `permissions: packages: write`. Se ejecuta
 `npm pack --dry-run` antes de publicar.
 
-**Versionado:** el mantenedor incrementa `version` en `package.json` (SemVer, ver matriz de
-ruptura en §3) antes del merge. El release workflow **NO** hace bump automático; el
-`update.sh --bump` del mantenedor es sólo una conveniencia local y no es invocado por el
-workflow.
+**Versionado:** el mantenedor escribe la nueva versión vía el mecanismo canónico
+(`bash release-bump.sh X.Y.Z`, ver §6.1; SemVer según la matriz de ruptura en §3)
+antes del merge. El release workflow **NO** hace bump automático; el
+`update.sh --bump` del mantenedor es sólo una conveniencia local (CHANGELOG + sync
+de tooling; sin tags) y no es invocado por el workflow.
 
-**Política de tags (desde M-912):** el bump crea siempre un **tag local** `v{version}`
-— `release-bump.sh` lo crea al finalizar el bump (después de escribir
-`package.json` + `.specboot.json`; si no es repo git, avisa y sigue) y
-`update.sh --bump` lo crea del mismo modo — y el mantenedor pushea el tag **tras
-el merge a `main`** (`git push origin v{version}`). Un push de tags
-**no dispara** `release.yml` (sus triggers son `push: branches: [main]` y
+**Política de tags (post-merge; reemplaza la política de M-912):** el bump **nunca
+crea tags** — ni `release-bump.sh` ni `update.sh --bump` los crean; ningún script o
+tooling del framework crea tags durante el bump, `/apply`, `/archive` ni el commit
+de la rama. Tras fusionar el PR a `main` y actualizar la rama local (`git checkout
+main && git pull`), el **mantenedor** crea el **tag local** `v{version}` apuntando
+**exactamente** al commit de `main` que contiene el bump
+(`git tag v{version} <sha-del-commit>`) y lo pushea **solo con autorización
+explícita** (`git push origin v{version}`). Un push de tags **no dispara**
+`release.yml` (sus triggers son `push: branches: [main]` y
 `release: types: [published]`), por lo que el push del tag es siempre seguro.
-El **GitHub Release** correspondiente se crea desde la UI
+El **GitHub Release** correspondiente se crea manualmente desde la UI
 (`github.com/.../releases/new` → "Choose a tag" → seleccionar el tag → pegar la
-sección `## [X.Y.Z]` del CHANGELOG como notas). El publicado en GitHub Packages
-(`npm publish`) lo hace `release.yml` en push a `main` con idempotencia
-(`npm view` check): no requiere el GitHub Release para publicar, pero sí que la
+sección `## [X.Y.Z]` del CHANGELOG como notas). La publicación en GitHub Packages
+(`npm publish`) la hace `release.yml` en push a `main` con idempotencia (check
+`npm view`): no requiere el GitHub Release ni el tag para publicar, pero sí que la
 versión de `package.json` sea nueva. Los tags retroactivos (backfill) son
 recuperables apuntando al commit del bump correspondiente.
 

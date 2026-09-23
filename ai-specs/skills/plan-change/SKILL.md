@@ -173,6 +173,7 @@ Checklist (apply before reporting):
 - [ ] **Every task has `Suggested Path` or marked `no aplica` explicitly**
 - [ ] **Every task has `Test Path` or marked `no aplica` explicitly**
 - [ ] **`proposal.md` includes `## Why` and `## What Changes` sections** (required by `openspec archive`; absence triggers a proposal warning)
+- [ ] **`## Why` de `proposal.md` tiene ≤ 1000 caracteres** (SPECBOOT-HARDEN-02, REQ-009): contar la longitud de la sección `## Why` (entre `## Why` y `## What Changes`); si supera los 1000 caracteres, recortarla y NO informar éxito hasta que cumpla.
 - [ ] **tasks.md includes the `## Mandatory Steps` section** (injected per Step 5 from `docs/openspec-tasks-mandatory-steps.md`)
 - [ ] **Validación de diseño completada (Step 4½)**
 - [ ] **No hay conflictos críticos sin reportar**

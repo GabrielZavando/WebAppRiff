@@ -7,7 +7,7 @@
       "name": "OmniRoute",
       "options": {
         "baseURL": "http://localhost:20128/v1",
-        "apiKey": "sk-aad2f9f3f277f6d8-ce79b3-b14add23"
+        "apiKey": "{env:OMNIROUTE_API_KEY}"
       },
       "models": {
         "auto/best-free": {
@@ -46,6 +46,7 @@
   "permission": {
     "edit": "allow",
     "bash": {
+      "*": "ask",
       "git *": "allow",
       "npm *": "allow",
       "npx *": "allow",
@@ -60,8 +61,7 @@
       "mkdir *": "allow",
       "date *": "allow",
       "python3 *": "allow",
-      "rm -rf *": "ask",
-      "*": "ask"
+      "rm -rf *": "ask"
     },
     "webfetch": "allow"
   }

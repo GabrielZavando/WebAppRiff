@@ -38,7 +38,9 @@ evidencia utilizable, solo el flag `--force` permite continuar, y el bypass
 `Gate-Bypass: --force (verify=<PASS|PARTIAL|FAIL|missing>; adversarial=<SHIP|NO-SHIP|missing>)` reflejando el estado real de ambos gates. Con gates verdes el trailer **no se emite**.
 
 **Reglas comunes a ambos gateways** (lectura token-light; para extraer campos
-puntuales: `node -e "const d=require('./openspec/state/verify-results.json');console.log(d.status)"`):
+puntuales usar el helper fail-closed
+`node scripts/read-json-field.mjs openspec/state/verify-results.json status` —
+**nunca `node -e`**, prohibido como bypass de escritura):
 
 1. **Evidencia utilizable** = el archivo existe, es JSON válido y su campo
    `change` coincide con el change de referencia del Step 1 (el change activo o,
@@ -48,8 +50,10 @@ puntuales: `node -e "const d=require('./openspec/state/verify-results.json');con
 2. **Chequeo de staleness (warn-only, git-based)**: la evidencia es **stale**
    si existe al menos un commit posterior a su `timestamp` que toca alguna de
    las **rutas de código** configuradas. Las rutas se resuelven **token-light**
-   leyendo el campo opcional `stalenessPaths` de `.specboot.json` con
-   `node -e` (ej. `node -e "const c=require('./.specboot.json');console.log((c.stalenessPaths||['src','app','tests','ai-specs','.opencode']).join(' '))"`);
+   leyendo el campo opcional `stalenessPaths` de `.specboot.json` con el helper
+   `node scripts/read-json-field.mjs .specboot.json stalenessPaths` (devuelve el
+   array JSON serializado; si el campo falla con código ≠ 0 porque el campo no
+   existe, aplicar el fallback);
    si el campo no existe, aplica el **fallback al default**
    `src/`, `app/`, `tests/`, `ai-specs/`, `.opencode/` (comportamiento
    idéntico al de la primera versión de esta regla). El cómputo canónico es:
@@ -87,7 +91,7 @@ puntuales: `node -e "const d=require('./openspec/state/verify-results.json');con
 
 Tras el gateway de verify, aplicar la misma matriz sobre
 `openspec/state/adversarial-result.json` (extracción token-light de `verdict` y
-`timestamp`: `node -e "const d=require('./openspec/state/adversarial-result.json');console.log(d.verdict, d.timestamp)"`).
+`timestamp`: `node scripts/read-json-field.mjs openspec/state/adversarial-result.json verdict` y `... timestamp`).
 
 - `verdict: "SHIP"` → omitir la confirmación manual de la auditoría y reportar:
   `✅ Veredicto adversarial: SHIP ({timestamp})`. Continuar a Step 3.

@@ -1,5 +1,5 @@
 ---
-description: Create conventional commits and pull request (hard evidence gates: verify PASS + adversarial SHIP; --force registered escape hatch)
+description: "Create conventional commits and pull request (hard evidence gates: verify PASS + adversarial SHIP; --force registered escape hatch)"
 agent: commit
 ---
 

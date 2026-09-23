@@ -19,6 +19,7 @@ Auditoría adversarial de calidad de código. Ejecútala antes de archivar un ca
 - `npx dependency-cruiser --config templates/ci/.dependency-cruiser.js src/` → validar regla `no-infra-from-domain` (ningún archivo en `domain/` o `application/` importe infraestructura).
 - **Pasar los JSON resultantes al LLM para interpretar y priorizar**, no para leer código línea por línea.
 - Si algún config no existe (`templates/ci/*.js` no presentes), saltar ese paso e informar.
+- **Herramientas opcionales ausentes → skip registrado (SPECBOOT-HARDEN-04, REQ-008, SC-014)**: si una herramienta opcional no está disponible — el binario no existe en `node_modules/.bin` (compruébalo con lectura simple, p. ej. `ls node_modules/.bin/`) o su ejecución falla / `npm audit` está indisponible — NO la ejecutes con `npx` (evita descargas/instalaciones interactivas que bloquean la subejecución en silencio) y regístrala como **skip** en el anexo del reporte (Paso 5, `tool_skips`), sin contarla como hallazgo ni como fallo. Los skips **nunca bloquean la persistencia** (Paso 7): el veredicto se persiste SIEMPRE al final de cada auditoría — incluso con TODAS las herramientas opcionales ausentes y también en veredictos NO-SHIP. El lente adversarial (Pasos 3–4) es manual y obligatorio, independiente de las herramientas opcionales. Los skips viven SOLO en el reporte en pantalla: el JSON persistido conserva su esquema `schema_version: 1` exacto, sin campos de skip.
 
 ## Paso 3 — Lente adversarial (red-team)
 
@@ -131,21 +132,24 @@ Escribir `openspec/state/adversarial-result.json` al finalizar **cada** auditor�
 
 Reglas:
 
-- Escribir vía redirección `cat > openspec/state/adversarial-result.json` (la
-  evidencia es la **única** escritura permitida del reviewer; `edit` permanece
-  denegado). Crear el directorio si falta con `mkdir -p openspec/state`.
+- Crear el directorio con `mkdir -p openspec/state` si todavía no existe.
+- Obtener el timestamp mediante `date -u +"%Y-%m-%dT%H:%M:%SZ"`.
+- Crear o reemplazar `openspec/state/adversarial-result.json` mediante la
+  herramienta de edición. El permiso `edit` del reviewer está restringido
+  exclusivamente a este archivo; cualquier otra escritura permanece denegada.
+- Volver a leer el archivo persistido y comprobar que sea JSON válido y que
+  respete el esquema e invariantes definidos en este paso.
 - `total`/`critical`/`warnings`/`info` salen del `summary` del Paso 5;
   `discarded` del anexo "Descartados". Invariantes: `total = critical +
   warnings + info` y `critical ≤ total`.
 - `timestamp` en ISO-8601 (ej. `2026-09-05T15:00:00Z`).
 - El archivo queda trackeado en git (no gitignored): evidencia auditable en PRs.
-- Si falla la escritura → advertir pero no abortar (el reporte en pantalla ya se
-  emitió). El gate duro del veredicto vive en `/commit` (activo desde M-901),
-- **Handoff del tick del Mandatory Steps**: el reviewer es **read-only** y no
-  edita `tasks.md`; la checkbox del paso post (`adversarial-review`) la marca
-  `[x]` (vía edit tool) el **agente orquestador** (build/primario) al validar el
-  veredicto persistido (ver `ai-specs/agents/build-agent.md`).
-  no en este archivo.
+- Si falla la persistencia o la validación del JSON, reportar que la auditoría
+  fue ejecutada pero su evidencia no pudo persistirse, finalizar con error y no
+  marcar el Mandatory Step como completado. `/commit` debe permanecer bloqueado.
+- **Handoff del tick del Mandatory Steps**: el reviewer no edita `tasks.md`.
+  La checkbox del paso post (`adversarial-review`) la marca `[x]` el agente
+  orquestador (`build`) después de validar el veredicto persistido.
 
 ---
 **Eliminado**: la Fase 7 (OpenSpec Alignment) ha sido removida (cubre `/verify`). Esta skill ahora se enfoca únicamente en auditoría adversarial: robustez, seguridad, tradeoffs y diseño contextual.

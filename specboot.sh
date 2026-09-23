@@ -15,7 +15,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # project being bootstrapped (we cd into SCRIPT_DIR below for the validation modes).
 ORIGINAL_PWD="$(pwd)"
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
-  cd "$SCRIPT_DIR"
+  # Validation modes (`--init`/`--ci`) validate the INVOCATION directory
+  # (SPECBOOT-HARDEN-02, REQ-008): the framework repo in dogfooding, the
+  # consumer project when this script is executed from
+  # node_modules/@gabrielzavando/specboot. Project `init`/`update` target
+  # $ORIGINAL_PWD explicitly regardless, so they keep running from the
+  # framework source directory.
+  case "${1:-}" in
+    --init|--ci) cd "$ORIGINAL_PWD" ;;
+    *) cd "$SCRIPT_DIR" ;;
+  esac
 fi
 
 # Do NOT use 'set -e': this script counts errors/warnings and must keep running.
@@ -72,6 +81,7 @@ REQUIRED_FILES=(
   "ai-specs/skills/deploy/SKILL.md"
   "ai-specs/skills/onboarding/SKILL.md"
   ".github/pull_request_template.md"
+  "scripts/read-json-field.mjs"
 )
 
 # Note: This template is OpenCode-only. Agent and skill artifacts live in
@@ -134,9 +144,10 @@ FRAMEWORK_ITEMS=(
   "opencode.json"
   "AGENTS.md"
   "Makefile"
-  ".github"
   "LICENSE"
   "README.md"
+  "templates/github"
+  "scripts/read-json-field.mjs"
 )
 
 # Resolve the framework source directory.
@@ -185,6 +196,31 @@ copy_framework_files() {
       warn "falló la copia de: $item"
     fi
   done
+}
+
+# Install the GitHub consumer artifacts into the target from the templates.
+# Only the consumer CI workflow and the PR template are installed by default;
+# the internal release.yml/deploy.yml workflows are NEVER copied (Health-2 /
+# SPECBOOT-HARDEN-02, REQ-001/REQ-003). Never overwrites an existing file.
+install_github_artifacts() {
+  local fw_dir="$1" dst="$2"
+  mkdir -p "$dst/.github/workflows"
+  local pr_src="$fw_dir/templates/github/pull_request_template.md"
+  local ci_src="$fw_dir/templates/github/workflows/consumer-ci.yml"
+  if [ -f "$pr_src" ] && [ ! -f "$dst/.github/pull_request_template.md" ]; then
+    if cp "$pr_src" "$dst/.github/pull_request_template.md" 2>/dev/null; then
+      pass "instalado: .github/pull_request_template.md"
+    else
+      warn "falló la instalación de .github/pull_request_template.md"
+    fi
+  fi
+  if [ -f "$ci_src" ] && [ ! -f "$dst/.github/workflows/ci.yml" ]; then
+    if cp "$ci_src" "$dst/.github/workflows/ci.yml" 2>/dev/null; then
+      pass "instalado: .github/workflows/ci.yml (consumer CI)"
+    else
+      warn "falló la instalación de .github/workflows/ci.yml"
+    fi
+  fi
 }
 
 # Build a JSON array string from a comma/space separated list.
@@ -458,6 +494,9 @@ run_init_project() {
   echo "→ Copiando archivos del framework..."
   copy_framework_files "$fw_dir" "$target"
   echo ""
+  echo "→ Instalando artefactos GitHub de consumidores..."
+  install_github_artifacts "$fw_dir" "$target"
+  echo ""
   echo "→ Creando .specboot.json..."
   create_initial_specboot_json "$target" "$interactive"
   echo ""
@@ -521,7 +560,8 @@ UPDATE_ITEMS=(
   "opencode.json"
   "AGENTS.md"
   "Makefile"
-  ".github/workflows"
+  "templates/github"
+  "scripts/read-json-field.mjs"
 )
 
 # Resolve the installed framework version.
@@ -664,6 +704,204 @@ ensure_gitignore_entry() {
     && info "Añadido .specboot-backup-* a .gitignore"
 }
 
+# Known framework-owned legacy release.yml content fingerprints (git blob hashes)
+# of EVERY release.yml variant Specboot distributed to consumers before artifact
+# isolation (SPECBOOT-HARDEN-02, REQ-002):
+#   v1 87847ce0... — initial release workflow (ea2f096)
+#   v2 ed2a6f7d... — node 24 bump / orphan publish removed (033806f)
+#   v3 122cb15d... — idempotent publish (e68135b, last distributed)
+# These hashes describe IMMUTABLE legacy content — never derived from the current internal
+# .github/workflows/release.yml, which may evolve freely and is no longer
+# distributed. A consumer file matching ANY allowlisted hash is a framework-owned
+# legacy artifact (backed up + removed by update); anything else is never
+# auto-deleted. The regression suite (tests/specboot-update-test.sh) re-derives
+# every pre-isolation variant from git history and fails if this allowlist
+# drifts from the distributed history.
+KNOWN_RELEASE_FINGERPRINTS=(
+  "87847ce00d9dd02e98302962cdc39787194a5733"  # v1 — initial release workflow
+  "ed2a6f7dd68b0e29e7b4bf1c78c6b8611b360871"  # v2 — node 24 bump, orphan publish removed
+  "122cb15dccf07599ef4ddd494e3f9a3643e8948f"  # v3 — idempotent publish (last distributed)
+)
+
+# True when the fingerprint matches any known legacy framework-owned variant.
+is_known_legacy_release_fingerprint() {
+  local fp="$1" known
+  for known in "${KNOWN_RELEASE_FINGERPRINTS[@]}"; do
+    [ "$fp" = "$known" ] && return 0
+  done
+  return 1
+}
+
+# Known consumer CI content fingerprints (git blob hashes) of EVERY consumer CI
+# variant Specboot distributed since 0.10.0 (SPECBOOT-HARDEN-04, REQ-001):
+#   v1 99394ca6... — internal .github/workflows/ci.yml @ tag v0.10.0 (pinned
+#     commit cf50b18, the last pre-tag change); distributed by the pre-isolation
+#     `specboot update`, which copied the internal ci.yml into consumers.
+#   v2 a0041c33... — templates/github/workflows/consumer-ci.yml (pinned commit
+#     0c586db, SPECBOOT-HARDEN-02); first distributed with 0.11.0.
+# These are IMMUTABLE historical content fingerprints of every consumer CI variant
+# distributed since 0.10.0, each with verifiable git provenance. They are
+# never derived from the current internal .github/workflows/ci.yml (mutable,
+# internal-only, may evolve freely): templates/github/workflows/consumer-ci.yml
+# is the only distributable consumer CI source. A consumer ci.yml matching ANY
+# allowlisted hash is a framework-owned distributed artifact (the update policy
+# backs it up and replaces it); anything else is never overwritten automatically.
+# The regression suite (tests/specboot-update-test.sh) re-derives every variant
+# from git history and fails if this allowlist drifts from the distributed
+# history.
+KNOWN_CONSUMER_CI_FINGERPRINTS=(
+  "99394ca62f790f33e6f6fb506c41a458f6e65340"  # v1 — ci.yml @ v0.10.0 (cf50b18, pre-isolation copy)
+  "a0041c332f799156606062a037458b4ca525008c"  # v2 — consumer-ci.yml template @ 0c586db (first shipped in 0.11.0)
+)
+
+# True when the fingerprint matches any known distributed consumer CI variant.
+is_known_consumer_ci_fingerprint() {
+  local fp="$1" known
+  for known in "${KNOWN_CONSUMER_CI_FINGERPRINTS[@]}"; do
+    [ "$fp" = "$known" ] && return 0
+  done
+  return 1
+}
+
+# Return a stable content fingerprint of a file (git blob hash; git is always
+# available in this git-based framework). Empty string when it cannot be computed.
+content_fingerprint() {
+  local f="$1"
+  if command -v git >/dev/null 2>&1; then
+    git hash-object "$f" 2>/dev/null
+  fi
+}
+
+# Tri-state safe policy for the consumer's .github/workflows/ci.yml on update
+# (SPECBOOT-HARDEN-04, REQ-002/REQ-003). Applied identically in dogfooding and
+# consumer mode (the template and the allowlist come from the running framework):
+#   1. Missing file            -> install the current template and report it.
+#   2. Exact match with the current template (content fingerprint) -> idempotent
+#      no-op: no backup, no rewrite, no warning.
+#   3. Fingerprint matches the KNOWN_CONSUMER_CI_FINGERPRINTS allowlist (a
+#      variant Specboot actually distributed) -> BACK UP the original into
+#      $backup_dir/.github/workflows/ci.yml (when backup_dir is non-empty,
+#      mirroring repair_legacy_release) BEFORE replacing it with the current
+#      template, then report the repair. The backup uses cp -p (preserves the
+#      original's metadata) and is VERIFIED: if it fails, ci.yml is NOT
+#      replaced — the function emits a clear error to stderr and returns 1
+#      (non-successful state), keeping the original byte-for-byte intact.
+#   The INSTALL (1) and REPLACE (3) copies are also VERIFIED (SC-015): if the
+#   cp fails, or the final destination does NOT match the expected template
+#   (partial/corrupt write), the function returns 1 with a clear error — a
+#   partial write is NEVER reported as a successful install/repair.
+#   4. Modified or foreign content -> preserve the file byte-for-byte and warn,
+#      requiring explicit manual resolution; it is NEVER overwritten
+#      automatically (no silent overwrite).
+# Custom consumer workflows are never evaluated or touched here: only ci.yml is
+# handled, and no operation copies the whole .github directory.
+update_consumer_ci_safely() {
+  local fw_dir="$1" dst="$2" backup_dir="${3:-}"
+  local ci_src="$fw_dir/templates/github/workflows/consumer-ci.yml"
+  local ci_dst="$dst/.github/workflows/ci.yml"
+  if [ ! -f "$ci_src" ]; then
+    return 0
+  fi
+  # (1) Missing -> install and report.
+  if [ ! -f "$ci_dst" ]; then
+    # Verified install (SC-015): the copy must succeed AND the destination
+    # must match the expected template before reporting success. A failed or
+    # partial/corrupt install is never reported as a successful one.
+    if ! cp "$ci_src" "$ci_dst" 2>/dev/null || ! cmp -s "$ci_dst" "$ci_src"; then
+      echo "❌ No se pudo instalar .github/workflows/ci.yml con la plantilla actual; verifica permisos y reintenta" >&2
+      return 1
+    fi
+    pass "instalado: .github/workflows/ci.yml (consumer CI)"
+    return 0
+  fi
+  local fp tpl_fp
+  fp="$(content_fingerprint "$ci_dst")"
+  tpl_fp="$(content_fingerprint "$ci_src")"
+  # (2) Exact match with the current template -> idempotent no-op.
+  if [ -n "$fp" ] && [ "$fp" = "$tpl_fp" ]; then
+    info "ci.yml de consumidor ya coincide con la plantilla actual; no-op idempotente (sin cambios)."
+    return 0
+  fi
+  # (3) Known distributed variant -> back up BEFORE replacing, then repair.
+  if [ -n "$fp" ] && is_known_consumer_ci_fingerprint "$fp"; then
+    if [ -n "$backup_dir" ]; then
+      # Verified backup (SPECBOOT-HARDEN-04 follow-up, REQ-002, SC-013): the
+      # backup MUST be verified explicitly. cp -p preserves the original's
+      # metadata for a faithful restore. A FAILED backup must NEVER lead to a
+      # replacement — at that point the in-place file is the consumer's only
+      # copy, so the policy aborts with a clear error and a non-successful
+      # state, keeping ci.yml byte-for-byte intact.
+      mkdir -p "$backup_dir/.github/workflows" 2>/dev/null
+      if ! cp -p "$ci_dst" "$backup_dir/.github/workflows/ci.yml" 2>/dev/null; then
+        echo "❌ No se pudo respaldar .github/workflows/ci.yml en $backup_dir/.github/workflows/ci.yml — ci.yml NO se reemplaza y permanece byte a byte intacto (resuelve manualmente o reintenta el update)" >&2
+        return 1
+      fi
+    fi
+    # Verified replacement (SC-015): the copy must succeed AND the destination
+    # must match the expected template before reporting the repair. A failed
+    # or partial/corrupt replacement is never reported as a successful repair —
+    # it returns 1 with a clear error. (ci.yml is still the consumer's original
+    # if the cp failed; if it partially wrote, the mismatch is caught here.)
+    if ! cp "$ci_src" "$ci_dst" 2>/dev/null || ! cmp -s "$ci_dst" "$ci_src"; then
+      echo "❌ Falló el reemplazo de .github/workflows/ci.yml (el destino no coincide con la plantilla esperada); revisa el archivo y resuelve manualmente o reintenta" >&2
+      return 1
+    fi
+    pass "reparado: .github/workflows/ci.yml era una variante histórica distribuida por Specboot (respaldado${backup_dir:+ en $backup_dir/.github/workflows/ci.yml} y reemplazado por la plantilla actual)"
+    return 0
+  fi
+  # (4) Modified or foreign content -> preserve + explicit-resolution warning.
+  warn ".github/workflows/ci.yml modificado o ajeno NO se sobrescribió; requiere resolución explícita manual (conservado byte a byte, nunca se sobrescribe automáticamente)"
+}
+
+# Refresh the consumer GitHub artifacts (consumer CI + PR template) into the
+# target from the templates. The consumer CI workflow is NOT overwritten
+# unconditionally: it goes through the tri-state safe policy
+# (update_consumer_ci_safely, SPECBOOT-HARDEN-04 REQ-002/REQ-003). The PR
+# template remains framework-owned and keeps its current update behavior
+# (replaced without mercy when the template exists). Custom consumer workflows
+# are never touched and no operation copies the whole .github directory
+# (SPECBOOT-HARDEN-02, REQ-001/REQ-003).
+update_github_artifacts() {
+  local fw_dir="$1" dst="$2" backup_dir="${3:-}"
+  mkdir -p "$dst/.github/workflows"
+  local pr_src="$fw_dir/templates/github/pull_request_template.md"
+  # Propagate the tri-state policy's failure (SPECBOOT-HARDEN-04 follow-up,
+  # SC-013): a failed ci.yml backup must surface as a non-successful state,
+  # never be swallowed by the caller.
+  if ! update_consumer_ci_safely "$fw_dir" "$dst" "$backup_dir"; then
+    return 1
+  fi
+  if [ -f "$pr_src" ]; then
+    if cp "$pr_src" "$dst/.github/pull_request_template.md" 2>/dev/null; then
+      pass "reemplazado: .github/pull_request_template.md"
+    else
+      warn "falló el reemplazo de .github/pull_request_template.md"
+    fi
+  fi
+}
+
+# Repair a contaminated consumer: remove the framework-owned legacy release.yml
+# (backed up first) when it matches ANY fingerprint of the historical allowlist
+# exactly; otherwise warn and require explicit resolution (never auto-delete a
+# modified or consumer-owned release.yml). Custom workflows are never touched.
+repair_legacy_release() {
+  local dst="$1" backup_dir="$2"
+  local legacy="$dst/.github/workflows/release.yml"
+  [ -f "$legacy" ] || return 0
+  local fp
+  fp="$(content_fingerprint "$legacy")"
+  if [ -n "$fp" ] && is_known_legacy_release_fingerprint "$fp"; then
+    if [ -n "$backup_dir" ]; then
+      mkdir -p "$backup_dir/.github/workflows"
+      cp "$legacy" "$backup_dir/.github/workflows/release.yml" 2>/dev/null
+    fi
+    rm -f "$legacy"
+    pass "eliminado release.yml heredado de Specboot (respaldado${backup_dir:+ en $backup_dir})"
+  else
+    warn "release.yml en .github/workflows/ NO coincide con la firma framework-owned y NO se eliminó; requiere resolución explícita manual (nunca se auto-elimina un archivo modificado o ajeno)"
+  fi
+}
+
 run_update_project() {
   local interactive_confirm=1   # 1 = ask; 0 = --yes
   local template=""
@@ -777,6 +1015,18 @@ run_update_project() {
   echo "→ Reemplazando archivos del framework..."
   replace_framework_files "$fw_dir" "$target"
 
+  # 6b. Refresh consumer GitHub artifacts (ci.yml via the tri-state safe policy,
+  #     PR template unchanged) and repair a contaminated consumer. A failed
+  #     ci.yml backup stops the update with a non-successful state (SC-013):
+  #     ci.yml stays intact and the consumer must resolve explicitly.
+  echo ""
+  echo "→ Actualizando artefactos GitHub de consumidores..."
+  if ! update_github_artifacts "$fw_dir" "$target" "$backup_dir"; then
+    echo "❌ El update se detuvo: no se pudo respaldar .github/workflows/ci.yml antes de repararlo; ci.yml permanece intacto${backup_dir:+ (backup parcial en $backup_dir)}. Resuelve manualmente y re-ejecuta."
+    exit 1
+  fi
+  repair_legacy_release "$target" "$backup_dir"
+
   # 7. Rewrite frameworkVersion if it changed (eq = leave intact).
   if [ "$jump" != "eq" ]; then
     if write_specboot_json_version "$target/.specboot.json" "$installed"; then
@@ -825,7 +1075,10 @@ Opciones:
   --template DIR  Usa DIR como origen de los archivos del framework.
   --yes           No pedir confirmación en saltos major (para CI / no-TTY).
   --dry-run       Muestra qué se reemplazaría sin cambiar nada.
-  --no-backup     No crea un backup de los archivos reemplazados.
+  --no-backup     Opt-out EXPLÍCITO del respaldo (.specboot-backup-* de los archivos
+                  del framework y del ci.yml de consumidores). Solo con esta bandera se omite
+                  el respaldo; la verificación del reemplazo del ci.yml (coincidencia con la
+                  plantilla esperada) sigue aplicando (SC-013/SC-015).
   --help, -h      Muestra esta ayuda.
 
 El comando:
@@ -930,6 +1183,58 @@ check_ci_cd() {
     pass "commitlint configurado"
   else
     info ".commitlintrc.json no encontrado (opcional)"
+  fi
+}
+
+# REQ-009 (SPECBOOT-HARDEN-02): check_permission_contracts() vive FUERA de
+# check_ci_cd() para no depender del orden de ejecución. El validador vive en el
+# paquete Specboot (node_modules en consumidores, scripts/ en dogfooding); el
+# proyecto validado se pasa con --root; el manifiesto se lee desde el paquete.
+check_permission_contracts() {
+  echo "→ Verificando contratos de permisos de agentes..."
+  local validator=""
+  if [ -f "node_modules/@gabrielzavando/specboot/scripts/validate-agent-permissions.mjs" ]; then
+    validator="node_modules/@gabrielzavando/specboot/scripts/validate-agent-permissions.mjs"
+  elif [ -f "$SCRIPT_DIR/scripts/validate-agent-permissions.mjs" ]; then
+    validator="$SCRIPT_DIR/scripts/validate-agent-permissions.mjs"
+  fi
+  if [ -z "$validator" ]; then
+    fail "Validador de contratos de permisos no encontrado (ni en node_modules/@gabrielzavando/specboot ni en scripts/)"
+    return
+  fi
+  if ! command -v node >/dev/null 2>&1; then
+    fail "Node.js no disponible: no se pudieron validar los contratos de permisos (fail-closed REQ-009)"
+    return
+  fi
+  if node "$validator" --root .; then
+    pass "Contratos de permisos de agentes conformes"
+  else
+    fail "Descalce de contratos de permisos de agentes (ver salida del validador)"
+  fi
+}
+
+# REQ-007 (SPECBOOT-HARDEN-02): contratos de comandos (agent + subtask) validados
+# desde el front matter. El validador vive en el paquete Specboot.
+check_command_contracts() {
+  echo "→ Verificando contratos de comandos..."
+  local vcmd=""
+  if [ -f "node_modules/@gabrielzavando/specboot/scripts/validate-command-contracts.mjs" ]; then
+    vcmd="node_modules/@gabrielzavando/specboot/scripts/validate-command-contracts.mjs"
+  elif [ -f "$SCRIPT_DIR/scripts/validate-command-contracts.mjs" ]; then
+    vcmd="$SCRIPT_DIR/scripts/validate-command-contracts.mjs"
+  fi
+  if [ -z "$vcmd" ]; then
+    fail "Validador de contratos de comandos no encontrado (ni en node_modules/@gabrielzavando/specboot ni en scripts/)"
+    return
+  fi
+  if ! command -v node >/dev/null 2>&1; then
+    fail "Node.js no disponible: no se pudieron validar los contratos de comandos"
+    return
+  fi
+  if node "$vcmd" --root .; then
+    pass "Contratos de comandos conformes"
+  else
+    fail "Descalce de contratos de comandos (ver salida del validador)"
   fi
 }
 
@@ -1062,6 +1367,10 @@ run_ci() {
   check_git_hooks
   echo ""
   check_ci_cd
+  echo ""
+  check_permission_contracts
+  echo ""
+  check_command_contracts
   echo ""
   print_summary
 

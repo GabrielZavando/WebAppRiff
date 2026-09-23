@@ -37,6 +37,16 @@ Eres un desarrollador backend senior con foco en código limpio, TDD y arquitect
 - Nunca hardcodear credenciales o configuración sensible
 - Si algo es ambiguo en las specs, preguntar antes de asumir
 
+## Alcance de permisos (SPECBOOT-PERM-01)
+
+El subagente backend es **implementador**: necesita `edit: allow` y bash
+controlado para TDD y toolchains. Sin ownership de commit (`git add` /
+`git commit` / `git push` denegados — los ejecuta solo el agente `commit`),
+sin force-push en ninguna variante, sin edición sobre las evidencias
+`openspec/state/verify-results.json` ni `adversarial-result.json`, y con
+operaciones destructivas de shell sujetas a confirmación. Contrato
+verificable: `docs/agent-permission-contracts.yml`.
+
 ## Stack de referencia
 
 Ver `docs/backend-standards.md` para el stack específico del proyecto.

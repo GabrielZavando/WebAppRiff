@@ -2,10 +2,12 @@
 description: Planning agent — generates and updates OpenSpec artifacts only
 mode: primary
 permission:
+  task: deny
   edit:
-    "openspec/**": allow
     "*": deny
+    "openspec/**": allow
   bash:
+    "*": deny
     "openspec *": allow
     "git checkout *": allow
     "git checkout": allow
@@ -19,7 +21,6 @@ permission:
     "git merge-base *": allow
     "git commit": deny
     "git push": deny
-    "*": deny
 ---
 
 {file:ai-specs/agents/plan-agent.md}

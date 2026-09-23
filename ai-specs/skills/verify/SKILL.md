@@ -40,9 +40,9 @@ Leer **solo** los archivos listados en cada tarea bajo los campos `Suggested Pat
 - Detectar automáticamente el runner (`pytest`, `npm test`, `npx vitest`, `npx jest`).
 - Ejecutar con banderas de salida corta:
   - `pytest {changed-path} -v --tb=short -q` (Python)
-  - `npm test -- --testPathPattern="{changed-path}" --tb=short -q` (Node)
+  - `npm test -- "{changed-path}"` (Node, runner definido por el proyecto)
   - `npx vitest run {changed-path} --reporter=dot` (Node)
-  - `npx jest --testPathPattern="{changed-path}" --tb=short -q` (Node)
+  - `npx jest --runTestsByPath "{changed-path}" --noStackTrace` (Node)
 - Parsear resultado: PASS → ✅; FAIL → ❌ con resumen resumido del traceback (no el trace completo).
 
 ### 5c — Cobertura de escenarios por tests (prioridad de evidencia)
@@ -129,8 +129,19 @@ Nada de narrativa larga, párrafos explicativos o metadata de debugging.
 
 ## Step 8 — Persistencia de resultados
 
-Después de **cada** ejecución (incluyendo PASS, PARTIAL y FAIL), escribir
-`openspec/state/verify-results.json` (crear el directorio con `mkdir -p` si falta).
+Después de **cada** ejecución, incluyendo PASS, PARTIAL y FAIL, persistir
+`openspec/state/verify-results.json`.
+
+La persistencia se realiza de la siguiente forma:
+
+1. Crear `openspec/state` mediante `mkdir -p openspec/state` si no existe.
+2. Obtener el timestamp mediante `date -u +"%Y-%m-%dT%H:%M:%SZ"`.
+3. Crear o reemplazar `openspec/state/verify-results.json` mediante la
+   herramienta de edición. El permiso `edit` del agente está restringido
+   exclusivamente a este archivo.
+4. Volver a leer el archivo persistido y comprobar que sea JSON válido y que
+   respete el esquema e invariantes definidos en este paso.
+
 El archivo queda **trackeado en git** (no gitignore). Prevalencia
 **last-write-wins**: cada ejecución **sobrescribe** el archivo anterior, así que el
 documento siempre refleja la **corrida más reciente** — el gate de `/commit` lee
@@ -165,8 +176,10 @@ Reglas:
 - `scenarios[].test` registra el nombre del test que provee la evidencia (mapeo del
   Step 5c). Si ningún test cubre el escenario → `"test": "untested"` y
   `"status": "UNTESTED"` (el campo no admite string vacío).
-- Si la escritura del archivo falla → advertir pero **no abortar**: el informe en
-  pantalla (Step 7) ya fue emitido y la verificación en sí ya se completó.
+- Si falla la persistencia o la validación del JSON, reportar que la
+  verificación fue ejecutada pero su evidencia no pudo persistirse, finalizar
+  con error y no marcar el Mandatory Step como completado. `/commit` debe
+  permanecer bloqueado.
 
 Consumidores de este archivo (no lo re-ejecutan):
 
@@ -176,11 +189,10 @@ Consumidores de este archivo (no lo re-ejecutan):
   (bypass registrado como trailer `Gate-Bypass`).
 - `archive` copia `{status, timestamp, source}` al manifiesto (Step 5 de su skill).
 
-**Handoff del tick del Mandatory Steps**: este skill es **read-only** — el
-subagente `verify` no edita `tasks.md`. La checkbox del paso post (`verify`) de
-la sección `## Mandatory Steps` del change se marca `[x]` (vía edit tool) por el
-**agente orquestador** (build/primario) al validar la evidencia persistida, en
-cuanto esta existe (ver `ai-specs/agents/build-agent.md`).
+**Handoff del tick del Mandatory Steps**: el agente `verify` no edita
+`tasks.md` (es read-only sobre código y specs). La checkbox del paso post
+(`verify`) de la sección `## Mandatory Steps` la marca `[x]` el agente
+orquestador (`build`) después de validar la evidencia persistida.
 
 ## Stack Notes
 

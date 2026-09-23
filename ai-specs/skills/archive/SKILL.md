@@ -41,13 +41,16 @@ Listar `openspec/changes/` y tomar el único cambio presente. Si hay varios, lis
 - **Evidencia de verificación (M-401)**: antes de construir la entrada, comprobar
   si existe `openspec/state/verify-results.json` para el change activo. Si existe,
   extraer **solo** `status` y `timestamp` (lectura token-light: dos campos puntuales,
-  **nunca** el array `scenarios` — ej. `node -e "const d=require('./openspec/state/verify-results.json');console.log(d.status, d.timestamp)"`). Si no existe, continuar
+  **nunca** el array `scenarios` — mediante el helper fail-closed
+  `node scripts/read-json-field.mjs openspec/state/verify-results.json status` y
+  `... timestamp`, **nunca `node -e`**). Si no existe, continuar
   sin error ni bloqueo (el campo simplemente se omite).
 - **Veredicto adversarial (M-502)**: comprobar también si existe
   `openspec/state/adversarial-result.json`. Si existe, verificar que su campo
   `change` coincida con el change activo y extraer **solo** `verdict` y
-  `timestamp` (lectura token-light, **nunca** el detalle de hallazgos — ej.
-  `node -e "const d=require('./openspec/state/adversarial-result.json');console.log(d.verdict, d.timestamp)"`). Si falta, es JSON inválido o corresponde
+  `timestamp` (lectura token-light, **nunca** el detalle de hallazgos — mediante
+  `node scripts/read-json-field.mjs openspec/state/adversarial-result.json verdict`
+  y `... verdict`/`... timestamp`; nunca `node -e`). Si falta, es JSON inválido o corresponde
   a otro change → imprimir *"⚠️ Sin veredicto adversarial vigente para este
   change. Considera ejecutar `/adversarial-review` antes de archivar."* y
   continuar (el archive **nunca se bloquea** por falta de evidencia adversarial;
@@ -78,27 +81,28 @@ Listar `openspec/changes/` y tomar el único cambio presente. Si hay varios, lis
   de evidencia).
 - `archived_at` usar formato ISO-8601 (ej. `2026-08-25T14:30:00Z`). Si falla la escritura → advertir pero no abortar (el archive ya se completó).
 
-## Step 6 — Preparar commit (no ejecutar)
+## Step 6 — Dejar listo para commit (sin stagear)
 
-- Ejecutar `git add openspec/` para stagear:
-  - Los archivos nuevos/archivados en `openspec/archive/`.
+- **No** ejecutar `git add`: el staging es ownership exclusivo del agente
+  `commit` (SPECBOOT-PERM-01, REQ-005). `/archive` informa qué quedó listo:
+  - Los archivos nuevos/archivados en `openspec/changes/archive/`.
   - El `manifest.json` actualizado.
   - Cualquier otro archivo de spec modificado por `openspec archive`.
-- **No** ejecutar `git commit`. El commit se deja staged para que `/commit` lo ejecute en el siguiente paso del ciclo.
+- **No** ejecutar `git commit`. El staging y el commit los hace `/commit` en el paso siguiente del ciclo (`git add openspec/` incluido).
 
 - Imprimir bloque con mensaje sugerido:
   ```
   chore(specs): archive change PROJ-123 (auth-reset)
 
   - Specs updated: auth-spec.md, user-spec.md
-  - Archived to: openspec/archive/2026-08-25-auth-reset/
+  - Archived to: openspec/changes/archive/2026-08-25-auth-reset/
   ```
 - **Nota**: `/commit` será quien ejecute `git commit -m "..."` en el siguiente paso.
 
 ## Step 7 — Limpieza
 
 - Eliminar `openspec/tickets/{TICKET-ID}-enriched.md` si existe (el ciclo del ticket enriquecido terminó).
-- **No** tocar archivos dentro de `openspec/archive/` (son histórico).
+- **No** tocar archivos dentro de `openspec/changes/archive/` (son histórico).
 - Reporte final en YAML compacto (solo pantalla, no persistido):
   ```yaml
   change: auth-reset
