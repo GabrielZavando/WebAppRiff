@@ -12,6 +12,7 @@
     "postinstall": "node scripts/build-html-sanitize.mjs",
     "lint": "npm run lint --workspaces",
     "typecheck": "npm run typecheck --workspaces --if-present",
+    "pretest": "node scripts/build-html-sanitize.mjs",
     "test": "npm run test --workspaces",
     "build": "npm run build --workspaces",
     "dev:backend": "npm run start:dev --workspace=apps/backend",
