@@ -39,6 +39,6 @@ jobs:
         run: npm ci --ignore-scripts || npm install --ignore-scripts
       - name: Specboot structural validation
         run: bash specboot.sh --ci
-      - name: Project gate (make ci: refs + solid-lint + lint + test + audit)
+      - name: Project gate (make ci + refs + solid-lint + lint + test + audit)
         if: ${{ hashFiles('Makefile') != '' }}
         run: make ci
