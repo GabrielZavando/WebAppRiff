@@ -1,5 +1,5 @@
 ---
-description: Close the SDD cycle: pre-checks, openspec archive, staging for /commit
+description: "Close the SDD cycle: pre-checks and openspec archive for /commit"
 agent: archive
 ---
 

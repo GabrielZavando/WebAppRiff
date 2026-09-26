@@ -12,6 +12,7 @@
     "postinstall": "node scripts/build-html-sanitize.mjs",
     "lint": "npm run lint --workspaces",
     "typecheck": "npm run typecheck --workspaces --if-present",
+    "pretest": "node scripts/build-html-sanitize.mjs",
     "test": "npm run test --workspaces",
     "build": "npm run build --workspaces",
     "dev:backend": "npm run start:dev --workspace=apps/backend",
@@ -36,7 +37,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
-    "@gabrielzavando/specboot": "^0.10.0",
+    "@gabrielzavando/specboot": "^0.11.1",
     "husky": "^9.0.0",
     "vitest": "^4.1.10"
   }

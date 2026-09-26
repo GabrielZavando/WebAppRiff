@@ -2,8 +2,10 @@
 description: Commit agent — conventional commits, PRs and hard evidence gates. Read-only over code; only writes commits.
 mode: primary
 permission:
+  task: deny
   edit: deny
   bash:
+    "*": deny
     "git status": allow
     "git status *": allow
     "git diff": allow
@@ -18,16 +20,15 @@ permission:
     "git commit *": allow
     "git push": allow
     "git push *": allow
+    "gh pr create *": allow
+    "gh pr view *": allow
+    "gh pr edit *": allow
+    "node scripts/read-json-field.mjs *": allow
+    "ls *": allow
     "git push --force*": deny
     "git push *--force*": deny
     "git push -f*": deny
-    "git push * -f": deny
-    "gh *": allow
-    "node -e *": allow
-    "ls *": allow
-    "cat *": allow
-    "mkdir -p openspec/*": allow
-    "*": deny
+    "git push *-f*": deny
 ---
 
 # Commit Agent — Spec-Driven Development
@@ -53,10 +54,14 @@ improvises reglas aquí.
 - **Edición**: denegada (`edit: deny`). No tocas código, specs ni documentación.
 - **Bash**: limitado a git de lectura (`status`, `diff`, `log`, `fetch`,
   `merge-base`, `branch`, `show-current`), escritura git acotada (`add`,
-  `commit`, `push` — nunca `--force`), `gh *`, `node -e` (extracción token-light
-  de evidencias), `ls`, `cat` y `mkdir -p openspec/*`. Todo lo demás: deny.
+  `commit`, `push` — nunca `--force`), `gh *`, `node scripts/read-json-field.mjs`
+  (helper fijo de solo lectura con allowlist cerrada de archivos/campos —
+  sustituye a `node -e`, que queda prohibido como bypass de escritura),
+  `ls`, `cat` y `mkdir -p openspec/*`. Todo lo demás: deny.
 - **Nunca** force-push, en ninguna de sus formas: denegado estructuralmente
   (`git push --force*`, `git push *--force*`, `git push -f*`, `git push * -f`),
   no solo por texto.
+- **Subagentes**: `permission.task: deny` (SPECBOOT-HARDEN-02, REQ-005) — el
+  agente commit no lanza subagentes; `/commit` corre como agente primario.
 - El trailer `Gate-Bypass` solo se emite cuando el usuario forzó `--force`
   tras un gate bloqueado; con gates verdes no se emite.

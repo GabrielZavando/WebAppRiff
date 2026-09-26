@@ -14,7 +14,13 @@ Specboot es un framework de desarrollo SDD (Spec-Driven Development) que enjaula
 6. **Agentes y skills son fijos y definidos por el framework (prefabricados)**, aportan estándares (calidad, TDD, SOLID), no código.
 7. **Las MCP son del proyecto**; el framework solo declara dónde se conectan. Queda abierto un MCP transversal futuro definido por el framework.
 8. **Actualización opción A**: `specboot update` reemplaza los archivos del framework sin piedad; el dev no los toca (como `node_modules`); `docs/` es la única superficie de personalización.
-9. **Makefile y workflows los provee el framework (intocables)**; el proyecto los adapta vía `.specboot.json` + variables de entorno sin editarlos; los agentes los invocan según la tarea.
+9. **Makefile y plantillas de CI los provee el framework (intocables)**. Los workflows
+   del repositorio Specboot (`.github/workflows/**`) son **internos** del desarrollo del
+   framework y **no** se distribuyen ni se instalan. Los consumidores reciben vía
+   `templates/github/` únicamente el CI de consumidores (`consumer-ci.yml` →
+   `.github/workflows/ci.yml`) y el PR template; `deploy.example.yml` es una plantilla
+   opcional que `init`/`update` no instalan. `init`/`update` usan listas explícitas de
+   archivos, nunca copian `.github` completo y nunca instalan `release.yml`.
 10. **El paquete npm `@gabrielzavando/specboot` es la única forma de distribuir**; publicación automática por release (rama por cambio → merge a main → release cuando la versión esté lista); versionado SemVer.
 
 ## Arquitectura de distribución
@@ -38,7 +44,7 @@ en el tarball; cualquier archivo no listado queda fuera.
   (`docs/base-standards.md`, `docs/framework-contract.md`, `docs/docs-standard.md`,
   `docs/specboot-json-standard.md`, `docs/versioning-standard.md`,
   `docs/openspec-tasks-mandatory-steps.md`), `opencode.json`,
-  `AGENTS.md`, `Makefile`, `.github/workflows/`, `LICENSE` y `README.md`.
+  `AGENTS.md`, `Makefile`, `templates/github/`, `LICENSE` y `README.md`.
 - **NO** se publica `docs/` del proyecto (salvo los 6 estándares): al filtrarse por
   `files`, el repositorio de desarrollo de Specboot conserva sus propios `docs/`
   (backend/frontend/documentation/deploy standards, `api/`, `data-model/`,
@@ -182,7 +188,7 @@ Después de `init`, el proyecto ya tiene el puente `AGENTS.md`, los agentes/skil
 2. **Resolución del origen**: prefiere `--template <dir>` y cae por defecto al directorio del propio `specboot.sh` (el paquete instalado o el repo del framework en dogfooding). Si el origen resuelto es igual al directorio destino (dogfooding sobre sí mismo), avisa y no sincroniza.
 3. **Comparación de versiones**: lee `frameworkVersion` de `.specboot.json` y lo compara con la versión instalada del framework. Si la instalada es **menor**, rechaza con exit 1 (no se permite retroceder).
 4. **Salto major**: imprime `⚠️ Breaking change. Lee CHANGELOG/release notes de vX.Y.Z` y pide confirmación (o procede con `--yes`). En **minor/patch** el reemplazo es **silencioso**, sin advertencia.
-5. **Backup**: antes de reemplazar, copia los archivos actuales a `.specboot-backup-<timestamp>/` (salvo `--no-backup`) y añade el patrón `.specboot-backup-*` a `.gitignore` si existe.
+5. **Backup**: antes de reemplazar, copia los archivos actuales a `.specboot-backup-<timestamp>/` (salvo `--no-backup`) y añade el patrón `.specboot-backup-*` a `.gitignore` si existe. `--no-backup` es un **opt-out explícito** (ver §5.1 de `versioning-standard.md`): no es una excepción silenciosa — el respaldo del framework y del `ci.yml` se omite solo por decisión explícita del usuario; la verificación del reemplazo del `ci.yml` (coincidencia con la plantilla esperada, SC-013/SC-015) sigue aplicando.
 6. **Reemplazo sin piedad (opción A)** de `UPDATE_ITEMS[]`: `.opencode/commands`, `.opencode/agents`, `ai-specs`, `check-refs.sh`, `specboot.sh`, `validate-specboot.sh`, `templates/ci`, los 7 documentos estándar, `opencode.json`, `AGENTS.md`, `Makefile`, y los `.github/workflows/*` del framework (archivo por archivo). **Exclusiones deliberadas**: `README.md` y `LICENSE` del proyecto nunca se tocan; `.github/` se trata archivo por archivo para no borrar workflows del proyecto.
 7. **Nunca toca `docs/` del proyecto** (salvo los 5 estándares) ni el código (`backend/`, `frontend/`…).
 8. **Reescritura de `.specboot.json`**: si la versión cambió, actualiza `frameworkVersion` preservando el resto de campos; si es igual, el archivo queda intacto (modo reparación de intocables editados a mano).

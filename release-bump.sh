@@ -1,16 +1,27 @@
 #!/usr/bin/env bash
-# release-bump.sh — Atomic framework version bump (TICKET-AUDIT-3).
+# release-bump.sh — Atomic framework version bump (TICKET-AUDIT-3; contract
+# corrected per SPECBOOT-HARDEN-04 / REQ-006).
 #
-# Updates BOTH version sources in one operation:
-#   package.json   → "version": X.Y.Z
-#   .specboot.json → "frameworkVersion": X.Y.Z
+# Updates ALL version sources in ONE atomic operation — every file is parsed
+# and validated BEFORE anything is written, so a failure leaves no partially
+# updated versions:
+#   package.json      → "version": X.Y.Z
+#   package-lock.json → root "version": X.Y.Z AND packages[""].version: X.Y.Z
+#                        (skipped with a note when the file does not exist;
+#                        a corrupted lock aborts the bump without writes)
+#   .specboot.json    → "frameworkVersion": X.Y.Z
 #
 # Preconditions (aborts with exit 1, writing nothing):
 #   - argument must be a valid semver X.Y.Z (optional -suffix allowed)
 #   - CHANGELOG.md must contain a `## [X.Y.Z]` section
 #
 # The script operates on the CURRENT WORKING DIRECTORY (run it from the repo
-# root). It never creates git tags or commits — that belongs to /commit.
+# root). It NEVER creates git tags and NEVER commits: tag creation belongs to
+# the maintainer's POST-MERGE phase — after merging to main (with the local
+# main updated), the tag v{X.Y.Z} is created pointing exactly at the main
+# commit that contains the bump, and pushed only with explicit authorization
+# (see docs/versioning-standard.md, "Política de tags"). Committing belongs
+# to /commit.
 #
 # Usage: bash release-bump.sh 0.9.0
 
@@ -38,14 +49,19 @@ if ! grep -qF "## [$VERSION]" CHANGELOG.md; then
   err "CHANGELOG.md has no '## [$VERSION]' section — write the changelog entry first"
 fi
 
-# --- Atomic bump: parse AND validate both files BEFORE writing anything ---
+# --- Atomic bump: parse AND validate ALL version files BEFORE writing anything ---
 node -e "
 const fs = require('fs');
 const v = process.argv[1];
 
-// 1. Read + parse both sources first: any failure here leaves the tree untouched.
+// 1. Read + parse ALL version sources first: any failure here (e.g. a
+//    corrupted package-lock.json) leaves the tree untouched.
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const boot = JSON.parse(fs.readFileSync('.specboot.json', 'utf8'));
+let lock = null;
+if (fs.existsSync('package-lock.json')) {
+  lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+}
 
 // 2. Reject downgrades/no-ops: target must be strictly greater (semver compare).
 const cmp = (a, b) => {
@@ -56,28 +72,25 @@ const cmp = (a, b) => {
 if (cmp(v, pkg.version) <= 0)
   throw new Error(\`target \${v} is not greater than current \${pkg.version} — downgrades are not allowed\`);
 
-// 3. Only now write, both files in the same validated run.
+// 3. Only now write, all files in the same validated run.
 pkg.version = v;
 boot.frameworkVersion = v;
 fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
 fs.writeFileSync('.specboot.json', JSON.stringify(boot, null, 2) + '\n');
 console.log('package.json → ' + v);
 console.log('.specboot.json → frameworkVersion ' + v);
+
+// 4. Lockfile sync (same validated run): root version + packages[\"\"] entry.
+if (lock) {
+  lock.version = v;
+  if (lock.packages && Object.prototype.hasOwnProperty.call(lock.packages, '')) {
+    lock.packages[''].version = v;
+  }
+  fs.writeFileSync('package-lock.json', JSON.stringify(lock, null, 2) + '\n');
+  console.log('package-lock.json → ' + v);
+} else {
+  console.log('ℹ package-lock.json not found — skipped (bump continues without lock)');
+}
 " "$VERSION" || err "bump aborted: $VERSION not applied (see error above)"
 
-# --- After the files are written, create the local git tag (M-912). ---
-# Tagging is part of the bump contract: the tag records the version in git
-# history next to the bump commit. Push of the tag is the maintainer's action
-# after merging to main. Non-git dirs (unit-test fixtures) skip with a warning
-# and do NOT fail the bump.
-if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null 2>&1; then
-    echo "⚠️ tag v$VERSION already exists — leaving as is"
-  else
-    git tag "v$VERSION" && echo "✅ Tag v$VERSION created (push it after merging to main)"
-  fi
-else
-  echo "⚠️ not a git repository — tag v$VERSION skipped"
-fi
-
-echo "✅ Bump complete: $VERSION (committing belongs to /commit)"
+echo "✅ Bump complete: $VERSION (committing belongs to /commit; the tag belongs to the post-merge phase)"

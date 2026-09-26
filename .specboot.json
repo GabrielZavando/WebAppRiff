@@ -1,5 +1,5 @@
 {
-  "frameworkVersion": "0.10.0",
+  "frameworkVersion": "0.11.1",
   "name": "riff-catalogo-digital",
   "description": "Riff Catálogo Digital Headless — NestJS (BFF) + Astro (SSG) + Angular (admin)",
   "services": [
