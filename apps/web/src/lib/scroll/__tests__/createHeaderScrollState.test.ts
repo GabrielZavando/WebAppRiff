@@ -3,6 +3,7 @@ import {
   shouldBeCompact,
   initHeaderScrollState,
   DEFAULT_COMPACT_THRESHOLD,
+  type InitHeaderScrollStateOptions,
 } from '@/lib/scroll/createHeaderScrollState';
 
 describe('shouldBeCompact', () => {
@@ -106,6 +107,74 @@ describe('initHeaderScrollState', () => {
 
     host.setScrollY(5);
     host.dispatchScroll();
+    expect(target.attrs['data-scrolled']).toBe('true');
+  });
+});
+
+// --- astro:page-load re-initialization (view-transitions spec) ---
+
+/** Minimal surface of the object that dispatches Astro lifecycle events
+ * (browser default: `document`; Astro fires `astro:page-load` on the document
+ * after every client-side navigation). Contract for task 5.2: the lib will
+ * accept this `events` seam so the re-init is testable without a DOM. */
+interface PageLoadEvents {
+  addEventListener(type: 'astro:page-load', listener: () => void): void;
+  removeEventListener(type: 'astro:page-load', listener: () => void): void;
+}
+
+function createFakeEvents(): PageLoadEvents & {
+  listenerTypes: () => string[];
+  dispatch: () => void;
+} {
+  const listeners = new Set<() => void>();
+  const types: string[] = [];
+  return {
+    addEventListener(type: 'astro:page-load', listener: () => void) {
+      types.push(type);
+      listeners.add(listener);
+    },
+    removeEventListener(_type: 'astro:page-load', listener: () => void) {
+      listeners.delete(listener);
+    },
+    listenerTypes: () => [...types],
+    dispatch: () => {
+      listeners.forEach((listener) => listener());
+    },
+  };
+}
+
+describe('initHeaderScrollState — astro:page-load re-initialization (view-transitions)', () => {
+  it('subscribes to astro:page-load and re-applies the compact state on dispatch', () => {
+    const host = createFakeHost(0);
+    const target = createTargetMock();
+    const events = createFakeEvents();
+    // `events` becomes part of InitHeaderScrollStateOptions in task 5.2
+    // (browser default `document`); the intersection keeps this test fully
+    // typed until the option lands in the lib.
+    const options: InitHeaderScrollStateOptions & { events: PageLoadEvents } = {
+      host,
+      target,
+      events,
+    };
+
+    const cleanup = initHeaderScrollState(options);
+
+    // The initial page load applies the state immediately…
+    expect(target.attrs['data-scrolled']).toBe('false');
+    // …and the function also subscribes to Astro's client-side navigation
+    // lifecycle event (the Layout <script> does not re-run after a swap).
+    expect(events.listenerTypes()).toContain('astro:page-load');
+
+    // A client-side navigation (View Transitions swap) re-fires the event;
+    // the compact state must be re-applied from the current scroll position.
+    host.setScrollY(400);
+    events.dispatch();
+    expect(target.attrs['data-scrolled']).toBe('true');
+
+    // Cleanup detaches the lifecycle listener as well.
+    cleanup();
+    host.setScrollY(0);
+    events.dispatch();
     expect(target.attrs['data-scrolled']).toBe('true');
   });
 });
