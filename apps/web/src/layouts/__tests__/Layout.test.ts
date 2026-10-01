@@ -105,6 +105,20 @@ describe('Layout — default mode (no hero shell)', () => {
   });
 });
 
+describe('Layout — global View Transitions (view-transitions spec)', () => {
+  it('renders the <ClientRouter /> component (astro:transitions) inside the <head>', async () => {
+    const html = await renderDefaultLayout();
+    const head = html.match(/<head>([\s\S]*?)<\/head>/)?.[1] ?? '';
+    // Astro 7 <ClientRouter /> (astro:transitions) renders two static <meta>
+    // markers — `astro-view-transitions-enabled` and
+    // `astro-view-transitions-fallback` — which are the stable probe that the
+    // client-side router is active on this page (verified against
+    // node_modules/astro/components/ClientRouter.astro).
+    expect(head).toMatch(/<meta[^>]*name="astro-view-transitions-enabled"[^>]*>/);
+    expect(head).toMatch(/<meta[^>]*name="astro-view-transitions-fallback"[^>]*>/);
+  });
+});
+
 type LayoutSearchProps = {
   hero?: boolean;
   showSearch?: boolean;

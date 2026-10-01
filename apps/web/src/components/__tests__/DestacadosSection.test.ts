@@ -223,7 +223,7 @@ describe('DestacadosSection — card content', () => {
   });
 });
 
-describe('DestacadosSection — card CTA (outline primary "Cotizar")', () => {
+describe('DestacadosSection — card CTA (outline primary "Ver detalles")', () => {
   it('each card CTA links to /productos/{slug}', async () => {
     const html = await render();
     forEachCard(html, (card, product) => {
@@ -231,12 +231,13 @@ describe('DestacadosSection — card CTA (outline primary "Cotizar")', () => {
     });
   });
 
-  it('each card CTA visible text is exactly "Cotizar" (not SOLICITAR COTIZACIÓN)', async () => {
+  it('[SC-003] each card CTA visible text is exactly "Ver detalles" (not Cotizar or SOLICITAR COTIZACIÓN)', async () => {
     const html = await render();
     forEachCard(html, (card) => {
       const a = card.match(/<a\s[^>]*>[\s\S]*?<\/a>/);
       if (!a) throw new Error('card CTA <a> not found');
-      expect(a[0]).toContain('Cotizar');
+      expect(a[0]).toContain('Ver detalles');
+      expect(a[0]).not.toContain('Cotizar');
       expect(a[0]).not.toContain('SOLICITAR COTIZACIÓN');
       expect(a[0]).not.toContain('Cotización');
     });
@@ -334,9 +335,9 @@ describe('DestacadosSection — content config', () => {
     const titles = baseProps.products.map((p) => p.titulo);
     expect(titles).toEqual([
       'Antiincrustante Bimaks 420 para Ósmosis Inversa (Agua Salobre)',
-      'Flujómetro Universal',
+      'Medidor Electromagnético Fullmag HA',
       'Medidor Ultrasónico Doppler Portátil Fullsonic (No Invasivo)',
-      'MWN – MEDIDOR INDUSTRIAL PARA AGUA FRÍA LIMPIA – MEDIDOR TIPO WOLTMAN',
+      'Medidor de Flujo Riff Turbine Pro',
     ]);
   });
 

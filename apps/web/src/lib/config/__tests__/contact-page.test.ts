@@ -45,11 +45,11 @@ describe('CONTACT_FORM_CONFIG', () => {
 });
 
 describe('CONTACT_PAGE_CONTENT.bar', () => {
-  it('uses the canonical Riff phone and email constants', () => {
+  it('[SC-001] uses the canonical Riff phone and email constants', () => {
     expect(CONTACT_PAGE_CONTENT.bar.phone).toBe('+56 2 29079067');
-    expect(CONTACT_PAGE_CONTENT.bar.email).toBe('contacto@riff.cl');
+    expect(CONTACT_PAGE_CONTENT.bar.email).toBe('contacto@somosriff.cl');
     expect(CONTACT_PAGE_CONTENT.bar.phoneHref).toBe('tel:+56229079067');
-    expect(CONTACT_PAGE_CONTENT.bar.emailHref).toBe('mailto:contacto@riff.cl');
+    expect(CONTACT_PAGE_CONTENT.bar.emailHref).toBe('mailto:contacto@somosriff.cl');
   });
 });
 

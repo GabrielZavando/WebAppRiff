@@ -51,6 +51,9 @@ export const SERVICIOS_PAGE_HERO: Readonly<ServicesHeroProps> = {
  * The four service cards in render order.
  *
  * `number` is the 1-based ordinal rendered as a two-digit badge ("01"…"04").
+ * `slug` is the kebab-case scroll anchor of the card on /servicios
+ * (`/servicios#{slug}`), 1:1 with the home `SERVICES_DATA` slugs so the home
+ * CTAs can deep-link to each service (SC-002/SC-008).
  * `intro` (optional) is the lead-in paragraph above the `bullets` check-list on
  * cards 01, 02 and 03. `bullets` (optional) render with a `lucide:check` icon on
  * all four cards. `tags` (optional) render as a pill row and remain supported by
@@ -58,6 +61,7 @@ export const SERVICIOS_PAGE_HERO: Readonly<ServicesHeroProps> = {
  */
 export const SERVICIOS_PAGE_SERVICES: readonly ServicePageService[] = [
   {
+    slug: 'medicion-en-edificios',
     number: 1,
     sector: 'SECTOR RESIDENCIAL/COMERCIAL',
     title: 'Medición en Edificios',
@@ -77,6 +81,7 @@ export const SERVICIOS_PAGE_SERVICES: readonly ServicePageService[] = [
     ],
   },
   {
+    slug: 'medicion-industrial',
     number: 2,
     sector: 'SECTOR INDUSTRIAL',
     title: 'Medición Industrial',
@@ -96,6 +101,7 @@ export const SERVICIOS_PAGE_SERVICES: readonly ServicePageService[] = [
     ],
   },
   {
+    slug: 'obras-y-proyectos',
     number: 3,
     sector: 'INGENIERÍA & CONSTRUCCIÓN',
     title: 'Obras y Proyectos',
@@ -111,6 +117,7 @@ export const SERVICIOS_PAGE_SERVICES: readonly ServicePageService[] = [
     ],
   },
   {
+    slug: 'tratamiento-de-agua',
     number: 4,
     sector: 'QUÍMICA & PROCESOS',
     title: 'Tratamiento de Agua y Desalinización',

@@ -225,6 +225,20 @@ describe('ServiceCard — flat design tokens', () => {
   });
 });
 
+describe('ServiceCard — anchor id (SC-002/SC-005)', () => {
+  it('renders id={slug} on the root <article>', async () => {
+    const html = await render({ ...cardPlain, slug: 'medicion-en-edificios' });
+    const article = html.match(/<article[^>]*>/)![0];
+    expect(article).toContain('id="medicion-en-edificios"');
+  });
+
+  it('root <article> carries a scroll-margin utility compensating the sticky header', async () => {
+    const html = await render();
+    const article = html.match(/<article[^>]*>/)![0];
+    expect(article).toMatch(/scroll-mt-/);
+  });
+});
+
 describe('ServiceCard — snapshot', () => {
   it('matches the snapshot (card with bullets, image left)', async () => {
     const html = await render(cardWithBullets, 'left');

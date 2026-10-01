@@ -12,6 +12,10 @@ import { getSearchFormCategories } from '@/lib/api/categories';
 import { SITE_FOOTER_CONTENT } from '@/lib/config/footer';
 import { SITE_CREDITS_CONTENT } from '@/lib/config/site-credits';
 import { Picture } from 'astro:assets';
+// Client-side routing + View Transitions global (client decision in
+// web-home-contact-tweaks): <ClientRouter /> emits two <meta> markers in the
+// <head> that enable the Astro router on every page of the site.
+import { ClientRouter } from 'astro:transitions';
 import defaultHeroImage from '@/assets/img/banner_home.webp';
 import type { HeaderProps } from '@/lib/types/header';
 import type { SearchFormProps } from '@/lib/types/search-form';
@@ -86,6 +90,8 @@ const searchFormProps: SearchFormProps = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/png" href="/logo_riff.png" sizes="32x32" />
+    <!-- Global client-side routing + View Transitions (web-home-contact-tweaks). -->
+    <ClientRouter />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
