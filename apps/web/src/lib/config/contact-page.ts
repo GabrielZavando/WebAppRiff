@@ -60,14 +60,15 @@ export const CONTACT_FORM_CONFIG: Readonly<ContactFormConfig> = {
  *
  * Hardcoded (not read from `import.meta.env` via `getContactInfo`) so the
  * contact page has a deterministic, always-available phone/email regardless of
- * deploy env (consistent with `cotizacion.astro`, which also hardcodes
- * `+56 2 29079067` / `contacto@riff.cl`). Social links still reuse the shared
+ * deploy env. `contacto@somosriff.cl` is the site's single canonical inbox; the
+ * /cotizacion page does not expose an email (it renders only the support phone
+ * via `CotizacionSupport.astro`). Social links still reuse the shared
  * `getSocialLinks(getContactInfo())` source of truth (design.md Decision 5).
  */
 const CONTACT_PHONE_DISPLAY = '+56 2 29079067';
 const CONTACT_PHONE_HREF = 'tel:+56229079067';
-const CONTACT_EMAIL = 'contacto@riff.cl';
-const CONTACT_EMAIL_HREF = 'mailto:contacto@riff.cl';
+const CONTACT_EMAIL = 'contacto@somosriff.cl';
+const CONTACT_EMAIL_HREF = 'mailto:contacto@somosriff.cl';
 
 /** Hero section content for the contact page. */
 export const CONTACT_HERO: Readonly<ContactHeroProps> = {

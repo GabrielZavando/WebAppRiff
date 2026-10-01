@@ -41,6 +41,10 @@ import type { ImageMetadata } from 'astro';
  * `bullets` and `tags` are optional; when absent the card omits those blocks.
  */
 export interface ServicePageService {
+  /** Kebab-case slug, e.g. "medicion-en-edificios". Scroll anchor of the card
+   * on /servicios (`/servicios#{slug}`): the home `SERVICES_DATA` CTAs
+   * deep-link to it (SC-002/SC-008), so it MUST match the home slugs 1:1. */
+  readonly slug: string;
   /** 1-based ordinal, e.g. 1. Rendered as a two-digit badge ("01"). */
   readonly number: number;
   /** Sector label, e.g. "SECTOR INDUSTRIAL" (rendered uppercase primary). */

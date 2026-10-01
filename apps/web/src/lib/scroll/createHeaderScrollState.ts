@@ -2,13 +2,19 @@
  * Scroll-state controller for the compact site header.
  *
  * Pure, dependency-free and SSR-safe: it only reads `window`/`document` when
- * they exist and can be fully driven by injected `host`/`target` fakes in a
- * Node test environment (no jsdom dependency). The UI reacts to the
+ * they exist and can be fully driven by injected `host`/`target`/`events`
+ * fakes in a Node test environment (no jsdom dependency). The UI reacts to the
  * `data-scrolled` attribute toggled on `document.body` (see header-scroll.css).
  *
- * Why a custom `host`/`target` seam: keeps `initHeaderScrollState` testable
- * without a DOM and avoids touching `window` during SSG render. The Layout
- * calls it with no arguments, so the browser defaults apply in production.
+ * View-transitions resilience: besides the initial load, the compact state is
+ * re-applied on Astro's `astro:page-load` lifecycle event (fired on
+ * `document` after every client-side navigation), so it survives the body
+ * swaps performed by the global `<ClientRouter />`.
+ *
+ * Why custom `host`/`target`/`events` seams: keeps `initHeaderScrollState`
+ * testable without a DOM and avoids touching `window` during SSG render. The
+ * Layout calls it with no arguments, so the browser defaults apply in
+ * production.
  */
 
 /** Scroll position (in px) above which the header enters its compact state. */
@@ -31,6 +37,16 @@ export interface ScrollStateTarget {
   setAttribute(name: string, value: string): void;
 }
 
+/**
+ * Minimal surface of the object that dispatches Astro lifecycle events.
+ * Browser default: `document`, where Astro fires `astro:page-load` after every
+ * client-side navigation (View Transitions). Injected as a seam in tests.
+ */
+export interface PageLoadEvents {
+  addEventListener(type: 'astro:page-load', listener: () => void): void;
+  removeEventListener(type: 'astro:page-load', listener: () => void): void;
+}
+
 export interface InitHeaderScrollStateOptions {
   /** Scroll threshold in px. Compact when `scrollY > threshold`. Default 0. */
   threshold?: number;
@@ -38,6 +54,11 @@ export interface InitHeaderScrollStateOptions {
   host?: ScrollStateHost;
   /** Element that receives `data-scrolled` (defaults to `document.body`). */
   target?: ScrollStateTarget;
+  /**
+   * Astro lifecycle event source (defaults to `document`, where Astro fires
+   * `astro:page-load` after every client-side navigation). Injected for tests.
+   */
+  events?: PageLoadEvents;
 }
 
 /**
@@ -51,7 +72,10 @@ export function shouldBeCompact(scrollY: number, threshold: number = DEFAULT_COM
 /**
  * Wires a passive, rAF-throttled scroll listener that toggles `data-scrolled`
  * (`"true"`/`"false"`) on the target based on the current scroll position.
- * Returns a cleanup function that detaches the listener.
+ * Additionally re-applies the state on Astro's `astro:page-load` lifecycle
+ * event (default source: `document`) so it survives client-side navigations
+ * triggered by View Transitions.
+ * Returns a cleanup function that detaches both listeners.
  */
 export function initHeaderScrollState(options: InitHeaderScrollStateOptions = {}): () => void {
   const threshold = options.threshold ?? DEFAULT_COMPACT_THRESHOLD;
@@ -70,6 +94,10 @@ export function initHeaderScrollState(options: InitHeaderScrollStateOptions = {}
     throw new Error('initHeaderScrollState: no scroll target available (document.body is undefined).');
   }
 
+  const events =
+    options.events ??
+    (typeof document !== 'undefined' ? (document as unknown as PageLoadEvents) : undefined);
+
   let ticking = false;
 
   const update = (): void => {
@@ -86,9 +114,19 @@ export function initHeaderScrollState(options: InitHeaderScrollStateOptions = {}
     }
   };
 
+  // A client-side navigation (View Transitions swap) changes the body content,
+  // so the compact state must be recomputed from the current scroll position.
+  // Direct (not rAF-throttled): `astro:page-load` fires once per navigation,
+  // not in a continuous stream like scroll events.
+  const onPageLoad = (): void => update();
+
   // Apply the initial state without waiting for the first scroll event.
   update();
   host.addEventListener('scroll', onScroll, { passive: true });
+  events?.addEventListener('astro:page-load', onPageLoad);
 
-  return () => host.removeEventListener('scroll', onScroll);
+  return () => {
+    host.removeEventListener('scroll', onScroll);
+    events?.removeEventListener('astro:page-load', onPageLoad);
+  };
 }
