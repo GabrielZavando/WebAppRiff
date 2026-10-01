@@ -1,19 +1,15 @@
 {
   "schema_version": 1,
-  "change": "cap-logo-shrink",
-  "ticket_id": "LOGO-SIZE",
+  "change": "coolify-deploy",
+  "ticket_id": "cicd-coolify-deploy",
   "verdict": "SHIP",
   "confidence": 0.85,
-  "timestamp": "2026-09-19T19:42:00Z",
-  "findings": { "total": 3, "critical": 0, "warnings": 0, "info": 2, "discarded": 0 },
-  "notes": {
-    "warn_findings": [
-      { "finding": "F1 RESUELTO: max-h-full incumplía SC-001 en 640–1023px", "file": "apps/web/src/components/Header.astro", "recommendation": "Resuelto con sm:max-h-none + E2E de banda 800px; verificado 6/6" }
-    ],
-    "info_findings": [
-      { "finding": "Desktop transition over both max-width(none) and height(auto) endpoints is non-interpolable — snaps instead of animating 300ms" },
-      { "finding": "Cobertura de banda 640–1023px ahora incluida (E2E 800px); 1280px sigue cubierto" }
-    ],
-    "positives": ["No distortion; width:auto derives from aspect ratio", "R5 comment documents 100px + ratio equivalence", "Mobile 150px and prefers-reduced-motion preserved", "createHeaderScrollState.ts untouched", "Aspect math 330×134 → ~246px verified", "SC-001 now holds across all ≥640px via sm:max-h-none"]
+  "timestamp": "2026-10-01T23:28:13Z",
+  "findings": {
+    "total": 6,
+    "critical": 0,
+    "warnings": 2,
+    "info": 4,
+    "discarded": 0
   }
 }

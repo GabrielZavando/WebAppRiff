@@ -1,16 +1,19 @@
 {
   "schema_version": 1,
-  "change": "cap-logo-shrink",
-  "ticket_id": "LOGO-SIZE",
+  "change": "coolify-deploy",
+  "ticket_id": "cicd-coolify-deploy",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-09-20T00:40:32Z",
-  "tasks": { "total": 2, "passed": 2, "failed": 0, "untested": 0 },
+  "timestamp": "2026-10-01T22:30:45Z",
+  "tasks": { "total": 5, "passed": 4, "failed": 0, "untested": 1 },
   "scenarios": [
-    { "id": "SC-001", "test": "[SC-001] on scroll: logo shrinks to a 100px-tall cap on desktop; + desktop band 640–1023px (800px)", "status": "PASS" },
-    { "id": "SC-002", "test": "[SC-002] back at the top: everything reverts to the original state", "status": "PASS" },
-    { "id": "SC-003", "test": "[SC-003] on mobile: logo shrinks to 150px and the mobile menu opens above the compact header", "status": "PASS" },
-    { "id": "SC-004", "test": "[SC-004] respects reduced motion: transitions are disabled", "status": "PASS" }
+    { "id": "SC-001", "test": "[SC-001] deploy workflow triggers on push to main without legacy gating", "status": "PASS" },
+    { "id": "SC-002", "test": "[SC-002] deploy workflow invokes both Coolify staging webhooks via curl POST with Bearer", "status": "PASS" },
+    { "id": "SC-003", "test": "[SC-003] deploy workflow supports manual workflow_dispatch without DEPLOY_ENABLED", "status": "PASS" },
+    { "id": "SC-004", "test": "[SC-004] deploy workflow does not run on pull requests or tag pushes", "status": "PASS" },
+    { "id": "SC-005", "test": "[SC-005] missing webhook secret skips the step with a visible warning", "status": "PASS" },
+    { "id": "SC-006", "test": "[SC-006] webhook failures are visible via curl --fail", "status": "PASS" }
   ],
-  "unit_tests": "Header.test.ts 21/21 PASS (incluye assert sm:max-h-none)"
+  "unit_tests": "14/14 PASS (npx vitest 4.1.11 --reporter=verbose, corrida del agente verify; 2 archivos: deploy-workflow + deploy-standards-docs)",
+  "notes": "Evidencia ejecutable real (npx vitest run --reporter=verbose, 14/14 PASS, todos los escenarios con evidencia fuerte [SC-NNN]). T3 untested: la verificación end-to-end (merge → dispatch → deploys Coolify en verde) cierra post-merge por diseño (git push denegado para build; el workflow nuevo aún no existe en el ref remoto)."
 }
