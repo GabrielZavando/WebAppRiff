@@ -1,8 +1,9 @@
-name: Deploy
+name: Deploy to Coolify
 
 on:
   push:
-    tags: ['v*']
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -10,70 +11,27 @@ permissions:
 
 jobs:
   deploy-staging:
-    name: Deploy to staging
+    name: Deploy frontends staging (web + admin)
     runs-on: ubuntu-latest
-    if: vars.DEPLOY_ENABLED == 'true'
     steps:
-      - uses: actions/checkout@v4
-      - name: Check Dockerfile exists
-        id: dockerfile
-        if: ${{ hashFiles('Dockerfile') != '' }}
-        run: echo "dockerfile-present=true" >> "$GITHUB_OUTPUT"
-      - name: Build image
-        if: steps.dockerfile.outputs.dockerfile-present == 'true'
-        run: docker build -t ${{ vars.DOCKER_REPO }}:staging .
-      - name: Deploy via SSH
-        if: steps.dockerfile.outputs.dockerfile-present == 'true'
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ vars.DEPLOY_HOST }}
-          username: ${{ vars.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            docker pull ${{ vars.DOCKER_REPO }}:staging
-            docker stop app-staging || true
-            docker rm app-staging || true
-            docker run -d --name app-staging ${{ vars.DOCKER_REPO }}:staging
+      - name: Trigger riff-web-staging deploy
+        env:
+          WEBHOOK_URL: ${{ secrets.COOLIFY_WEB_STAGING_WEBHOOK_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ] || [ -z "$COOLIFY_API_TOKEN" ]; then
+            echo "::warning::COOLIFY_WEB_STAGING_WEBHOOK_URL or COOLIFY_API_TOKEN is not set - skipping riff-web-staging deploy"
+            exit 0
+          fi
+          curl --fail --silent --show-error --request POST "$WEBHOOK_URL" -H "Authorization: Bearer $COOLIFY_API_TOKEN" --max-time 60
 
-  deploy-production:
-    name: Deploy to production
-    runs-on: ubuntu-latest
-    if: vars.DEPLOY_ENABLED == 'true' && startsWith(github.ref, 'refs/tags/v')
-    steps:
-      - uses: actions/checkout@v4
-      - name: Check Dockerfile exists
-        id: dockerfile
-        if: ${{ hashFiles('Dockerfile') != '' }}
-        run: echo "dockerfile-present=true" >> "$GITHUB_OUTPUT"
-      - name: Build image
-        if: steps.dockerfile.outputs.dockerfile-present == 'true'
-        run: docker build -t ${{ vars.DOCKER_REPO }}:production .
-      - name: Deploy via SSH
-        if: steps.dockerfile.outputs.dockerfile-present == 'true'
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ vars.DEPLOY_HOST }}
-          username: ${{ vars.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            docker pull ${{ vars.DOCKER_REPO }}:production
-            docker stop app-prod || true
-            docker rm app-prod || true
-            docker run -d --name app-prod ${{ vars.DOCKER_REPO }}:production
-
-  rollback:
-    name: Rollback production
-    runs-on: ubuntu-latest
-    if: failure() && vars.DEPLOY_ENABLED == 'true' && startsWith(github.ref, 'refs/tags/v')
-    steps:
-      - uses: actions/checkout@v4
-      - name: Rollback via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ vars.DEPLOY_HOST }}
-          username: ${{ vars.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            docker stop app-prod || true
-            docker rm app-prod || true
-            docker run -d --name app-prod ${{ vars.DOCKER_REPO }}:previous
+      - name: Trigger riff-admin-staging deploy
+        env:
+          WEBHOOK_URL: ${{ secrets.COOLIFY_ADMIN_STAGING_WEBHOOK_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ] || [ -z "$COOLIFY_API_TOKEN" ]; then
+            echo "::warning::COOLIFY_ADMIN_STAGING_WEBHOOK_URL or COOLIFY_API_TOKEN is not set - skipping riff-admin-staging deploy"
+            exit 0
+          fi
+          curl --fail --silent --show-error --request POST "$WEBHOOK_URL" -H "Authorization: Bearer $COOLIFY_API_TOKEN" --max-time 60
