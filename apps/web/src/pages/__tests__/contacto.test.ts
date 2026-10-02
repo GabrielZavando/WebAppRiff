@@ -26,11 +26,11 @@ describe('Contact page composition', () => {
     expect(clean).toContain('action="/api/v1/contacts"');
   });
 
-  it('renders the contact bar with the phone anchor', async () => {
+  it('[SC-001] renders the contact bar with the phone anchor', async () => {
     const html = await render();
     const clean = stripComments(html);
     expect(clean).toContain('href="tel:+56229079067"');
-    expect(clean).toContain('contacto@riff.cl');
+    expect(clean).toContain('contacto@somosriff.cl');
   });
 
   it('does not introduce a second header landmark', async () => {

@@ -6,6 +6,7 @@ import { Icon } from 'astro-icon/components';
 interface Props extends ServiceCardProps {}
 
 const {
+  slug,
   number,
   sector,
   title,
@@ -26,8 +27,15 @@ const hasTags = Array.isArray(tags) && tags.length > 0;
 
 // Flat white surface, no rounded corners, no shadow. `md:flex-row-reverse`
 // flips the image to the right for cards 02 and 04 (design.md § Decision 4).
+// `scroll-mt-72 md:scroll-mt-40 lg:scroll-mt-44` offsets the anchor target so
+// the card lands below the sticky Header + SearchForm group (SC-002/SC-005):
+// 72 (288px) covers the mobile stacked search bar (~269px), 40 (160px) the md
+// row layout (80px header + ~77px search) and 44 (176px) the lg+ header
+// (96px + ~77px search). Heights are constant in the compact scroll state
+// (header-scroll.css only swaps colors/shadow/logo size).
 const cardClass = [
   'bg-white border border-border flex flex-col md:flex-row overflow-hidden',
+  'scroll-mt-72 md:scroll-mt-40 lg:scroll-mt-44',
   isImageRight ? 'md:flex-row-reverse' : '',
 ]
   .join(' ')
@@ -47,6 +55,9 @@ const cardClass = [
       no shadow (flat design). Flex column on mobile (image stacked on top),
       flex row side-by-side from md+. imagePosition === 'right' adds the
       md:flex-row-reverse utility so the image sits on the right (cards 02, 04).
+      Carries the scroll anchor id={slug} and a scroll-mt-* utility so
+      /servicios#{slug} deep links land below the sticky header group
+      (SC-002/SC-005).
     - Image: astro:assets (sharp-processed WebP/AVIF), full-width on mobile,
       half-width from md+, aspect-[4/3] object-cover, lazy-loaded.
      - Content block: sector label (text-primary uppercase), two-digit number
@@ -61,7 +72,7 @@ const cardClass = [
   bg-accent / bg-accent-dark. Strict flat design — no rounded-* and no shadow-*
   in the static state.
 -->
-<article class={cardClass}>
+<article id={slug} class={cardClass}>
   <Image
     src={image}
     alt={imageAlt}

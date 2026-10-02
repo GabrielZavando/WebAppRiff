@@ -225,10 +225,10 @@ describe('ServicesSection — card content', () => {
 });
 
 describe('ServicesSection — card CTA (design-system solid button)', () => {
-  it('each card CTA links to /servicios', async () => {
+  it('each card CTA links to the service anchor /servicios#{slug}', async () => {
     const html = await render();
-    forEachCard(html, (card) => {
-      expect(getCardCta(card)).toContain('href="/servicios"');
+    forEachCard(html, (card, service) => {
+      expect(getCardCta(card)).toContain(`href="/servicios#${service.slug}"`);
     });
   });
 
@@ -414,12 +414,6 @@ describe('ServicesSection — content config', () => {
       'Desarrollo de infraestructura para sistemas de medición y control.',
       'Diseño y optimización de plantas de tratamiento con tecnología de vanguardia.',
     ]);
-  });
-
-  it('every SERVICE href equals /servicios', async () => {
-    for (const service of baseProps.services) {
-      expect(service.href).toBe('/servicios');
-    }
   });
 
   it('every SERVICE imageAlt is a non-empty string', async () => {

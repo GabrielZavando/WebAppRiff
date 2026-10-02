@@ -119,12 +119,12 @@ describe('Product detail page', () => {
     expect(html).toContain('Minería');
   });
 
-  it('renders both CTAs with correct hrefs', async () => {
+  it('[SC-004] renders both CTAs with correct hrefs', async () => {
     const html = await render();
     expect(html).toContain('SOLICITAR COTIZACIÓN');
     expect(html).toContain('CONTACTAR ASESOR');
     expect(html).toContain('href="/cotizacion?producto=ablandador-para-agua"');
-    expect(html).toContain('href="mailto:contacto@riff.cl"');
+    expect(html).toContain('href="mailto:contacto@somosriff.cl"');
   });
 
   it('renders the product gallery with the main image', async () => {

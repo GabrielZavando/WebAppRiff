@@ -30,10 +30,10 @@ describe('ContactBar — phone and email', () => {
     expect(html).toContain('+56 2 29079067');
   });
 
-  it('renders a clickable mailto anchor', async () => {
+  it('[SC-001] renders a clickable mailto anchor', async () => {
     const html = await render();
-    expect(html).toContain('href="mailto:contacto@riff.cl"');
-    expect(html).toContain('contacto@riff.cl');
+    expect(html).toContain('href="mailto:contacto@somosriff.cl"');
+    expect(html).toContain('contacto@somosriff.cl');
   });
 });
 
@@ -116,7 +116,7 @@ describe('ContactBar — background and width (below-form correction)', () => {
     const leftGroup = section.match(/<div class="flex items-center gap-2 sm:gap-8">[\s\S]*?<\/div>/);
     expect(leftGroup, 'phone/email left group').toBeTruthy();
     expect(leftGroup![0]).toContain('tel:+56229079067');
-    expect(leftGroup![0]).toContain('contacto@riff.cl');
+    expect(leftGroup![0]).toContain('contacto@somosriff.cl');
     // The social nav is a sibling AFTER the left group (right side)
     const leftEnd = section.indexOf(leftGroup![0]) + leftGroup![0].length;
     const navIndex = section.indexOf('aria-label="Redes sociales"');

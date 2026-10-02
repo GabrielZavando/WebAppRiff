@@ -71,7 +71,7 @@ export interface ContactFormProps {
 export interface ContactBarProps {
   /** Phone number in display format, e.g. "+56 2 29079067". */
   readonly phone: string;
-  /** Email address in display format, e.g. "contacto@riff.cl". */
+  /** Email address in display format, e.g. "contacto@somosriff.cl". */
   readonly email: string;
   /** Clickable `tel:` href built from the phone number. */
   readonly phoneHref: string;

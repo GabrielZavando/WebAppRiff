@@ -13,11 +13,11 @@
  *   has no badge icon. The only icon used is the decorative `lucide:arrow-right`
  *   inside the CTA, hardcoded in the component (no `ServiceIconName` union
  *   needed yet).
- * - § Decision 9 / 10: each card has a per-card CTA and there is an extra
- *   centered "Ver todos los servicios" bottom CTA; both CTAs share the same
- *   `cta` block (label + href) in this MVP. Per-service detail routes are
- *   future work, but `slug` is already part of the contract so no breaking
- *   change will be needed.
+ * - § Decision 9 / 10: each card has a per-card CTA (label from `ctaLabel`,
+ *   target derived from `slug` as `/servicios#{slug}`) and there is an extra
+ *   centered "Ver todos los servicios" bottom CTA (the shared `cta` block).
+ *   Per-service detail routes are future work, but `slug` is already part of
+ *   the contract so no breaking change will be needed.
  */
 
 import type { ImageMetadata } from 'astro';
@@ -33,17 +33,17 @@ import type { ImageMetadata } from 'astro';
  * sitio"). The image is rendered full-color (POST-APPLY UPDATE: the grayscale
  * filter was removed per client request, see design.md § Decision 8).
  *
- * `href` defaults to the generic `/servicios` page in this change; the
- * per-service detail routes `/servicios/{slug}` are future work, but `slug`
- * is already part of the contract so no breaking change will be needed
- * (design.md § Trade-offs).
+ * The per-card CTA target is derived from `slug` as `/servicios#{slug}` (the
+ * scroll anchor of the matching card on /servicios); the redundant generic
+ * `href` field was removed — `slug` is the single source of truth for the CTA
+ * destination (design.md § Decision 3).
  *
  * `ctaLabel` is the per-card CTA text ("Ver detalles") — distinct from the
  * bottom CTA label "Ver todos los servicios" (POST-APPLY UPDATE, design.md
  * § Decision 9 / Sub-decision 9a superseded).
  */
 export interface Service {
-  /** Kebab-case slug, e.g. "medicion-en-edificios". Reserved for detail routes. */
+  /** Kebab-case slug, e.g. "medicion-en-edificios"; the card CTA targets the /servicios scroll anchor `/servicios#{slug}`. */
   readonly slug: string;
   /** Card title, e.g. "Medición en Edificios", rendered as `<h4>`. */
   readonly title: string;
@@ -53,16 +53,16 @@ export interface Service {
   readonly image: ImageMetadata;
   /** Descriptive alt text (not a repeat of `title`). */
   readonly imageAlt: string;
-  /** Destination of the card CTA link, e.g. `/servicios`. */
-  readonly href: string;
   /** Per-card CTA visible text, e.g. "Ver detalles". */
   readonly ctaLabel: string;
 }
 
 /**
- * CTA button rendered both per-card (smaller, `px-6 py-3 text-xs`) and once
- * below the grid (larger, `px-8 py-4 text-sm`), both pointing to `/servicios`
- * in this MVP (design.md § Decisions 9, 10).
+ * Bottom CTA rendered once below the grid ("Ver todos los servicios", larger,
+ * `px-8 py-4 text-sm`), pointing to `/servicios`. The per-card CTAs are NOT
+ * part of this block: their label comes from `Service.ctaLabel` and their
+ * target derives from `Service.slug` as `/servicios#{slug}` (design.md
+ * § Decisions 9, 10).
  */
 export interface ServicesSectionCta {
   /** Button label, e.g. "Ver todos los servicios". */
@@ -87,6 +87,6 @@ export interface ServicesSectionProps {
   readonly description: string;
   /** Service cards in render order; exactly 4 in the home config. */
   readonly services: readonly Service[];
-  /** Shared CTA for the per-card buttons and the bottom centered button. */
+  /** Bottom CTA ("Ver todos los servicios"); per-card CTAs derive their label and target from `Service.ctaLabel` + `Service.slug`. */
   readonly cta: ServicesSectionCta;
 }

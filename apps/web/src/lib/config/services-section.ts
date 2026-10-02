@@ -39,11 +39,11 @@ import osmosisImg from '@/assets/img/osmosis-inversa.jpg';
  * Images follow the `image-assets` convention (frontend-standards § "Imágenes
  * del sitio"): every optimizable site image lives in `assets/img/` and is
  * consumed via `astro:assets`. The `imageAlt` describes what the photo shows
- * (never repeats the card title). `href` is generic `/servicios` by design
- * (design.md § Trade-offs); per-service routes are future work (`slug` is
- * already part of the contract). `ctaLabel` ("Ver detalles") is the per-card
- * CTA text, distinct from the bottom CTA label "Ver todos los servicios"
- * (POST-APPLY UPDATE, design.md § Decision 9).
+ * (never repeats the card title). The card CTA target derives from `slug` as
+ * `/servicios#{slug}`; the redundant generic `href` field was removed (single
+ * source = slug, design.md § Decision 3). `ctaLabel` ("Ver detalles") is the
+ * per-card CTA text, distinct from the bottom CTA label "Ver todos los
+ * servicios" (POST-APPLY UPDATE, design.md § Decision 9).
  */
 export const SERVICES_DATA: readonly Service[] = [
   {
@@ -53,7 +53,6 @@ export const SERVICES_DATA: readonly Service[] = [
       'Instalación y recambio de medidores de agua caliente en comunidades.',
     image: edificiosImg,
     imageAlt: 'Edificios residenciales con instalación de medidores de agua',
-    href: '/servicios',
     ctaLabel: 'Ver detalles',
   },
   {
@@ -63,7 +62,6 @@ export const SERVICES_DATA: readonly Service[] = [
       'Instalación y puesta en marcha de sistemas de medición de caudal.',
     image: medidoresImg,
     imageAlt: 'Medidores de agua instalados en infraestructura industrial',
-    href: '/servicios',
     ctaLabel: 'Ver detalles',
   },
   {
@@ -73,7 +71,6 @@ export const SERVICES_DATA: readonly Service[] = [
       'Desarrollo de infraestructura para sistemas de medición y control.',
     image: obrasImg,
     imageAlt: 'Planta de tratamiento de agua en operación',
-    href: '/servicios',
     ctaLabel: 'Ver detalles',
   },
   {
@@ -83,7 +80,6 @@ export const SERVICES_DATA: readonly Service[] = [
       'Diseño y optimización de plantas de tratamiento con tecnología de vanguardia.',
     image: osmosisImg,
     imageAlt: 'Sistema de osmosis inversa para tratamiento y desalinización de agua',
-    href: '/servicios',
     ctaLabel: 'Ver detalles',
   },
 ];

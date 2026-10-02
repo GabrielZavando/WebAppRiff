@@ -21,9 +21,9 @@ describe('DESTACADOS_SECTION_CONTENT', () => {
     const titles = FEATURED_PRODUCTS.map((p) => p.titulo);
     expect(titles).toEqual([
       'Antiincrustante Bimaks 420 para Ósmosis Inversa (Agua Salobre)',
-      'Flujómetro Universal',
+      'Medidor Electromagnético Fullmag HA',
       'Medidor Ultrasónico Doppler Portátil Fullsonic (No Invasivo)',
-      'MWN – MEDIDOR INDUSTRIAL PARA AGUA FRÍA LIMPIA – MEDIDOR TIPO WOLTMAN',
+      'Medidor de Flujo Riff Turbine Pro',
     ]);
   });
 
@@ -64,26 +64,29 @@ describe('DESTACADOS_SECTION_CONTENT', () => {
     // via astro:assets (sharp reads 300x300 even though the raw VP8X header
     // says 299x299 — the metadata assertions below use the sharp-reported
     // values, which is what ImageMetadata actually carries).
+    // design.md Decision 7: the Fullmag HA and Riff Turbine Pro cards reuse
+    // the freed local assets (flujometro-multiproposito.webp, MWN-DN50.webp)
+    // provisionally, pending the client's real product photos.
     const expectedBySlug: Record<string, { filename: string; format: string; width: number; height: number }> = {
-      'antiincrustante-bimaks-420': {
+      'antiincrustante-bimaks-420-para-osmosis-inversa-agua-salobre': {
         filename: 'antiincrustante-Bimaks.png',
         format: 'png',
         width: 400,
         height: 400,
       },
-      'flujometro-universal': {
+      'medidor-electromagnetico-fullmag-ha': {
         filename: 'flujometro-multiproposito.webp',
         format: 'webp',
         width: 300,
         height: 300,
       },
-      'medidor-ultrasonico-doppler-fullsonic': {
+      'medidor-ultrasonico-doppler-portatil-fullsonic-no-invasivo': {
         filename: 'FULLSONIC-DOPPLER-CONTABLE.webp',
         format: 'webp',
         width: 300,
         height: 300,
       },
-      'mwn-medidor-woltman-agua-fria': {
+      'medidor-de-flujo-riff-turbine-pro': {
         filename: 'MWN-DN50.webp',
         format: 'webp',
         width: 300,

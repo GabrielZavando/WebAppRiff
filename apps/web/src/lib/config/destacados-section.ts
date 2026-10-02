@@ -23,6 +23,14 @@ import mwnImg from '@/assets/img/MWN-DN50.webp';
  * on each build and the component's `object-contain` image mat frames any
  * source ratio.
  *
+ * Since the client decision of 2026-09-30 (see `web-home-contact-tweaks`
+ * design.md Decision 7), two of the four cards are provisional: the Fullmag HA
+ * card reuses `flujometro-multiproposito.webp` and the Riff Turbine Pro card
+ * reuses `MWN-DN50.webp` (the freed assets of the replaced products) while the
+ * client's real product photos are pending. Those cards carry an inline
+ * `PROVISIONAL image` comment and a truthful `imagenAlt` describing what the
+ * photo actually shows.
+ *
  * See `openspec/changes/destacados-section/design.md` for the rationale:
  * Decision 1 (dumb component), Decision 2 (hardcoded constant), Decision 3
  * (`FeaturedProduct` carries NO price fields — the client specified the
@@ -39,33 +47,38 @@ import mwnImg from '@/assets/img/MWN-DN50.webp';
  */
 export const FEATURED_PRODUCTS: readonly FeaturedProduct[] = [
   {
-    id: 'antiincrustante-bimaks-420',
+    id: 'antiincrustante-bimaks-420-para-osmosis-inversa-agua-salobre',
     titulo: 'Antiincrustante Bimaks 420 para Ósmosis Inversa (Agua Salobre)',
-    slug: 'antiincrustante-bimaks-420',
+    slug: 'antiincrustante-bimaks-420-para-osmosis-inversa-agua-salobre',
     imagen: antiincrustanteImg,
     imagenAlt: 'Bidón azul de antiincrustante Bimaks 420 para ósmosis inversa',
   },
   {
-    id: 'flujometro-universal',
-    titulo: 'Flujómetro Universal',
-    slug: 'flujometro-universal',
+    id: 'medidor-electromagnetico-fullmag-ha',
+    titulo: 'Medidor Electromagnético Fullmag HA',
+    slug: 'medidor-electromagnetico-fullmag-ha',
+    // PROVISIONAL image — client's real product photo pending (design.md Decision 7).
+    // Reuses the freed `flujometro-multiproposito.webp` asset; the alt describes
+    // what the photo actually shows (a multipurpose flow meter).
     imagen: flujometroImg,
-    imagenAlt: 'Flujómetro universal de alta precisión',
+    imagenAlt: 'Medidor de flujo multipropósito',
   },
   {
-    id: 'medidor-ultrasonico-doppler-fullsonic',
+    id: 'medidor-ultrasonico-doppler-portatil-fullsonic-no-invasivo',
     titulo: 'Medidor Ultrasónico Doppler Portátil Fullsonic (No Invasivo)',
-    slug: 'medidor-ultrasonico-doppler-fullsonic',
+    slug: 'medidor-ultrasonico-doppler-portatil-fullsonic-no-invasivo',
     imagen: fullsonicImg,
     imagenAlt: 'Medidor ultrasónico Doppler portátil Fullsonic no invasivo',
   },
   {
-    id: 'mwn-medidor-woltman-agua-fria',
-    titulo:
-      'MWN – MEDIDOR INDUSTRIAL PARA AGUA FRÍA LIMPIA – MEDIDOR TIPO WOLTMAN',
-    slug: 'mwn-medidor-woltman-agua-fria',
+    id: 'medidor-de-flujo-riff-turbine-pro',
+    titulo: 'Medidor de Flujo Riff Turbine Pro',
+    slug: 'medidor-de-flujo-riff-turbine-pro',
+    // PROVISIONAL image — client's real product photo pending (design.md Decision 7).
+    // Reuses the freed `MWN-DN50.webp` asset; the alt describes what the photo
+    // actually shows (a mechanical turbine-type flow meter).
     imagen: mwnImg,
-    imagenAlt: 'Medidor industrial tipo Woltman MWN para agua fría limpia',
+    imagenAlt: 'Medidor de flujo mecánico tipo turbina',
   },
 ];
 
