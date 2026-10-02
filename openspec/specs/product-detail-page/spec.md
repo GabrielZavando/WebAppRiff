@@ -3,9 +3,7 @@
 ## Purpose
 
 Define the product detail page at `/productos/[slug]` of the Riff Astro SSG site: build-time data sourcing (single product + categories baked into the static page), the image gallery with thumbnail selector, the specifications section, the static industrial applications section, the technical documentation section, and the CTA buttons. The page SHALL work without JavaScript (progressive enhancement) showing the first image and no gallery interaction.
-
-## ADDED Requirements
-
+## Requirements
 ### Requirement: Build-time data sourcing for single product
 
 The page SHALL obtain a single product at build time by calling `GET /api/v1/products/slug/:slug` through `apps/web/src/lib/api/products.ts`. The function `getProductBySlug(slug)` SHALL cache the result at module scope (one fetch per build) and SHALL return `null` on any fetch or parse error so that `astro build` never fails.
@@ -94,9 +92,11 @@ The page SHALL render the product information in this exact vertical order:
 4. **Specifications box** with the product's `atributos` displayed as a grid of icon+label pairs
 5. **CTA row** with two buttons:
    - "SOLICITAR COTIZACIÓN" → `/cotizacion?producto={slug}` (primary visual treatment)
-   - "CONTACTAR ASESOR" → `mailto:contacto@riff.cl` (secondary visual treatment)
+   - "CONTACTAR ASESOR" → `mailto:contacto@somosriff.cl` (secondary visual treatment)
 
 The category chip SHALL be omitted when the category is not found (e.g., `sin-categoria`).
+
+(MODIFIED in `web-home-contact-tweaks`: the "CONTACTAR ASESOR" mailto target changes from `mailto:contacto@riff.cl` to `mailto:contacto@somosriff.cl`.)
 
 #### Scenario: Full product info
 - **WHEN** the product has `titulo="Medidor Ultrasónico"`, `categoriaId="cat-fluidos"`, `descripcionBreve="..."`, and `atributos=[{nombre:"Precisión", valor:"±2%"}]`
@@ -111,6 +111,11 @@ The category chip SHALL be omitted when the category is not found (e.g., `sin-ca
 - **WHEN** the product has `categoriaId="sin-categoria"` and the categories list does not contain it
 - **THEN** the category chip is omitted
 - **AND** the rest of the info renders normally
+
+#### Scenario: Contact advisor CTA uses the somosriff.cl mailto
+- **WHEN** the product detail page renders with a product
+- **THEN** the rendered HTML contains an anchor with `href="mailto:contacto@somosriff.cl"` for the "CONTACTAR ASESOR" CTA
+- **AND** the rendered HTML does NOT contain `mailto:contacto@riff.cl`
 
 ### Requirement: Specifications box with attributes
 
@@ -225,3 +230,4 @@ The product detail page (`/productos/[slug].astro`) SHALL render `descripcionLar
 #### Scenario: Meta description stays plain text
 - **WHEN** `descripcionBreve='<b>corto</b>'` is used as the page meta description
 - **THEN** the meta content is `corto` with no tags
+

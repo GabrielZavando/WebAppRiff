@@ -20,7 +20,7 @@ Each card SHALL be an `<article>` carrying a white background token (`bg-white`)
 - **THEN** the card content does NOT contain any element whose visible text starts with `$` (no price paragraph, no formatted amount)
 - **AND** the rendered HTML of the card does NOT contain the substring `$0` or any `$`-prefixed number pattern matching `/\$\d/`
 
-### Requirement: Each DestacadosSection card CTA renders as the outline primary "Ver detalles" button
+### Requirement: Each DestacadosSection card CTA renders as the outline primary "Cotizar" button
 Each card SHALL render an `<a>` CTA with the `href` attribute set to `/productos/{slug}` (product `slug` prop interpolated) and the visible text "Ver detalles" (verbatim, sentence case — NOT "Cotizar" and NOT "SOLICITAR COTIZACIÓN"). The CTA SHALL follow the design-system outline primary button pattern: `border-2 border-primary text-primary hover:bg-primary hover:text-white font-heading font-semibold uppercase text-xs tracking-wide px-4 py-3 block text-center transition-colors`. The CTA SHALL NOT carry `aria-hidden="true"` or `tabindex="-1"`. (MODIFIED in `web-home-contact-tweaks`: the visible text changes from "Cotizar" to "Ver detalles" — the href already targeted the product detail page `/productos/{slug}`.)
 
 #### Scenario: Each card CTA links to the product slug route
