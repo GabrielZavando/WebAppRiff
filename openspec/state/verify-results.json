@@ -1,18 +1,19 @@
 {
   "schema_version": 1,
-  "change": "coolify-deploy",
-  "ticket_id": "cicd-coolify-deploy",
+  "change": "add-git-workflow-standards",
+  "ticket_id": "DOCS-001",
   "status": "PARTIAL",
   "evidence_mode": "static",
-  "timestamp": "2026-10-02T03:00:17Z",
+  "timestamp": "2026-10-02T20:03:54Z",
   "tasks": { "total": 4, "passed": 3, "failed": 0, "untested": 1 },
   "scenarios": [
     { "id": "SC-001", "test": "untested", "status": "UNTESTED" },
     { "id": "SC-002", "test": "untested", "status": "UNTESTED" },
     { "id": "SC-003", "test": "untested", "status": "UNTESTED" },
     { "id": "SC-004", "test": "untested", "status": "UNTESTED" },
-    { "id": "SC-005", "test": "untested", "status": "UNTESTED" }
-  ],
-  "unit_tests": "no aplica — sin tests (tests del workflow eliminados en el pivote 2026-10-02; verificación estática)",
-  "notes": "Pivote 2026-10-02: deploy nativo vía GitHub App de Coolify (sin workflow de Actions). Verificación estática (5e): T1 workflow eliminado, T2 tests eliminados, T3 docs actualizadas (0 referencias legacy); T4 (gates/cierre) untested. Sin tests ejecutables → PARTIAL (invariante REQ-003: ningún escenario PASS)."
+    { "id": "SC-005", "test": "untested", "status": "UNTESTED" },
+    { "id": "SC-006", "test": "untested", "status": "UNTESTED" },
+    { "id": "SC-007", "test": "untested", "status": "UNTESTED" },
+    { "id": "SC-008", "test": "untested", "status": "UNTESTED" }
+  ]
 }

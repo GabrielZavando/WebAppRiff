@@ -1,0 +1,10 @@
+{
+  "change": "add-git-workflow-standards",
+  "ticket": "DOCS-001",
+  "timestamp": "2026-10-02T18:19:15Z",
+  "branch": "feature/add-git-workflow-standards",
+  "branchMatchesConvention": true,
+  "firstRunGitState": "clean-except-plan-artifacts",
+  "foreignChanges": [],
+  "notes": "Pre-flight passed on first /apply run. Dirt limited to openspec/changes/add-git-workflow-standards/** (plan artifacts, allowed). opencode.json resolved by user; openspec/tickets/DOCS-001-enriched.md committed by user."
+}
