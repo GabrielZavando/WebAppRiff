@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "change": "coolify-deploy",
-  "ticket_id": "cicd-coolify-deploy",
+  "change": "add-git-workflow-standards",
+  "ticket_id": "DOCS-001",
   "verdict": "SHIP",
-  "confidence": 0.72,
-  "timestamp": "2026-10-02T03:15:25Z",
+  "confidence": 0.85,
+  "timestamp": "2026-10-02T20:49:18Z",
   "findings": {
-    "total": 5,
+    "total": 4,
     "critical": 0,
-    "warnings": 3,
-    "info": 2,
-    "discarded": 0
+    "warnings": 1,
+    "info": 3,
+    "discarded": 1
   }
 }
