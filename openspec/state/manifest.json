@@ -342,6 +342,24 @@
         "services-section",
         "view-transitions"
       ]
+    },
+    {
+      "change_name": "add-git-workflow-standards",
+      "ticket_id": "DOCS-001",
+      "archived_at": "2026-10-02T22:59:55Z",
+      "specs_applied": [
+        "git-workflow"
+      ],
+      "verification": {
+        "status": "PARTIAL",
+        "timestamp": "2026-10-02T20:03:54Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-10-02T20:49:18Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }
