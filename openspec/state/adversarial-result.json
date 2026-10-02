@@ -3,13 +3,13 @@
   "change": "coolify-deploy",
   "ticket_id": "cicd-coolify-deploy",
   "verdict": "SHIP",
-  "confidence": 0.85,
-  "timestamp": "2026-10-01T23:28:13Z",
+  "confidence": 0.72,
+  "timestamp": "2026-10-02T03:15:25Z",
   "findings": {
-    "total": 6,
+    "total": 5,
     "critical": 0,
-    "warnings": 2,
-    "info": 4,
+    "warnings": 3,
+    "info": 2,
     "discarded": 0
   }
 }
