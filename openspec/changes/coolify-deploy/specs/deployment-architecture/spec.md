@@ -1,41 +1,29 @@
 ## ADDED Requirements
 
-### Requirement: Frontend staging deploys SHALL be triggered automatically on merge to main via Coolify webhooks
+### Requirement: Frontend staging deploys SHALL be handled natively by Coolify via its GitHub App, without a GitHub Actions deploy workflow
 
-The `.github/workflows/deploy.yml` workflow SHALL trigger automatically on push to `main` and SHALL support manual `workflow_dispatch` runs. On each run it SHALL invoke the Coolify deploy webhooks for both staging frontend applications (`riff-web-staging`, `riff-admin-staging`) via `curl --request POST` with `Authorization: Bearer $COOLIFY_API_TOKEN` using the GitHub secrets `COOLIFY_WEB_STAGING_WEBHOOK_URL` and `COOLIFY_ADMIN_STAGING_WEBHOOK_URL`. The workflow SHALL NOT require the `DEPLOY_ENABLED` variable, SSH secrets, or any build/Docker logic (Coolify builds in-situ). If a webhook URL secret is missing, the corresponding step SHALL be skipped with a visible warning without failing the workflow or blocking the other application's deploy. `docs/deploy-standards.md` SHALL document this flow.
+The repository SHALL NOT contain a custom deploy workflow (`.github/workflows/deploy.yml`) nor tests referencing one. The frontend staging applications (`riff-web-staging`, `riff-admin-staging`) SHALL be deployed by Coolify natively (GitHub App `coolify-github-zavando`) when a PR is merged to `main`, with in-situ builds managed by Coolify. Manual redeploys SHALL be available from the Coolify panel. `ci.yml` SHALL remain the only workflow in `.github/workflows/` (PR protection; it SHALL NOT trigger deploys). `docs/deploy-standards.md` SHALL document this native flow without references to curl, `/api/v1/deploy` webhooks, or a GitHub Actions deploy workflow.
 
-#### Scenario: Merge to main triggers the automatic deploy
+#### Scenario: Merge to main deploys via the Coolify GitHub App
 
-- **GIVEN** a PR from a feature branch to `main` has been merged
-- **WHEN** the resulting push to `main` completes
-- **THEN** the `Deploy to Coolify` workflow runs automatically without requiring `DEPLOY_ENABLED` or SSH secrets
+- **GIVEN** the Coolify GitHub App (`coolify-github-zavando`) has access to the repository
+- **WHEN** a PR is merged to `main`
+- **THEN** Coolify receives the push natively and deploys both staging frontend applications (`riff-web-staging`, `riff-admin-staging`) with in-situ builds, without a GitHub Actions workflow
 
-#### Scenario: The workflow invokes both application webhooks
+#### Scenario: No custom deploy workflow exists
 
-- **GIVEN** the `Deploy to Coolify` workflow is running on `main`
-- **WHEN** the deploy job executes its invocation steps
-- **THEN** a `curl --request POST` with `Authorization: Bearer $COOLIFY_API_TOKEN` is sent to the `riff-web-staging` webhook (`COOLIFY_WEB_STAGING_WEBHOOK_URL`) and to the `riff-admin-staging` webhook (`COOLIFY_ADMIN_STAGING_WEBHOOK_URL`), and Coolify receives the signal and deploys both applications
+- **GIVEN** the final repository state
+- **WHEN** `.github/workflows/` is reviewed
+- **THEN** no `deploy.yml` exists, no tests reference a removed deploy workflow, and `ci.yml` is the only workflow (PR protection only)
 
-#### Scenario: Manual workflow_dispatch triggers the deploy
+#### Scenario: Manual redeploy from the Coolify panel
 
-- **GIVEN** an operator opens the repository Actions tab
-- **WHEN** they run the `Deploy to Coolify` workflow manually selecting the `main` branch
-- **THEN** the deploy is triggered and both staging application webhooks are invoked
+- **GIVEN** an operator wants to redeploy a staging application
+- **WHEN** they trigger a redeploy from the Coolify panel (or push a commit to `main`)
+- **THEN** Coolify deploys the application without GitHub Actions
 
-#### Scenario: Pushes to non-main branches do not deploy
+#### Scenario: Documentation reflects the native flow
 
-- **GIVEN** a developer pushes to a feature branch or opens a PR
-- **WHEN** the push or PR completes
-- **THEN** the `Deploy to Coolify` workflow does not run (only `ci.yml` protects PRs)
-
-#### Scenario: Missing webhook secret degrades gracefully
-
-- **GIVEN** the workflow is running and `COOLIFY_ADMIN_STAGING_WEBHOOK_URL` is not configured
-- **WHEN** the corresponding step evaluates the secret
-- **THEN** the step is skipped with a visible `::warning::` in the log, the other application's deploy proceeds, and the workflow does not fail
-
-#### Scenario: Webhook failure is visible in the workflow
-
-- **GIVEN** the workflow is running and Coolify returns an HTTP error (>= 400) for a webhook
-- **WHEN** `curl --fail` exits with a non-zero code
-- **THEN** the step fails, the deploy job turns red, and the error is visible in the Actions log without exposing the secret value
+- **GIVEN** `docs/deploy-standards.md`
+- **WHEN** its deploy pipeline section is reviewed
+- **THEN** it describes the native Coolify GitHub App deploy with no references to curl, `/api/v1/deploy` webhooks, or a GitHub Actions deploy workflow

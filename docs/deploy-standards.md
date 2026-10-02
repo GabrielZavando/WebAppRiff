@@ -51,10 +51,10 @@
 
 ### Lane frontends — Coolify
 
-1. Merge a `main` → el workflow `Deploy to Coolify` (`.github/workflows/deploy.yml`) se dispara automáticamente (o por `workflow_dispatch` manual).
-2. El workflow invoca vía `curl --request POST` con `Authorization: Bearer $COOLIFY_API_TOKEN` los webhooks de deploy de Coolify de ambas apps de staging (`riff-web-staging`, `riff-admin-staging`).
-3. Coolify build in-situ por app (`web`, `admin`) desde el repo.
-4. Deploy a apps de staging; smoke tests.
+1. Merge a `main` → Coolify (GitHub App `coolify-github-zavando`) recibe el push nativamente.
+2. Coolify build in-situ por app (`web`, `admin`) desde el repo.
+3. Deploy a apps de staging; smoke tests.
+4. Redeploy manual: desde el panel de Coolify (o empujando un commit a `main`).
 5. Promoción manual a producción (redeploy con la misma referencia de build).
 
 ## Smoke Tests
@@ -224,9 +224,7 @@ npm run seed:productos
 | `CLOUD_RUN_SERVICE` | GitHub Actions / Cloud Run | Nombre del servicio Cloud Run de staging | `riff-api-staging` |
 | `SMOKE_WEB_STAGING_URL` | GitHub Actions (vars) | URL temporal del sitio Astro staging (también `ASTRO_SITE_URL` inyectada al backend para CORS) | `http://<sub>.sslip.io` |
 | `SMOKE_ADMIN_STAGING_URL` | GitHub Actions (vars) | URL temporal del panel Angular staging (también `ANGULAR_ADMIN_URL` para CORS) | `http://<sub>.sslip.io` |
-| `COOLIFY_API_TOKEN` | Coolify (si se usa API) | Token para Coolify CLI/API | `coolify_xxx` |
-| `COOLIFY_WEB_STAGING_WEBHOOK_URL` | GitHub Actions (secret) | Webhook de deploy de Coolify para `riff-web-staging` — invocado vía `curl --request POST` con `Authorization: Bearer $COOLIFY_API_TOKEN` por el workflow `Deploy to Coolify` (`.github/workflows/deploy.yml`). No-op con aviso si no está | `https://coolify.example.com/api/v1/deploy?uuid=...&force=false` |
-| `COOLIFY_ADMIN_STAGING_WEBHOOK_URL` | GitHub Actions (secret) | Webhook de deploy de Coolify para `riff-admin-staging` — invocado vía `curl --request POST` con Bearer por el workflow `Deploy to Coolify`. No-op con aviso si no está | `https://coolify.example.com/api/v1/deploy?uuid=...&force=false` |
+| `COOLIFY_API_TOKEN` | Coolify (uso manual opcional de la API) | Token para Coolify CLI/API — **no usado por el flujo de deploy del repo** (deploy nativo vía GitHub App de Coolify) | `coolify_xxx` |
 | `SLACK_WEBHOOK` | GitHub Actions | Notification webhook | `https://hooks.slack.com/...` |
 | `CATALOG_REBUILD_WEBHOOK_URL` | Cloud Run (backend — **secreto NestJS en Secret Manager**, ops-managed) | URL del webhook que el backend dispara cuando cambia cualquier entidad pública del catálogo (categoría, subcategoría, producto) para que Coolify regenere el sitio Astro. `POST` fire-and-forget con `Authorization: Bearer <token>` y timeout de 5s. No-op si no está configurado | `https://coolify.example.com/deploy` |
 | `CATALOG_REBUILD_WEBHOOK_TOKEN` | Cloud Run (backend — **secreto NestJS en Secret Manager**, ops-managed) | Token Bearer con el que se autentica el rebuild webhook del catálogo. **Nunca se loguea ni se envía en el body**. Reemplaza a la antigua variable de webhook de categorías (sin auth) | `secret-token` |
@@ -244,8 +242,7 @@ npm run seed:productos
 | `SMOKE_WEB_PRODUCTION_URL` | GitHub Actions (vars) | URL del sitio Astro producción (también `ASTRO_SITE_URL` para CORS) |
 | `SMOKE_ADMIN_PRODUCTION_URL` | GitHub Actions (vars) | URL del panel Angular producción (también `ANGULAR_ADMIN_URL` para CORS) |
 | `GCP_RUNTIME_SA_PRODUCTION` | Cloud Run (runtime service account) | Service account de runtime de producción (si difiere de la de staging) |
-| `COOLIFY_WEB_PRODUCTION_WEBHOOK_URL` | GitHub Actions (secret) | Webhook de deploy de Astro producción |
-| `COOLIFY_ADMIN_PRODUCTION_WEBHOOK_URL` | GitHub Actions (secret) | Webhook de deploy de Angular producción |
+> Nota: `COOLIFY_WEB_PRODUCTION_WEBHOOK_URL` y `COOLIFY_ADMIN_PRODUCTION_WEBHOOK_URL` (webhooks de producción del approach previo) quedaron **obsoletas** — el deploy es nativo vía la GitHub App de Coolify.
 
 > ⚠️ **Regla dura**: el deploy de producción se omite por completo mientras falte
 > cualquiera de las variables `*_PRODUCTION` obligatorias. **Nunca** despliega con
@@ -260,40 +257,31 @@ npm run seed:productos
 - Prohibidas en bundles frontend, argumentos de build Docker, `.env` versionado o variables `PUBLIC_*` de Astro.
 - La identidad de GitHub Actions para GCP debe ser de mínimo privilegio (Workload Identity Federation recomendado, sin JSON keys de service account).
 
-## Pipeline (`.github/workflows/deploy.yml`)
+## Deploy de frontends — nativo vía GitHub App de Coolify
 
-Workflow `Deploy to Coolify` — simple, sin build/Docker (Coolify compila
-in-situ). Reemplaza al workflow legacy de SSH/docker. Actualizado el 2026-10-01
-(change `coolify-deploy`).
+> Actualizado 2026-10-02 (change `coolify-deploy`): el deploy de los frontends
+> se maneja **nativamente por Coolify** mediante su GitHub App
+> (`coolify-github-zavando`), que tiene acceso al repositorio. **No existe
+> workflow de deploy en GitHub Actions**: el approach previo con invocación a
+> los webhooks de la API de Coolify devolvía 404 y era innecesario, por lo que
+> el workflow fue eliminado.
 
-- **Triggers**: `push` a `main` (post-merge de PR) + `workflow_dispatch`
-  (ejecución manual seleccionando `main`). Sin trigger de tags. Los PRs no
-  activan deploy; `ci.yml` los protege (specboot structural validation +
-  `make ci`).
-- **`deploy-staging`** (job único, dos pasos): invoca los webhooks de deploy de
-  Coolify vía
-  `curl --fail --silent --show-error --request POST "$WEBHOOK_URL" -H "Authorization: Bearer $COOLIFY_API_TOKEN" --max-time 60`
-  (el trigger de la API de Coolify es POST con uuid/force en query; Bearer
-  requerido; `--max-time 60` evita steps colgados — actualizado 2026-10-01,
-  change `coolify-deploy`) para
-  `riff-web-staging` (`COOLIFY_WEB_STAGING_WEBHOOK_URL`) y `riff-admin-staging`
-  (`COOLIFY_ADMIN_STAGING_WEBHOOK_URL`).
-- **Degradación controlada**: si un secret no está configurado, el paso se
-  omite con `::warning::` visible (`exit 0`) y el deploy de la otra app
-  procede; el workflow no falla por el secret faltante y `main` permanece
-  verde.
-- **Permissions**: `contents: read`; sin paso `checkout` (el workflow solo
-  invoca webhooks, no compila nada).
-- **Secrets Coolify** (creados como ops, una vez):
-  `COOLIFY_WEB_STAGING_WEBHOOK_URL` + `COOLIFY_ADMIN_STAGING_WEBHOOK_URL`. Los
-  de producción (`COOLIFY_WEB_PRODUCTION_WEBHOOK_URL` /
-  `COOLIFY_ADMIN_PRODUCTION_WEBHOOK_URL`) quedan reservados para la lane de
-  producción de frontends (fuera de alcance aquí).
+- **Trigger**: merge de un PR a `main` → Coolify recibe el push nativamente y
+  despliega ambas apps de staging (`riff-web-staging`, `riff-admin-staging`),
+  build in-situ por app (`web`, `admin`).
+- **Sin workflow de deploy**: `.github/workflows/` solo contiene `ci.yml`
+  (specboot structural validation + `make ci`), que protege PRs y no dispara
+  deploys.
+- **Redeploy manual**: desde el panel de Coolify (redeploy del recurso) o
+  empujando un commit a `main`.
+- **Secrets**: la GitHub App de Coolify gestiona su propia autenticación; no se
+  requieren secrets de webhook en GitHub. (Históricos obsoletos:
+  `COOLIFY_WEB_STAGING_WEBHOOK_URL`, `COOLIFY_ADMIN_STAGING_WEBHOOK_URL` y sus
+  variantes de producción.)
 - **Lane backend — Cloud Run** (build de imagen → push a Artifact Registry →
-  `gcloud run deploy` + smoke): pendiente de implementar como workflow propio;
-  no forma parte de `deploy.yml` (ver `Deploy Flow` → Lane backend).
-  Autenticación GCP prevista: Workload Identity Federation (sin JSON keys),
-  mínimo privilegio.
+  `gcloud run deploy` + smoke): pendiente de implementar como workflow propio
+  (ver `Deploy Flow` → Lane backend). Autenticación GCP prevista: Workload
+  Identity Federation (sin JSON keys), mínimo privilegio.
 - Rollback: `gcloud run services update-traffic riff-api-prod
   --to-revisions <previous>=100` (backend) y redeploy manual en panel Coolify
   (frontends — ver `Rollback`).
@@ -304,9 +292,9 @@ in-situ). Reemplaza al workflow legacy de SSH/docker. Actualizado el 2026-10-01
 Runtime: Node.js 24 (alineado a engines del monorepo)
 Backend runtime: Google Cloud Run (escala a cero; revisar min-instances tras medir cold starts)
 Frontends: contenedores estáticos en VPS + Coolify (nginx)
-Registry backend: Artifact Registry (build por GitHub Actions — workflow propio pendiente; no en deploy.yml)
+Registry backend: Artifact Registry (build por GitHub Actions — workflow propio pendiente)
 Registry frontends: build in-situ Coolify (MVP); GHCR opcional
-Pipeline: deploy.yml — Deploy to Coolify (push a main + workflow_dispatch, curl POST con Bearer a webhooks Coolify staging); backend Cloud Run pendiente de workflow propio
+Pipeline: sin workflow de deploy — Coolify GitHub App (deploy nativo en merge a main); backend Cloud Run pendiente de workflow propio
 Smoke tests: npm run test:smoke (backend), npm run test:smoke (web), npm run test:smoke (admin)
 Rollback: Cloud Run revisión anterior / Coolify redeploy anterior
 VPS Provider: pendiente de confirmación (tentativo: Oracle Cloud VPS existente)
