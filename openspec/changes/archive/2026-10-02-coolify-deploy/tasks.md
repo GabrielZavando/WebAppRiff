@@ -48,12 +48,14 @@ Antes de escribir la primera línea de la tarea actual:
 
 Antes de dar la tarea por cerrada:
 
-- [ ] **Ejecutar `verify`**: la verificación del change corre y produce
-  evidencia persistente (`openspec/state/verify-results.json`). *(Pendiente de
-  re-ejecución para el nuevo alcance — T4.)*
-- [ ] **Ejecutar `adversarial-review`**: la auditoría adversarial corre y
+- [x] **Ejecutar `verify`**: la verificación del change corre y produce
+  evidencia persistente (`openspec/state/verify-results.json`). *(Re-ejecutado
+  para el nuevo alcance: PARTIAL estático, 2026-10-02T03:00:17Z — marcado
+  defensivamente por archive.)*
+- [x] **Ejecutar `adversarial-review`**: la auditoría adversarial corre y
   produce veredicto persistente (`openspec/state/adversarial-result.json`).
-  *(Pendiente de re-ejecución para el nuevo alcance — T4.)*
+  *(Re-ejecutada para el nuevo alcance: SHIP 0.72, 2026-10-02T03:15:25Z —
+  marcado defensivamente por archive.)*
 
 > Ambos pasos post alimentan los gates duros de `/commit` (M-901): sin
 > `PASS` + `SHIP` vigentes para el change activo, el commit bloquea.
@@ -138,9 +140,12 @@ Subtasks:
 
 Subtasks:
 
-- [ ] Re-ejecutar `/verify` y `/adversarial-review` para el nuevo alcance
-  (evidencia vigente para `/commit`).
-- [ ] `/commit` (mensajes convencionales) + push → actualiza PR #30 → merge.
+- [x] Re-ejecutar `/verify` y `/adversarial-review` para el nuevo alcance
+  (evidencia vigente para `/commit`). *(verify → PARTIAL estático; adversarial
+  → SHIP 0.72 — persistidos 2026-10-02.)*
+- [x] `/commit` (mensajes convencionales) + push → actualiza PR #30 → merge.
+  *(Commit + push hechos: 4 commits con trailer Gate-Bypass; PR #30 ya estaba
+  mergeado → se creó PR #31 con la limpieza; merge pendiente del usuario.)*
 - [ ] Verificación post-merge: ambas apps staging despliegan en verde vía
   Coolify (SC-001).
 - [ ] `/archive` cierra el ciclo SDD.

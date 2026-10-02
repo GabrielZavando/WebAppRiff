@@ -311,6 +311,37 @@
         "timestamp": "2026-09-19T19:42:00Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "coolify-deploy",
+      "ticket_id": "cicd-coolify-deploy",
+      "archived_at": "2026-10-02T14:20:06Z",
+      "specs_applied": [
+        "deployment-architecture"
+      ],
+      "verification": {
+        "status": "PARTIAL",
+        "timestamp": "2026-10-02T03:00:17Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-10-02T03:15:25Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
+    },
+    {
+      "change_name": "web-home-contact-tweaks",
+      "ticket_id": "feat-web-home-contact-tweaks",
+      "archived_at": "2026-10-02T15:14:33Z",
+      "specs_applied": [
+        "contact-page",
+        "destacados-section",
+        "product-detail-page",
+        "services-page",
+        "services-section",
+        "view-transitions"
+      ]
     }
   ]
 }

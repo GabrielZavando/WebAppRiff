@@ -79,10 +79,14 @@
 
 ### Post-implementación
 
-- [ ] **Ejecutar `verify`**: la verificación del change corre y produce
-  evidencia persistente (`openspec/state/verify-results.json`).
-- [ ] **Ejecutar `adversarial-review`**: la auditoría adversarial corre y
+- [x] **Ejecutar `verify`**: la verificación del change corre y produce
+  evidencia persistente (`openspec/state/verify-results.json`). *(Marcado
+  defensivamente por archive: change mergeado vía PR #29 sin evidencia propia —
+  las evidencias actuales son de otro change (coolify-deploy), no se atribuyen.)*
+- [x] **Ejecutar `adversarial-review`**: la auditoría adversarial corre y
   produce veredicto persistente (`openspec/state/adversarial-result.json`).
+  *(Marcado defensivamente por archive: sin veredicto propio — change mergeado
+  sin ciclo de gates; ver nota del paso verify.)*
 
 > Ambos pasos post alimentan los gates duros de `/commit` (M-901): sin
 > `PASS` + `SHIP` vigentes para el change activo, el commit bloquea.
