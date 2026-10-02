@@ -1,20 +1,19 @@
 {
   "schema_version": 1,
-  "change": "web-home-contact-tweaks",
-  "ticket_id": "feat/web-home-contact-tweaks",
-  "status": "PARTIAL",
+  "change": "coolify-deploy",
+  "ticket_id": "cicd-coolify-deploy",
+  "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-10-01T01:57:52Z",
-  "tasks": { "total": 30, "passed": 30, "failed": 0, "untested": 0 },
+  "timestamp": "2026-10-01T22:30:45Z",
+  "tasks": { "total": 5, "passed": 4, "failed": 0, "untested": 1 },
   "scenarios": [
-    { "id": "SC-001", "test": "[SC-001] uses the canonical Riff phone and email constants + [SC-001] renders the contact bar with the phone anchor + [SC-001] renders a clickable mailto anchor", "status": "PASS" },
-    { "id": "SC-002", "test": "ServiceCard — anchor id (SC-002/SC-005) + home SERVICES_DATA <-> /servicios slug contract (SC-002/SC-008)", "status": "PASS" },
-    { "id": "SC-003", "test": "[SC-003] each card CTA visible text is exactly Ver detalles", "status": "PASS" },
-    { "id": "SC-004", "test": "[SC-004] renders both CTAs with correct hrefs", "status": "PASS" },
-    { "id": "SC-005", "test": "ServiceCard — anchor id (SC-002/SC-005)", "status": "PASS" },
-    { "id": "SC-006", "test": "untested", "status": "UNTESTED" },
-    { "id": "SC-007", "test": "untested", "status": "UNTESTED" },
-    { "id": "SC-008", "test": "home SERVICES_DATA <-> /servicios slug contract (SC-002/SC-008)", "status": "PASS" }
+    { "id": "SC-001", "test": "[SC-001] deploy workflow triggers on push to main without legacy gating", "status": "PASS" },
+    { "id": "SC-002", "test": "[SC-002] deploy workflow invokes both Coolify staging webhooks via curl POST with Bearer", "status": "PASS" },
+    { "id": "SC-003", "test": "[SC-003] deploy workflow supports manual workflow_dispatch without DEPLOY_ENABLED", "status": "PASS" },
+    { "id": "SC-004", "test": "[SC-004] deploy workflow does not run on pull requests or tag pushes", "status": "PASS" },
+    { "id": "SC-005", "test": "[SC-005] missing webhook secret skips the step with a visible warning", "status": "PASS" },
+    { "id": "SC-006", "test": "[SC-006] webhook failures are visible via curl --fail", "status": "PASS" }
   ],
-  "unit_tests": "apps/web vitest 933/933 PASS (85/85 files, 22:56-57Z). SC-006/SC-007 browser-only (prefers-reduced-motion + fallback MPA) — UNTESTED by design, documentados como pendiente futuro en design.md (backlog, análogo a productos destacados vía API)"
+  "unit_tests": "14/14 PASS (npx vitest 4.1.11 --reporter=verbose, corrida del agente verify; 2 archivos: deploy-workflow + deploy-standards-docs)",
+  "notes": "Evidencia ejecutable real (npx vitest run --reporter=verbose, 14/14 PASS, todos los escenarios con evidencia fuerte [SC-NNN]). T3 untested: la verificación end-to-end (merge → dispatch → deploys Coolify en verde) cierra post-merge por diseño (git push denegado para build; el workflow nuevo aún no existe en el ref remoto)."
 }
