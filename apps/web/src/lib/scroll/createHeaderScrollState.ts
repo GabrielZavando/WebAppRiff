@@ -9,7 +9,11 @@
  * View-transitions resilience: besides the initial load, the compact state is
  * re-applied on Astro's `astro:page-load` lifecycle event (fired on
  * `document` after every client-side navigation), so it survives the body
- * swaps performed by the global `<ClientRouter />`.
+ * swaps performed by the global `<ClientRouter />`. The `data-scrolled`
+ * target is resolved lazily on every update (the CURRENT `document.body`, not
+ * an init-time capture), because View Transitions replace the whole `<body>`
+ * element on each navigation and a stale reference would silently break the
+ * compact state on the destination page (SC-101/102/103, design D1).
  *
  * Why custom `host`/`target`/`events` seams: keeps `initHeaderScrollState`
  * testable without a DOM and avoids touching `window` during SSG render. The
@@ -87,10 +91,20 @@ export function initHeaderScrollState(options: InitHeaderScrollStateOptions = {}
     throw new Error('initHeaderScrollState: no scroll host available (window is undefined).');
   }
 
-  const target =
+  // Resolve the `data-scrolled` target lazily on every update: an explicit
+  // `target` seam (tests) wins, otherwise the CURRENT `document.body` is read
+  // at call time. View Transitions swap the whole `<body>` element on each
+  // client-side navigation, so an init-time capture goes stale and the compact
+  // state would silently die on the destination page (SC-101, SC-102, SC-103
+  // — design D1). `document` itself persists across swaps, only its `body`
+  // child is replaced, so re-reading `document.body` per update is correct.
+  const resolveTarget = (): ScrollStateTarget | undefined =>
     options.target ??
     (typeof document !== 'undefined' ? (document.body as ScrollStateTarget) : undefined);
-  if (!target) {
+
+  // Fail fast on construction when no target is available anywhere, so a
+  // misconfigured integration surfaces immediately (same contract as before).
+  if (!resolveTarget()) {
     throw new Error('initHeaderScrollState: no scroll target available (document.body is undefined).');
   }
 
@@ -101,8 +115,11 @@ export function initHeaderScrollState(options: InitHeaderScrollStateOptions = {}
   let ticking = false;
 
   const update = (): void => {
-    const compact = shouldBeCompact(host.scrollY, threshold);
-    target.setAttribute('data-scrolled', compact ? 'true' : 'false');
+    const target = resolveTarget();
+    if (target) {
+      const compact = shouldBeCompact(host.scrollY, threshold);
+      target.setAttribute('data-scrolled', compact ? 'true' : 'false');
+    }
     ticking = false;
   };
 
