@@ -1,0 +1,19 @@
+---
+import Layout from '@/layouts/Layout.astro';
+---
+
+<!--
+  Public about page (/nosotros). Empty for now (ticket
+  fix/header-scroll-regressions-and-about-page, Req 5): renders only the shared
+  chrome (Header + Footer) with no intermediate content — no hero shell and no
+  global search form (showSearch=false, same opt-out as /contacto). The main
+  slot is intentionally empty (SC-108, SC-109).
+-->
+<Layout
+  title="Nosotros — Riff"
+  description="Conozca a Riff: ingeniería de precisión en medición, control y tratamiento de fluidos."
+  hero={false}
+  showSearch={false}
+>
+  <main aria-label="Contenido de Nosotros"></main>
+</Layout>
