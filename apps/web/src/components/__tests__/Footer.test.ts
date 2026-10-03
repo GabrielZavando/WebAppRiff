@@ -278,19 +278,22 @@ describe('Footer — bottom bar (copyright + location + scroll-to-top)', () => {
   });
 });
 
-describe('Footer — scroll-to-top inline script', () => {
-  it('ships an inline script targeting [data-scroll-top] with smooth scrollTo', async () => {
+describe('Footer — scroll-to-top binding (delegated, design D2)', () => {
+  it('no longer ships an inline [data-scroll-top] click-binding script (SC-105)', async () => {
     const source = await getSource();
-    expect(source).toContain('<script is:inline>');
-    expect(source).toContain('[data-scroll-top]');
-    expect(source).toContain("window.scrollTo({ top: 0, behavior: 'smooth' })");
+    // The click binding moved to the persistent document-level delegation in
+    // lib/scroll/createScrollTopButton.ts (survives View Transitions swaps).
+    expect(source).not.toContain('<script is:inline>');
+    expect(source).not.toContain('querySelectorAll');
+    expect(source).not.toContain('window.scrollTo');
   });
 
-  it('respects prefers-reduced-motion (no smooth scroll behavior forced)', async () => {
-    const source = await getSource();
-    // The script must not force smooth scrolling when reduced motion is
-    // requested — the scrollTo is a single call without matchMedia override.
-    expect(source).toMatch(/scrollTo\(\{[^}]*top: 0[^}]*\}\)/);
+  it('keeps rendering the [data-scroll-top] button markup unchanged (SC-105)', async () => {
+    const button = getScrollTopButton(await render());
+    expect(button).toContain('data-scroll-top');
+    expect(button).toContain('bg-primary');
+    expect(button).toContain('aria-label="Volver arriba"');
+    expect(button).toContain('type="button"');
   });
 });
 

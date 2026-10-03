@@ -42,10 +42,11 @@ const logoAltText = logoAlt || 'Riff';
       Decision 5).
     - Schedule column: <dl> rows (day range → hours; design.md § Decision
       10) plus the 24/7 note with a decorative clock icon.
-    - Bottom bar: divider `border-t border-white/10`, copyright + location
-      (fixed legal copy from config constants, design.md § D11), and the
-      square teal scroll-to-top <button> wired by the inline script below
-      (design.md § Decision 6).
+- Bottom bar: divider `border-t border-white/10`, copyright + location
+       (fixed legal copy from config constants, design.md § D11), and the
+       square teal scroll-to-top <button> wired by the persistent
+       document-level delegation in `lib/scroll/createScrollTopButton.ts`
+       (design.md § Decision 6, D2 — survives View Transitions body swaps).
     - Strict flat design: no `rounded*`, no `shadow*` (static chrome never
       floats).
 
@@ -158,15 +159,3 @@ const logoAltText = logoAlt || 'Riff';
     </div>
   </div>
 </footer>
-
-<script is:inline>
-  // Smooth-scrolls to the top when the footer's scroll-to-top button is
-  // clicked (design.md § Decision 6). `behavior: 'smooth'` is a progressive
-  // enhancement: browsers honoring `prefers-reduced-motion` ignore it and
-  // jump instantly, so no matchMedia override is needed.
-  document.querySelectorAll('[data-scroll-top]').forEach((button) => {
-    button.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  });
-</script>
