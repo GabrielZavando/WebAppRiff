@@ -1,0 +1,11 @@
+{
+  "change": "header-scroll-restore",
+  "branch": "feature/fix-header-scroll-and-about-page",
+  "checkedAt": "2026-10-02",
+  "firstRun": true,
+  "allowedDirt": [
+    "openspec/changes/header-scroll-restore/"
+  ],
+  "interpretationNote": "Dirt permitido en primer run: solo los artefactos del plan (openspec/changes/header-scroll-restore/). No hay ticket enriquecido (openspec/tickets/) para este change; el ticket llego bien formado con criterios de aceptacion.",
+  "blockedFiles": []
+}

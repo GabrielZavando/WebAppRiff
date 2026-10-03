@@ -142,10 +142,14 @@ const searchFormProps: SearchFormProps = {
 
     <!-- Compact scroll state: toggles `data-scrolled` on <body> on scroll.
          Imported (not inline) so `initHeaderScrollState` stays tree-shakeable
-         and testable in lib/. -->
+         and testable in lib/. Scroll-top: the footer's `[data-scroll-top]`
+         button is bound via a persistent document-level delegation (design D2)
+         so it survives the `<body>` swaps of View Transitions. -->
     <script>
       import { initHeaderScrollState } from '@/lib/scroll/createHeaderScrollState';
+      import { initScrollTopButton } from '@/lib/scroll/createScrollTopButton';
       initHeaderScrollState();
+      initScrollTopButton();
     </script>
   </body>
 </html>

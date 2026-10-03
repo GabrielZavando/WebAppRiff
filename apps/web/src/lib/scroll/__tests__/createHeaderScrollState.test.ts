@@ -1,9 +1,10 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   shouldBeCompact,
   initHeaderScrollState,
   DEFAULT_COMPACT_THRESHOLD,
   type InitHeaderScrollStateOptions,
+  type ScrollStateTarget,
 } from '@/lib/scroll/createHeaderScrollState';
 
 describe('shouldBeCompact', () => {
@@ -176,5 +177,132 @@ describe('initHeaderScrollState — astro:page-load re-initialization (view-tran
     host.setScrollY(0);
     events.dispatch();
     expect(target.attrs['data-scrolled']).toBe('true');
+  });
+});
+
+// --- body swap across View Transitions (SC-101, SC-102, SC-103 — design D1) ---
+
+/**
+ * Minimal fake of the global `document` whose `body` can be swapped, mimicking
+ * how Astro's View Transitions (`<ClientRouter />`) replaces the whole `<body>`
+ * element on every client-side navigation (the `document` object persists, the
+ * body element does not). Used through `vi.stubGlobal` so the production
+ * default path (`document.body`) is exercised in the `node` environment
+ * (no jsdom), keeping this file's pure-fake style.
+ *
+ * Design D1: the lib must resolve the `data-scrolled` target lazily at each
+ * update; capturing `document.body` once at init is the bug these tests pin
+ * (task 1.1 RED, fixed in task 1.2).
+ */
+interface FakeSwappableDocument {
+  readonly body: ScrollStateTarget;
+}
+
+function createFakeSwappableDocument(
+  initialBody: ScrollStateTarget,
+): FakeSwappableDocument & { swapBody(nextBody: ScrollStateTarget): void } {
+  let currentBody: ScrollStateTarget = initialBody;
+  return {
+    get body(): ScrollStateTarget {
+      return currentBody;
+    },
+    swapBody(nextBody: ScrollStateTarget): void {
+      currentBody = nextBody;
+    },
+  };
+}
+
+describe('initHeaderScrollState — body swap across View Transitions (lazy target, D1)', () => {
+  it('[SC-101] sets data-scrolled="true" on the current body — not the init-time one — when scrolled after a <body> swap', () => {
+    const host = createFakeHost(0);
+    const events = createFakeEvents();
+    // `targetA` is the body present at init (resolved via the production
+    // default `document.body`, no explicit `target` seam); `targetB` replaces
+    // it, exactly as View Transitions swaps `<body>` on every client-side
+    // navigation.
+    const targetA = createTargetMock();
+    const targetB = createTargetMock();
+    const fakeDocument = createFakeSwappableDocument(targetA);
+    vi.stubGlobal('document', fakeDocument);
+
+    try {
+      initHeaderScrollState({ host, events });
+
+      // Initial state lands on the body present at init.
+      expect(targetA.attrs['data-scrolled']).toBe('false');
+      expect(targetB.attrs['data-scrolled']).toBeUndefined();
+
+      // View Transitions swap: the effective target becomes `targetB`.
+      fakeDocument.swapBody(targetB);
+
+      // GIVEN the post-swap page, WHEN the user scrolls past the threshold…
+      host.setScrollY(400);
+      host.dispatchScroll();
+      // …THEN `data-scrolled` lands on the CURRENT body (`targetB`)…
+      expect(targetB.attrs['data-scrolled']).toBe('true');
+      // …and the stale pre-navigation body is never written again.
+      expect(targetA.attrs['data-scrolled']).toBe('false');
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it('[SC-102] re-applies the shrink/grow cycle (true→false) to the current body after a <body> swap', () => {
+    const host = createFakeHost(0);
+    const events = createFakeEvents();
+    const targetA = createTargetMock();
+    const targetB = createTargetMock();
+    const fakeDocument = createFakeSwappableDocument(targetA);
+    vi.stubGlobal('document', fakeDocument);
+
+    try {
+      initHeaderScrollState({ host, events });
+
+      // View Transitions swap before any user interaction.
+      fakeDocument.swapBody(targetB);
+
+      // WHEN the user scrolls down and then returns to `scrollY === 0`…
+      host.setScrollY(400);
+      host.dispatchScroll();
+      host.setScrollY(0);
+      host.dispatchScroll();
+      // …THEN the compact-state driver on the CURRENT body (`targetB`)
+      // completes the shrink ("true") and grow-back ("false") cycle, so the
+      // logo shrink/grow survives the client-side navigation.
+      expect(targetB.attrs['data-scrolled']).toBe('false');
+      // The stale pre-swap body never receives an update.
+      expect(targetA.attrs['data-scrolled']).toBe('false');
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it('[SC-103] re-applies the compact state to the current body on astro:page-load after a <body> swap', () => {
+    const host = createFakeHost(0);
+    const events = createFakeEvents();
+    const targetA = createTargetMock();
+    const targetB = createTargetMock();
+    const fakeDocument = createFakeSwappableDocument(targetA);
+    vi.stubGlobal('document', fakeDocument);
+
+    try {
+      initHeaderScrollState({ host, events });
+
+      // Client-side navigation: View Transitions swap `<body>` and Astro fires
+      // `astro:page-load` on `document` afterwards. The Layout `<script>` does
+      // not re-run after a swap, so the lifecycle event must write the state
+      // to the post-swap body.
+      fakeDocument.swapBody(targetB);
+
+      // GIVEN the post-swap page at scrollY 400, WHEN `astro:page-load` fires…
+      host.setScrollY(400);
+      events.dispatch();
+      // …THEN the compact state is re-applied to the CURRENT body (`targetB`).
+      expect(targetB.attrs['data-scrolled']).toBe('true');
+      // The stale pre-navigation body is never written again.
+      expect(targetA.attrs['data-scrolled']).toBe('false');
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });

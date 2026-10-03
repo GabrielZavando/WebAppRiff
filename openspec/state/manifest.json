@@ -360,6 +360,28 @@
         "timestamp": "2026-10-02T20:49:18Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "header-scroll-restore",
+      "ticket_id": "fix/header-scroll-regressions-and-about-page",
+      "archived_at": "2026-10-03T03:10:46Z",
+      "specs_applied": [
+        "nosotros-page",
+        "site-footer",
+        "site-header",
+        "site-header-scroll",
+        "view-transitions"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-10-03T02:57:20Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-10-03T03:06:13Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }
