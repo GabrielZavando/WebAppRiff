@@ -284,6 +284,16 @@ describe('Header', () => {
       const logoImg = html.match(/<img[^>]*alt="Riff"[^>]*>/)?.[0] ?? '';
       expect(logoImg).toContain('site-logo');
     });
+
+    it('contains the full logo height via responsive padding-bottom (SC-107)', async () => {
+      const html = await render();
+      const headerTag = html.match(/<header[^>]*>/)?.[0] ?? '';
+      // The header box must include the 2× logo (200px mobile / 300px desktop
+      // cap) — the padding-bottom makes the box at least as tall as the logo.
+      expect(headerTag).toContain('site-header');
+      expect(headerTag).toContain('pb-10');
+      expect(headerTag).toContain('lg:pb-12');
+    });
   });
 
   describe('transparent mode (home hero full-bleed background)', () => {
