@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
-  "change": "header-scroll-restore",
-  "ticket_id": "fix/header-scroll-regressions-and-about-page",
+  "change": "admin-login-panel",
+  "ticket_id": "LOGIN-1",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-10-03T02:57:20Z",
-  "tasks": { "total": 13, "passed": 13, "failed": 0, "untested": 0 },
+  "timestamp": "2026-10-04T20:37:15Z",
+  "tasks": { "total": 9, "passed": 9, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-101", "test": "[SC-101] sets data-scrolled=\"true\" on the current body — not the init-time one — when scrolled after a <body> swap", "status": "PASS" },
-    { "id": "SC-102", "test": "[SC-102] re-applies the shrink/grow cycle (true→false) to the current body after a <body> swap", "status": "PASS" },
-    { "id": "SC-103", "test": "[SC-103] re-applies the compact state to the current body on astro:page-load after a <body> swap", "status": "PASS" },
-    { "id": "SC-104", "test": "[SC-104] keeps working after a client-side navigation (body swap) — delegation is attached to the persistent document, no re-init needed", "status": "PASS" },
-    { "id": "SC-105", "test": "no longer ships an inline [data-scroll-top] click-binding script (SC-105)", "status": "PASS" },
-    { "id": "SC-106", "test": "[SC-106] scrolls smoothly to the top when the [data-scroll-top] button is clicked", "status": "PASS" },
-    { "id": "SC-107", "test": "contains the full logo height via responsive padding-bottom (SC-107)", "status": "PASS" },
-    { "id": "SC-108", "test": "renders the shared chrome: exactly one <header> landmark and the site <footer> (SC-108)", "status": "PASS" },
-    { "id": "SC-109", "test": "has no intermediate content: empty main, no hero image and no search form (SC-109)", "status": "PASS" }
+    { "id": "SC-001", "test": "[SC-001] render — heading above card / Riff logo / fields / button / flat card (unit) + [SC-001] renders the login card (E2E)", "status": "PASS" },
+    { "id": "SC-002", "test": "[SC-002] email validation — invalid email shows error state and message", "status": "PASS" },
+    { "id": "SC-003", "test": "[SC-003] password validation — invalid password shows error state and message", "status": "PASS" },
+    { "id": "SC-004", "test": "[SC-004] submit button enabled only when the form is valid", "status": "PASS" },
+    { "id": "SC-005", "test": "[SC-005] UI-only submit handler — prevents the native form submission", "status": "PASS" },
+    { "id": "SC-006", "test": "[SC-006] root path redirects to /login (E2E)", "status": "PASS" },
+    { "id": "SC-007", "test": "[SC-007] accessibility — label for/id and aria-describedby wiring", "status": "PASS" },
+    { "id": "SC-008", "test": "[SC-008] forgot-password link — renders clickable a href=\"#\" with aria-label", "status": "PASS" },
+    { "id": "SC-009", "test": "[SC-009] no horizontal overflow at mobile (375px) and desktop (1440px) (E2E)", "status": "PASS" }
   ]
 }
