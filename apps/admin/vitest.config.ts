@@ -5,7 +5,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     include: ['src/**/*.test.ts'],
-    setupFiles: [],
+    setupFiles: ['src/test-setup.ts'],
     // vitest 4 default pool serves test files via data: URLs, breaking
     // fileURLToPath(import.meta.url) in config-file tests. The 'forks'
     // pool loads files from disk so import.meta.url is a real file URL.
