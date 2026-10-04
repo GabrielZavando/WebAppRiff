@@ -69,23 +69,69 @@ describe('Header', () => {
     expect(html).not.toContain('w-[165px] h-[80px]');
   });
 
-  it('renders the five navigation items followed by the CTA in declared order', async () => {
+  it('renders the six navigation items followed by the CTA in declared order', async () => {
     const html = await render();
     const nav = getDesktopNav(html);
 
     const hrefs = [...nav.matchAll(/href="([^"]+)"/g)].map((m) => m[1] ?? '');
-    // Five nav items + CTA as the last item inside the nav
-    expect(hrefs).toEqual(['/', '/productos', '/servicios', '/marcas', '/contacto', '/cotizacion']);
+    // Six nav items + CTA as the last item inside the nav
+    expect(hrefs).toEqual(['/', '/nosotros', '/productos', '/servicios', '/marcas', '/contacto', '/cotizacion']);
 
     const labels = [...nav.matchAll(/>([^<>]+)<\/a>/g)].map((m) => (m[1] ?? '').trim());
     expect(labels).toEqual([
       'Inicio',
+      'Nosotros',
       'Productos',
       'Servicios',
       'Marcas',
       'Contacto',
       'SOLICITAR COTIZACIÓN',
     ]);
+  });
+
+  it('renders a "Nosotros" link pointing to /nosotros in the desktop nav (SC-006)', async () => {
+    const html = await render();
+    const nav = getDesktopNav(html);
+
+    expect(nav).toContain('href="/nosotros"');
+    expect(nav).toContain('>Nosotros</a>');
+  });
+
+  it('renders the six navigation items (Inicio, Nosotros, ...) followed by the CTA in declared order (SC-006)', async () => {
+    const html = await render();
+    const nav = getDesktopNav(html);
+
+    const hrefs = [...nav.matchAll(/href="([^"]+)"/g)].map((m) => m[1] ?? '');
+    // Six nav items + CTA as the last item inside the nav
+    expect(hrefs).toEqual([
+      '/',
+      '/nosotros',
+      '/productos',
+      '/servicios',
+      '/marcas',
+      '/contacto',
+      '/cotizacion',
+    ]);
+
+    const labels = [...nav.matchAll(/>([^<>]+)<\/a>/g)].map((m) => (m[1] ?? '').trim());
+    expect(labels).toEqual([
+      'Inicio',
+      'Nosotros',
+      'Productos',
+      'Servicios',
+      'Marcas',
+      'Contacto',
+      'SOLICITAR COTIZACIÓN',
+    ]);
+  });
+
+  it('marks the Nosotros item active on /nosotros in the desktop nav (SC-006)', async () => {
+    const html = await render({ ...baseProps, activePath: '/nosotros' });
+    const nav = getDesktopNav(html);
+
+    const nosotrosItem = nav.match(/<a[^>]*href="\/nosotros"[^>]*>/)?.[0] ?? '';
+    expect(nosotrosItem).toContain('aria-current="page"');
+    expect(nosotrosItem).toContain('after:h-[3px]');
   });
 
   it('renders the CTA as the last item inside the nav with accent styling unchanged', async () => {
@@ -204,6 +250,31 @@ describe('Header', () => {
     const labels = [...overlay.matchAll(/>([^<>]+)<\/a>/g)].map((m) => (m[1] ?? '').trim());
     expect(labels).toEqual([
       'Inicio',
+      'Nosotros',
+      'Productos',
+      'Servicios',
+      'Marcas',
+      'Contacto',
+      'SOLICITAR COTIZACIÓN',
+    ]);
+  });
+
+  it('renders a "Nosotros" link pointing to /nosotros in the mobile overlay menu (SC-006)', async () => {
+    const html = await render();
+    const overlay = getMobileNav(html);
+
+    expect(overlay).toContain('href="/nosotros"');
+    expect(overlay).toContain('>Nosotros</a>');
+  });
+
+  it('renders the fullscreen overlay with all six items + CTA as last item (SC-006)', async () => {
+    const html = await render();
+    const overlay = getMobileNav(html);
+
+    const labels = [...overlay.matchAll(/>([^<>]+)<\/a>/g)].map((m) => (m[1] ?? '').trim());
+    expect(labels).toEqual([
+      'Inicio',
+      'Nosotros',
       'Productos',
       'Servicios',
       'Marcas',
@@ -285,14 +356,17 @@ describe('Header', () => {
       expect(logoImg).toContain('site-logo');
     });
 
-    it('contains the full logo height via responsive padding-bottom (SC-107)', async () => {
+    it('contains the full logo height via responsive padding-bottom (SC-001)', async () => {
       const html = await render();
       const headerTag = html.match(/<header[^>]*>/)?.[0] ?? '';
       // The header box must include the 2× logo (200px mobile / 300px desktop
       // cap) — the padding-bottom makes the box at least as tall as the logo.
+      // Desktop relaxes to lg:pb-4 (client decision in ui-chrome-polish): the
+      // slight 2× logo overflow on desktop is accepted (SC-001).
       expect(headerTag).toContain('site-header');
       expect(headerTag).toContain('pb-10');
-      expect(headerTag).toContain('lg:pb-12');
+      expect(headerTag).toContain('lg:pb-4');
+      expect(headerTag).not.toContain('lg:pb-12');
     });
   });
 

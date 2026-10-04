@@ -63,6 +63,10 @@
   --color-info-dark: #1B74A6;
   --color-info-light: #E7F3FB;
 
+  /* ── Marca WhatsApp (2 tokens — botón flotante de contacto) ── */
+  --color-whatsapp: #25D366;
+  --color-whatsapp-dark: #1EBE5D;
+
   /* ── Tipografía ── */
   --font-heading: "Montserrat", sans-serif;
   --font-body: "Open Sans", sans-serif;

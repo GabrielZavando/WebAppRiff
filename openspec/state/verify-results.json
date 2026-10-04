@@ -1,20 +1,19 @@
 {
   "schema_version": 1,
-  "change": "header-scroll-restore",
-  "ticket_id": "fix/header-scroll-regressions-and-about-page",
+  "change": "ui-chrome-polish",
+  "ticket_id": "UI-FIX1",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-10-03T02:57:20Z",
-  "tasks": { "total": 13, "passed": 13, "failed": 0, "untested": 0 },
+  "timestamp": "2026-10-04T15:05:17Z",
+  "tasks": { "total": 20, "passed": 20, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-101", "test": "[SC-101] sets data-scrolled=\"true\" on the current body — not the init-time one — when scrolled after a <body> swap", "status": "PASS" },
-    { "id": "SC-102", "test": "[SC-102] re-applies the shrink/grow cycle (true→false) to the current body after a <body> swap", "status": "PASS" },
-    { "id": "SC-103", "test": "[SC-103] re-applies the compact state to the current body on astro:page-load after a <body> swap", "status": "PASS" },
-    { "id": "SC-104", "test": "[SC-104] keeps working after a client-side navigation (body swap) — delegation is attached to the persistent document, no re-init needed", "status": "PASS" },
-    { "id": "SC-105", "test": "no longer ships an inline [data-scroll-top] click-binding script (SC-105)", "status": "PASS" },
-    { "id": "SC-106", "test": "[SC-106] scrolls smoothly to the top when the [data-scroll-top] button is clicked", "status": "PASS" },
-    { "id": "SC-107", "test": "contains the full logo height via responsive padding-bottom (SC-107)", "status": "PASS" },
-    { "id": "SC-108", "test": "renders the shared chrome: exactly one <header> landmark and the site <footer> (SC-108)", "status": "PASS" },
-    { "id": "SC-109", "test": "has no intermediate content: empty main, no hero image and no search form (SC-109)", "status": "PASS" }
+    { "id": "SC-001", "test": "Header — contains the full logo height via responsive padding-bottom (SC-001)", "status": "PASS" },
+    { "id": "SC-002", "test": "SearchForm — transparent mode (home hero full-bleed background, SC-002)", "status": "PASS" },
+    { "id": "SC-003", "test": "SearchForm — non-hero background (solid bg-secondary, SC-003)", "status": "PASS" },
+    { "id": "SC-004", "test": "SearchForm — compact scroll contract (SC-004) > keeps the .site-search compact scroll rule in header-scroll.css (SC-004)", "status": "PASS" },
+    { "id": "SC-005", "test": "PanelHome — the <section> carries a uniform -mt-2 (8px overlap at every breakpoint), relative, and z-10, with NO md:-mt-2 nor positive lg:mt-2 (SC-005)", "status": "PASS" },
+    { "id": "SC-006", "test": "Header — renders a \"Nosotros\" link pointing to /nosotros in the desktop nav (SC-006)", "status": "PASS" },
+    { "id": "SC-007", "test": "WhatsAppButton — floating link (SC-007) > is fixed at the bottom-right corner (fixed bottom-6 right-6 z-20)", "status": "PASS" },
+    { "id": "SC-008", "test": "WhatsAppButton — icon-only (SC-007, SC-008)", "status": "PASS" }
   ]
 }

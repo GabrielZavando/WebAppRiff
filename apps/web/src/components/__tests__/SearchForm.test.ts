@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import SearchForm from '@/components/SearchForm.astro';
 import { getSearchFormConfig } from '@/lib/config/search-form';
@@ -340,12 +341,14 @@ describe('SearchForm — snapshot', () => {
   });
 });
 
-describe('SearchForm — transparent mode (home hero full-bleed background)', () => {
+describe('SearchForm — transparent mode (home hero full-bleed background, SC-002)', () => {
   it('removes the white wrapper background and bottom border in transparent mode', async () => {
     const html = await renderTransparent();
     const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
 
     const wrapperClass = wrapper.match(/class="([^"]*)"/)?.[1] ?? '';
+    // Hero pages (`/`, `/servicios`) render the fully transparent wrapper (SC-002).
+    expect(wrapperClass).toContain('bg-transparent');
     expect(wrapperClass).not.toContain('bg-white');
     expect(wrapperClass).not.toContain('border-gray-200');
 
@@ -353,6 +356,13 @@ describe('SearchForm — transparent mode (home hero full-bleed background)', ()
     // no longer carries border-b on its own. Controls (select/input) keep
     // their white fields, so the assertion targets the wrapper/border only.
     expect(wrapperClass).not.toContain('border-b');
+    // The transparent state must not fall back to the solid secondary wrapper
+    // nor to the removed navy gradient (SC-002).
+    expect(wrapperClass).not.toContain('bg-secondary');
+    expect(wrapperClass).not.toContain('border-border');
+    expect(wrapperClass).not.toContain('bg-linear-to-r');
+    expect(wrapperClass).not.toContain('from-secondary');
+    expect(wrapperClass).not.toContain('to-secondary-light');
   });
 
   it('keeps the form, select, input and submit button in transparent mode', async () => {
@@ -378,12 +388,21 @@ describe('SearchForm — transparent mode (home hero full-bleed background)', ()
     expect(getButton(html)).not.toContain('bg-accent');
   });
 
-  it('defaults to the white background wrapper when transparent is not set', async () => {
+  it('defaults to the solid bg-secondary wrapper when transparent is not set (non-hero)', async () => {
     const html = await render();
     const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
+    const wrapperClass = wrapper.match(/class="([^"]*)"/)?.[1] ?? '';
 
-    expect(wrapper).toContain('bg-white');
-    expect(html).toContain('border-border');
+    // Non-hero pages (`/productos`, `/productos/{slug}`, 404 fallback) render
+    // the uniform solid --color-secondary wrapper (SC-003). The white wrapper
+    // with its bottom border and the old navy gradient no longer exist.
+    expect(wrapperClass).toContain('bg-secondary');
+    expect(wrapperClass).not.toContain('bg-white');
+    expect(wrapperClass).not.toContain('border-b');
+    expect(wrapperClass).not.toContain('border-border');
+    expect(wrapperClass).not.toContain('bg-linear-to-r');
+    expect(wrapperClass).not.toContain('from-secondary');
+    expect(wrapperClass).not.toContain('to-secondary-light');
   });
 
   it('select, input and button do not use rounded* utility (flat radio 0)', async () => {
@@ -408,15 +427,6 @@ describe('SearchForm — compact scroll state class (site-header-scroll-animatio
   });
 });
 
-async function renderSecondary(
-  props: SearchFormProps = baseProps,
-): Promise<string> {
-  const container = await AstroContainer.create();
-  return container.renderToString(SearchForm, {
-    props: { ...props, secondaryBg: true },
-  });
-}
-
 async function renderWithoutSelect(
   props: SearchFormProps = baseProps,
 ): Promise<string> {
@@ -426,54 +436,31 @@ async function renderWithoutSelect(
   });
 }
 
-describe('SearchForm — secondary background variant (search-bar-pages-scope)', () => {
-  it('renders the header gradient wrapper when secondaryBg is true', async () => {
-    const html = await renderSecondary();
+describe('SearchForm — non-hero background (solid bg-secondary, SC-003)', () => {
+  it('renders the solid bg-secondary wrapper on non-hero pages (default)', async () => {
+    const html = await render();
     const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
     const wrapperClass = wrapper.match(/class="([^"]*)"/)?.[1] ?? '';
-    // The navy variant reuses the SAME left-to-right gradient as the site
-    // <Header> (`bg-linear-to-r from-secondary to-secondary-light`) so the
-    // adjacent header/search surfaces blend into one continuous surface.
-    expect(wrapperClass).toContain('bg-linear-to-r');
-    expect(wrapperClass).toContain('from-secondary');
-    expect(wrapperClass).toContain('to-secondary-light');
-    // It must NOT be the flat --color-secondary token, nor the white wrapper.
-    expect(wrapperClass).not.toContain('bg-secondary');
+
+    // Non-hero pages get the flat --color-secondary token (uniform color rule,
+    // reference: Inicio). The old header gradient and the white wrapper with
+    // its bottom border are gone, and no literal hex may appear in the class.
+    expect(wrapperClass).toContain('bg-secondary');
+    expect(wrapperClass).not.toContain('bg-linear-to-r');
+    expect(wrapperClass).not.toContain('from-secondary');
+    expect(wrapperClass).not.toContain('to-secondary-light');
     expect(wrapperClass).not.toContain('bg-white');
     expect(wrapperClass).not.toContain('border-b');
-    expect(wrapperClass).not.toContain('bg-transparent');
-    // No raw hex: the navy color comes from the --color-secondary token.
-    expect(wrapperClass).not.toContain('#1F2D40');
+    expect(wrapperClass).not.toContain('border-border');
+    expect(wrapperClass).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
   });
 
-  it('keeps white controls and the primary button in secondary mode', async () => {
-    const html = await renderSecondary();
+  it('keeps white controls and the primary button on non-hero pages', async () => {
+    const html = await render();
     expect(getSelect(html)).toContain('bg-white');
     expect(getInput(html)).toContain('bg-white');
     expect(getButton(html)).toContain('bg-primary');
     expect(getButton(html)).not.toContain('bg-accent');
-  });
-
-  it('keeps the white wrapper by default (secondaryBg false)', async () => {
-    const html = await render();
-    const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
-    const wrapperClass = wrapper.match(/class="([^"]*)"/)?.[1] ?? '';
-    expect(wrapperClass).toContain('bg-white');
-    expect(wrapperClass).toContain('border-b');
-    expect(wrapperClass).not.toContain('bg-secondary');
-    expect(wrapperClass).not.toContain('bg-linear-to-r');
-  });
-
-  it('transparent takes precedence over secondaryBg', async () => {
-    const container = await AstroContainer.create();
-    const html = await container.renderToString(SearchForm, {
-      props: { ...baseProps, transparent: true, secondaryBg: true },
-    });
-    const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
-    const wrapperClass = wrapper.match(/class="([^"]*)"/)?.[1] ?? '';
-    expect(wrapperClass).toContain('bg-transparent');
-    expect(wrapperClass).not.toContain('bg-secondary');
-    expect(wrapperClass).not.toContain('bg-linear-to-r');
   });
 });
 
@@ -498,5 +485,28 @@ describe('SearchForm — hide category select (search-bar-pages-scope)', () => {
   it('still renders the select by default (showCategorySelect true)', async () => {
     const html = await render();
     expect(html).toContain('name="categoriaId"');
+  });
+});
+
+describe('SearchForm — compact scroll contract (SC-004)', () => {
+  it('keeps the site-search wrapper class in the compact scroll state (SC-004)', async () => {
+    const html = await render();
+    const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
+    expect(wrapper).toContain('site-search');
+  });
+
+  it('keeps the .site-search compact scroll rule in header-scroll.css (SC-004)', async () => {
+    const css = readFileSync(
+      new URL('../../styles/header-scroll.css', import.meta.url),
+      'utf8',
+    );
+    expect(css).toContain("body[data-scrolled='true'] .site-search");
+    expect(css).toContain('background-color: var(--color-secondary)');
+    expect(css).toContain('transition: background-color 300ms ease-in-out');
+    const reducedMotionBlock = css.match(
+      /@media \(prefers-reduced-motion: reduce\) \{[\s\S]*?\}/,
+    )?.[0] ?? '';
+    expect(reducedMotionBlock).toContain('.site-search');
+    expect(reducedMotionBlock).toContain('transition: none');
   });
 });

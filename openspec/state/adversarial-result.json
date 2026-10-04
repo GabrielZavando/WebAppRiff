@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "change": "header-scroll-restore",
-  "ticket_id": "fix/header-scroll-regressions-and-about-page",
+  "change": "ui-chrome-polish",
+  "ticket_id": "UI-FIX1",
   "verdict": "SHIP",
   "confidence": 0.85,
-  "timestamp": "2026-10-03T03:06:13Z",
+  "timestamp": "2026-10-04T15:17:35Z",
   "findings": {
-    "total": 3,
+    "total": 5,
     "critical": 0,
-    "warnings": 1,
-    "info": 2,
-    "discarded": 1
+    "warnings": 2,
+    "info": 3,
+    "discarded": 0
   }
 }

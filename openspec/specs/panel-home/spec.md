@@ -76,26 +76,6 @@ The `panel-home` SHALL compose its two halves in a responsive grid: on mobile (`
 - **THEN** the outermost panel grid carries a class expressing two columns (e.g. `lg:grid-cols-2`)
 - **AND** the left half and the right half each occupy ~50% of the panel width
 
-### Requirement: PanelHome sits 8px below the HeroBanner on desktop (no overlap) via positive margin-top
-The `panel-home` outermost `<section>` SHALL carry a `margin-top` and `position: relative` with a positive `z-index` (e.g. `z-10`). On desktop (`lg` >= 1024px) the section SHALL carry `lg:mt-2` (a positive 8px margin-top, so the panel starts 8px below the banner's bottom edge — no overlap). On smaller viewports the panel SHALL keep a small 8px overlap at `-mt-2 md:-mt-2` (negative margin-top, per the client's earlier review of the mobile/tablet look). The separation/gap SHALL be purely visual (CSS) and SHALL NOT modify the HeroBanner component or its rendered HTML. This refines the previously archived requirement (which targeted ~50% overlap with `-mt-16 md:-mt-24 lg:-mt-32`) down through ~25%, ~10%, a minimal `~4px` overlap, a 24px overlap, a 16px overlap, a 16px GAP, an 8px GAP and an 8px OVERLAP, to a final 8px GAP below the banner on desktop (`lg:mt-2`) per client review ("dejarlo en 8px" — adjusted from overlap to gap after confirming a positive margin seats the panel lower, not higher).
-
-#### Scenario: Panel section carries a desktop margin-top that separates it from the banner (8px gap)
-- **WHEN** the PanelHome renders
-- **THEN** the outermost `<section>` carries `-mt-2` and `md:-mt-2` (mobile/tablet keep a small 8px overlap)
-- **AND** the `<section>` carries `lg:mt-2` (8px gap below the banner on desktop, no overlap)
-- **AND** the `<section>` carries a `relative` positioning class
-- **AND** the `<section>` carries a positive z-index class (e.g. `z-10`)
-
-#### Scenario: PanelHome is rendered after the HeroBanner in the DOM
-- **WHEN** the home page `/` renders
-- **THEN** the rendered HTML contains the HeroBanner `<section>` followed by the PanelHome `<section>`
-- **AND** the PanelHome `<section>` appears exactly once in the document
-
-#### Scenario: HeroBanner HTML is not modified by the PanelHome
-- **WHEN** the home page `/` renders with both HeroBanner and PanelHome
-- **THEN** the HeroBanner `<section>` carries the same set of classes it would carry when rendered alone
-- **AND** the HeroBanner headline, subtitle and CTAs render with the same text and classes as in the `banner-home` change
-
 ### Requirement: PanelHome is keyboard and screen-reader accessible
 The `panel-home` SHALL use semantic HTML so it is operable with the keyboard and consumable by screen readers without extra ARIA attributes: the panel headline is `<h2>` (subordinate to the hero `<h1>`), the CTA is a focusable `<a>`, and no decorative element emits aria noise.
 
@@ -160,7 +140,6 @@ The `panel-home` left half (`<div>` carrying `bg-primary`) SHALL use reduced inn
 - **WHEN** the PanelHome renders the left (bg-primary) half
 - **THEN** the left half `<div>` carries `lg:p-12`
 - **AND** the left half `<div>` does NOT carry `lg:p-16`
-
 
 ### Requirement: PanelHome renders with a static elevation shadow on its main grid
 The `panel-home` main grid element (`<div class="grid grid-cols-1 lg:grid-cols-2">`, the element that wraps the teal + white halves) SHALL apply a static `box-shadow` with the value `0 10px 30px rgba(22, 32, 46, 0.3)` (the same elevation used by the compact scroll header shell), visible at all times regardless of scroll position. The shadow value SHALL resolve from the global CSS token `--shadow-scroll-shell` (promoted to `globals.css` `@theme`), which the `.header-scroll-shell` rule SHALL also consume. This is a documented exception to the flat-design rule that otherwise forbids `shadow*` on base components in their static state.
@@ -237,3 +216,14 @@ Because the divider is rendered via CSS Grid gaps (not as separate DOM elements)
 - **WHEN** the rendered DOM is inspected by assistive technologies
 - **THEN** the four stat `<p>` values and labels remain unmodified in text and accessible order
 - **AND** because the divider is rendered via CSS Grid gaps (no separate DOM elements), no `aria-hidden` attribute is required: gaps are not exposed to the accessibility tree
+
+### Requirement: PanelHome elevates 8px above the HeroBanner via uniform negative margin-top
+The PanelHome `<section>` SHALL carry a uniform `-mt-2` (−8px at every breakpoint) so the elevated card (`.panel-home-elevated`) overlaps the HeroBanner bottom edge by 8px at all breakpoints; on desktop (≥1024px) this places the card 16px closer to the top than the previous +8px positive offset (client decision, desktop-only change; mobile/tablet unchanged at −8px). The `z-10` overlap stacking SHALL be preserved. (ADDED in `ui-chrome-polish`.)
+
+#### Scenario: SC-005 — panel card is 16px higher on desktop
+- **WHEN** the home page renders the PanelHome section
+- **THEN** the `<section data-panel-home>` carries `relative -mt-2 z-10`
+- **AND** the section does NOT carry a positive `lg:mt-2` offset nor a redundant `md:-mt-2`
+- **AND** on desktop (≥1024px) the card sits 8px above the hero bottom edge — 16px closer to the top than before
+- **AND** on mobile/tablet the offset stays −8px (unchanged)
+

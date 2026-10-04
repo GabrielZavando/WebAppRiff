@@ -6,7 +6,7 @@ This file documents the canonical design tokens and icon catalog for the Riff Ca
 
 ## Design Tokens
 
-### Marca (13 tokens)
+### Marca (15 tokens)
 
 | Token CSS | HEX | Tailwind Utility | Semantic Role |
 |---|---|---|---|
@@ -23,6 +23,8 @@ This file documents the canonical design tokens and icon catalog for the Riff Ca
 | `--color-accent-dark` | `#D14E12` | `-dark` | Naranja oscuro |
 | `--color-accent-darker` | `#B03E0E` | `-darker` | Naranja muy oscuro |
 | `--color-accent-light` | `#FDE8DC` | `-light` | Naranja claro |
+| `--color-whatsapp` | `#25D366` | `bg-whatsapp`, `text-whatsapp`, `border-whatsapp` | WhatsApp brand · botón flotante de contacto |
+| `--color-whatsapp-dark` | `#1EBE5D` | `-dark` | WhatsApp oscuro · hover del botón flotante |
 
 ### Neutros (6 tokens)
 
@@ -70,7 +72,10 @@ This file documents the canonical design tokens and icon catalog for the Riff Ca
 
 ## Catálogo de Iconos
 
-Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI funcionales como a iconos de marca/redes sociales (uniformados al set Lucide). Los sets `material-symbols`, `logos` y `simple-icons` quedan **obsoletos** (prohibidos en código nuevo), **excepto** `simple-icons:x` que es la única excepción documentada — utilizada para el logo de marca oficial de X, ya que Lucide no provee el logo actual de X (el `lucide:x` existente es el icono de cerrar, no la marca).
+Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI funcionales como a iconos de marca/redes sociales (uniformados al set Lucide). Los sets `material-symbols`, `logos` y `simple-icons` quedan **obsoletos** (prohibidos en código nuevo), **excepto** dos excepciones documentadas vía `simple-icons`:
+
+- `simple-icons:x` — logo de marca oficial de X: Lucide no provee el logo actual de X (el `lucide:x` existente es el icono de cerrar, no la marca).
+- `simple-icons:whatsapp` — logo de marca de WhatsApp: Lucide no provee icono de marca de WhatsApp; se usa en el botón flotante global de contacto `WhatsAppButton.astro` (change `ui-chrome-polish`).
 
 ### Mapeo de los 5 componentes base
 
@@ -84,7 +89,7 @@ Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI func
 | `menu` | `lucide:menu` | Hamburguesa menú móvil |
 | `close` | `lucide:x` | Cerrar menú móvil |
 
-### Catálogo completo (21 iconos mínimos)
+### Catálogo completo (22 iconos mínimos)
 
 | Referencia | Icono (Iconify name) | Uso |
 |---|---|---|
@@ -102,6 +107,7 @@ Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI func
 | `clock` | `lucide:clock` | Reloj / tiempo |
 | `star` | `lucide:star` | Estrella / favorito |
 | `bookmark` | `lucide:bookmark` | Marcador |
+| `whatsapp` | `simple-icons:whatsapp` | Botón flotante global de contacto WhatsApp — excepción al set único Lucide |
 
 > **Nota:** Único set base: `lucide`. Los alias antiguos de Lucide (`alert-triangle`, `alert-circle`, `more-vertical`, `x-circle`) siguen resolviéndose en `@iconify-json/lucide`, pero se documentan los nombres canónicos actuales (`triangle-alert`, `circle-alert`, `ellipsis-vertical`, `x`).
 

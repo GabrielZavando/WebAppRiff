@@ -1,15 +1,16 @@
 import type { NavItem, CtaConfig } from '@/lib/types/header';
 
 /**
- * Hardcoded main menu. Five fixed items are not worth external config in an
+ * Hardcoded main menu. Six fixed items are not worth external config in an
  * SSG: any change requires a rebuild anyway.
  *
- * Nav items: Inicio, Productos, Servicios, Marcas, Contacto.
+ * Nav items: Inicio, Nosotros, Productos, Servicios, Marcas, Contacto.
  * The CTA ("SOLICITAR COTIZACIÓN") renders inside the <nav> as the last item
  * (see Header.astro), preserving its bg-accent styling.
  */
 export const NAVIGATION_ITEMS: readonly NavItem[] = [
   { label: 'Inicio', href: '/' },
+  { label: 'Nosotros', href: '/nosotros' },
   { label: 'Productos', href: '/productos' },
   { label: 'Servicios', href: '/servicios' },
   { label: 'Marcas', href: '/marcas' },

@@ -5,6 +5,7 @@ import Header from '@/components/Header.astro';
 import SearchForm from '@/components/SearchForm.astro';
 import Footer from '@/components/Footer.astro';
 import SiteCredits from '@/components/SiteCredits.astro';
+import WhatsAppButton from '@/components/WhatsAppButton.astro';
 import { getContactInfo } from '@/lib/config/contact';
 import { NAVIGATION_ITEMS, getCtaConfig } from '@/lib/config/navigation';
 import { getSearchFormConfig } from '@/lib/config/search-form';
@@ -35,11 +36,6 @@ interface Props {
    * group. Used by pages like /contacto that manage their own layout and must
    * not show the catalog search (design decision). Defaults to true. */
   showSearch?: boolean;
-  /** Passed through to the search bar (see SearchFormProps.secondaryBg): navy
-   * (`bg-secondary`, #1F2D40) wrapper on Productos/Servicios/Cotización and the
-   * product-detail pages so the bar matches the brand navy surfaces. Defaults
-   * to false (white wrapper). */
-  searchSecondary?: boolean;
   /** Passed through to the search bar (see SearchFormProps.showCategorySelect):
    * hides the category `<select>` (e.g. /productos, which has its own sidebar
    * filter). Defaults to true. */
@@ -52,7 +48,6 @@ const {
   hero = false,
   heroImage = defaultHeroImage,
   showSearch = true,
-  searchSecondary = false,
   searchShowCategorySelect = true,
 } = Astro.props;
 // AstroContainer tests have no `site` configured; in real builds the astro
@@ -78,7 +73,6 @@ const searchFormProps: SearchFormProps = {
   config: getSearchFormConfig(),
   initialQuery: Astro.url.searchParams.get('q') ?? '',
   initialCategoriaId: Astro.url.searchParams.get('categoriaId') ?? '',
-  secondaryBg: searchSecondary,
   showCategorySelect: searchShowCategorySelect,
 };
 ---
@@ -138,6 +132,7 @@ const searchFormProps: SearchFormProps = {
       <slot />
       <Footer {...SITE_FOOTER_CONTENT} />
       <SiteCredits {...SITE_CREDITS_CONTENT} />
+      <WhatsAppButton />
     </div>
 
     <!-- Compact scroll state: toggles `data-scrolled` on <body> on scroll.
