@@ -122,7 +122,6 @@ describe('Layout — global View Transitions (view-transitions spec)', () => {
 type LayoutSearchProps = {
   hero?: boolean;
   showSearch?: boolean;
-  searchSecondary?: boolean;
   searchShowCategorySelect?: boolean;
 };
 
@@ -137,33 +136,19 @@ async function renderLayout(props: LayoutSearchProps = {}): Promise<string> {
     .replace(/<script[\s\S]*?<\/script>/g, '');
 }
 
-function getSearchWrapperClass(html: string): string {
-  const wrapper = html.match(/<div role="search"[^>]*>/)?.[0] ?? '';
-  return wrapper.match(/class="([^"]*)"/)?.[1] ?? '';
-}
+describe('Layout — global floating WhatsApp CTA (SC-007)', () => {
+  it('renders the WhatsApp button on every page', async () => {
+    const html = await renderDefaultLayout();
+    // WhatsAppButton is a global fixed-position CTA wired into the single
+    // layout composition point, so it must be present on every rendered page.
+    expect(html).toContain('href="https://wa.me/56937526162"');
+  });
+});
 
 describe('Layout — search visibility & variant (search-bar-pages-scope)', () => {
   it('omits the search landmark when showSearch is false', async () => {
     const html = await renderLayout({ showSearch: false });
     expect(html).not.toContain('role="search"');
-  });
-
-  it('renders the navy (header gradient) search wrapper when searchSecondary is true', async () => {
-    const html = await renderLayout({ searchSecondary: true });
-    const wrapperClass = getSearchWrapperClass(html);
-    expect(wrapperClass).toContain('bg-linear-to-r');
-    expect(wrapperClass).toContain('from-secondary');
-    expect(wrapperClass).toContain('to-secondary-light');
-    expect(wrapperClass).not.toContain('bg-secondary');
-    expect(wrapperClass).not.toContain('bg-white');
-  });
-
-  it('renders the white search wrapper by default (searchSecondary false)', async () => {
-    const html = await renderLayout({});
-    const wrapperClass = getSearchWrapperClass(html);
-    expect(wrapperClass).toContain('bg-white');
-    expect(wrapperClass).not.toContain('bg-secondary');
-    expect(wrapperClass).not.toContain('bg-linear-to-r');
   });
 
   it('hides the category select when searchShowCategorySelect is false', async () => {
