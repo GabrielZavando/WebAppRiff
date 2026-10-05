@@ -1,8 +1,5 @@
-# audit-blocking Specification
+## MODIFIED Requirements
 
-## Purpose
-Auditoría de dependencias bloqueante (scripts/audit.mjs): suppressions declarativas vía npm-audit-suppressions.json, expiración por revokedAt, camino suave (warning) para devDependencies high y bloqueo siempre para critical.
-## Requirements
 ### Requirement: The system SHALL support declarative suppressions via JSON file
 
 El sistema SHALL soportar un archivo `npm-audit-suppressions.json` con suppressions en formato `{ id, reason, revokedAt?, review_by? }` que permita excluir vulnerabilidades conocidas del conteo de fallo. `revokedAt` y `review_by` son fechas ISO-8601 UTC opcionales.
@@ -38,6 +35,8 @@ Una suppression con `revokedAt` en el pasado SHALL tratarse como si no existiera
 - **WHEN** se ejecuta `npm run audit`
 - **THEN** el script falla con un mensaje que menciona el id de la supresión y el valor inválido
 - **AND** retorna código distinto de 0
+
+## ADDED Requirements
 
 ### Requirement: Suppressions SHALL expire automatically via review_by
 
@@ -86,43 +85,3 @@ El archivo `npm-audit-suppressions.json` SHALL contener `review_by` con fecha fu
 - **WHEN** se inspeccionan las entradas con `revokedAt` nulo
 - **THEN** cada una de las 95 entradas tiene un campo `review_by` con fecha en el futuro
 - **AND** la entrada con `revokedAt` programado no requiere `review_by`
-
-### Requirement: devDependencies SHALL have a soft path (Warning only)
-
-Las vulnerabilidades high que afectan solo a devDependencies SHALL emitir WARNING pero no fallar. Las vulnerabilidades critical SIEMPRE SHALL fallar sin importar si son devDependencies.
-
-#### Scenario: SC-204 — devDependencies tienen camino suave (Warning)
-
-- **GIVEN** una vulnerabilidad high que afecta SOLO a devDependencies (no a dependencies)
-- **WHEN** se ejecuta `npm run audit`
-- **THEN** el script emite un WARNING con la información de la vuln
-- **BUT** no retorna código distinto de 0 (no falla)
-
-#### Scenario: SC-205 — critical siempre bloquea sin importar devDependencies
-
-- **GIVEN** una vulnerabilidad critical en devDependencies
-- **WHEN** se ejecuta `npm run audit`
-- **THEN** el script retorna código distinto de 0 (falla)
-- **AND** el mensaje indica que critical siempre bloquea
-
-### Requirement: CI SHALL execute the blocking audit step
-
-El paso de audit en `.github/workflows/ci.yml` SHALL ejecutar `npm run audit` sin `|| true`, de modo que el gate sea realmente bloqueante.
-
-#### Scenario: SC-207 — CI project-ci refleja el gate duro
-
-- **GIVEN** el job `project-ci` en `.github/workflows/ci.yml`
-- **WHEN** un PR contiene una vulnerabilidad high/critical sin suppression
-- **THEN** el job `project-ci` falla
-- **AND** el PR queda bloqueado para merge
-
-### Requirement: Makefile SHALL remain untouched and functional
-
-El Makefile (intocable) SHALL seguir funcionando sin cambios. El target `audit` del Makefile tiene su propio `|| true` que no se modifica.
-
-#### Scenario: SC-206 — Makefile sigue funcionando (intocable)
-
-- **GIVEN** el Makefile sin modificar
-- **WHEN** se ejecuta `make ci`
-- **THEN** el target `audit` completa sin error (el `|| true` interno del Makefile sigue activo)
-

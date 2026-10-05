@@ -13,6 +13,9 @@
  * - SC-203: Expires suppressions via revokedAt
  * - SC-204: Soft path for devDependencies (WARNING only)
  * - SC-205: Critical always blocks
+ * - SC-208/SC-209: Expires suppressions via review_by (future = active)
+ * - SC-210: Suppression without review_by stays active
+ * - SC-213/SC-214: Invalid dates in review_by/revokedAt fail loudly
  */
 
 import { execFile } from 'node:child_process';
@@ -42,7 +45,7 @@ export async function loadRootDevDependencies() {
 
 /**
  * Load suppressions from JSON file.
- * @returns {Promise<Array<{id: string, reason: string, revokedAt: string | null}>>}
+ * @returns {Promise<Array<{id: string, reason: string, revokedAt: string | null, review_by: string | null}>>}
  */
 export async function loadSuppressions() {
   try {
@@ -55,14 +58,44 @@ export async function loadSuppressions() {
 }
 
 /**
+ * Strict ISO-8601 UTC pattern (YYYY-MM-DDTHH:mm:ssZ).
+ */
+const ISO_8601_UTC_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
+const EXPECTED_DATE_FORMAT = 'ISO-8601 UTC (YYYY-MM-DDTHH:mm:ssZ)';
+
+/**
+ * Validate and parse a suppression date field (fail-loud).
+ * Throws when the value is present but not a valid ISO-8601 UTC date.
+ * @param {{ id?: string }} suppression
+ * @param {string} field
+ * @param {string | null} value
+ * @returns {Date | null}
+ */
+function parseSuppressionDate(suppression, field, value) {
+  if (value === null || value === undefined) return null;
+  if (!ISO_8601_UTC_PATTERN.test(value) || Number.isNaN(Date.parse(value))) {
+    throw new Error(
+      `Suppression "${suppression.id}" has invalid ${field}: "${value}". ` +
+      `Expected format: ${EXPECTED_DATE_FORMAT}.`
+    );
+  }
+  return new Date(value);
+}
+
+/**
  * Check if a suppression is active (not expired).
- * @param {{ revokedAt: string | null }} suppression
+ * revokedAt (manual revocation) and review_by (review deadline) are
+ * independent and cumulative: the suppression is active only when neither
+ * date is in the past. Invalid dates fail loudly (SC-213, SC-214).
+ * @param {{ id?: string, revokedAt: string | null, review_by?: string | null }} suppression
  * @returns {boolean}
  */
 export function isSuppressionActive(suppression) {
-  if (!suppression.revokedAt) return true;
-  const revokedDate = new Date(suppression.revokedAt);
-  return revokedDate > new Date();
+  const revokedDate = parseSuppressionDate(suppression, 'revokedAt', suppression.revokedAt);
+  const reviewDate = parseSuppressionDate(suppression, 'review_by', suppression.review_by);
+  if (revokedDate && revokedDate <= new Date()) return false;
+  if (reviewDate && reviewDate <= new Date()) return false;
+  return true;
 }
 
 /**
