@@ -4,7 +4,7 @@ import { Icon } from 'astro-icon/components';
 
 interface Props extends SearchFormProps {
   /** Transparent wrapper on the home hero so the full-bleed image shows
-   * through (default solid white wrapper). Controls keep their white fields. */
+   * through (default solid secondary wrapper). Controls keep their white fields. */
   transparent?: boolean;
 }
 
@@ -14,7 +14,6 @@ const {
   initialQuery = '',
   initialCategoriaId = '',
   transparent = false,
-  secondaryBg = false,
   showCategorySelect = true,
 } = Astro.props;
 
@@ -43,17 +42,20 @@ function isSelected(categoryId: string): boolean {
   getSearchFormConfig(). Wrapped in a role="search" landmark so it doesn't
   introduce a new <header> landmark (single-header rule inherited from the
   site-header change).
+
+  Wrapper background — two states only (SC-002/SC-003):
+  - transparent=true (hero pages: `/`, `/servicios`): `bg-transparent` so the
+    full-bleed hero image shows through.
+  - default (every non-hero page): solid `bg-secondary` (var(--color-secondary)),
+    the uniform color rule referenced from Inicio's compact state. No white
+    wrapper, no bottom border, no gradient.
 -->
 <div
   role="search"
   aria-label="Buscar productos"
   class:list={[
     'site-search',
-    transparent
-      ? 'bg-transparent'
-      : secondaryBg
-        ? 'bg-linear-to-r from-secondary to-secondary-light'
-        : 'bg-white border-b border-border',
+    transparent ? 'bg-transparent' : 'bg-secondary',
   ]}
 >
   <!-- Inner container: 760px max-width centered. `px-4` adds horizontal

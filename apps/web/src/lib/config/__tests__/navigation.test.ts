@@ -14,9 +14,10 @@ afterEach(() => {
 });
 
 describe('NAVIGATION_ITEMS', () => {
-  it('contains the 5 menu items in the declared order', () => {
+  it('contains the 6 menu items in the declared order', () => {
     expect(NAVIGATION_ITEMS.map(item => item.label)).toEqual([
       'Inicio',
+      'Nosotros',
       'Productos',
       'Servicios',
       'Marcas',
@@ -27,11 +28,23 @@ describe('NAVIGATION_ITEMS', () => {
   it('declares the expected hrefs', () => {
     expect(NAVIGATION_ITEMS.map(item => item.href)).toEqual([
       '/',
+      '/nosotros',
       '/productos',
       '/servicios',
       '/marcas',
       '/contacto',
     ]);
+  });
+
+  it('includes the Nosotros item with href /nosotros placed after Inicio (SC-006)', () => {
+    const labels = NAVIGATION_ITEMS.map(item => item.label);
+    expect(labels).toContain('Nosotros');
+
+    const nosotrosItem = NAVIGATION_ITEMS.find(item => item.href === '/nosotros');
+    expect(nosotrosItem).toEqual({ label: 'Nosotros', href: '/nosotros' });
+
+    // Placed right after "Inicio" (index 0) per the SC-006 contract
+    expect(labels.indexOf('Nosotros')).toBe(1);
   });
 });
 

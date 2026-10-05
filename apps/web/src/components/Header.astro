@@ -21,15 +21,17 @@ const logoAltText = logoAlt ?? 'Riff';
 
 <!-- Main site header: logo (2x with overflow), right-aligned desktop nav with
      CTA as the last item, and a fullscreen mobile overlay with slide animation.
-     `pb-10 lg:pb-12` gives the header box enough bottom padding to contain the
-     full 2× logo height (SC-107): mobile 80px (h-20) + 40px ≥ ~81px logo at the
-     200px cap; desktop 96px (lg:h-24) + 48px ≥ ~122px logo at the 300px cap. -->
+     `pb-10 lg:pb-4` is the client decision ("así se ve mejor"): mobile keeps
+     80px (h-20) + 40px (pb-10) ≥ ~81px logo at the 200px cap (full containment);
+     desktop relaxes to 96px (lg:h-24) + 16px (lg:pb-4) = 112px vs ~122px logo at
+     the 300px cap — a slight visual overflow of the 2× logo on desktop explicitly
+     accepted by the client (SC-001). -->
 <header
   data-menu-open="false"
   class:list={[
     'site-header',
     'text-white',
-    'pb-10 lg:pb-12',
+    'pb-10 lg:pb-4',
     transparent ? 'bg-transparent' : 'bg-linear-to-r from-secondary to-secondary-light',
   ]}
 >
