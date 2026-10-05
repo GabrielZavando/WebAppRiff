@@ -66,6 +66,22 @@ Reglas del flujo:
   npm workspaces).
 - husky + commitlint — conventional commits en `git commit`.
 
+### Formato de supresiones de audit (`npm-audit-suppressions.json`)
+
+Cada entrada usa el formato `{ id, reason, revokedAt?, review_by? }`. Las fechas
+son ISO-8601 UTC (`YYYY-MM-DDTHH:mm:ssZ`).
+
+- `revokedAt` — revocación manual explícita. Si está en el pasado, la supresión
+  deja de aplicarse y la vulnerabilidad vuelve a bloquear el gate.
+- `review_by` — fecha de revisión trimestral. Si está en el pasado, la supresión
+  caduca automáticamente y la vulnerabilidad vuelve a bloquear el gate.
+- Ambos campos son independientes y acumulativos: la supresión es activa solo si
+  ninguna de las dos fechas está en el pasado. Una supresión sin `review_by` no
+  caduca por esta vía (compatibilidad con el formato previo).
+- **Fail-loud**: si `revokedAt` o `review_by` contiene un valor no parseable
+  como fecha válida, `npm run audit` falla con mensaje explícito (id de la
+  supresión + valor inválido) en lugar de tratar la supresión como activa.
+
 ## 5. No negociable
 
 1. Una tarea a la vez. Nunca saltar pasos.

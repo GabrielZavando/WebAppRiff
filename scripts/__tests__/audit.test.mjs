@@ -109,6 +109,46 @@ describe('audit.mjs', () => {
     });
   });
 
+  describe('SC-208: Suppressions expire with review_by', () => {
+    it('should NOT suppress vulns with past review_by', async () => {
+      const auditData = {
+        vulnerabilities: {
+          'test-package': {
+            severity: 'high',
+            via: [{ url: 'GHSA-xxxx-xxxx-xxxx' }],
+          },
+        },
+      };
+      const suppressions = [
+        { id: 'GHSA-xxxx-xxxx-xxxx', reason: 'Expired', revokedAt: null, review_by: '2020-01-01T00:00:00Z' },
+      ];
+      
+      const result = analyzeVulnerabilities(auditData, suppressions);
+      
+      expect(result.blocking).toHaveLength(1);
+      expect(result.suppressed).toHaveLength(0);
+    });
+
+    it('should suppress vulns with future review_by', async () => {
+      const auditData = {
+        vulnerabilities: {
+          'test-package': {
+            severity: 'high',
+            via: [{ url: 'GHSA-xxxx-xxxx-xxxx' }],
+          },
+        },
+      };
+      const suppressions = [
+        { id: 'GHSA-xxxx-xxxx-xxxx', reason: 'Active', revokedAt: null, review_by: '2030-01-01T00:00:00Z' },
+      ];
+      
+      const result = analyzeVulnerabilities(auditData, suppressions);
+      
+      expect(result.blocking).toHaveLength(0);
+      expect(result.suppressed).toHaveLength(1);
+    });
+  });
+
   describe('SC-204: devDependencies have soft path (Warning only)', () => {
     it('should block high vulns in production dependencies', async () => {
       const auditData = {
@@ -222,6 +262,40 @@ describe('audit.mjs', () => {
 
     it('should return false for past revokedAt', () => {
       expect(isSuppressionActive({ revokedAt: '2020-01-01T00:00:00Z' })).toBe(false);
+    });
+  });
+
+  describe('SC-208/SC-209: review_by controls expiry', () => {
+    it('should return true for future review_by', () => {
+      expect(isSuppressionActive({ revokedAt: null, review_by: '2030-01-01T00:00:00Z' })).toBe(true);
+    });
+
+    it('should return false for past review_by', () => {
+      expect(isSuppressionActive({ revokedAt: null, review_by: '2020-01-01T00:00:00Z' })).toBe(false);
+    });
+
+    it('should return false when revokedAt is past even with future review_by (SC-211)', () => {
+      expect(isSuppressionActive({ revokedAt: '2020-01-01T00:00:00Z', review_by: '2030-01-01T00:00:00Z' })).toBe(false);
+    });
+  });
+
+  describe('SC-210: suppression without review_by stays active', () => {
+    it('should return true when review_by is absent', () => {
+      expect(isSuppressionActive({ revokedAt: null })).toBe(true);
+    });
+  });
+
+  describe('SC-213: invalid review_by fails loudly', () => {
+    it('should throw an error mentioning the suppression id and the invalid value', () => {
+      expect(() => isSuppressionActive({ id: 'test-pkg', revokedAt: null, review_by: '01/01/2027' })).toThrow(/test-pkg/);
+      expect(() => isSuppressionActive({ id: 'test-pkg', revokedAt: null, review_by: '01/01/2027' })).toThrow(/01\/01\/2027/);
+    });
+  });
+
+  describe('SC-214: invalid revokedAt fails loudly', () => {
+    it('should throw an error mentioning the suppression id and the invalid value', () => {
+      expect(() => isSuppressionActive({ id: 'test-pkg', revokedAt: '01/01/2027' })).toThrow(/test-pkg/);
+      expect(() => isSuppressionActive({ id: 'test-pkg', revokedAt: '01/01/2027' })).toThrow(/01\/01\/2027/);
     });
   });
 });
