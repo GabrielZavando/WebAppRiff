@@ -1,6 +1,0 @@
-apply-preflight marker — change: ui-chrome-uniform — ticket: UI-02 — branch: feature/ui-02-ui-chrome-uniform — status: PASS (first-run) — date: 2026-10-04
-
-Allowed dirt on first run:
-- openspec/changes/ui-chrome-uniform/** (artifacts created by /plan-change)
-
-Notes: the user's parallel change (angular.json) was stashed before branch creation (stash@{0}, belongs to that parallel change). No foreign changes expected.
