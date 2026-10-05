@@ -1,7 +1,7 @@
 # site-scrollbar Specification
 
 ## Purpose
-TBD - created by archiving change footer-credits-scrollbar. Update Purpose after archive.
+Scrollbar del sitio público teñida con el token secondary-dark, track transparente, radio 0 (flat design) y reglas scoped que no afectan al panel admin.
 ## Requirements
 ### Requirement: Site scrollbar thumb is tinted with the secondary-dark design token
 

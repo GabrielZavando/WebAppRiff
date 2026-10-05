@@ -1,7 +1,7 @@
 # ci-deploy-smoke-gate Specification
 
 ## Purpose
-TBD - created by archiving change ampliar-e2e. Update Purpose after archive.
+Gates de CI/smoke del pipeline: el job project-ci corre los e2e del backend y el smoke de web, admin queda excluido del smoke, y deploy.yml cubre smoke de staging y producción sobre endpoints de dominio.
 ## Requirements
 ### Requirement: CI project-ci runs backend e2e
 

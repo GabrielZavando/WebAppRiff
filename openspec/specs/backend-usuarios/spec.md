@@ -1,7 +1,7 @@
 # backend-usuarios Specification
 
 ## Purpose
-TBD - created by archiving change backend-usuarios. Update Purpose after archive.
+Autenticación y autorización de usuarios: verificación de ID tokens de Firebase, RBAC vía custom claims, sincronización del rol con Firestore, endpoints /users con roles, bootstrap idempotente del primer superadmin y GET /auth/me.
 ## Requirements
 ### Requirement: Backend SHALL authenticate requests by verifying Firebase ID tokens
 The backend-usuarios SHALL provide a `FirebaseAuthGuard` that, for any route decorated to require authentication, reads the `Authorization: Bearer <token>` header, verifies the token via Firebase Admin SDK `getAuth().verifyIdToken(token)`, and populates `request.user` with the decoded token (including the `role` custom claim). If the header is missing or the token is invalid/expired, the guard SHALL reject the request with HTTP 401. Routes without the auth guard applied SHALL remain accessible without a token.

@@ -270,7 +270,7 @@ npm run seed:productos
   despliega ambas apps de staging (`riff-web-staging`, `riff-admin-staging`),
   build in-situ por app (`web`, `admin`).
 - **Sin workflow de deploy**: `.github/workflows/` solo contiene `ci.yml`
-  (specboot structural validation + `make ci`), que protege PRs y no dispara
+  (`openspec validate --all --strict` + `make ci`), que protege PRs y no dispara
   deploys.
 - **Redeploy manual**: desde el panel de Coolify (redeploy del recurso) o
   empujando un commit a `main`.

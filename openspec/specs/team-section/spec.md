@@ -1,7 +1,7 @@
 # team-section Specification
 
 ## Purpose
-TBD - created by archiving change nosotros-team-section. Update Purpose after archive.
+Sección de equipo (Nosotros): header con título y subtítulo, tarjetas de miembros en grid responsive con foto, overlay de nombre y rol, hover que revela la foto en color con zoom 3d y respeto a reduced motion.
 ## Requirements
 ### Requirement: Section header renders title and subtitle
 

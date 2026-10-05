@@ -1,7 +1,7 @@
 # site-credits Specification
 
 ## Purpose
-TBD - created by archiving change footer-credits-scrollbar. Update Purpose after archive.
+Franja de atribución full-width bajo el footer: enlace del developer sin subrayado con hover animado vía design tokens; componente presentacional con contrato de props tipado.
 ## Requirements
 ### Requirement: SiteCredits renders a thin full-width attribution strip below the footer
 

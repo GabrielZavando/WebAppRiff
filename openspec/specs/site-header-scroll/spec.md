@@ -1,7 +1,7 @@
 # site-header-scroll Specification
 
 ## Purpose
-TBD - created by archiving change site-header-scroll-animations. Update Purpose after archive.
+Comportamiento del header y la agrupación de búsqueda al hacer scroll: sticky, encogido del logo, transición de fondo a secondary, sombra en estado compacto, revert completo al top y animación suave respetando reduced motion.
 ## Requirements
 ### Requirement: Header and Search group stick on scroll
 The site SHALL keep the Header and SearchForm fixed at the top of the viewport (`position: sticky; top: 0`) when the page is scrolled down (`scrollY > 0`), grouped inside a single sticky wrapper rendered by `Layout.astro`.

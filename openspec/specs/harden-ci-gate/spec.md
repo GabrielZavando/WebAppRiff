@@ -1,36 +1,36 @@
 # harden-ci-gate Specification
 
 ## Purpose
-TBD - created by archiving change harden-ci-gate. Update Purpose after archive.
+Endurecimiento del gate de CI: secuencia explícita y bloqueante (validación de OpenSpec, lint, typecheck, build, tests con cobertura 90% del backend y audit bloqueante), lint sin --fix y sin ejecutar la suite del backend dos veces.
 ## Requirements
-### Requirement: The CI project-ci job SHALL enforce a hard, blocking gate
+### Requirement: The CI gate SHALL enforce a hard, blocking sequence
 
-The `.github/workflows/ci.yml` `project-ci` job SHALL replace its single `make ci` step with an explicit hard sequence covering: `bash check-refs.sh`, `make solid-lint`, `npm run lint --workspaces`, `npm run typecheck --workspaces --if-present`, `npm run build --workspaces`, `npm run test:cov --workspace=apps/backend`, `npm run test --workspace=apps/web`, `npm run test --workspace=apps/admin`, `npm run test --workspace=packages/html-sanitize`, and `npm audit --audit-level=high`. The `Makefile` SHALL NOT be modified.
+The project gate (`make ci`, invoked by `.github/workflows/ci.yml`) SHALL run an explicit hard sequence covering: `npx openspec validate --all --strict` (validación de specs/changes — reemplaza la validación estructural de Specboot y `check-refs.sh`), `npm run lint --workspaces`, `npm run typecheck --workspaces --if-present`, `npm run build --workspaces`, `npm run test:cov --workspace=apps/backend`, `npm run test --workspace=apps/web`, `npm run test --workspace=apps/admin`, `npm run test --workspace=packages/html-sanitize`, y `npm run audit`. El `Makefile` es del proyecto (no del framework).
 
 #### Scenario: SC-101 — A type error fails the pipeline
 
-- **WHEN** the `project-ci` job runs `npm run typecheck --workspaces --if-present`
-- **THEN** a type error in any workspace fails the pipeline and blocks the pull request
+- **WHEN** el gate CI corre `npm run typecheck --workspaces --if-present`
+- **THEN** un type error en cualquier workspace falla el pipeline y bloquea el pull request
 
 #### Scenario: SC-102 — A build failure fails the pipeline
 
-- **WHEN** the `project-ci` job runs `npm run build --workspaces`
-- **THEN** a workspace that does not compile (nest build / astro build / ng build) fails the pipeline
+- **WHEN** el gate CI corre `npm run build --workspaces`
+- **THEN** un workspace que no compila (nest build / astro build / ng build) falla el pipeline
 
 #### Scenario: SC-103 — Backend coverage below 90% fails the pipeline
 
-- **WHEN** the `project-ci` job runs `npm run test:cov --workspace=apps/backend`
+- **WHEN** el gate CI corre `npm run test:cov --workspace=apps/backend`
 - **THEN** global statements/branches/functions/lines below 90% fail the pipeline (the `apps/backend/jest.config.js` thresholds are now actually evaluated)
 
-#### Scenario: SC-104 — npm audit runs in CI and reports without blocking
+#### Scenario: SC-104 — npm audit runs blocking in CI
 
-- **WHEN** the `project-ci` job runs `npm audit --audit-level=high`
-- **THEN** it is executed in the pipeline and its findings are reported in the run log, but it does NOT fail the pipeline, because the repository currently carries pre-existing high/critical vulnerabilities (e.g. `astro <=7.2.7`, `vitest <=4.1.10`) whose remediation is tracked by separate upgrade tickets (V1/Q2) — making the audit blocking here would leave `main` permanently red with no migration plan in this change
+- **WHEN** el gate CI corre `npm run audit`
+- **THEN** se ejecuta el script bloqueante `scripts/audit.mjs` (con suppressions vía `npm-audit-suppressions.json`), que falla el pipeline ante high/critical no suprimidas (ver capability `audit-blocking`)
 
-#### Scenario: SC-106 — The gate is hardened without editing the Makefile
+#### Scenario: SC-106 — The gate no longer depends on Specboot integrity scripts
 
-- **WHEN** the `project-ci` job is hardened with the explicit sequence
-- **THEN** `refs` and `solid-lint` still run (via `bash check-refs.sh` / `make solid-lint`) and the local `make ci` target remains intact and functional
+- **WHEN** el gate CI se ejecuta tras la migración Specboot → OpenSpec
+- **THEN** `bash check-refs.sh` y `make solid-lint` ya NO forman parte del gate (scripts y target eliminados), y la validación de integridad de specs corre vía `npx openspec validate --all --strict`
 
 ### Requirement: The root package.json SHALL expose a workspace-wide typecheck script
 
@@ -47,20 +47,20 @@ The `lint` scripts in `apps/backend/package.json`, `apps/web/package.json`, `app
 
 #### Scenario: SC-105 — lint reports without auto-fixing
 
-- **WHEN** the `project-ci` job runs `npm run lint --workspaces`
-- **THEN** ESLint reports lint errors and DOES NOT modify the source files (the `--fix` flag is only in the local `lint:fix` scripts)
+- **WHEN** el gate CI corre `npm run lint --workspaces`
+- **THEN** ESLint reporta errores y NO modifica los archivos fuente (el flag `--fix` solo existe en los scripts locales `lint:fix`)
 
 ### Requirement: The CI gate SHALL not run backend tests twice
 
-The hardened `project-ci` job SHALL run backend tests once, via `npm run test:cov --workspace=apps/backend` (which both runs the suite and evaluates the 90% thresholds), and SHALL run web and admin tests separately with their own `test` scripts, so the sequence does not exercise Jest twice.
+El gate CI SHALL correr los tests del backend una sola vez, vía `npm run test:cov --workspace=apps/backend` (que ejecuta la suite y evalúa los umbrales 90%), y SHALL correr web y admin por separado con sus propios scripts `test`, para no ejercitar Jest dos veces.
 
 #### Scenario: SC-107 — No duplicate backend test execution
 
-- **WHEN** the `project-ci` job executes the hardened sequence
-- **THEN** the backend suite runs exactly once (through `test:cov`), and web/admin run independently via `npm run test --workspace=apps/{web,admin}`
+- **WHEN** el gate CI ejecuta la secuencia endurecida
+- **THEN** la suite del backend corre exactamente una vez (vía `test:cov`), y web/admin corren independientemente vía `npm run test --workspace=apps/{web,admin}`
 
 #### Scenario: SC-108 — The shared html-sanitize package tests keep running in the gate
 
-- **WHEN** the `project-ci` job executes the hardened sequence
-- **THEN** `npm run test --workspace=packages/html-sanitize` runs, so the shared XSS-sanitization boundary (the security-sensitive package consumed by backend and frontend) does not lose test coverage that the previous `npm test --workspaces` gate exercised
+- **WHEN** el gate CI ejecuta la secuencia endurecida
+- **THEN** `npm run test --workspace=packages/html-sanitize` corre, de modo que la frontera compartida de sanitización XSS (paquete consumido por backend y frontend) no pierde cobertura de tests que el gate previo ejercitaba
 

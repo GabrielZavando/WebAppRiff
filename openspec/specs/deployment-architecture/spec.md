@@ -1,7 +1,7 @@
 # deployment-architecture Specification
 
 ## Purpose
-TBD - created by archiving change decide-api-deployment-architecture. Update Purpose after archive.
+Decisión de arquitectura de despliegue: separación explícita de responsabilidades, evaluación de Cloud Run vs Coolify para el runtime NestJS, configuración por entorno con secretos, health checks y evidencia de rollback, y frontends desplegados nativamente por Coolify.
 ## Requirements
 ### Requirement: Deployment responsibilities SHALL be explicitly separated
 

@@ -1,7 +1,7 @@
 # add-sitemap Specification
 
 ## Purpose
-TBD - created by archiving change add-sitemap. Update Purpose after archive.
+Generación de sitemap del sitio público Astro: sitemap-index y secciones, rutas dinámicas de productos, URLs absolutas al dominio canónico, y contrato verificado por tests.
 ## Requirements
 ### Requirement: The Astro build SHALL generate a sitemap-index and sections
 

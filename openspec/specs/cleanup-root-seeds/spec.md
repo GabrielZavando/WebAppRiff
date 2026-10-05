@@ -1,7 +1,7 @@
 # cleanup-root-seeds Specification
 
 ## Purpose
-TBD - created by archiving change cleanup-root-seeds. Update Purpose after archive.
+Higiene de la raíz del monorepo: los seeds JSON viven en data/, los loaders del backend resuelven rutas por defecto desde data/, tests y docs reflejan la nueva ubicación, los residuos del framework se eliminan y SEED_FILE_PATH sigue funcionando como override.
 ## Requirements
 ### Requirement: Seed files SHALL reside in a dedicated `data/` directory
 
@@ -53,8 +53,8 @@ El spec `producto-seed.loader.spec.ts` que hardcodea la ruta del seed real SHALL
 #### Scenario: SC-308 — Repo sano y sin referencias residuales
 
 - **GIVEN** que se movieron los seeds y borraron residuos
-- **WHEN** se ejecuta `bash check-refs.sh`, `bash specboot.sh --ci` y la suite backend
-- **THEN** ambos scripts reportan 0 errores y la suite backend pasa
+- **WHEN** se ejecuta `npx openspec validate --all --strict` y la suite backend
+- **THEN** la validación de OpenSpec reporta 0 errores y la suite backend pasa
 - **AND** `rg "seed-productos-71|seed-categorias-subcategorias"` fuera de `data/` y `docs/` no arroja rutas viejas en código
 
 ### Requirement: Framework residues SHALL be removed from repo root

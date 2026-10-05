@@ -1,8 +1,7 @@
 # cotizacion-page Specification
 
 ## Purpose
-TBD - created by archiving change astro-cotizacion-page. Update Purpose after archive.
-
+Página de cotización del sitio público: formulario con seis campos etiquetados, heading h1 'Datos del Requerimiento', submit POST a /api/v1/quotes, proceso en tres pasos y CTA de soporte.
 ## Requirements
 
 ### Requirement: CotizacionForm renders six form fields with associated labels

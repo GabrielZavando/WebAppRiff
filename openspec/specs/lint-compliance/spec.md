@@ -1,7 +1,7 @@
 # lint-compliance Specification
 
 ## Purpose
-TBD - created by archiving change fix-preexisting-lint-test-failures. Update Purpose after archive.
+Cumplimiento de lint por workspace: backend con complexity <= 10, web sin variables sin usar, admin con ESLint crudo, html-sanitize con script lint y `make lint` global verde.
 ## Requirements
 ### Requirement: Backend cumple `complexity <= 10`
 

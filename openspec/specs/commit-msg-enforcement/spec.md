@@ -1,7 +1,7 @@
 # commit-msg-enforcement Specification
 
 ## Purpose
-TBD - created by archiving change update-specboot-framework. Update Purpose after archive.
+Enforcement de Conventional Commits: husky activado vía prepare, hook commit-msg validando con commitlint y `.commitlintrc.json`, y sin efectos secundarios (lint/test) en pre-commit.
 ## Requirements
 ### Requirement: Husky activated via prepare script
 The root `package.json` SHALL declare a `prepare` script (`husky`) so that installing dependencies activates the Git hooks path (`.husky/`).

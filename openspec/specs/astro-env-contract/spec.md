@@ -1,7 +1,7 @@
 # astro-env-contract Specification
 
 ## Purpose
-TBD - created by archiving change implement-deployment-pipeline. Update Purpose after archive.
+Contrato de entorno del sitio Astro: normalización de la URL base de la API en un solo lugar, fail-fast en builds de producción cuando la API no responde, y `.env.example` sincronizado con el contrato.
 ## Requirements
 ### Requirement: The API base URL SHALL be normalized in one place
 

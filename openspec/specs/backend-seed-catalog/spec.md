@@ -1,7 +1,7 @@
 # backend-seed-catalog Specification
 
 ## Purpose
-TBD - created by archiving change backend-seed-catalog. Update Purpose after archive.
+CLI de seed del catálogo: poblado idempotente de categorías y subcategorías desde JSON, ids deterministas, categoría por defecto con esDefault, slug derivado del nombre y fail-fast ante input malformado o referencias colgantes.
 ## Requirements
 ### Requirement: Seed CLI SHALL populate categories and subcategorias idempotently from the JSON file
 The backend-seed-catalog SHALL provide the command `npm run seed:catalog` (mirroring `bootstrap:superadmin`) that reads `seed-categorias-subcategorias.json` (path override via `SEED_FILE_PATH`, default repo root) and creates the categories and subcategorias it describes. For each entry, if a document with the resolved deterministic id already exists, it SHALL be skipped (no duplicate, no overwrite); otherwise it SHALL be created. The command SHALL log a summary with created/skipped counts and exit 0 on success.

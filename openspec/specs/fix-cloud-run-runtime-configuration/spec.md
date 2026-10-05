@@ -1,7 +1,7 @@
 # fix-cloud-run-runtime-configuration Specification
 
 ## Purpose
-TBD - created by archiving change fix-cloud-run-runtime-configuration. Update Purpose after archive.
+Configuración de runtime de Cloud Run staging: variables de entorno, service account e ingress público; secrets del rebuild del catálogo desde Secret Manager; lane de producción bloqueado hasta tener sus propias vars; CI gating conservado.
 ## Requirements
 ### Requirement: Staging Cloud Run SHALL be configured with runtime env, service account and public ingress
 The staging deploy step SHALL configure `riff-api-staging` (via `vars.CLOUD_RUN_SERVICE`)

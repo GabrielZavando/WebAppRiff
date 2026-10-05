@@ -1,7 +1,7 @@
 # generalize-catalog-rebuild-webhook Specification
 
 ## Purpose
-TBD - created by archiving change generalize-catalog-rebuild-webhook. Update Purpose after archive.
+Webhook de rebuild del catálogo: notificación ante cambios de categorías/subcategorías/productos, autenticación Bearer con timeout, errores HTTP visibles (sin fallo silencioso) y contrato de entorno CATALOG_REBUILD_*.
 ## Requirements
 ### Requirement: Catalog changes SHALL trigger a rebuild notification
 The backend SHALL notify a configured rebuild webhook whenever a public catalog

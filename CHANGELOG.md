@@ -1,31 +1,45 @@
-# Changelog
+# Changelog — Riff Catálogo Digital Headless
 
-All notable changes to Specboot are documented here.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Cambios notables del proyecto, en formato
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+El historial completo de cambios vive en los changes archivados de OpenSpec
+(`openspec/changes/archive/`) y en el historial git.
 
 ## [Unreleased]
 
 ### Changed
-- **Template is OpenCode-only**: removed `.claude/` and `.cursor/` symlinks; no Claude Code or Cursor configuration is generated. Agent/skill artifacts live in `ai-specs/` and are consumed by OpenCode via `{file:...}` references in `opencode.json` (base-standards.md §6, README FAQ).
-- `specboot.sh`: dropped symlink creation and the Windows copy fallback; `--init`/`--ci` now only validate structure, placeholders, JSON and referential integrity.
-- Removed `tests/specboot-symlink-test.sh` (tested the removed symlink behavior).
-- README: corrected clone URL, OpenSpec badge (`new change`), clarified `model` is optional, and replaced the Cursor/Claude FAQ with an OpenCode-only note.
-- CI: `build` job upload tolerates a missing `dist/` (`if-no-files-found: warn`) so the template repo passes CI without a build artifact.
-- `deploy.yml`: jobs are guarded by `hashFiles('Dockerfile') != ''` so tag pushes on the template (no Dockerfile) do not attempt a Node/Docker deploy.
-- `AGENTS.md`: restored the skill trigger table (name + trigger) that was replaced by a pointer to `ai-specs/README.md`. Since `AGENTS.md` is the file auto-loaded via `instructions[]` and `ai-specs/README.md` is not, the pointer left the auto-load matching mechanism with nothing to match against.
-- `check-refs.sh`: added a guard that fails if any `ai-specs/skills/*/` folder is not mentioned in `AGENTS.md`, to catch this class of drift automatically.
 
-## [0.1.0] - 2026-08-16
+- **Framework SDD: Specboot → OpenSpec (Fission-AI v1.14.0)**: se eliminó el
+  template `@gabrielzavando/specboot` (scripts `specboot.sh`, `check-refs.sh`,
+  `validate-specboot.sh`, `release-bump.sh`, `ai-specs/`, `templates/`,
+  `.opencode/agents/`, `.opencode/commands/`, `.specboot.json` y docs del
+  framework) y se adoptó la CLI `@fission-ai/openspec@1.14.0` como
+  devDependency. El flujo SDD usa ahora las skills de OpenSpec
+  (`/opsx-propose`, `/opsx-apply`, `/opsx-archive`, `/opsx-explore`,
+  `/opsx-sync`).
+- **CI**: `.github/workflows/ci.yml` ahora corre `make ci`
+  (`openspec validate --all --strict` + lint + typecheck + test + audit);
+  se eliminó la auth de GitHub Packages (Specboot era la única dep privada).
+- **Makefile**: reescrito como proyecto propio (targets npm workspaces +
+  `openspec-validate`); eliminados `refs`, `validate-specboot`, `solid-lint`.
+- **docs**: eliminados `framework-contract.md`, `docs-standard.md`,
+  `specboot-json-standard.md`, `openspec-tasks-mandatory-steps.md`,
+  `versioning-standard.md`, `tdd-failure-protocol.md`, `ci-standards.md`
+  (maquinaria de Specboot); `README.md` reescrito para el proyecto.
+- **Estado Specboot eliminado**: `openspec/state/`, `openspec/tickets/` y los
+  specs `openspec/specs/specboot-*` (git rm; recuperables desde el historial).
 
-### Added
-- **search-form-categories**: `SearchForm` now sources its category list from the backend at build time (`GET /api/v1/categories?activa=true`) with a safe fallback to the default option only when the API is unreachable. The backend emits a `CATEGORIES_WEBHOOK_URL` webhook on category create/update/delete so the static Astro site rebuilds.
-- SDD template: `AGENTS.md`, `opencode.json` y agentes (`plan`, `build`, `reviewer`).
-- Estándares base y por área: `docs/base-standards.md`, `backend-`, `frontend-`, `documentation-`.
-- Skills reutilizables en `ai-specs/skills/` (enrich-us, commit, code-auditing, using-git-worktrees, deploy, onboarding).
-- `specboot.sh`: setup (`--init`) y validación (`--ci`) con lista única de archivos requeridos y symlinks.
-- `check-refs.sh`: validación de integridad referencial de tokens `{file:...}` en `opencode.json` y `SKILL.md`.
-- `Makefile` stack-agnostic que expone `install/lint/test/build/audit/commitlint/refs`.
-- `update.sh`: sincroniza el tooling del template a proyectos existentes sin tocar `docs/`, y `--bump` para releases semver.
-- `CHANGELOG.md` y versionado por git tags (`vX.Y.Z`).
+### Notes
+
+- **Deuda técnica conocida — supresiones de audit**: el gate de audit
+  (`scripts/audit.mjs`) es ahora bloqueante y expone 44 vulnerabilidades
+  `high` pre-existentes (jest/firebase y transitivas de Angular) que
+  estaban silenciadas por el antiguo `npm audit || true`. Están
+  registradas como 95 supresiones activas en
+  `npm-audit-suppressions.json` con razón provisional "remediate via
+  V1/Q2 upgrade". El script actual solo soporta revocación manual vía
+  `revokedAt`, sin caducidad automática. Endurecimiento planificado como
+  **Q6** en `AUDIT.md` (añadir campo `review_by` y expiración en el
+  gate). Mientras Q6 no esté implementado, la revisión de estas
+  supresiones es responsabilidad manual del equipo.
+  

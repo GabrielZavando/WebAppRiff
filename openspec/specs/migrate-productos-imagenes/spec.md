@@ -1,7 +1,7 @@
 # migrate-productos-imagenes Specification
 
 ## Purpose
-TBD - created by archiving change migrate-productos-imagenes. Update Purpose after archive.
+CLI de migración de imágenes de productos: lectura del mapa de imágenes, descarga y optimización, persistencia de la galería vía el repositorio, idempotencia por completitud, tolerancia a fallos con reporte y reuso de la infraestructura del backend.
 ## Requirements
 ### Requirement: Migration CLI SHALL read the image map and migrate only existing products
 The backend-migrate-productos-imagenes SHALL provide `npm run migrate:productos:imagenes` that reads `_imagenesPendientesMigracion` from `seed-productos-71.json` (path override via `SEED_FILE_PATH`, default repo root). For each `productoId` whose Firestore document exists in `productos`, it SHALL migrate its source image URLs. Products whose document does not exist (e.g. `prod-054`, excluded from the seed) SHALL be recorded as `omitidos` and SHALL NOT be treated as errors.

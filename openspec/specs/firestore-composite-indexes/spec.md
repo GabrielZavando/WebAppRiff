@@ -1,7 +1,7 @@
 # firestore-composite-indexes Specification
 
 ## Purpose
-TBD - created by archiving change products-pagination. Update Purpose after archive.
+Índices compuestos de Firestore necesarios para el listado público de productos y su documentación en el modelo de datos.
 ## Requirements
 ### Requirement: Composite indexes for Firestore public product listing
 The system SHALL declare composite indexes in `apps/backend/firestore.indexes.json` for the `productos` collection to support the native Firestore pagination path. Required indexes:

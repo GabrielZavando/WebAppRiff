@@ -1,7 +1,7 @@
 # services-page Specification
 
 ## Purpose
-TBD - created by archiving change servicios-page. Update Purpose after archive.
+Página de servicios del sitio: hero con headline y palabra destacada y tarjetas de servicio con número, sector, título, imagen, bullets, tags y CTA al contacto.
 ## Requirements
 ### Requirement: ServicesHero renders headline with highlighted word and subtitle
 The services-hero SHALL render a headline from the `headline` prop with the `highlightedWord` substring wrapped in a `<span class="text-accent">`, plus a `subtitle` rendered as a subordinate paragraph, following the same split logic as HeroBanner/ContactHero via `splitHeadline()`.

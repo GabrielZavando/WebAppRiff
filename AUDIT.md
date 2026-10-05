@@ -141,11 +141,11 @@
 ### 🟡 M — Otros hallazgos medios
 
 - **M1 · Sin sitemap**: `@astrojs/sitemap` ausente en `apps/web/package.json` y en `astro.config.mjs` — pese a que SEO es prioridad declarada (`docs/project/client.md`, `stack.md`). Con `site` configurado, integrarlo es barato.
-- **M2 · Higiene raíz**: 3 carpetas `.specboot-backup-*` sin gestionar, `dist/` en la raíz, y los seeds JSON de cliente (`seed-productos-71.json`, `seed-categorias-subcategorias.json`) en la raíz (estos sí están referenciados por CLIs y documentados en `docs/seed-catalog.md` — no son huérfanos, solo conviene moverlos a `data/` o mantenerlos documentados).
+- **M2 · Higiene raíz**: `dist/` en la raíz, y los seeds JSON de cliente (`seed-productos-71.json`, `seed-categorias-subcategorias.json`) en la raíz (estos sí están referenciados por CLIs y documentados en `docs/seed-catalog.md` — no son huérfanos, solo conviene moverlos a `data/` o mantenerlos documentados). *(Resuelto 2026-10-04: las 3 carpetas `.specboot-backup-*` fueron eliminadas en la migración Specboot → OpenSpec.)*
 - **M3 · E2E limitados a web**: `apps/web/e2e/` cubre componentes de landing (8 specs) pero no flujos completos de catálogo/cotización contra el API real; sin e2e para backend (`test:e2e` de backend no tiene specs en `apps/backend`).
 - **M4 · Admin: stack por decidir**: dependerá de una decisión (`@ngrx/store` vs `@ngrx/signals` vs solo signals nativas) antes de construir features; cambiar después es caro.
 - **M5 · Firestore paginación/proyección pendiente de verificar**: los endpoints públicos de listado podrían devolver entidades completas sin paginación; marcar como verificación en P2 (no afirmado en esta auditoría).
-- **M6 · Backups del framework**: `.specboot-backup-*` duplican estructura del repo; revisar si `.gitignore` los cubre y archivar/eliminar los antiguos.
+- **M6 · Backups del framework**: *(Resuelto 2026-10-04: eliminados con la migración Specboot → OpenSpec.)*
 
 ---
 
@@ -215,11 +215,12 @@ Leyenda esfuerzo: **S** < 1 día · **M** 1-3 días · **L** 1-2 semanas. Cada �
 
 | ID | Mejora | Evidencia | Pasos | Aceptación | Esfuerzo |
 |---|---|---|---|---|---|
-| **Q1** | Migrar ESLint 8 → 9 (flat config) y typescript-eslint v8 en los tres workspaces | H6 | Actualizar deps y configs; validar contra `templates/ci/*` (framework) | `eslint` 9 limpio en los 3 apps; CI verde | L |
+| **Q1** | Migrar ESLint 8 → 9 (flat config) y typescript-eslint v8 en los tres workspaces | H6 | Actualizar deps y configs; validar en los 3 workspaces | `eslint` 9 limpio en los 3 apps; CI verde | L |
 | **Q2** | Upgrade NestJS 10 → 11 | H6 | Actualizar `@nestjs/*`; corregir breaking changes; CI + test:cov verdes | Backend en NestJS 11 con suite verde | M |
 | **Q3** | Ampliar e2e: backend (`test:e2e` sin specs), flujos completos web (listado → ficha → cotización) y humo de admin (login, CRUD) | M3, deploy-standards.md:44-53 | Crear specs e2e por app; mapear a `npm run test:smoke` | Smoke tests verdes en staging por cada deploy | L |
 | **Q4** | Tests de contrato del envelope `{data, error, meta}` del API (consumidor web vs backend) | stack.md:14 | Spec compartida (OpenAPI `docs/api/api-spec.yml`) + tests de contrato | Cambios de envelope rompen tests, no producción | M |
 | **Q5** | Cerrar TODO pendiente y deuda menor: `PanelHome.astro:55` (TODO de `design-system-revision`), migración de contenido config a CMS si el cliente lo pide (hoy contenido en `lib/config/*`) | §grep TODO | Revisar item por item; archivar el design system o implementar | Cero TODOs en código; decisión sobre contenido configurable documentada | S/M |
+| **Q6** | Endurecer el gate de audit: añadir campo `review_by` a las supresiones y hacer que `audit.mjs` las caduque automáticamente | H3, `npm-audit-suppressions.json` (95 activas) | 1) Documentar formato extendido en `AGENTS.md`; 2) Extender `scripts/audit.mjs` (`loadSuppressions` + `isSuppressionActive`) para leer `review_by` y marcar caducadas; 3) Añadir `review_by` a las 95 entradas con fecha de revisión trimestral; 4) Test que verifique caducidad | Gate de audit rechaza builds con supresiones caducadas; `revokedAt` sigue soportado para revocación manual; sin supresiones sin fecha | M |
 
 ### Orden de ejecución sugerido (roadmap)
 
@@ -227,7 +228,7 @@ Leyenda esfuerzo: **S** < 1 día · **M** 1-3 días · **L** 1-2 semanas. Cada �
 2. **Semana 2**: D2 + D3 (Dockerfiles web/admin + pipeline/deploy con Coolify) + smoke tests básicos.
 3. **Semana 3**: V1 + H1.1 + A1 (decisión stack admin) — alineación total y arranque del admin limpio.
 4. **Semanas 4-6**: W1 + W2 + W3 (producción/rendimiento) en paralelo con features del admin.
-5. **Trimestre**: Q1-Q5 (deuda diferida) según ritmo del equipo; re-auditar tras Q2.
+5. **Trimestre**: Q1-Q6 (deuda diferida) según ritmo del equipo; re-auditar tras Q2.
 
 ---
 

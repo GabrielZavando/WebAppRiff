@@ -1,8 +1,7 @@
 # product-description-html Specification
 
 ## Purpose
-TBD - created by archiving change fix-product-descriptions-html-render. Update Purpose after archive.
-
+Política compartida de sanitización HTML de descripciones de producto (paquete html-sanitize) y migración de datos que normaliza los productos existentes.
 ## Requirements
 
 ### Requirement: Shared HTML sanitization policy

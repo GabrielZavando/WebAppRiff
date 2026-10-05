@@ -1,7 +1,7 @@
 # web-e2e-critical-flows Specification
 
 ## Purpose
-TBD - created by archiving change ampliar-e2e. Update Purpose after archive.
+Flujos e2e críticos del sitio con Playwright: stub de API para datos de catálogo, configuración multi-server de webServer, fixtures curadas, flujo catálogo (listing → detail → CTA) y flujo de cotización, manteniendo verdes las 8 specs de landing existentes.
 ## Requirements
 ### Requirement: Stub API server serves catalog data for Playwright build
 

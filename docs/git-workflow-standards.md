@@ -1,17 +1,15 @@
 # Git Workflow Standards — Riff Catálogo Digital
 
 > Fuente única de verdad de la convención git del proyecto (ramas, commits, PRs, deploy).
-> Referenciado por el skill `plan-change` (§1), el agente `plan-agent`, el comando `/apply`
-> y `docs/framework-contract.md`. Creado el 2026-10-02 (change `add-git-workflow-standards`,
-> ticket `DOCS-001`).
+> Creado el 2026-10-02 (change `add-git-workflow-standards`, ticket `DOCS-001`).
 
 ## 1. Flujo estándar de ramas
 
 Flujo estándar: **`feature/` → PR → merge a `main`**.
 
 1. La rama del ticket se crea **desde `main` actualizado** y **nunca sobre un
-   árbol git sucio** (sin cambios sin commitear ni staged), mediante
-   `/plan-change` (Step 1½ del skill): `git checkout -b feature/{name}`.
+   árbol git sucio** (sin cambios sin commitear ni staged), mediante el
+   flujo OpenSpec: `git checkout -b {type}/{short-name}`.
 2. El trabajo se implementa en la rama del ticket. **Nunca se implementa
    directamente sobre `main`.**
 3. Se abre un PR hacia `main` (ver §4) y se mergea con merge commit.
@@ -30,7 +28,7 @@ de rama.
 |---|---|---|
 | `feature/` | Nueva funcionalidad o mejora | `feature/add-git-workflow-standards` |
 | `fix/` | Corrección de bug | `fix/{short-name}` |
-| `chore/` | Mantenimiento, tooling, dependencias | `chore/specboot-0.11.0` |
+| `chore/` | Mantenimiento, tooling, dependencias | `chore/replace-specboot-with-openspec` |
 | `docs/` | Cambios documentales | `docs/{short-name}` |
 | `test/` | Cambios de tests | `test/{short-name}` |
 | `refactor/` | Refactorización sin cambio de comportamiento | `refactor/{short-name}` |
@@ -39,13 +37,12 @@ Reglas:
 
 - kebab-case, corto y descriptivo (2-5 palabras).
 - El ticket ID **no** forma parte del nombre de rama: viaja en el PR y en los
-  artefactos OpenSpec (`openspec/tickets/`, `openspec/changes/`).
+  artefactos OpenSpec (`openspec/changes/`).
 - Este documento es la **fuente de verdad** de la convención; el ejemplo del
-  skill `plan-change` (`feature/{ticket-id}-{short-name}`) queda subordinado a
-  esta sección.
+  flujo OpenSpec (`{type}/{short-name}`) queda subordinado a esta sección.
 - Ramas reales del repo que cumplen el patrón: `feature/cicd-coolify-deploy`,
   `feature/logo-size-cap-logo-shrink`, `feature/web-home-contact-tweaks`,
-  `chore/specboot-0.11.0`.
+  `chore/replace-specboot-with-openspec`.
 
 ## 3. Proceso de commit
 
@@ -53,16 +50,12 @@ Reglas:
   `test:`, `chore:` (con scope opcional, p. ej. `docs(deploy):`, `feat(web):`).
 - **Un commit = un cambio lógico**: agrupar por paths afines (p. ej. código,
   specs y docs en commits separados).
-- **Gates duros previos al commit (M-901)**: `/verify` con `status: PASS` y
-  `/adversarial-review` con `verdict: SHIP` vigentes para el change activo.
-  Sin ambas evidencias (`openspec/state/`) el commit bloquea; el escape hatch
-  `--force` queda registrado con el trailer `Gate-Bypass` en el mensaje del
-  commit.
-- **Ownership**: `git add`, `git commit` y `git push` son exclusivos de
-  `/commit` — los agentes plan/apply tienen `git commit` y `git push`
-  prohibidos.
-- Formato completo: `ai-specs/reference/commits.md` · Flujo completo:
-  `ai-specs/skills/commit/SKILL.md`.
+- **Flujo OpenSpec**: cada change se propone, implementa y archiva vía las
+  skills de OpenSpec (`/opsx-propose`, `/opsx-apply`, `/opsx-archive`); los
+  commits de implementación se crean siguiendo Conventional Commits.
+- **Ownership**: `git add`, `git commit` y `git push` son exclusivos del
+  flujo de commit del agente — los agentes de plan/apply tienen `git commit` y
+  `git push` prohibidos.
 
 ## 4. Proceso de PR
 
@@ -88,7 +81,7 @@ Reglas:
   apps de staging (`riff-web-staging`, `riff-admin-staging`), build in-situ
   por app (`web`, `admin`).
 - **Sin workflow de deploy**: `.github/workflows/` solo contiene `ci.yml`
-  (validación estructural specboot + `make ci`), que protege PRs y **no
+  (`openspec validate --all --strict` + `make ci`), que protege PRs y **no
   dispara deploys**.
 - **Redeploy manual**: desde el panel de Coolify (o empujando un commit a
   `main`).
