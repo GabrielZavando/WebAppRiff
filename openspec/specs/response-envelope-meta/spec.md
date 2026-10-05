@@ -1,7 +1,7 @@
 # response-envelope-meta Specification
 
 ## Purpose
-TBD - created by archiving change products-pagination. Update Purpose after archive.
+Envoltura de respuesta estandarizada de la API: `{ data, error, meta }` en todas las respuestas y errores.
 ## Requirements
 ### Requirement: Standardized response envelope
 All endpoints under `/api/v1/` SHALL be wrapped by the ResponseInterceptor in `{ data, error: null, meta }`. When the handler returns an object with a `meta` property (e.g. `{ data, meta: { total, page, limit } }`), the interceptor SHALL merge the handler's meta with its own `{ timestamp, path }` — handler meta keys win in case of conflict. When the handler returns a plain value (array, object) without `meta`, the interceptor SHALL produce `{ data, error: null, meta: { timestamp, path } }` (current behavior, no-op merge).

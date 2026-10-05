@@ -32,7 +32,7 @@ Para estándares detallados, leer los archivos correspondientes:
 
 ## 7. Actualización de artefactos OpenSpec ante cambios post-apply
 
-Si aparece un fix o cambio nuevo después de `/apply` y antes de `/archive`:
+Si aparece un fix o cambio nuevo después de aplicar el change (`/opsx-apply`) y antes de archivarlo (`/opsx-archive`):
 
 1. Actualizar primero los artefactos OpenSpec afectados (scenarios, requirements, tasks.md)
 2. Si se necesita regenerar artefactos, ejecutar el paso OpenSpec correspondiente antes de codear
@@ -43,10 +43,9 @@ Si aparece un fix o cambio nuevo después de `/apply` y antes de `/archive`:
 
 ## 8. Contexto del proyecto (personalizar por proyecto)
 
-> ⚠️ Esta sección no se completa aquí: `base-standards.md` es intocable (plantilla de
-> principios). El contexto específico del proyecto vive en `docs/project/` (plantillas del
-> framework): `docs/project/stack.md`, `docs/project/domain.md` y `docs/project/client.md`.
-> Ver `docs/docs-standard.md` para la frontera intocable/del proyecto en `docs/`.
+> ⚠️ Esta sección no se completa aquí: `base-standards.md` es una plantilla de
+> principios. El contexto específico del proyecto vive en `docs/project/`:
+> `docs/project/stack.md`, `docs/project/domain.md` y `docs/project/client.md`.
 
 El proyecto debe definir, en esos archivos:
 

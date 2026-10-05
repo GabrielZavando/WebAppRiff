@@ -1,7 +1,7 @@
 # products-catalog-page Specification
 
 ## Purpose
-TBD - created by archiving change products-catalog-page. Update Purpose after archive.
+Página de catálogo de productos: datos en build-time, filtrado client-side (SSG + progressive enhancement), header de página, sidebar de categorías con multi-select condicional de subcategorías, contrato de filtrado por URL y paginación con ellipsis preservando parámetros.
 ## Requirements
 ### Requirement: Build-time data sources
 

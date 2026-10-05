@@ -1,7 +1,7 @@
 # nosotros-page Specification
 
 ## Purpose
-TBD - created by archiving change header-scroll-restore. Update Purpose after archive.
+Página Nosotros del sitio público: se renderiza únicamente con el chrome compartido (header y footer).
 ## Requirements
 ### Requirement: Page renders with only the shared header and footer chrome
 The site SHALL serve a static page at `/nosotros` that renders the site's shared chrome (Header and Footer, per the standard `Layout.astro`) with no intermediate content: no hero shell, no global search form, and an empty `<main>` slot. A GET request to `/nosotros` SHALL respond with HTTP 200. (ADDED in `header-scroll-restore`.)

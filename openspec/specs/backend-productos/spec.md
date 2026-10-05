@@ -1,7 +1,7 @@
 # backend-productos Specification
 
 ## Purpose
-TBD - created by archiving change backend-productos. Update Purpose after archive.
+Módulo de productos del backend NestJS: endpoints públicos de lectura y autenticados de escritura, reglas de negocio, categoría por defecto y visibilidad publicada, ids explícitos opcionales y sanitización de descripciones.
 ## Requirements
 ### Requirement: Backend SHALL expose public product read endpoints
 The backend-productos SHALL provide `GET /api/v1/products` (optionally filtered by `?categoriaId=`, `?subcategoriaId=`, `?destacado=<boolean>`, `?publicado=<boolean>`, `?search=<string>`, `?sortBy=`, `?sortDir=`), `GET /api/v1/products/slug/:slug`, and `GET /api/v1/products/:id`. Unauthenticated requests SHALL return only products with `publicado: true`. Authenticated requests (any role, optional token) SHALL be allowed to see all products (including unpublished) by passing `?publicado=`. All responses SHALL use the standard envelope `{ data, error, meta }`. `GET /api/v1/products/:id` and `GET /api/v1/products/slug/:slug` SHALL return 404 when the product does not exist or is not published for an anonymous caller.

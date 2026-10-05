@@ -1,2 +1,0 @@
-// Apply pre-flight marker for change coolify-deploy (JSONC: leading comment avoids tool JSON mis-parse)
-{"change": "coolify-deploy", "date": "2026-10-01", "branch": "feature/cicd-coolify-deploy", "firstRun": true, "checks": {"branchConvention": "pass", "gitState": "pass", "gitStateDetail": "dirt limited to openspec/changes/coolify-deploy/** (plan artifacts allowed on first run)", "domain": "infrastructure (CI/CD + docs + ops) — no backend/frontend subagents, build continues as itself per build-agent.md contract SPECBOOT-HARDEN-02/REQ-005"}}

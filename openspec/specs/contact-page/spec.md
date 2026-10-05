@@ -1,7 +1,7 @@
 # contact-page Specification
 
 ## Purpose
-TBD - created by archiving change contact-page. Update Purpose after archive.
+Página de contacto del sitio público: ContactHero con headline y palabra destacada, formulario con inputs etiquetados, checkboxes de áreas de interés, textarea y submit POST, y ContactBar con teléfono, email e iconos sociales.
 ## Requirements
 ### Requirement: ContactHero renders headline with highlighted word and subtitle
 The contact-hero SHALL render a headline from the `headline` prop with the `highlightedWord` substring wrapped in a `<span class="text-primary">`, plus a `subtitle` rendered as a subordinate heading, following the same split logic as HeroBanner.

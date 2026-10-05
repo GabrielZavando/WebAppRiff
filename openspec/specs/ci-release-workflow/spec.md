@@ -1,7 +1,7 @@
 # ci-release-workflow Specification
 
 ## Purpose
-TBD - created by archiving change remove-release-workflow. Update Purpose after archive.
+Garantiza que el repositorio consumidor no lleva un workflow de publish de framework y que el flujo de deploy por tags se preserva.
 ## Requirements
 ### Requirement: No framework-publish workflow in consumer repository
 The consumer repository SHALL NOT contain a GitHub Actions workflow that publishes the root package to GitHub Packages on push to main; main-branch validation SHALL be provided by the existing CI workflow.

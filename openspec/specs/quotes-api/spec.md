@@ -1,7 +1,7 @@
 # quotes-api Specification
 
 ## Purpose
-TBD - created by archiving change ampliar-e2e. Update Purpose after archive.
+API de cotizaciones: POST público de creación, GET admin paginado, GET por id, PATCH de estado por admin/editor, contrato CotizacionCreate con rut opcional y documentación de la colección cotizaciones en el modelo de datos.
 ## Requirements
 ### Requirement: POST /api/v1/quotes creates a quote request (public, no auth)
 

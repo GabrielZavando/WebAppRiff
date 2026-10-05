@@ -1,7 +1,7 @@
 # api-products-pagination Specification
 
 ## Purpose
-TBD - created by archiving change products-pagination. Update Purpose after archive.
+Paginación de los listados de productos (público y autenticado) con offset page/limit, filtros y orden, orden por defecto con paginación nativa de Firestore y proyección de tarjetas vía Firestore select.
 ## Requirements
 ### Requirement: Public product listing is paginated with offset page/limit
 The system SHALL support `page` (integer, default 1, min 1) and `limit` (integer, default 24, max 100) query parameters on `GET /api/v1/products`. The response SHALL include `meta: { total, page, limit, timestamp, path }` via the ResponseInterceptor merge. Invalid non-numeric values SHALL return HTTP 400. Values outside range SHALL be clamped (page ≥ 1, limit ≤ 100).

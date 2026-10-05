@@ -1,7 +1,7 @@
 # top-header Specification
 
 ## Purpose
-TBD - created by archiving change top-header. Update Purpose after archive.
+Barra superior del sitio: teléfono, links de redes sociales, modo transparente, oculta en mobile, colores de marca y sin dependencia de componentes de iconos SVG locales.
 ## Requirements
 ### Requirement: TopHeader renders phone number
 TopHeader SHALL render the phone number from the shared configuration constant (currently `+56 2 29079067`) as a `tel:` link when it is non-empty, using the E.164 normalization for the `href`. The value SHALL come from `lib/config/contact.ts` constants, NOT from environment variables. (MODIFIED in `ui-chrome-uniform` — the scenario wording moved from `PRIMARY_PHONE` to the configured constant.)

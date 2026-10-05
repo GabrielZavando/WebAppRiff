@@ -1,7 +1,7 @@
 # backend-cloudrun-pipeline Specification
 
 ## Purpose
-TBD - created by archiving change implement-deployment-pipeline. Update Purpose after archive.
+Pipeline de deploy del backend a Cloud Run: publicación de la imagen en Artifact Registry, deploy a staging, promoción manual a producción reusando la imagen staged, y eliminación del workflow SSH/docker obsoleto.
 ## Requirements
 ### Requirement: The backend deploy pipeline SHALL publish the image to Artifact Registry and deploy to Cloud Run staging
 

@@ -1,7 +1,7 @@
 # frontend-dockerfiles Specification
 
 ## Purpose
-TBD - created by archiving change implement-deployment-pipeline. Update Purpose after archive.
+Imágenes Docker multi-stage reproducibles para las apps Astro y Angular, con verificación de las tres imágenes de servicio en CI.
 ## Requirements
 ### Requirement: The Astro web app SHALL have a reproducible multi-stage Docker image
 

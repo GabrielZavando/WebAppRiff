@@ -36,8 +36,5 @@ Thumbs.db
 # Logs
 *.log
 
-# Specboot update backups
-.specboot-backup-*
-
 # Husky (estado interno, no se commitea)
 .husky/_

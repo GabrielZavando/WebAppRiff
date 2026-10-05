@@ -1,7 +1,7 @@
 # solution-section Specification
 
 ## Purpose
-TBD - created by archiving change solution-section. Update Purpose after archive.
+Sección Solución del home: header con eyebrow, headline, underline teal y descripción; grid responsive de tarjetas de solución; componente presentacional que consume solo tokens de diseño canónicos y los pipelines astro-icon/astro:assets.
 ## Requirements
 ### Requirement: SolutionSection renders the section header with eyebrow, headline, teal underline and description
 The `solution-section` SHALL render an `<section>` as its outermost element containing a header block composed of: an eyebrow `<span>` (uppercase, NOT a heading) with the eyebrow text; a headline `<h3>` with the headline text styled with the navy `--color-secondary` token; a teal underline bar `<div>` (carrying `bg-primary`) directly beneath the headline; and a description `<p>` with the description text. The header block SHALL be composed in a responsive grid: `grid-cols-1 lg:grid-cols-2` (left half holds eyebrow+headline+bar, right half holds the description paragraph).

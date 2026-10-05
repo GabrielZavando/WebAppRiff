@@ -1,7 +1,0 @@
-apply-preflight marker — change: ui-chrome-polish — ticket: UI-FIX1 — branch: feature/ui-fix1-ui-chrome-polish — status: PASS (first-run) — date: 2026-10-03
-
-Allowed dirt on first run:
-- openspec/changes/ui-chrome-polish/** (artifacts created by /plan-change)
-- openspec/tickets/UI-FIX1-enriched.md (enrich-us artifact for this ticket, change-owned per AGENTS.md 5.2; user decision: committed on this branch at the end of the SDD cycle via /commit)
-
-Notes: the header hand-edit (pb-10 lg:pb-4) was stashed by the user before branch creation; the change re-applies it via TDD (tasks 1.1-1.2, updated artifacts-first). Stash is dropped at the end of the cycle after /verify passes.

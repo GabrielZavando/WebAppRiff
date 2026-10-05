@@ -1,7 +1,7 @@
 # catalog-image-migration Specification
 
 ## Purpose
-TBD - created by archiving change migrate-product-images. Update Purpose after archive.
+Migración de imágenes del catálogo: validación de accesibilidad pública de URLs, re-run idempotente con retry de productos omitidos, reporte completo, notificación de rebuild del sitio estático y validación fail-fast de configuración.
 ## Requirements
 ### Requirement: Public accessibility validation of migrated image URLs
 The image-migration CLI SHALL validate, via an HTTP HEAD request through a domain port (UrlAccessibilityPort), that each image URL responds with HTTP 200 before persisting it into the galeria field of a productos document.

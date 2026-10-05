@@ -1,7 +1,7 @@
 # backend-seed-productos Specification
 
 ## Purpose
-TBD - created by archiving change backend-seed-productos. Update Purpose after archive.
+CLI de seed de productos: poblado idempotente desde JSON, ids deterministas, reuso de las reglas de integridad de dominio, exclusión de duplicados, de-duplicación de slugs y creación de la subcategoría prerrequisito.
 ## Requirements
 ### Requirement: Seed CLI SHALL populate productos idempotently from the JSON file
 `npm run seed:productos` SHALL read `seed-productos-71.json` (path override via `SEED_FILE_PATH`, default repo root) and create the products it describes. For each entry, if a document with the resolved deterministic id already exists, it SHALL be skipped (no duplicate, no overwrite); otherwise it SHALL be created. The command SHALL log a summary with created/skipped counts and exit 0 on success.

@@ -1,7 +1,7 @@
 # test-runner-consistency Specification
 
 ## Purpose
-TBD - created by archiving change fix-preexisting-lint-test-failures. Update Purpose after archive.
+Consistencia del runner de tests del monorepo: admin ejecuta con Vitest, `make test` global queda verde y no queda arquitectura Karma residual en admin.
 ## Requirements
 ### Requirement: Admin ejecuta sus tests con Vitest
 

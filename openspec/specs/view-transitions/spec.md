@@ -1,7 +1,7 @@
 # view-transitions Specification
 
 ## Purpose
-TBD - created by archiving change web-home-contact-tweaks. Update Purpose after archive.
+View Transitions habilitado globalmente en el sitio: el estado de scroll del header sobrevive navegaciones client-side, el hash navigation hace scroll suave al ancla con degradación controlada y el botón scroll-top sigue funcional.
 ## Requirements
 ### Requirement: Client-side routing with View Transitions is enabled globally
 The `Layout.astro` SHALL import and render Astro's `<ClientRouter />` component (from `astro:transitions`) in the document `<head>`, enabling View Transitions (client-side routing with animated view transitions) for every page of the site. (ADDED in `web-home-contact-tweaks`.)

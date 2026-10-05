@@ -1,7 +1,7 @@
 # backend-categorias Specification
 
 ## Purpose
-TBD - created by archiving change backend-categorias. Update Purpose after archive.
+Módulo de categorías del backend NestJS: endpoints públicos de lectura y autenticados de escritura, reglas de negocio, garantía de la categoría por defecto, generación de slug y prefijo /api/v1.
 ## Requirements
 ### Requirement: Backend SHALL expose public category read endpoints
 The backend-categorias SHALL provide `GET /api/v1/categories` (optionally filtered by `?activa=<boolean>`) and `GET /api/v1/categories/{id}`, both publicly accessible (no authentication required), returning the standard response envelope `{ data, error, meta }`. `GET /api/v1/categories/{id}` SHALL return 404 when the category does not exist.

@@ -1,7 +1,7 @@
 # admin-login Specification
 
 ## Purpose
-TBD - created by archiving change admin-login-panel. Update Purpose after archive.
+Pantalla de login del panel admin (Angular): ruta con lazy loading, tarjeta centrada según design tokens, logo de Riff, campos email/password con labels y validación.
 ## Requirements
 ### Requirement: Login route with lazy loading
 The admin panel SHALL configure `@angular/router` so that the root path (`''`) redirects to `/login` and the `/login` route loads the `LoginPageComponent` lazily via `loadComponent`; the root `AppComponent` SHALL render a `<router-outlet/>`. (ADDED in `admin-login-panel`.)

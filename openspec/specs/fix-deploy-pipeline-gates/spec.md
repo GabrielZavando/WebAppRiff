@@ -1,7 +1,7 @@
 # fix-deploy-pipeline-gates Specification
 
 ## Purpose
-TBD - created by archiving change fix-deploy-pipeline-gates. Update Purpose after archive.
+Corrección de los gates del pipeline de deploy: deploy gated por CI exitoso, build de validación de Astro sin depender de una API viva, webhooks de Coolify autenticados por entorno y smoke del backend antes de los triggers de frontend.
 ## Requirements
 ### Requirement: Deploy SHALL be gated by a successful CI run
 `deploy.yml` SHALL trigger via `workflow_run` on the `CI` workflow with `types: completed` and proceed only when `conclusion == 'success'` for the triggering run/commit. No deploy (Cloud Run or Coolify) SHALL start when CI fails. `workflow_dispatch` remains as an explicit manual exception. PRs SHALL NOT trigger deployment (CI protects PRs).

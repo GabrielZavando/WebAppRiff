@@ -1,7 +1,7 @@
 # backend-e2e-suite Specification
 
 ## Purpose
-TBD - created by archiving change ampliar-e2e. Update Purpose after archive.
+Suite e2e del backend: infraestructura con Firestore fake compartido, cobertura de todos los endpoints públicos y de los guards admin, jest-e2e sin passWithNoTests, y test:smoke mapeado a la suite e2e.
 ## Requirements
 ### Requirement: Backend e2e infrastructure with shared Firestore fake
 

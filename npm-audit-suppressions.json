@@ -66,8 +66,73 @@
       "revokedAt": null
     },
     {
+      "id": "@firebase/firestore",
+      "reason": "Pre-existing: high vulnerability in @firebase/firestore (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@firebase/firestore-compat",
+      "reason": "Pre-existing: high vulnerability in @firebase/firestore-compat (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@grpc/grpc-js",
+      "reason": "Pre-existing: high vulnerability in @grpc/grpc-js (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
       "id": "@iconify/tools",
       "reason": "Pre-existing: high vulnerability in @iconify/tools (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@jest/console",
+      "reason": "Pre-existing: high vulnerability in @jest/console (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@jest/core",
+      "reason": "Pre-existing: high vulnerability in @jest/core (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@jest/environment",
+      "reason": "Pre-existing: high vulnerability in @jest/environment (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@jest/expect",
+      "reason": "Pre-existing: high vulnerability in @jest/expect (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@jest/fake-timers",
+      "reason": "Pre-existing: high vulnerability in @jest/fake-timers (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@jest/globals",
+      "reason": "Pre-existing: high vulnerability in @jest/globals (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@jest/reporters",
+      "reason": "Pre-existing: high vulnerability in @jest/reporters (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@jest/test-result",
+      "reason": "Pre-existing: high vulnerability in @jest/test-result (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@jest/test-sequencer",
+      "reason": "Pre-existing: high vulnerability in @jest/test-sequencer (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "@jest/transform",
+      "reason": "Pre-existing: high vulnerability in @jest/transform (remediate via V1/Q2 upgrade)",
       "revokedAt": null
     },
     {
@@ -106,8 +171,18 @@
       "revokedAt": null
     },
     {
+      "id": "@types/jest",
+      "reason": "Pre-existing: high vulnerability in @types/jest (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
       "id": "astro",
       "reason": "Pre-existing: critical vulnerability in astro (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "astro-eslint-parser",
+      "reason": "Pre-existing: high vulnerability in astro-eslint-parser (remediate via V1/Q2 upgrade)",
       "revokedAt": null
     },
     {
@@ -116,8 +191,48 @@
       "revokedAt": null
     },
     {
+      "id": "babel-jest",
+      "reason": "Pre-existing: high vulnerability in babel-jest (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "brace-expansion",
+      "reason": "Pre-existing: high vulnerability in brace-expansion (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "braces",
+      "reason": "Pre-existing: high vulnerability in braces (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
       "id": "cacache",
       "reason": "Pre-existing: high vulnerability in cacache (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "chokidar",
+      "reason": "Pre-existing: high vulnerability in chokidar (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "create-jest",
+      "reason": "Pre-existing: high vulnerability in create-jest (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "devalue",
+      "reason": "Pre-existing: high vulnerability in devalue (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "eslint-plugin-astro",
+      "reason": "Pre-existing: high vulnerability in eslint-plugin-astro (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "expect",
+      "reason": "Pre-existing: high vulnerability in expect (remediate via V1/Q2 upgrade)",
       "revokedAt": null
     },
     {
@@ -126,13 +241,33 @@
       "revokedAt": null
     },
     {
+      "id": "fast-glob",
+      "reason": "Pre-existing: high vulnerability in fast-glob (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
       "id": "fast-uri",
       "reason": "Pre-existing: high vulnerability in fast-uri (remediate via V1/Q2 upgrade)",
       "revokedAt": null
     },
     {
+      "id": "firebase",
+      "reason": "Pre-existing: high vulnerability in firebase (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "firebase-admin",
+      "reason": "Pre-existing: high vulnerability in firebase-admin (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
       "id": "glob",
       "reason": "Pre-existing: high vulnerability in glob (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "http-cache-semantics",
+      "reason": "Pre-existing: high vulnerability in http-cache-semantics (remediate via V1/Q2 upgrade)",
       "revokedAt": null
     },
     {
@@ -143,6 +278,71 @@
     {
       "id": "image-size",
       "reason": "Pre-existing: high vulnerability in image-size (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest",
+      "reason": "Pre-existing: high vulnerability in jest (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest-circus",
+      "reason": "Pre-existing: high vulnerability in jest-circus (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest-cli",
+      "reason": "Pre-existing: high vulnerability in jest-cli (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest-config",
+      "reason": "Pre-existing: high vulnerability in jest-config (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest-environment-node",
+      "reason": "Pre-existing: high vulnerability in jest-environment-node (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest-haste-map",
+      "reason": "Pre-existing: high vulnerability in jest-haste-map (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest-message-util",
+      "reason": "Pre-existing: high vulnerability in jest-message-util (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest-resolve",
+      "reason": "Pre-existing: high vulnerability in jest-resolve (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest-resolve-dependencies",
+      "reason": "Pre-existing: high vulnerability in jest-resolve-dependencies (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest-runner",
+      "reason": "Pre-existing: high vulnerability in jest-runner (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest-runtime",
+      "reason": "Pre-existing: high vulnerability in jest-runtime (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest-snapshot",
+      "reason": "Pre-existing: high vulnerability in jest-snapshot (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "jest-watcher",
+      "reason": "Pre-existing: high vulnerability in jest-watcher (remediate via V1/Q2 upgrade)",
       "revokedAt": null
     },
     {
@@ -166,6 +366,11 @@
       "revokedAt": null
     },
     {
+      "id": "micromatch",
+      "reason": "Pre-existing: high vulnerability in micromatch (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
       "id": "multer",
       "reason": "Pre-existing: high vulnerability in multer (remediate via V1/Q2 upgrade)",
       "revokedAt": null
@@ -173,6 +378,11 @@
     {
       "id": "nanoid",
       "reason": "Pre-existing: high vulnerability in nanoid (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "node-forge",
+      "reason": "Pre-existing: high vulnerability in node-forge (remediate via V1/Q2 upgrade)",
       "revokedAt": null
     },
     {
@@ -259,6 +469,16 @@
       "id": "vitest",
       "reason": "Pre-existing: critical vulnerability in vitest — temporary suppression, upgrade tracked in V1/Q2",
       "revokedAt": "2026-10-10T00:00:00Z"
+    },
+    {
+      "id": "webpack-dev-middleware",
+      "reason": "Pre-existing: high vulnerability in webpack-dev-middleware (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
+    },
+    {
+      "id": "webpack-dev-server",
+      "reason": "Pre-existing: high vulnerability in webpack-dev-server (remediate via V1/Q2 upgrade)",
+      "revokedAt": null
     }
   ]
 }

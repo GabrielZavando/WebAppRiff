@@ -1,7 +1,7 @@
 # search-form Specification
 
 ## Purpose
-TBD - created by archiving change search-form. Update Purpose after archive.
+Formulario de búsqueda del sitio: select de categorías con opción por defecto, input etiquetado, botón submit, modo transparente, landmark search y submit por GET a una URL canónica.
 ## Requirements
 ### Requirement: SearchForm renders a category select with a default option
 The search-form SHALL render a `<select>` populated from the `categories` prop, where the first option is `{ id: "", label: "Todas las categorías" }` and is pre-selected when `initialCategoriaId` is empty. The select border SHALL use the `--color-border` (`#E3E8ED`) token via la utility `border-border`; el texto del control SHALL usar el token `text-text-2` (#5C6675) en lugar de la paleta por defecto Tailwind `text-gray-*`. The select SHALL NOT apply `rounded` (flat design con radio 0). The selected/focused state SHALL use a primary-color ring via `focus:border-primary` (resolving to `#41B3C4`). Hex literals SHALL NOT appear in `class` attributes.

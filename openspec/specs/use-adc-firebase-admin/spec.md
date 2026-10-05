@@ -1,7 +1,7 @@
 # use-adc-firebase-admin Specification
 
 ## Purpose
-TBD - created by archiving change use-adc-firebase-admin. Update Purpose after archive.
+Inicialización de FIREBASE_APP con Application Default Credentials en runtime; las CLIs locales conservan su auth explícita por service account; el contrato de entorno refleja AD-only y la suite de tests pasa sin credenciales reales.
 ## Requirements
 ### Requirement: FIREBASE_APP SHALL initialize with Application Default Credentials
 The provider `FIREBASE_APP` in `apps/backend/src/infrastructure/firebase/firebase.module.ts` SHALL, when no Firebase app is initialized yet (`getApps().length === 0`), call `initializeApp` with `credential: applicationDefault()`, `projectId` from `ConfigService.getOrThrow('FIREBASE_PROJECT_ID')` and `storageBucket` from `ConfigService.getOrThrow('FIREBASE_STORAGE_BUCKET')`. It SHALL NOT read `FIREBASE_CLIENT_EMAIL` nor `FIREBASE_PRIVATE_KEY` to init the runtime app.

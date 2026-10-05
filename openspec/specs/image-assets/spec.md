@@ -1,7 +1,7 @@
 # image-assets Specification
 
 ## Purpose
-TBD - created by archiving change real-site-images. Update Purpose after archive.
+Gestión de assets de imagen del sitio: imágenes optimizables en src/assets/img consumidas vía astro:assets, excepción de la imagen Open Graph en public/, dependencia del pipeline en sharp e iconos fuera del dominio de assets.
 ## Requirements
 ### Requirement: Optimizable images live in src/assets/img and are consumed via astro:assets
 The `image-assets` SHALL store every optimizable image (hero, logo, y futuras imágenes del sitio) under `apps/web/src/assets/img/`, imported in `.astro` components using the `@` alias (`@/assets/img/<file>`) and rendered with the built-in `astro:assets` components (`<Image>` or `<Picture>` from `astro:assets`). No optimizable image SHALL be placed in `apps/web/public/`.

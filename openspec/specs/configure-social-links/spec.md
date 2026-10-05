@@ -1,7 +1,7 @@
 # configure-social-links Specification
 
 ## Purpose
-TBD - created by archiving change configure-social-links. Update Purpose after archive.
+Configuración de las URLs reales de redes sociales, render en los componentes del sitio público, contrato de seguridad/accesibilidad, contrato de variables de entorno y setup de E2E y build-time para Astro SSG.
 ## Requirements
 ### Requirement: Real social media URLs configuration
 The Astro site SHALL configure the official Riff social media URLs for Facebook, Instagram, and LinkedIn as **typed constants in `apps/web/src/lib/config/contact.ts`** (NOT via `import.meta.env`), keeping the X URL empty to suppress the X icon and link. Current values: Facebook `https://www.facebook.com/somosriff`, Instagram `https://www.instagram.com/somosriff.cl/`, LinkedIn `https://www.linkedin.com/company/somosriff/`, X `''`. (MODIFIED in `ui-chrome-uniform` — moved from env-driven to code constants.)

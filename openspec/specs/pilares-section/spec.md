@@ -1,7 +1,7 @@
 # pilares-section Specification
 
 ## Purpose
-TBD - created by archiving change pilares-section. Update Purpose after archive.
+Sección Pilares del home: full-bleed de dos columnas con eyebrow, h2, descripción y CTA; lista de pilares en la columna derecha; imágenes con astro:assets y lazy loading; componente presentacional (dumb) con props tipados.
 ## Requirements
 ### Requirement: PilaresSection renders as a full-bleed two-column section
 The `pilares-section` SHALL render a `<section>` as its outermost element carrying NO background color token (the backgrounds live on each column, not on the section). The section SHALL be full-bleed: it SHALL NOT wrap its content in the canonical `container` utility. The section SHALL render a grid with the mobile-first classes `grid-cols-1 lg:grid-cols-2` (columns stack on mobile, split 50/50 from the `lg` breakpoint). The LEFT column SHALL be `relative` and SHALL contain a background `<Image>` (astro:assets) with `absolute inset-0 w-full h-full object-cover`, a navy color overlay `<div>` with `absolute inset-0 bg-secondary/80`, and the column content wrapped in a `relative z-10` container with padding utilities (`p-8 md:p-12 lg:p-16`). The RIGHT column SHALL carry the solid teal-deep background token `bg-primary-deep` (token `--color-primary-deep: #006874` — POST-APPLY FIX 2026-08-09: the right column has NO background photo and NO overlay; it is a flat solid color per client feedback that the `planta-tratamiento-ecologica.webp` photo "no se ve nada de bien") with the same padding utilities.

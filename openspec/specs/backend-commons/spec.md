@@ -1,7 +1,7 @@
 # backend-commons Specification
 
 ## Purpose
-TBD - created by archiving change backend-commons. Update Purpose after archive.
+Comunes transversales del backend NestJS: CORS restringido a orígenes configurados, pipe de validación global, rate-limiting vía Throttler, envoltura consistente de respuestas y errores, y health endpoint enriquecido.
 ## Requirements
 ### Requirement: Backend SHALL enable CORS restricted to configured frontend origins
 The backend-commons SHALL enable CORS via `app.enableCors(...)` using options produced by a pure `buildCorsOptions(config)` function. In production (`NODE_ENV !== 'development'`) the allowed origin list SHALL be the strictly filtered set of `ASTRO_SITE_URL` and `ANGULAR_ADMIN_URL` that are present (fail-closed: if both are empty, no origins are allowed). In development (`NODE_ENV === 'development'`) the origin SHALL be `true` (allow all) to ease local development. `credentials` SHALL be `true` and `methods` restricted to safe HTTP methods.

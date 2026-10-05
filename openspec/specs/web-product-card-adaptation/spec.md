@@ -1,7 +1,7 @@
 # web-product-card-adaptation Specification
 
 ## Purpose
-TBD - created by archiving change products-pagination. Update Purpose after archive.
+Adaptación de la tarjeta de producto al detalle: tipo ProductoCardApi para datos de proyección de tarjeta, fetch del detalle por slug sin reusar la caché de catálogo y modelo toProductCardModel para ProductoCardApi.
 ## Requirements
 ### Requirement: ProductoCardApi type for card-projection data
 The web application SHALL define a `ProductoCardApi` type that is compatible with `ProductoApi` (assignable) but has optional fields for those not present in card projections: `descripcionLarga`, `atributos`, `fichaTecnica`, `stock`, `actualizadoEn`, `idExterno` SHALL be optional (may be undefined). Required fields: id, sku, titulo, slug, descripcionBreve, categoriaId, subcategoriaId, precio, galeria, creadoEn.

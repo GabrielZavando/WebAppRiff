@@ -1,7 +1,7 @@
 # add-frontend-smoke-and-nginx-hardening Specification
 
 ## Purpose
-TBD - created by archiving change add-frontend-smoke-and-nginx-hardening. Update Purpose after archive.
+Smoke tests de deploy que validan API, sitio Astro y panel Angular; endurecimiento de nginx con políticas de caché y headers de seguridad; documentación de rollback y migración de URLs.
 ## Requirements
 ### Requirement: Deploy smoke tests SHALL validate API, Astro and Angular
 The project SHALL provide smoke-test scripts that validate the deployed API

@@ -1,7 +1,7 @@
 # audit-blocking Specification
 
 ## Purpose
-TBD - created by archiving change audit-blocking. Update Purpose after archive.
+Auditoría de dependencias bloqueante (scripts/audit.mjs): suppressions declarativas vía npm-audit-suppressions.json, expiración por revokedAt, camino suave (warning) para devDependencies high y bloqueo siempre para critical.
 ## Requirements
 ### Requirement: The system SHALL support declarative suppressions via JSON file
 
