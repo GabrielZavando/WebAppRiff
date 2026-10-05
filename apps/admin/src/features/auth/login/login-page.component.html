@@ -1,0 +1,88 @@
+<!--
+  Login panel — dumb-presentation markup of the smart LoginPageComponent
+  (change `admin-login-panel`, ticket LOGIN-1).
+
+  Flat design: navy card (`bg-secondary shadow-2`) centered over `bg-bg`; no
+  `rounded*`; only `@theme` utilities. Inner content adapts to the dark
+  surface: labels `text-white`, link `text-primary-light`, inputs stay
+  `bg-white` (pattern of the site SearchForm: `h-11 border border-border
+  bg-white px-3 text-sm focus:outline-none focus:border-primary`), button
+  `bg-primary`, validation messages `text-error-light`. Accessible: label
+  for/id, autocomplete, aria-describedby → error messages (SC-007).
+-->
+<div class="min-h-screen bg-bg flex items-center justify-center px-4 py-8">
+  <!-- Title sits ABOVE the card, on the neutral bg-bg background (dark navy
+       text for contrast). The card itself is the navy surface below. -->
+  <div class="w-full max-w-md">
+    <h1 class="text-center font-heading font-bold text-2xl text-secondary mb-6">
+      Iniciar sesión
+    </h1>
+    <div class="bg-secondary shadow-2 p-8 sm:p-10" data-login-card>
+      <img
+        src="assets/img/logo-web.webp"
+        alt="Riff"
+        class="block mx-auto h-auto w-full max-w-[220px]"
+      />
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit($event)" class="mt-8" novalidate>
+      <div>
+        <label for="login-email" class="block mb-1 text-sm font-semibold text-white">
+          Correo
+        </label>
+        <input
+          id="login-email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          aria-describedby="login-email-error"
+          class="w-full h-11 border border-border bg-white px-3 text-sm text-text-2 focus:outline-none focus:border-primary"
+          [class.border-error]="showEmailError"
+        />
+        @if (showEmailError) {
+          <p id="login-email-error" data-email-error class="mt-1 text-xs text-error-light">
+            {{ emailErrorMessage }}
+          </p>
+        }
+      </div>
+
+      <div class="mt-4">
+        <label for="login-password" class="block mb-1 text-sm font-semibold text-white">
+          Contraseña
+        </label>
+        <input
+          id="login-password"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+          aria-describedby="login-password-error"
+          class="w-full h-11 border border-border bg-white px-3 text-sm text-text-2 focus:outline-none focus:border-primary"
+          [class.border-error]="showPasswordError"
+        />
+        @if (showPasswordError) {
+          <p id="login-password-error" data-password-error class="mt-1 text-xs text-error-light">
+            {{ passwordErrorMessage }}
+          </p>
+        }
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="loginForm.invalid"
+        class="w-full h-11 mt-6 font-heading font-semibold uppercase text-xs tracking-wide bg-primary hover:bg-primary-dark text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        INICIAR SESIÓN
+      </button>
+    </form>
+
+    <p class="mt-4 text-center">
+      <a
+        href="#"
+        aria-label="Recuperar contraseña"
+        class="text-sm text-primary-light hover:text-white underline-offset-4 hover:underline"
+      >
+        ¿Olvidaste tu contraseña?
+      </a>
+    </p>
+    </div>
+  </div>
+</div>
