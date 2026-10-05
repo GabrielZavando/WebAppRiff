@@ -388,11 +388,17 @@ describe('Header', () => {
       expect(html).toContain('SOLICITAR COTIZACIÓN');
     });
 
-    it('defaults to the solid navy gradient when transparent is not set', async () => {
+    it('defaults to a solid bg-secondary background when transparent is not set (SC-001)', async () => {
       const html = await render();
+      const headerTag = html.match(/<header[^>]*>/)?.[0] ?? '';
 
-      expect(html).toContain('from-secondary');
-      expect(html).toContain('to-secondary-light');
+      // Non-hero pages: uniform solid secondary background (same token as the
+      // global search bar). The old navy gradient must be gone.
+      expect(headerTag).toContain('site-header');
+      expect(headerTag).toContain('bg-secondary');
+      expect(headerTag).not.toContain('bg-linear-to-r');
+      expect(headerTag).not.toContain('from-secondary');
+      expect(headerTag).not.toContain('to-secondary-light');
     });
   });
 });

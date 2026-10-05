@@ -132,7 +132,7 @@ const searchFormProps: SearchFormProps = {
       <slot />
       <Footer {...SITE_FOOTER_CONTENT} />
       <SiteCredits {...SITE_CREDITS_CONTENT} />
-      <WhatsAppButton />
+      <WhatsAppButton phone={contact.whatsapp} />
     </div>
 
     <!-- Compact scroll state: toggles `data-scrolled` on <body> on scroll.

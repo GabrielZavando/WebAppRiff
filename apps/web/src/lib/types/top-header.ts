@@ -7,6 +7,7 @@ export interface SocialLink {
 
 export interface ContactInfo {
   phone: string;
+  whatsapp: string;
   social: {
     facebook: string;
     x: string;

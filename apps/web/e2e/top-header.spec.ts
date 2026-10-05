@@ -11,9 +11,17 @@ test.describe('TopHeader (utility bar)', () => {
 
     const socialNav = bar.getByRole('navigation', { name: 'Redes sociales' });
     await expect(socialNav).toBeVisible();
-    await expect(socialNav.getByRole('link', { name: 'Facebook' })).toBeVisible();
-    await expect(socialNav.getByRole('link', { name: 'Instagram' })).toBeVisible();
-    await expect(socialNav.getByRole('link', { name: 'LinkedIn' })).toBeVisible();
+    // Official URLs come from the shared config constants (SC-005): Facebook,
+    // Instagram and LinkedIn present, X absent.
+    await expect(
+      socialNav.getByRole('link', { name: 'Facebook' }),
+    ).toHaveAttribute('href', 'https://www.facebook.com/somosriff');
+    await expect(
+      socialNav.getByRole('link', { name: 'Instagram' }),
+    ).toHaveAttribute('href', 'https://www.instagram.com/somosriff.cl/');
+    await expect(
+      socialNav.getByRole('link', { name: 'LinkedIn' }),
+    ).toHaveAttribute('href', 'https://www.linkedin.com/company/somosriff/');
     await expect(socialNav.getByRole('link', { name: 'X' })).toHaveCount(0);
   });
 

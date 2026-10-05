@@ -1,8 +1,16 @@
 ---
-// Global floating WhatsApp contact CTA — dumb presentational component: no
-// props, no logic, no business rules in the frontmatter. Full contract in
-// the template comment below (SC-007 / SC-008).
+// Global floating WhatsApp contact CTA — dumb presentational component: it
+// receives the phone number via the `phone` prop and derives the wa.me href
+// (digits only with country code). No business rules in the frontmatter.
+// Full contract in the template comment below (SC-007 / SC-008 / SC-004).
 import { Icon } from 'astro-icon/components';
+
+interface Props {
+  /** WhatsApp number (e.g. '+56 9 3752 6162'). Digits-only wa.me href is derived. */
+  phone: string;
+}
+
+const { phone } = Astro.props;
 ---
 
 <!-- WhatsAppButton — global floating WhatsApp CTA (SC-007 / SC-008):
@@ -11,8 +19,10 @@ import { Icon } from 'astro-icon/components';
        its mobile menu overlay — the overlay's z-40 is trapped inside the
        sticky shell's z-30 stacking context, so the FAB must be below z-30 to
        stay under the open menu (adversarial review finding, 2026-10-04).
-     - Icon-only link to https://wa.me/56937526162 (+56 9 3752 6162, digits
-       only with country code), `target="_blank"` + `rel="noopener noreferrer"`.
+     - Icon-only link to https://wa.me/{digits} derived from the `phone` prop
+       (sourced from the `lib/config/contact.ts` constant `contact.whatsapp`,
+       e.g. '+56 9 3752 6162' → digits only with country code),
+       `target="_blank"` + `rel="noopener noreferrer"`.
        The accessible name lives in `aria-label`; the icon is decorative
        (`aria-hidden="true"`), so no visible text renders the number.
      - Colors use the design tokens `bg-whatsapp` / `hover:bg-whatsapp-dark`
@@ -21,7 +31,7 @@ import { Icon } from 'astro-icon/components';
        Lucide provides no WhatsApp brand icon; precedent: `simple-icons:x`
        (see docs/design/style-guide/README.md). -->
 <a
-  href="https://wa.me/56937526162"
+  href={`https://wa.me/${phone.replace(/\D/g, '')}`}
   target="_blank"
   rel="noopener noreferrer"
   aria-label="Contactar por WhatsApp"

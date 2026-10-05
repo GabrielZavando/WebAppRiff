@@ -3,13 +3,22 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import WhatsAppButton from '@/components/WhatsAppButton.astro';
 
 /**
- * Renders the dumb WhatsAppButton component (no props) through the
+ * Site WhatsApp number (SC-004): the component receives it via the `phone`
+ * prop and derives `https://wa.me/{digits}`; it MUST NOT be hardcoded in the
+ * markup. `+56 9 3752 6162` → `https://wa.me/56937526162`.
+ */
+const WHATSAPP_PHONE = '+56 9 3752 6162';
+
+/**
+ * Renders the dumb WhatsAppButton component with a `phone` prop through the
  * AstroContainer, the same pattern used by the rest of the component tests
  * (e.g. SearchForm.test.ts, PanelHome.test.ts).
  */
-async function render(): Promise<string> {
+async function render(phone: string = WHATSAPP_PHONE): Promise<string> {
   const container = await AstroContainer.create();
-  const html = await container.renderToString(WhatsAppButton);
+  const html = await container.renderToString(WhatsAppButton, {
+    props: { phone },
+  });
   // Strip AstroContainer-emitted JSX comments so literal mentions of
   // "WhatsApp" inside documentation comments don't count as visible text.
   return html.replace(/<!--[\s\S]*?-->/g, '');
@@ -37,11 +46,19 @@ function countOccurrences(haystack: string, needle: string): number {
 }
 
 describe('WhatsAppButton — floating link (SC-007)', () => {
-  it('renders an <a> to the WhatsApp wa.me link with target and rel', async () => {
-    const { tag } = getAnchor(await render());
+  it('renders an <a> to the wa.me link derived from the phone prop, with target and rel', async () => {
+    const { tag } = getAnchor(await render('+56 9 3752 6162'));
     expect(tag).toContain('href="https://wa.me/56937526162"');
     expect(tag).toContain('target="_blank"');
     expect(tag).toContain('rel="noopener noreferrer"');
+  });
+
+  it('derives the wa.me href from the phone prop digits (SC-004)', async () => {
+    // A different prop value must produce a different href: proves the number
+    // comes from the prop, not from a hardcoded literal (SC-004).
+    const { tag } = getAnchor(await render('+56 9 1111 2222'));
+    expect(tag).toContain('href="https://wa.me/56911112222"');
+    expect(tag).not.toContain('href="https://wa.me/56937526162"');
   });
 
   it('is fixed at the bottom-right corner (fixed bottom-6 right-6 z-20)', async () => {

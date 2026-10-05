@@ -33,6 +33,16 @@ describe('Contact page composition', () => {
     expect(clean).toContain('contacto@somosriff.cl');
   });
 
+  it('[SC-005] renders the official social links (Facebook, Instagram, LinkedIn) and omits X', async () => {
+    const html = await render();
+    const clean = stripComments(html);
+    expect(clean).toContain('href="https://www.facebook.com/somosriff"');
+    expect(clean).toContain('href="https://www.instagram.com/somosriff.cl/"');
+    expect(clean).toContain('href="https://www.linkedin.com/company/somosriff/"');
+    expect(clean).not.toContain('aria-label="X"');
+    expect(clean).not.toContain('simple-icons:x');
+  });
+
   it('does not introduce a second header landmark', async () => {
     const html = await render();
     const clean = stripComments(html);
@@ -55,7 +65,9 @@ describe('Contact page composition', () => {
     const html = await render();
     const clean = stripComments(html);
     const formEnd = clean.indexOf('</form>');
-    const barStart = clean.indexOf('tel:+56229079067');
+    // The phone link now renders twice (TopHeader + ContactBar), so anchor the
+    // bar locator on the email, which is unique to the ContactBar (SC-005).
+    const barStart = clean.indexOf('mailto:contacto@somosriff.cl');
     // Bar must appear AFTER the form in DOM order
     expect(barStart).toBeGreaterThan(formEnd);
     // The bar must NOT be a distinct dark footer strip
