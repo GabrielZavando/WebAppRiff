@@ -39,30 +39,17 @@ until the asynchronously-built Coolify deployment is live or a timeout is reache
 - **THEN** the smoke script prints a notice and is skipped without failing
 
 ### Requirement: Nginx SHALL enforce cache policy and security headers
-`apps/web/nginx.conf` and `apps/admin/nginx.conf` SHALL serve content-hashed assets
-immutably (`/_astro/*` for web, `/assets/*` for admin), HTML/index without permanent
-caching (`no-cache`), keep the web 404 static page and the admin SPA fallback, and
-add security headers compatible with both apps (`X-Content-Type-Options`,
-`X-Frame-Options`, `Referrer-Policy`, and a compatible base Content-Security-Policy
-that does not break required inline styles/scripts).
+`apps/web/nginx.conf` and `apps/admin/nginx.conf` SHALL serve content-hashed assets (`/_astro/*` for web, `/assets/*` for admin) with `Cache-Control: public, max-age=31536000, immutable`; HTML (including `index.html` and the SPA fallback) with `no-cache`; and every HTML document SHALL carry the security headers `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, and a compatible base Content-Security-Policy repeated explicitly in each `location` that defines an `add_header`. The CSP `font-src` directive SHALL be `font-src 'self' https: data:` — the `data:` source allows the self-hosted `@fontsource` fonts that the build inlines as base64 data URIs (change `ui-chrome-uniform`); the other CSP directives remain unchanged. (MODIFIED in `ui-chrome-uniform`.)
 
-#### Scenario: Web nginx cache and 404
-- **WHEN** a client requests web assets and HTML
-- **THEN** `/_astro/*` is served immutable and HTML is served no-cache
-- **AND** unknown paths hit the static 404 page
+#### Scenario: CSP font-src allows embedded fonts
+- **WHEN** any `location` in `apps/web/nginx.conf` or `apps/admin/nginx.conf` emits the `Content-Security-Policy` header
+- **THEN** the `font-src` directive is `'self' https: data:`
+- **AND** the remaining directives (`default-src`, `script-src`, `style-src`, `img-src`, `connect-src`, `object-src`, `base-uri`, `form-action`) are unchanged
 
-#### Scenario: Admin nginx cache and SPA fallback
-- **WHEN** a client requests admin assets and a deep route
-- **THEN** `/assets/*` is served immutable, `index.html` no-cache
-- **AND** deep routes fall back to `index.html`
-
-#### Scenario: Security headers present in both apps
-- **WHEN** web or admin responds with any document (including index.html served via
-its own location or the SPA fallback)
-- **THEN** `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` and a
-compatible base CSP are present
-- **AND** those headers are repeated explicitly in every `location` that defines
-`add_header` (nginx does not inherit `add_header`), so no served document loses them
+#### Scenario: Security headers present on every document
+- **WHEN** nginx serves any HTML document
+- **THEN** it includes `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` and the base CSP
+- **AND** the headers + CSP are repeated explicitly in each `location` that defines its own `add_header` (nginx `add_header` inheritance)
 
 ### Requirement: Rollback and URL migration SHALL be documented
 `docs/deploy-standards.md` SHALL document how to identify the last healthy

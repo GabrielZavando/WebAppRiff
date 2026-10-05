@@ -1,19 +1,17 @@
 {
   "schema_version": 1,
-  "change": "ui-chrome-polish",
-  "ticket_id": "UI-FIX1",
+  "change": "ui-chrome-uniform",
+  "ticket_id": "UI-02",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-10-04T15:05:17Z",
-  "tasks": { "total": 20, "passed": 20, "failed": 0, "untested": 0 },
+  "timestamp": "2026-10-04T23:53:55Z",
+  "tasks": { "total": 18, "passed": 18, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "Header — contains the full logo height via responsive padding-bottom (SC-001)", "status": "PASS" },
-    { "id": "SC-002", "test": "SearchForm — transparent mode (home hero full-bleed background, SC-002)", "status": "PASS" },
-    { "id": "SC-003", "test": "SearchForm — non-hero background (solid bg-secondary, SC-003)", "status": "PASS" },
-    { "id": "SC-004", "test": "SearchForm — compact scroll contract (SC-004) > keeps the .site-search compact scroll rule in header-scroll.css (SC-004)", "status": "PASS" },
-    { "id": "SC-005", "test": "PanelHome — the <section> carries a uniform -mt-2 (8px overlap at every breakpoint), relative, and z-10, with NO md:-mt-2 nor positive lg:mt-2 (SC-005)", "status": "PASS" },
-    { "id": "SC-006", "test": "Header — renders a \"Nosotros\" link pointing to /nosotros in the desktop nav (SC-006)", "status": "PASS" },
-    { "id": "SC-007", "test": "WhatsAppButton — floating link (SC-007) > is fixed at the bottom-right corner (fixed bottom-6 right-6 z-20)", "status": "PASS" },
-    { "id": "SC-008", "test": "WhatsAppButton — icon-only (SC-007, SC-008)", "status": "PASS" }
+    { "id": "SC-001", "test": "Header — defaults to a solid bg-secondary background when transparent is not set (SC-001)", "status": "PASS" },
+    { "id": "SC-002", "test": "TopHeader — applies the solid bg-secondary background (SC-002)", "status": "PASS" },
+    { "id": "SC-003", "test": "contact — returns the configured contact constants (SC-003)", "status": "PASS" },
+    { "id": "SC-004", "test": "WhatsAppButton — derives the wa.me href from the phone prop digits (SC-004)", "status": "PASS" },
+    { "id": "SC-005", "test": "contacto — [SC-005] renders the official social links (Facebook, Instagram, LinkedIn) and omits X", "status": "PASS" },
+    { "id": "SC-006", "test": "csp-nginx — SC-006 — CSP font-src allows embedded @fontsource fonts", "status": "PASS" }
   ]
 }

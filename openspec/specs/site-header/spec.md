@@ -55,17 +55,17 @@ The site-header SHALL render a call-to-action link to request a quote as the las
 - **AND** the CTA retains `bg-accent` styling
 
 ### Requirement: Site Header supports a transparent mode
-Header SHALL accept an optional boolean prop `transparent` (default `false`). When `true`, the `<header>` element SHALL use `bg-transparent` instead of `bg-linear-to-r from-secondary to-secondary-light`; the logo, desktop nav, CTA and mobile toggle remain unchanged. When `false` (default), the existing navy gradient SHALL be present.
+Header SHALL accept an optional boolean prop `transparent` (default `false`). When `true`, the `<header>` element SHALL use `bg-transparent` instead of the solid `bg-secondary`; the logo, desktop nav, CTA and mobile toggle remain unchanged. When `false` (default), the solid navy `bg-secondary` background SHALL be present — uniform with the search bar and the top bar; the gradient `bg-linear-to-r from-secondary to-secondary-light` was removed in `ui-chrome-uniform`. (MODIFIED in `ui-chrome-uniform`.)
 
-#### Scenario: Transparent mode replaces header gradient
-- **WHEN** Header renders with `transparent: true`
+#### Scenario: Transparent mode replaces the solid header background
+- **WHEN** the Header renders with `transparent: true`
 - **THEN** the `<header>` element carries `bg-transparent`
-- **AND** its class does NOT contain `from-secondary to-secondary-light`
-- **AND** the logo link and navigation items still render
+- **AND** the `<header>` element does NOT carry `bg-secondary` nor the gradient utilities
 
-#### Scenario: Default mode keeps gradient header
-- **WHEN** Header renders without `transparent`
-- **THEN** the `<header>` element carries `bg-linear-to-r from-secondary to-secondary-light`
+#### Scenario: Default mode renders the solid secondary header
+- **WHEN** the Header renders without `transparent`
+- **THEN** the `<header>` element carries `bg-secondary` (solid var(--color-secondary))
+- **AND** the `<header>` element does NOT carry `bg-linear-to-r from-secondary to-secondary-light`
 
 ### Requirement: Header supports a fullscreen mobile overlay with slide animation
 The site-header SHALL collapse the desktop navigation into a toggleable hamburger menu on viewports smaller than 1024px. When toggled open, the mobile menu SHALL render as a **full-viewport overlay** (`100vw` × `100vh`) with a **white background** (`bg-white`), showing only the menu items and CTA. The overlay SHALL slide in from the right (off-screen `translateX(100%)` → visible `translateX(0)`) with a smooth `300ms ease-in-out` CSS transition. The hamburger button SHALL transform into an X button and SHALL remain always visible — positioned `fixed` with `z-50` (above the overlay's `z-40`) so the sliding menu layer does NOT cover it. The button's icon color SHALL adapt from white (on the navy header) to secondary `#1F2D40` (on the white overlay) via CSS driven by a `data-menu-open` attribute on the `<header>`. Body scroll SHALL be locked (`overflow:hidden` on `<body>`) while the overlay is open.
@@ -115,31 +115,12 @@ The site-header SHALL obtain its menu and close icons via `astro-icon` (`<Icon>`
 - **AND** all `<Icon name="...">` references start with the prefix `lucide:`
 
 ### Requirement: Header renders logo at 2× size with overflow
-The site-header SHALL render a logo link pointing to the home page, wrapping the real raster logo imported from `@/assets/img/` (`logo-web.webp`) and rendered with the built-in `astro:assets` `<Image>` component. The `<img>` SHALL carry the `alt` text from the `logoAlt` prop and **double** the previous `width`/`height` attributes (from `165`/`67` to `330`/`134`). The `<img>` SHALL use a responsive max-width so it scales proportionally: `max-w-[200px]` on mobile viewports and `max-w-[300px]` from the `sm` breakpoint (>= 640px) upward, combined with `w-full` so it occupies available width up to the cap while preserving the aspect ratio defined by `width`/`height`. The wrapping `<a>` SHALL use `overflow-visible` with a responsive constrained height: `h-20` on mobile/tablet (viewport < 1024px) and `lg:h-24` on desktop (>= 1024px), so the header is shorter on small screens. The `<img>` SHALL additionally carry `max-h-full` (removed via `lg:max-h-none` on desktop) so on mobile/tablet it never exceeds the header height, preventing the header from growing when the width-capped logo would be taller than the header. On desktop the original 2× overflow behaviour is restored. The placeholder text "Logo placeholder" SHALL no longer appear. The header container SHALL use the `--color-secondary` (navy `#1F2D40`) and `--color-secondary-light` (`#35455E`) tokens via Tailwind utilities `bg-linear-to-r from-secondary to-secondary-light`; the obsolete utilities `bg-brand-navy`, `from-brand-navy`, `to-brand-navy-light` SHALL NOT appear.
+(section on tokens) The header container SHALL use the `--color-secondary` (navy `#1F2D40`) token via the Tailwind utility `bg-secondary` for its background; the gradient utilities `bg-linear-to-r from-secondary to-secondary-light` and the obsolete utilities `bg-brand-navy`, `from-brand-navy`, `to-brand-navy-light` SHALL NOT appear. (MODIFIED in `ui-chrome-uniform` — the logo rendering contract is unchanged; only the background token sentence changed from gradient to solid.)
 
-#### Scenario: Logo link points to home
-- **WHEN** the site-header renders
-- **THEN** the logo link has `href="/"` and `aria-label="Ir al inicio"`
-- **AND** the logo link is inside a container with a gradient `from-secondary to-secondary-light`
-- **AND** the rendered HTML contains no `brand-navy` token references
-
-#### Scenario: Logo image is the real raster asset at 2x size with overflow
-- **WHEN** the site-header renders
-- **THEN** the logo link contains an `<img>` element whose `src` resolves to the imported asset from `@/assets/img/` (`logo-web.webp`, 600×243 native)
-- **AND** the `<img>` carries `alt="Riff"` (the `logoAlt` prop value)
-- **AND** the `<img>` carries explicit `width="330"` and `height="134"` attributes (2× the previous 165×67)
-- **AND** the `<a>` wrapper has `overflow-visible` and a responsive constrained height (`h-20 lg:h-24`)
-- **AND** the `<img>` carries `max-h-full` so it never exceeds the header height on mobile/tablet
-- **AND** the rendered HTML does NOT contain "Logo placeholder"
-
-#### Scenario: Logo image uses responsive max-width
-- **WHEN** the site-header renders
-- **THEN** the `<img>` carries `w-full` so it fills available width up to its cap
-- **AND** the `<img>` carries `max-w-[200px]` to cap width at 200px on mobile
-- **AND** the `<img>` carries `sm:max-w-[300px]` to cap width at 300px from the `sm` breakpoint upward
-- **AND** the `<img>` carries `max-h-full` (mobile/tablet) so it cannot exceed the header height
-- **AND** the `<img>` carries `lg:max-h-none` to restore the 2× overflow on desktop
-- **AND** the `<img>` still carries explicit `width="330"` and `height="134"` attributes (aspect ratio preserved)
+#### Scenario: Logo container uses the solid secondary background
+- **WHEN** the site header renders in its default (non-transparent) state
+- **THEN** the `<header>` container applies `bg-secondary` (resolving to `#1F2D40`)
+- **AND** the container does NOT apply `from-secondary to-secondary-light`
 
 ### Requirement: Header accessibility
 The site-header SHALL meet accessibility requirements and ensure a single `<header>` landmark per page. The hamburger/X toggle button SHALL remain visible over the fullscreen overlay with a color that contrasts both the navy header and the white overlay.
