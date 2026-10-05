@@ -7,7 +7,8 @@ import logoImage from '@/assets/img/logo-web.webp';
 
 interface Props extends HeaderProps {
   /** Transparent background on the home hero so the full-bleed image shows
-   * through the shell (default solid navy gradient). */
+   * through the shell (default solid bg-secondary, uniform with the search
+   * bar — SC-001; the old navy gradient was removed). */
   transparent?: boolean;
 }
 
@@ -32,7 +33,10 @@ const logoAltText = logoAlt ?? 'Riff';
     'site-header',
     'text-white',
     'pb-10 lg:pb-4',
-    transparent ? 'bg-transparent' : 'bg-linear-to-r from-secondary to-secondary-light',
+    // SC-001: non-hero pages get the solid secondary token (same as the search
+    // bar); the old navy gradient `bg-linear-to-r from-secondary
+    // to-secondary-light` was removed in ui-chrome-uniform.
+    transparent ? 'bg-transparent' : 'bg-secondary',
   ]}
 >
   <div class="site-header__inner container mx-auto px-4 h-20 lg:h-24 flex items-center justify-between gap-4">
@@ -93,8 +97,8 @@ const logoAltText = logoAlt ?? 'Riff';
 
     <!-- Mobile toggle: fixed so it is always visible above the fullscreen
          overlay (z-50 > overlay z-40). Icon color adapts via CSS driven by
-         data-menu-open on <header>: white on navy header (closed), secondary
-         on white overlay (open). -->
+         data-menu-open on <header>: white on the solid secondary header
+         (closed), secondary on white overlay (open). -->
     <button
       type="button"
       data-menu-toggle
@@ -158,7 +162,7 @@ const logoAltText = logoAlt ?? 'Riff';
     transform: translateX(0);
     pointer-events: auto;
   }
-  /* Toggle button: white on navy header (closed) -> secondary on white overlay (open) */
+  /* Toggle button: white on solid secondary header (closed) -> secondary on white overlay (open) */
   header[data-menu-open="false"] [data-menu-toggle] {
     color: var(--color-white);
   }

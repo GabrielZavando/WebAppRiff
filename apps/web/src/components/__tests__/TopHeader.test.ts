@@ -5,6 +5,7 @@ import type { ContactInfo } from '@/lib/types/top-header';
 
 const fullContact: ContactInfo = {
   phone: '+56 2 29079067',
+  whatsapp: '+56 9 3752 6162',
   social: {
     facebook: 'https://facebook.com/riff',
     x: 'https://x.com/riff',
@@ -46,18 +47,19 @@ describe('TopHeader', () => {
   it('renders the official Riff social links (Facebook, Instagram, LinkedIn) and omits X when SOCIAL_X_URL is empty (SC-001, SC-004)', async () => {
     const officialContact: ContactInfo = {
       phone: '+56 2 29079067',
+      whatsapp: '+56 9 3752 6162',
       social: {
-        facebook: 'https://www.facebook.com/share/1DL9drgCDU/?mibextid=wwXIfr',
+        facebook: 'https://www.facebook.com/somosriff',
         x: '',
-        instagram: 'https://www.instagram.com/somosriff.cl?igsi=MTU2YXhqaThoNnFydA%3D%3D&utm_source=qr',
-        linkedin: 'https://www.linkedin.com/company/100252590',
+        instagram: 'https://www.instagram.com/somosriff.cl/',
+        linkedin: 'https://www.linkedin.com/company/somosriff/',
       },
     };
     const html = await render(officialContact);
 
-    expect(html).toContain('href="https://www.facebook.com/share/1DL9drgCDU/?mibextid=wwXIfr"');
-    expect(html).toMatch(/href="https:\/\/www\.instagram\.com\/somosriff\.cl\?igsi=MTU2YXhqaThoNnFydA%3D%3D&(amp;)?utm_source=qr"/);
-    expect(html).toContain('href="https://www.linkedin.com/company/100252590"');
+    expect(html).toContain('href="https://www.facebook.com/somosriff"');
+    expect(html).toContain('href="https://www.instagram.com/somosriff.cl/"');
+    expect(html).toContain('href="https://www.linkedin.com/company/somosriff/"');
     expect(html).not.toContain('aria-label="X"');
     expect(html).not.toContain('simple-icons:x');
 
@@ -69,6 +71,7 @@ describe('TopHeader', () => {
   it('renders only social links that have a configured URL', async () => {
     const html = await render({
       phone: '+56 2 29079067',
+      whatsapp: '+56 9 3752 6162',
       social: {
         facebook: 'https://facebook.com/riff',
         x: '',
@@ -88,6 +91,7 @@ describe('TopHeader', () => {
   it('omits the social nav when no social URLs are configured', async () => {
     const html = await render({
       phone: '+56 2 29079067',
+      whatsapp: '+56 9 3752 6162',
       social: { facebook: '', x: '', instagram: '', linkedin: '' },
     });
 
@@ -102,7 +106,7 @@ describe('TopHeader', () => {
     expect(html).toContain('sm:flex');
   });
 
-  it('applies brand navy background, compact h-8 height and full layout styling', async () => {
+  it('applies the solid bg-secondary background (SC-002)', async () => {
     const html = await render(fullContact);
 
     // Root region div (outermost) uses h-8 for a compact footprint.
@@ -112,9 +116,11 @@ describe('TopHeader', () => {
     expect(rootClasses).toContain('h-8');
     expect(rootClasses).not.toContain('h-9');
 
-    // Background
+    // Background — SC-002: solid bg-secondary (uniform with search bar), no gradient
     expect(html).toContain('bg-secondary');
-    expect(html).toContain('bg-linear-to-r from-secondary to-secondary-light');
+    expect(html).not.toContain('from-secondary');
+    expect(html).not.toContain('to-secondary-light');
+    expect(html).not.toContain('bg-linear-to-r');
     // Centered container
     expect(html).toContain('container mx-auto px-4');
     // Space between phone (left) and social (right)
@@ -169,8 +175,11 @@ describe('TopHeader', () => {
     it('defaults to the solid navy background when transparent is not set', async () => {
       const html = await render(fullContact);
 
+      // SC-002: default solid bg-secondary, gradient must NOT appear
       expect(html).toContain('bg-secondary');
-      expect(html).toContain('bg-linear-to-r from-secondary to-secondary-light');
+      expect(html).not.toContain('from-secondary');
+      expect(html).not.toContain('to-secondary-light');
+      expect(html).not.toContain('bg-linear-to-r');
     });
   });
 
@@ -196,6 +205,7 @@ describe('TopHeader', () => {
   it('normalizes a phone number with spaces/separators to an E.164 tel: link (click-to-call regression)', async () => {
     const html = await render({
       phone: '+56 2 2907 9067',
+      whatsapp: '+56 9 3752 6162',
       social: { facebook: '', x: '', instagram: '', linkedin: '' },
     });
 

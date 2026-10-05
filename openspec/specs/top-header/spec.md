@@ -4,14 +4,11 @@
 TBD - created by archiving change top-header. Update Purpose after archive.
 ## Requirements
 ### Requirement: TopHeader renders phone number
-The TopHeader component SHALL render the primary phone number from configuration as a clickable `tel:` link. The phone icon SHALL be rendered via `astro-icon` (`<Icon name="lucide:phone" />`) — the set único autorizado es **Lucide** (outline stroke 2px); el set `material-symbols` y el icono `material-symbols:contact-phone-outline` quedan obsoletos. El per-network `PhoneIcon.astro` component SHALL no longer exist in `apps/web/src/components/icons/`.
+TopHeader SHALL render the phone number from the shared configuration constant (currently `+56 2 29079067`) as a `tel:` link when it is non-empty, using the E.164 normalization for the `href`. The value SHALL come from `lib/config/contact.ts` constants, NOT from environment variables. (MODIFIED in `ui-chrome-uniform` — the scenario wording moved from `PRIMARY_PHONE` to the configured constant.)
 
-#### Scenario: Phone number displayed
-- **WHEN** the component renders with PRIMARY_PHONE="+56 2 29079067"
-- **THEN** the phone number is visible in the left section of the header
-- **AND** the phone number is wrapped in an `<a>` tag with `href="tel:+56229079067"`
-- **AND** the link contains an `<Icon name="lucide:phone">` element (no inline `<svg>`)
-- **AND** the formatted number text follows the icon
+#### Scenario: Phone link renders with the configured constant
+- **WHEN** the component renders with the configured phone constant (`+56 2 29079067`)
+- **THEN** the phone anchor renders with a `tel:` href normalized to E.164 (`tel:+56229079067`)
 
 ### Requirement: TopHeader renders social media links
 The TopHeader component SHALL render up to 4 social media links (Facebook, X, Instagram, LinkedIn) only when their corresponding URLs are configured. Each social link icon SHALL be rendered via `astro-icon` using a `<Icon>` element. Facebook, Instagram and LinkedIn icons SHALL use the `lucide:` prefix (the set único autorizado). **Exception**: the X (Twitter) social link icon SHALL use `simple-icons:x` (the official current X brand logo), because Lucide does not provide the current X brand mark and `lucide:x` is a close icon (not the brand); this is the **only** documented exception to the "set único Lucide" rule (see `docs/design/style-guide/README.md`). Los sets `logos` (Iconify Logos) quedan obsoletos. El per-network `.astro` SVG icon components (FacebookIcon, XIcon, InstagramIcon, LinkedInIcon) SHALL no longer exist in `apps/web/src/components/icons/`.
@@ -51,17 +48,17 @@ The TopHeader component SHALL obtain all its icons via `astro-icon` (`<Icon>` el
 - **AND** all `<Icon name="...">` references use either the `lucide:` prefix or the `simple-icons:x` exception for X
 
 ### Requirement: TopHeader supports a transparent mode
-TopHeader SHALL accept an optional boolean prop `transparent` (default `false`). When `true`, the component SHALL render with `bg-transparent` instead of the gradient `bg-secondary bg-linear-to-r from-secondary to-secondary-light` while keeping the same layout, text colors, and social dividers. When `false` (default), the existing gradient navy background SHALL be present.
+TopHeader SHALL accept an optional boolean prop `transparent` (default `false`). When `true`, the component SHALL render with `bg-transparent` instead of the solid `bg-secondary` while keeping the same layout, text colors, and social dividers. When `false` (default), the solid navy background `bg-secondary` SHALL be present — uniform with the global search bar; the gradient `bg-linear-to-r from-secondary to-secondary-light` was removed in `ui-chrome-uniform`. (MODIFIED in `ui-chrome-uniform`.)
 
-#### Scenario: Transparent mode removes the gradient
+#### Scenario: Transparent mode renders a transparent wrapper
 - **WHEN** TopHeader renders with `transparent: true`
 - **THEN** the outer class contains `bg-transparent`
-- **AND** the outer class does NOT contain `bg-secondary` nor `from-secondary to-secondary-light`
-- **AND** the phone link and social links are still rendered
+- **AND** the outer class does NOT contain `bg-secondary` nor the gradient utilities `from-secondary to-secondary-light`
 
-#### Scenario: Default mode keeps the gradient
-- **WHEN** TopHeader renders without `transparent` (or `transparent: false`)
-- **THEN** the outer class contains `bg-secondary` and `from-secondary to-secondary-light`
+#### Scenario: Default mode renders the solid secondary wrapper
+- **WHEN** TopHeader renders without `transparent`
+- **THEN** the outer class contains `bg-secondary`
+- **AND** the outer class does NOT contain `from-secondary` nor `to-secondary-light`
 
 ### Requirement: TopHeader is hidden on mobile
 The TopHeader component SHALL be completely hidden on viewports smaller than 640px (Tailwind `sm` breakpoint).
@@ -77,12 +74,12 @@ The TopHeader component SHALL be completely hidden on viewports smaller than 640
 - **AND** phone and social links are visible
 
 ### Requirement: TopHeader uses brand colors and layout
-The TopHeader component SHALL use the `--color-secondary` (navy `#1F2D40`) and `--color-secondary-light` (`#35455E`) tokens via Tailwind utilities `bg-secondary`, `from-secondary`, `to-secondary-light`. The component SHALL NOT use the obsolete tokens `--color-brand-navy`, `--color-brand-navy-light`, nor the utilities `bg-brand-navy`, `from-brand-navy`, `to-brand-navy-light`.
+The TopHeader component SHALL use the `--color-secondary` (navy `#1F2D40`) token via the Tailwind utility `bg-secondary` for its non-transparent background. The gradient utilities `from-secondary`/`to-secondary-light` and the obsolete tokens `--color-brand-*` SHALL NOT be used. (MODIFIED in `ui-chrome-uniform` — the gradient was removed so the top bar matches the search bar's solid `var(--color-secondary)`.)
 
-#### Scenario: TopHeader uses navy tokens (no brand-navy)
-- **WHEN** the TopHeader renders
-- **THEN** the outer container applies `bg-secondary` (resolving to `#1F2D40`) and a gradient `from-secondary to-secondary-light`
-- **AND** no class in the rendered HTML contains the substring `brand-navy`
+#### Scenario: Solid secondary background applied
+- **WHEN** the TopHeader renders in its default (non-transparent) state
+- **THEN** the outer container applies `bg-secondary` (resolving to `#1F2D40`)
+- **AND** the outer container does NOT apply `from-secondary to-secondary-light`
 
 ### Requirement: TopHeader accessibility
 The TopHeader component SHALL meet accessibility requirements for links and navigation.
@@ -96,18 +93,6 @@ The TopHeader component SHALL meet accessibility requirements for links and navi
 #### Scenario: Navigation landmark
 - **WHEN** social links are rendered
 - **THEN** they are wrapped in a `<nav>` element with `aria-label="Redes sociales"`
-
-### Requirement: Configuration reads from environment variables
-The contact configuration SHALL read all values from `import.meta.env` with graceful fallback to empty strings.
-
-#### Scenario: All env vars present
-- **WHEN** PRIMARY_PHONE, SOCIAL_FACEBOOK_URL, SOCIAL_X_URL, SOCIAL_INSTAGRAM_URL, SOCIAL_LINKEDIN_URL are set
-- **THEN** `getContactInfo()` returns object with all values
-
-#### Scenario: Missing env vars
-- **WHEN** some environment variables are not defined
-- **THEN** `getContactInfo()` returns empty strings for missing values
-- **AND** no error is thrown
 
 ### Requirement: TopHeader normalizes phone number to E.164 tel: format (regression)
 The `phoneHref` computation in TopHeader SHALL normalize the configured phone number to E.164 format by stripping all characters except digits and the leading `+` before constructing the `tel:` link. This is a regression test guarding the existing behavior.
@@ -151,4 +136,12 @@ The TopHeader component SHALL use the smallest practical vertical height that st
 #### Scenario: Content still renders fully at reduced height
 - **WHEN** TopHeader renders with full contact (phone + 4 socials)
 - **THEN** both the phone link and all social anchors are fully visible and not clipped vertically
+
+### Requirement: Configuration is defined in code constants
+`lib/config/contact.ts` SHALL define the contact/social values as typed constants and `getContactInfo()` SHALL return them without reading `import.meta.env`: `phone` `+56 2 29079067`, `whatsapp` `+56 9 3752 6162`, `social.facebook` `https://www.facebook.com/somosriff`, `social.x` `''` (empty — suppresses the X icon), `social.instagram` `https://www.instagram.com/somosriff.cl/`, `social.linkedin` `https://www.linkedin.com/company/somosriff/`. (ADDED in `ui-chrome-uniform`.)
+
+#### Scenario: getContactInfo returns the configured constants
+- **WHEN** `getContactInfo()` is invoked
+- **THEN** it returns exactly the constants listed above
+- **AND** no `import.meta.env` read is performed for those values
 

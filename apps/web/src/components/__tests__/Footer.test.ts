@@ -91,9 +91,9 @@ describe('Footer — brand column (logo + tagline + social)', () => {
     const officialProps: SiteFooterProps = {
       ...SITE_FOOTER_CONTENT,
       socialLinks: [
-        { name: 'Facebook', href: 'https://www.facebook.com/share/1DL9drgCDU/?mibextid=wwXIfr' },
-        { name: 'Instagram', href: 'https://www.instagram.com/somosriff.cl?igsi=MTU2YXhqaThoNnFydA%3D%3D&utm_source=qr' },
-        { name: 'LinkedIn', href: 'https://www.linkedin.com/company/100252590' },
+        { name: 'Facebook', href: 'https://www.facebook.com/somosriff' },
+        { name: 'Instagram', href: 'https://www.instagram.com/somosriff.cl/' },
+        { name: 'LinkedIn', href: 'https://www.linkedin.com/company/somosriff/' },
       ],
     };
     const html = await render(officialProps);

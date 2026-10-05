@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "change": "admin-login-panel",
-  "ticket_id": "LOGIN-1",
+  "change": "ui-chrome-uniform",
+  "ticket_id": "UI-02",
   "verdict": "SHIP",
   "confidence": 0.85,
-  "timestamp": "2026-10-04T20:47:57Z",
+  "timestamp": "2026-10-04T23:58:06Z",
   "findings": {
-    "total": 7,
+    "total": 4,
     "critical": 0,
-    "warnings": 2,
-    "info": 5,
+    "warnings": 1,
+    "info": 3,
     "discarded": 0
   }
 }

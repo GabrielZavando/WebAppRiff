@@ -1,8 +1,7 @@
 # configure-social-links Specification
 
-## Purpose
-TBD - created by archiving change configure-social-links. Update Purpose after archive.
-## Requirements
+## MODIFIED Requirements
+
 ### Requirement: Real social media URLs configuration
 The Astro site SHALL configure the official Riff social media URLs for Facebook, Instagram, and LinkedIn as **typed constants in `apps/web/src/lib/config/contact.ts`** (NOT via `import.meta.env`), keeping the X URL empty to suppress the X icon and link. Current values: Facebook `https://www.facebook.com/somosriff`, Instagram `https://www.instagram.com/somosriff.cl/`, LinkedIn `https://www.linkedin.com/company/somosriff/`, X `''`. (MODIFIED in `ui-chrome-uniform` — moved from env-driven to code constants.)
 
@@ -19,17 +18,6 @@ The Astro site SHALL configure the official Riff social media URLs for Facebook,
 - **THEN** no X anchor or icon renders in TopHeader, Footer or ContactBar
 - **AND** Facebook, Instagram and LinkedIn anchors render with the configured URLs
 
-### Requirement: Security and accessibility contract
-
-Every social link rendered across `TopHeader`, `Footer`, and `ContactBar` SHALL include `target="_blank"`, `rel="noopener noreferrer"`, and an `aria-label` matching the social network name ("Facebook", "Instagram", "LinkedIn").
-
-#### Scenario: Accessible and secure social anchors
-
-- **WHEN** any social anchor is rendered
-- **THEN** it carries `target="_blank"`
-- **AND** it carries `rel="noopener noreferrer"`
-- **AND** its `aria-label` attribute equals the official network name
-
 ### Requirement: Environment variables contract and E2E test setup
 The project SHALL keep the official social URLs testable via the e2e suite: `apps/web/e2e/top-header.spec.ts` SHALL assert the configured Facebook, Instagram and LinkedIn URLs (and the absence of X). The social URLs are code constants in `lib/config/contact.ts`; the legacy env declarations (`.env.example`, `playwright.config.ts` env injection) are no longer required by the implementation and may be cleaned up by the team separately. (MODIFIED in `ui-chrome-uniform` — the env contract is no longer required; e2e asserts the constants.)
 
@@ -45,4 +33,3 @@ The project SHALL keep the official social URLs testable via the e2e suite: `app
 - **WHEN** `docs/deploy-standards.md` is read
 - **THEN** it documents that the social media URLs and the contact phone are configuration constants in `lib/config/contact.ts` (not build-time env variables)
 - **AND** a change to them requires a code change and a site rebuild/redeploy
-

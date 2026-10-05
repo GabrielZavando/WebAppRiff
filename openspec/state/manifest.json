@@ -415,6 +415,28 @@
         "timestamp": "2026-10-04T15:17:35Z",
         "source": "openspec/state/adversarial-result.json"
       }
+    },
+    {
+      "change_name": "ui-chrome-uniform",
+      "ticket_id": "UI-02",
+      "archived_at": "2026-10-05T00:09:06Z",
+      "specs_applied": [
+        "add-frontend-smoke-and-nginx-hardening",
+        "configure-social-links",
+        "site-header",
+        "top-header",
+        "whatsapp-float-button"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-10-04T23:53:55Z",
+        "source": "openspec/state/verify-results.json"
+      },
+      "adversarial": {
+        "verdict": "SHIP",
+        "timestamp": "2026-10-04T23:58:06Z",
+        "source": "openspec/state/adversarial-result.json"
+      }
     }
   ]
 }

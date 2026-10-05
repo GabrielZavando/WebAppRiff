@@ -1,20 +1,17 @@
 {
   "schema_version": 1,
-  "change": "admin-login-panel",
-  "ticket_id": "LOGIN-1",
+  "change": "ui-chrome-uniform",
+  "ticket_id": "UI-02",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-10-04T20:37:15Z",
-  "tasks": { "total": 9, "passed": 9, "failed": 0, "untested": 0 },
+  "timestamp": "2026-10-04T23:53:55Z",
+  "tasks": { "total": 18, "passed": 18, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "[SC-001] render — heading above card / Riff logo / fields / button / flat card (unit) + [SC-001] renders the login card (E2E)", "status": "PASS" },
-    { "id": "SC-002", "test": "[SC-002] email validation — invalid email shows error state and message", "status": "PASS" },
-    { "id": "SC-003", "test": "[SC-003] password validation — invalid password shows error state and message", "status": "PASS" },
-    { "id": "SC-004", "test": "[SC-004] submit button enabled only when the form is valid", "status": "PASS" },
-    { "id": "SC-005", "test": "[SC-005] UI-only submit handler — prevents the native form submission", "status": "PASS" },
-    { "id": "SC-006", "test": "[SC-006] root path redirects to /login (E2E)", "status": "PASS" },
-    { "id": "SC-007", "test": "[SC-007] accessibility — label for/id and aria-describedby wiring", "status": "PASS" },
-    { "id": "SC-008", "test": "[SC-008] forgot-password link — renders clickable a href=\"#\" with aria-label", "status": "PASS" },
-    { "id": "SC-009", "test": "[SC-009] no horizontal overflow at mobile (375px) and desktop (1440px) (E2E)", "status": "PASS" }
+    { "id": "SC-001", "test": "Header — defaults to a solid bg-secondary background when transparent is not set (SC-001)", "status": "PASS" },
+    { "id": "SC-002", "test": "TopHeader — applies the solid bg-secondary background (SC-002)", "status": "PASS" },
+    { "id": "SC-003", "test": "contact — returns the configured contact constants (SC-003)", "status": "PASS" },
+    { "id": "SC-004", "test": "WhatsAppButton — derives the wa.me href from the phone prop digits (SC-004)", "status": "PASS" },
+    { "id": "SC-005", "test": "contacto — [SC-005] renders the official social links (Facebook, Instagram, LinkedIn) and omits X", "status": "PASS" },
+    { "id": "SC-006", "test": "csp-nginx — SC-006 — CSP font-src allows embedded @fontsource fonts", "status": "PASS" }
   ]
 }
