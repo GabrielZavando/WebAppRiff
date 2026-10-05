@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "change": "ui-chrome-polish",
-  "ticket_id": "UI-FIX1",
+  "change": "admin-login-panel",
+  "ticket_id": "LOGIN-1",
   "verdict": "SHIP",
   "confidence": 0.85,
-  "timestamp": "2026-10-04T15:17:35Z",
+  "timestamp": "2026-10-04T20:47:57Z",
   "findings": {
-    "total": 5,
+    "total": 7,
     "critical": 0,
     "warnings": 2,
-    "info": 3,
+    "info": 5,
     "discarded": 0
   }
 }

@@ -384,6 +384,15 @@
       }
     },
     {
+      "change_name": "2026-10-04-admin-login-panel",
+      "ticket_id": "LOGIN-1",
+      "archived_at": "2026-10-04T23:43:54Z",
+      "specs_applied": [
+        "admin-login"
+      ],
+      "verification": {
+        "status": "PASS",
+        "timestamp": "2026-10-04T20:37:15Z",
       "change_name": "ui-chrome-polish",
       "ticket_id": "UI-FIX1",
       "archived_at": "2026-10-04T15:45:01Z",
@@ -402,6 +411,7 @@
       },
       "adversarial": {
         "verdict": "SHIP",
+        "timestamp": "2026-10-04T20:47:57Z",
         "timestamp": "2026-10-04T15:17:35Z",
         "source": "openspec/state/adversarial-result.json"
       }

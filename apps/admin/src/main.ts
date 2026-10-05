@@ -1,25 +1,16 @@
-import { Component } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
+import { AppComponent } from './app/app.component';
+import { appRoutes } from './app/app.routes';
 
 /**
- * Minimal shell component to validate the Tailwind v4 design-token loop on
- * the Angular admin app. The token `bg-primary` SHALL resolve to the
- * `--color-primary` (`#41B3C4`) declared in `src/styles/globals.css`.
- *
- * Full features of the admin panel will be developed in subsequent changes;
- * this component is intentionally a placeholder to make the build smokeable.
+ * Bootstrap del panel admin: standalone root `AppComponent` + router with the
+ * `/login` route (lazy). The previous inline placeholder is gone — the first
+ * real page of the admin panel is the login screen (change
+ * `admin-login-panel`, ticket LOGIN-1).
  */
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  template: `<div class="bg-primary text-white p-4">admin ready</div>`,
-})
-export class AppComponent {}
-
-export function appConfig(): ReturnType<typeof bootstrapApplication> {
-  return bootstrapApplication(AppComponent);
-}
-
-bootstrapApplication(AppComponent).catch((err: unknown) => {
+bootstrapApplication(AppComponent, {
+  providers: [provideRouter(appRoutes)],
+}).catch((err: unknown) => {
   console.error(err);
 });

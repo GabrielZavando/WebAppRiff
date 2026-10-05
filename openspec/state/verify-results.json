@@ -1,19 +1,20 @@
 {
   "schema_version": 1,
-  "change": "ui-chrome-polish",
-  "ticket_id": "UI-FIX1",
+  "change": "admin-login-panel",
+  "ticket_id": "LOGIN-1",
   "status": "PASS",
   "evidence_mode": "executable",
-  "timestamp": "2026-10-04T15:05:17Z",
-  "tasks": { "total": 20, "passed": 20, "failed": 0, "untested": 0 },
+  "timestamp": "2026-10-04T20:37:15Z",
+  "tasks": { "total": 9, "passed": 9, "failed": 0, "untested": 0 },
   "scenarios": [
-    { "id": "SC-001", "test": "Header — contains the full logo height via responsive padding-bottom (SC-001)", "status": "PASS" },
-    { "id": "SC-002", "test": "SearchForm — transparent mode (home hero full-bleed background, SC-002)", "status": "PASS" },
-    { "id": "SC-003", "test": "SearchForm — non-hero background (solid bg-secondary, SC-003)", "status": "PASS" },
-    { "id": "SC-004", "test": "SearchForm — compact scroll contract (SC-004) > keeps the .site-search compact scroll rule in header-scroll.css (SC-004)", "status": "PASS" },
-    { "id": "SC-005", "test": "PanelHome — the <section> carries a uniform -mt-2 (8px overlap at every breakpoint), relative, and z-10, with NO md:-mt-2 nor positive lg:mt-2 (SC-005)", "status": "PASS" },
-    { "id": "SC-006", "test": "Header — renders a \"Nosotros\" link pointing to /nosotros in the desktop nav (SC-006)", "status": "PASS" },
-    { "id": "SC-007", "test": "WhatsAppButton — floating link (SC-007) > is fixed at the bottom-right corner (fixed bottom-6 right-6 z-20)", "status": "PASS" },
-    { "id": "SC-008", "test": "WhatsAppButton — icon-only (SC-007, SC-008)", "status": "PASS" }
+    { "id": "SC-001", "test": "[SC-001] render — heading above card / Riff logo / fields / button / flat card (unit) + [SC-001] renders the login card (E2E)", "status": "PASS" },
+    { "id": "SC-002", "test": "[SC-002] email validation — invalid email shows error state and message", "status": "PASS" },
+    { "id": "SC-003", "test": "[SC-003] password validation — invalid password shows error state and message", "status": "PASS" },
+    { "id": "SC-004", "test": "[SC-004] submit button enabled only when the form is valid", "status": "PASS" },
+    { "id": "SC-005", "test": "[SC-005] UI-only submit handler — prevents the native form submission", "status": "PASS" },
+    { "id": "SC-006", "test": "[SC-006] root path redirects to /login (E2E)", "status": "PASS" },
+    { "id": "SC-007", "test": "[SC-007] accessibility — label for/id and aria-describedby wiring", "status": "PASS" },
+    { "id": "SC-008", "test": "[SC-008] forgot-password link — renders clickable a href=\"#\" with aria-label", "status": "PASS" },
+    { "id": "SC-009", "test": "[SC-009] no horizontal overflow at mobile (375px) and desktop (1440px) (E2E)", "status": "PASS" }
   ]
 }

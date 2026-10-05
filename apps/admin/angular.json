@@ -23,7 +23,7 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
-            "assets": [],
+            "assets": ["src/assets"],
             "styles": ["src/styles/globals.css"]
           },
           "configurations": {
@@ -52,5 +52,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
