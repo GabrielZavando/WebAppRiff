@@ -85,37 +85,43 @@ The gallery SHALL work without JavaScript: only the first image is shown, thumbn
 
 ### Requirement: Product info section
 
-The page SHALL render the product information in this exact vertical order:
-1. **Category chip** with the product's category name resolved server-side
-2. **Title** (`titulo`) as an `<h1>` heading
-3. **Short description** (`descripcionBreve`) as a paragraph
-4. **Specifications box** with the product's `atributos` displayed as a grid of icon+label pairs
-5. **CTA row** with two buttons:
-   - "SOLICITAR COTIZACIÓN" → `/cotizacion?producto={slug}` (primary visual treatment)
-   - "CONTACTAR ASESOR" → `mailto:contacto@somosriff.cl` (secondary visual treatment)
+El sistema SHALL render la información del producto en este orden vertical exacto:
 
-The category chip SHALL be omitted when the category is not found (e.g., `sin-categoria`).
+1. **Chip de categoría** con el nombre de la categoría resuelto server-side.
+2. **Título** (`titulo`) como encabezado `<h1>`.
+3. **Descripción breve** (`descripcionBreve`) como párrafo.
+4. **Caja de especificaciones** con los `atributos` del producto renderizados como una grilla de pares icono+etiqueta.
+5. **Fila de CTAs** con dos botones:
+   - "SOLICITAR COTIZACIÓN" → `/cotizacion?producto={slug}` (tratamiento visual primario).
+   - "CONTACTAR ASESOR" → `/contacto` (tratamiento visual secundario).
 
-(MODIFIED in `web-home-contact-tweaks`: the "CONTACTAR ASESOR" mailto target changes from `mailto:contacto@riff.cl` to `mailto:contacto@somosriff.cl`.)
+El chip de categoría SHALL omitirse cuando la categoría no se encuentra (p.ej. `sin-categoria`).
+
+(MODIFIED en este change: la CTA "CONTACTAR ASESOR" pasa de `mailto:contacto@somosriff.cl` a navegar a `/contacto`.)
 
 #### Scenario: Full product info
-- **WHEN** the product has `titulo="Medidor Ultrasónico"`, `categoriaId="cat-fluidos"`, `descripcionBreve="..."`, and `atributos=[{nombre:"Precisión", valor:"±2%"}]`
-- **THEN** the rendered HTML contains:
-  1. The category chip text "MEDICIÓN DE FLUIDOS"
-  2. An `<h1>` with "Medidor Ultrasónico"
-  3. The short description paragraph
-  4. A specifications box with "Precisión: ±2%"
-  5. Two CTA buttons with correct hrefs
+
+- **WHEN** el producto tiene `titulo="Medidor Ultrasónico"`, `categoriaId="cat-fluidos"`, `descripcionBreve="..."` y `atributos=[{nombre:"Precisión", valor:"±2%"}]`
+- **THEN** el HTML renderizado contiene:
+  1. El chip de categoría "MEDICIÓN DE FLUIDOS"
+  2. Un `<h1>` con "Medidor Ultrasónico"
+  3. El párrafo de descripción breve
+  4. Una caja de especificaciones con "Precisión: ±2%"
+  5. Dos botones CTA con los href correctos
 
 #### Scenario: Category not found
-- **WHEN** the product has `categoriaId="sin-categoria"` and the categories list does not contain it
-- **THEN** the category chip is omitted
-- **AND** the rest of the info renders normally
+
+- **WHEN** el producto tiene `categoriaId="sin-categoria"` y la lista de categorías no la contiene
+- **THEN** el chip de categoría se omite
+- **AND** el resto de la información se renderiza con normalidad
 
 #### Scenario: Contact advisor CTA uses the somosriff.cl mailto
-- **WHEN** the product detail page renders with a product
-- **THEN** the rendered HTML contains an anchor with `href="mailto:contacto@somosriff.cl"` for the "CONTACTAR ASESOR" CTA
-- **AND** the rendered HTML does NOT contain `mailto:contacto@riff.cl`
+
+(MODIFIED en este change: la CTA "CONTACTAR ASESOR" pasa de `mailto:contacto@somosriff.cl` a navegar a `/contacto`. La variante mailto sigue disponible vía la ContactBar del propio `/contacto`.)
+
+- **WHEN** la página de detalle de producto renderiza con un producto
+- **THEN** el HTML renderizado contiene un anchor con `href="/contacto"` para la CTA "CONTACTAR ASESOR"
+- **AND** el HTML renderizado NO contiene `href="mailto:contacto@somosriff.cl"` ni `href="mailto:contacto@riff.cl"` para esa CTA
 
 ### Requirement: Specifications box with attributes
 
