@@ -26,12 +26,15 @@ export interface FormSubmitOptions {
   readonly errorMessage?: string;
   /** API base URL override (defaults to `PUBLIC_API_URL`). For tests. */
   readonly apiBaseUrl?: string;
+  /** Timeout in milliseconds before cancelling the submission (defaults to 20_000). For tests. */
+  readonly timeoutMs?: number;
 }
 
 const DEFAULT_SUCCESS_MESSAGE = 'Mensaje enviado correctamente';
 const DEFAULT_ERROR_MESSAGE =
   'No pudimos enviar el mensaje. Inténtalo nuevamente.';
 const API_VERSION_SUFFIX = '/api/v1';
+const FORM_SUBMIT_TIMEOUT_MS = 20_000;
 
 /**
  * Resolves the absolute endpoint URL for a form submission.
@@ -91,10 +94,17 @@ export function serializeForm(form: HTMLFormElement): Record<string, unknown> {
   return payload;
 }
 
+const boundForms = new WeakSet<HTMLFormElement>();
+
 export function initFormSubmit(
   form: HTMLFormElement,
   options: FormSubmitOptions = {},
 ): () => void {
+  if (boundForms.has(form)) {
+    return () => {};
+  }
+  boundForms.add(form);
+
   const action = form.getAttribute('action') ?? '';
   const url = resolveFormSubmitUrl(action, options.apiBaseUrl);
   const successMessage =
@@ -105,6 +115,7 @@ export function initFormSubmit(
     options.errorMessage ??
     form.getAttribute('data-error-message') ??
     DEFAULT_ERROR_MESSAGE;
+  const timeoutMs = options.timeoutMs ?? FORM_SUBMIT_TIMEOUT_MS;
   const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
   const statusEl = form.querySelector<HTMLElement>('[role="status"]');
 
@@ -119,10 +130,17 @@ export function initFormSubmit(
     event.preventDefault();
     if (submitButton) submitButton.disabled = true;
     try {
+      const signal =
+        typeof AbortSignal !== 'undefined' &&
+        typeof AbortSignal.timeout === 'function'
+          ? AbortSignal.timeout(timeoutMs)
+          : undefined;
+
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(serializeForm(form)),
+        signal,
       });
       if (!response.ok) {
         setStatus(errorMessage, 'error');
@@ -138,5 +156,8 @@ export function initFormSubmit(
   }
 
   form.addEventListener('submit', handleSubmit);
-  return () => form.removeEventListener('submit', handleSubmit);
+  return () => {
+    form.removeEventListener('submit', handleSubmit);
+    boundForms.delete(form);
+  };
 }

@@ -23,7 +23,7 @@ describe('Contact page composition', () => {
     const html = await render();
     const clean = stripComments(html);
     expect(clean).toMatch(/<form[^>]*method="post"[\s\S]*?<\/form>/);
-    expect(clean).toContain('action="/api/v1/contacts"');
+    expect(clean).toContain('action="http://localhost:3000/api/v1/contacts"');
   });
 
   it('[SC-001] renders the contact bar with the phone anchor', async () => {

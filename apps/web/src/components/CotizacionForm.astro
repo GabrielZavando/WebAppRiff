@@ -1,11 +1,13 @@
 ---
 import type { CotizacionFormProps } from '@/lib/types/cotizacion-form';
+import { resolveFormSubmitUrl } from '@/lib/forms/formSubmitClient';
 import { Icon } from 'astro-icon/components';
 
 interface Props extends CotizacionFormProps {}
 
 const { config } = Astro.props;
 const { placeholders, submitLabel, action } = config;
+const resolvedAction = resolveFormSubmitUrl(action);
 
 // Deterministic ids for label↔control association. There is exactly one
 // CotizacionForm per page (the /cotizacion page), so these ids stay unique
@@ -56,7 +58,7 @@ const inputLabels = {
 <form
   id="cotizacion-form"
   method="post"
-  action={action}
+  action={resolvedAction}
   class="bg-white border border-border"
   data-success-message="Solicitud enviada. Un ingeniero la evaluará en un plazo máximo de 24 horas hábiles."
   data-error-message="No pudimos enviar la solicitud. Verifique los datos e intente nuevamente."
