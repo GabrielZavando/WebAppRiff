@@ -15,7 +15,7 @@ describe('Cotizacion page — composition', () => {
   it('renders the cotizacion form, process card and support card', async () => {
     const html = stripComments(await render());
     expect(html).toMatch(/<form[^>]*method="post"/);
-    expect(html).toContain('action="/api/v1/quotes"');
+    expect(html).toContain('action="http://localhost:3000/api/v1/quotes"');
     expect(html).toContain('Proceso de Cotización');
     expect(html).toContain('¿Necesita soporte inmediato?');
   });
@@ -48,9 +48,9 @@ describe('Cotizacion page — two-column layout', () => {
 });
 
 describe('Cotizacion page — verification', () => {
-  it('verifies the form submits to /api/v1/quotes', async () => {
+  it('verifies the form submits to /api/v1/quotes (resolved to absolute API URL)', async () => {
     const html = stripComments(await render());
-    expect(html).toContain('action="/api/v1/quotes"');
+    expect(html).toContain('action="http://localhost:3000/api/v1/quotes"');
   });
 
   it('uses project design tokens and no hex literals', async () => {

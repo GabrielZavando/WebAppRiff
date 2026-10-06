@@ -1,11 +1,13 @@
 ---
 import type { ContactFormProps } from '@/lib/types/contact-form';
+import { resolveFormSubmitUrl } from '@/lib/forms/formSubmitClient';
 import { Icon } from 'astro-icon/components';
 
 interface Props extends ContactFormProps {}
 
 const { areas, config } = Astro.props;
 const { placeholders, submitLabel, action } = config;
+const resolvedAction = resolveFormSubmitUrl(action);
 
 // Deterministic ids for label↔control association. There is exactly one
 // ContactForm per page (the /contacto page), so these ids stay unique within
@@ -41,8 +43,8 @@ const inputLabels = {
   `CONTACT_PAGE_CONTENT.form` by `apps/web/src/pages/contacto.astro`.
 
   Layout:
-    - Outermost <form method="post" action={config.action}> (native HTML
-      submit; the future backend endpoint `POST /api/v1/contacts` consumes it).
+    - Outermost <form method="post" action={resolvedAction}> (native HTML
+      submit; resolved to absolute API URL via `resolveFormSubmitUrl`).
     - Text inputs grid `grid-cols-1 md:grid-cols-2` (mobile stacked, desktop
       two columns): Nombre | Empresa, Email | Teléfono.
     - Areas of interest: a single <fieldset> with <legend> "ÁREA DE INTERÉS"
@@ -65,7 +67,7 @@ const inputLabels = {
   <form
     id="contact-form"
     method="post"
-    action={action}
+    action={resolvedAction}
     class="bg-white border border-border"
     data-success-message="Mensaje enviado. Nuestro equipo de ingenieros lo contactará a la brevedad."
     data-error-message="No pudimos enviar el mensaje. Verifique los datos e intente nuevamente."

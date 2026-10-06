@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import CotizacionForm from '@/components/CotizacionForm.astro';
 import { COTIZACION_PAGE_CONTENT } from '@/lib/config/cotizacion-page';
@@ -40,11 +40,34 @@ function getLabelFor(html: string, forId: string): string {
 }
 
 describe('CotizacionForm — form element', () => {
-  it('renders a <form method="post"> with action /api/v1/quotes', async () => {
+  afterEach(() => {
+    delete import.meta.env.PUBLIC_API_URL;
+  });
+
+  it('renders a <form method="post"> with default absolute action resolved from PUBLIC_API_URL fallback', async () => {
+    delete import.meta.env.PUBLIC_API_URL;
     const html = await render();
     const form = getForm(html);
     expect(form).toContain('method="post"');
-    expect(form).toContain('action="/api/v1/quotes"');
+    expect(form).toContain('action="http://localhost:3000/api/v1/quotes"');
+  });
+
+  it('resolves the action to an absolute URL when PUBLIC_API_URL is configured (with or without /api/v1)', async () => {
+    import.meta.env.PUBLIC_API_URL = 'https://api.somosriff.cl/api/v1';
+    let html = await render();
+    expect(getForm(html)).toContain('action="https://api.somosriff.cl/api/v1/quotes"');
+
+    import.meta.env.PUBLIC_API_URL = 'https://api.somosriff.cl';
+    html = await render();
+    expect(getForm(html)).toContain('action="https://api.somosriff.cl/api/v1/quotes"');
+  });
+
+  it('honours an already-absolute action from config', async () => {
+    const html = await render({
+      ...baseProps,
+      config: { ...baseProps.config, action: 'https://api.riff.cl/api/v1/quotes' },
+    });
+    expect(getForm(html)).toContain('action="https://api.riff.cl/api/v1/quotes"');
   });
 
   it('renders the page heading "Datos del Requerimiento" as h1', async () => {

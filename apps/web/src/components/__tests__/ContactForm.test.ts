@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import ContactForm from '@/components/ContactForm.astro';
 import { CONTACT_PAGE_CONTENT } from '@/lib/config/contact-page';
@@ -40,19 +40,42 @@ function getLabelFor(html: string, forId: string): string {
 }
 
 describe('ContactForm — form element', () => {
-  it('renders a <form method="post"> with configurable action', async () => {
+  afterEach(() => {
+    delete import.meta.env.PUBLIC_API_URL;
+  });
+
+  it('renders a <form method="post"> with default absolute action resolved from PUBLIC_API_URL fallback', async () => {
+    delete import.meta.env.PUBLIC_API_URL;
     const html = await render();
     const form = getForm(html);
     expect(form).toContain('method="post"');
-    expect(form).toContain('action="/api/v1/contacts"');
+    expect(form).toContain('action="http://localhost:3000/api/v1/contacts"');
   });
 
-  it('honours a custom action from config', async () => {
+  it('resolves the action to an absolute URL when PUBLIC_API_URL is configured (with or without /api/v1)', async () => {
+    import.meta.env.PUBLIC_API_URL = 'https://api.somosriff.cl/api/v1';
+    let html = await render();
+    expect(getForm(html)).toContain('action="https://api.somosriff.cl/api/v1/contacts"');
+
+    import.meta.env.PUBLIC_API_URL = 'https://api.somosriff.cl';
+    html = await render();
+    expect(getForm(html)).toContain('action="https://api.somosriff.cl/api/v1/contacts"');
+  });
+
+  it('honours an already-absolute action from config', async () => {
+    const html = await render({
+      ...baseProps,
+      config: { ...baseProps.config, action: 'https://api.riff.cl/api/v1/contacts' },
+    });
+    expect(getForm(html)).toContain('action="https://api.riff.cl/api/v1/contacts"');
+  });
+
+  it('honours a custom relative action from config by resolving it against PUBLIC_API_URL', async () => {
     const html = await render({
       ...baseProps,
       config: { ...baseProps.config, action: '/custom-endpoint' },
     });
-    expect(getForm(html)).toContain('action="/custom-endpoint"');
+    expect(getForm(html)).toContain('action="http://localhost:3000/api/v1/custom-endpoint"');
   });
 
   it('renders the form as a full-width white box on the blue background', async () => {

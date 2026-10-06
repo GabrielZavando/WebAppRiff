@@ -34,7 +34,7 @@ interface FakeFormShape {
   querySelector: (selector: string) => HTMLElement | HTMLButtonElement | null;
   reset: () => void;
   elements: HTMLInputElement[];
-  submitHandler?: (e: SubmitEvent) => Promise<void>;
+  submitHandlers: Array<(e: SubmitEvent) => Promise<void>>;
 }
 
 type MockClassList = {
@@ -61,10 +61,10 @@ function createFakeForm(options: {
       return null;
     },
     addEventListener: (_type: string, cb) => {
-      form.submitHandler = cb;
+      form.submitHandlers.push(cb);
     },
     removeEventListener: (_type: string, cb) => {
-      if (form.submitHandler === cb) form.submitHandler = undefined;
+      form.submitHandlers = form.submitHandlers.filter((h) => h !== cb);
     },
     querySelector: (selector: string) => {
       if (selector === 'button[type="submit"]') return submitButton;
@@ -73,6 +73,7 @@ function createFakeForm(options: {
     },
     reset: vi.fn(),
     elements: options.fields.map(field),
+    submitHandlers: [],
   };
 
   return {
@@ -86,10 +87,12 @@ function createFakeForm(options: {
 }
 
 async function dispatchSubmit(form: HTMLFormElement): Promise<void> {
-  const handler = (form as unknown as FakeFormShape).submitHandler;
-  if (!handler) throw new Error('No submit handler registered');
+  const handlers = (form as unknown as FakeFormShape).submitHandlers;
+  if (!handlers || handlers.length === 0) throw new Error('No submit handler registered');
   const preventDefault = vi.fn();
-  await handler({ preventDefault } as unknown as SubmitEvent);
+  for (const handler of handlers) {
+    await handler({ preventDefault } as unknown as SubmitEvent);
+  }
 }
 
 const BASE_FIELDS: FieldStub[] = [
@@ -270,7 +273,7 @@ describe('initFormSubmit', () => {
     const { form, submitButton } = createFakeForm({ fields: BASE_FIELDS });
 
     initFormSubmit(form);
-    const handler = (form as unknown as FakeFormShape).submitHandler!;
+    const handler = (form as unknown as FakeFormShape).submitHandlers[0]!;
     const pending = handler({ preventDefault: vi.fn() } as unknown as SubmitEvent);
     expect(submitButton.disabled).toBe(true);
 
@@ -333,7 +336,7 @@ describe('initFormSubmit', () => {
     const { form, submitButton } = createFakeForm({ fields: BASE_FIELDS });
 
     initFormSubmit(form);
-    const handler = (form as unknown as FakeFormShape).submitHandler!;
+    const handler = (form as unknown as FakeFormShape).submitHandlers[0]!;
     let resolveFetch: (response: { ok: boolean; status: number }) => void;
     globalThis.fetch = vi.fn(
       () =>
@@ -368,6 +371,94 @@ describe('initFormSubmit', () => {
 
     const cleanup = initFormSubmit(form);
     cleanup();
-    expect((form as unknown as FakeFormShape).submitHandler).toBeUndefined();
+    expect((form as unknown as FakeFormShape).submitHandlers).toHaveLength(0);
+  });
+
+  describe('idempotency', () => {
+    it('is idempotent: double initialization registers a single listener and triggers a single fetch', async () => {
+      const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+      globalThis.fetch = fetchMock as unknown as typeof fetch;
+      const { form } = createFakeForm({ fields: BASE_FIELDS });
+
+      initFormSubmit(form);
+      initFormSubmit(form);
+
+      expect((form as unknown as FakeFormShape).submitHandlers).toHaveLength(1);
+      await dispatchSubmit(form);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns a no-op cleanup on subsequent calls without detaching the listener from the first call', async () => {
+      const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+      globalThis.fetch = fetchMock as unknown as typeof fetch;
+      const { form } = createFakeForm({ fields: BASE_FIELDS });
+
+      const cleanup1 = initFormSubmit(form);
+      const cleanup2 = initFormSubmit(form);
+
+      cleanup2();
+      expect((form as unknown as FakeFormShape).submitHandlers).toHaveLength(1);
+      await dispatchSubmit(form);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+
+      cleanup1();
+      expect((form as unknown as FakeFormShape).submitHandlers).toHaveLength(0);
+    });
+
+    it('allows re-initialization after the primary cleanup is invoked', async () => {
+      const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+      globalThis.fetch = fetchMock as unknown as typeof fetch;
+      const { form } = createFakeForm({ fields: BASE_FIELDS });
+
+      const cleanup1 = initFormSubmit(form);
+      cleanup1();
+      expect((form as unknown as FakeFormShape).submitHandlers).toHaveLength(0);
+
+      const cleanup2 = initFormSubmit(form);
+      expect((form as unknown as FakeFormShape).submitHandlers).toHaveLength(1);
+      await dispatchSubmit(form);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      cleanup2();
+      expect((form as unknown as FakeFormShape).submitHandlers).toHaveLength(0);
+    });
+  });
+
+  describe('timeout', () => {
+    it('cancels the submission and displays error when fetch times out via AbortSignal', async () => {
+      const fetchMock = vi.fn((_url: string, init?: RequestInit) => {
+        return new Promise<Response>((_resolve, reject) => {
+          const signal = init?.signal;
+          if (signal) {
+            signal.addEventListener('abort', () => {
+              reject(signal.reason ?? new DOMException('The operation was aborted', 'AbortError'));
+            });
+          }
+        });
+      });
+      globalThis.fetch = fetchMock as unknown as typeof fetch;
+      const { form, statusEl, submitButton } = createFakeForm({
+        fields: BASE_FIELDS,
+        errorMessage: 'Tiempo de espera agotado',
+      });
+
+      initFormSubmit(form, { timeoutMs: 50 });
+      await dispatchSubmit(form);
+
+      expect(statusEl.textContent).toBe('Tiempo de espera agotado');
+      expect(form.reset).not.toHaveBeenCalled();
+      expect(submitButton.disabled).toBe(false);
+    });
+
+    it('does not interfere with the happy path when fetch completes before timeout', async () => {
+      const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+      globalThis.fetch = fetchMock as unknown as typeof fetch;
+      const { form, statusEl } = createFakeForm({ fields: BASE_FIELDS });
+
+      initFormSubmit(form, { timeoutMs: 50 });
+      await dispatchSubmit(form);
+
+      expect(statusEl.textContent).toBe('Mensaje enviado correctamente');
+      expect(form.reset).toHaveBeenCalledTimes(1);
+    });
   });
 });
