@@ -21,6 +21,7 @@ import {
 } from '../domain/cotizacion.entity';
 import { CotizacionCreateDto } from './cotizacion-create.dto';
 import { CotizacionUpdateDto } from './cotizacion-update.dto';
+import { isHoneypotFilled } from '../../common/utils/honeypot';
 
 /** Tighter rate limit for the public lead-capture form (spam surface). */
 const QUOTES_THROTTLE = { limit: 10, ttl: 60_000 };
@@ -33,7 +34,27 @@ export class CotizacionController {
   @HttpCode(201)
   @Throttle({ default: QUOTES_THROTTLE })
   async create(@Body() dto: CotizacionCreateDto): Promise<Cotizacion> {
+    if (isHoneypotFilled(dto.website)) {
+      // Silent simulated success: never persist nor notify a bot.
+      return this.simulatedAccepted(dto);
+    }
     return this.service.create(dto);
+  }
+
+  private simulatedAccepted(dto: CotizacionCreateDto): Cotizacion {
+    const now = new Date();
+    return {
+      id: 'accepted',
+      nombre: dto.nombre,
+      email: dto.email,
+      telefono: dto.telefono ?? null,
+      nombre_empresa: dto.nombre_empresa,
+      rut: dto.rut ?? null,
+      mensaje: dto.mensaje,
+      estado: 'pendiente',
+      creadoEn: now,
+      actualizadoEn: now,
+    };
   }
 
   @Get()

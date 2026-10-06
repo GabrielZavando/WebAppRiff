@@ -36,7 +36,7 @@
 | Servicio | Build | Registry | Notas |
 |---|---|---|---|
 | Backend (NestJS) | `apps/backend/Dockerfile` (multi-stage, contexto = raíz del monorepo) vía GitHub Actions | **Artifact Registry** (`REGION-docker.pkg.dev/PROJECT/riff/riff-backend`) | Tag `sha-<commit>` (el tag git `vX.Y.Z` marca el release); `latest` prohibido; la promoción despliega el **digest** validado en staging |
-| Web (Astro) | `apps/web/Dockerfile` (multi-stage → nginx, build args `SITE_URL`/`NESTJS_API_URL`/`REQUIRE_API`) vía Coolify | build in-situ (MVP); GHCR opcional | Healthcheck incluido en la imagen |
+| Web (Astro) | `apps/web/Dockerfile` (multi-stage → nginx, build args `SITE_URL`/`NESTJS_API_URL`/`REQUIRE_API`/`PUBLIC_API_URL`) vía Coolify | build in-situ (MVP); GHCR opcional | Healthcheck incluido en la imagen |
 | Admin (Angular) | `apps/admin/Dockerfile` (multi-stage → nginx, SPA fallback) vía Coolify | build in-situ (MVP); GHCR opcional | Healthcheck incluido en la imagen |
 
 ## Deploy Flow
@@ -123,9 +123,15 @@
 
 1. **DNS**: crear los registros A/CNAME para los dominios definitivos hacia el VPS
    de Coolify (web/admin) y el domain mapping de `api.somosriff.cl` → Cloud Run.
-2. **Coolify Build Variables** (web staging/prod): actualizar `SITE_URL` y
-   `NESTJS_API_URL` a las URLs definitivas (p. ej. `https://somosriff.cl` y
-   `https://api.somosriff.cl/api/v1`). Redeploy de web y admin.
+2. **Coolify Build Variables** (web staging/prod): actualizar `SITE_URL`,
+   `NESTJS_API_URL` y `PUBLIC_API_URL` a las URLs definitivas (p. ej.
+   `https://somosriff.cl`, `https://api.somosriff.cl/api/v1` y
+   `https://api.somosriff.cl/api/v1`). `NESTJS_API_URL` alimenta el fetch de
+   datos en build (Node); `PUBLIC_API_URL` alimenta los `fetch` de los
+   formularios públicos desde el navegador del visitante y **debe** apuntar a
+   la URL real de la API: si falta, el bundle publicado cae al default
+   `http://localhost:3000/api/v1` y los formularios fallan en producción.
+   Redeploy de web y admin.
 3. **Coolify dominios**: asignar los dominios definitivos a los 4 recursos
    (reemplazando las URLs wildcard temporales); Coolify emite TLS vía Let's
    Encrypt.

@@ -14,7 +14,7 @@ function stripComments(html: string): string {
 describe('Cotizacion page — composition', () => {
   it('renders the cotizacion form, process card and support card', async () => {
     const html = stripComments(await render());
-    expect(html).toContain('<form method="post"');
+    expect(html).toMatch(/<form[^>]*method="post"/);
     expect(html).toContain('action="/api/v1/quotes"');
     expect(html).toContain('Proceso de Cotización');
     expect(html).toContain('¿Necesita soporte inmediato?');

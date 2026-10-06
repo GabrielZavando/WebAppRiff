@@ -29,3 +29,14 @@ import { CONTACT_PAGE_CONTENT } from '@/lib/config/contact-page';
     <ContactBar {...CONTACT_PAGE_CONTENT.bar} />
   </div>
 </Layout>
+
+<script>
+  import { initFormSubmit } from '@/lib/forms/formSubmitClient';
+  // `astro:page-load` fires on the initial load AND after every client-side
+  // navigation (View Transitions), so the submit handler is always bound to the
+  // form of the page that is actually in the DOM.
+  document.addEventListener('astro:page-load', () => {
+    const form = document.querySelector<HTMLFormElement>('#contact-form');
+    if (form) initFormSubmit(form);
+  });
+</script>

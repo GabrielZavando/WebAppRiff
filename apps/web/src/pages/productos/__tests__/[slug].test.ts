@@ -124,7 +124,16 @@ describe('Product detail page', () => {
     expect(html).toContain('SOLICITAR COTIZACIÓN');
     expect(html).toContain('CONTACTAR ASESOR');
     expect(html).toContain('href="/cotizacion?producto=ablandador-para-agua"');
-    expect(html).toContain('href="mailto:contacto@somosriff.cl"');
+    expect(html).toContain('href="/contacto"');
+  });
+
+  it('does not render the CONTACTAR ASESOR CTA as a mailto link', async () => {
+    const html = await render();
+    // The CTA now navigates to /contacto; the mailto remains available only via
+    // the contact bar on /contacto itself.
+    expect(html).not.toMatch(
+      /<a[^>]*href="mailto:contacto@somosriff\.cl"[^>]*>[\s\S]*CONTACTAR ASESOR/,
+    );
   });
 
   it('renders the product gallery with the main image', async () => {

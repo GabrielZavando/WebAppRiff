@@ -96,7 +96,7 @@ describe('Contact page composition', () => {
     const html = await render();
     const clean = stripComments(html);
     const h1 = clean.indexOf('<h1');
-    const form = clean.indexOf('<form method="post"');
+    const form = clean.indexOf('<form id="contact-form"');
     const spacer = clean.indexOf('h-4 sm:h-8');
     // Spacer must exist and sit between the hero headline and the form
     expect(spacer, 'spacer h-4 sm:h-8').toBeGreaterThanOrEqual(0);

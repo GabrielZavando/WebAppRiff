@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { computeCatalogState } from '@/lib/products/catalogClient';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { computeCatalogState, initCatalog } from '@/lib/products/catalogClient';
 import { parseProductsPageFilters } from '@/lib/products/parseProductsPageFilters';
 import type { ProductoApi } from '@/lib/types/products-page';
 
@@ -77,5 +77,154 @@ describe('computeCatalogState (client runtime, pure relay)', () => {
     const state = computeCatalogState(PRODUCTS, filters);
     expect(state.filters.view).toBe('list');
     expect(state.filters.page).toBe(1);
+  });
+});
+
+interface AnchorStub {
+  getAttribute(name: string): string | null;
+  addEventListener(
+    type: string,
+    handler: (event: { preventDefault: () => void }) => void,
+  ): void;
+  click(event: { preventDefault: () => void }): void;
+}
+
+function createAnchor(href: string): AnchorStub {
+  let handler: ((event: { preventDefault: () => void }) => void) | undefined;
+  return {
+    getAttribute: (name) => (name === 'href' ? href : null),
+    addEventListener: (_type, cb) => {
+      handler = cb;
+    },
+    click: (event) => {
+      if (handler) handler(event);
+    },
+  };
+}
+
+function parseAnchorHrefs(html: string): AnchorStub[] {
+  const anchors: AnchorStub[] = [];
+  const re = /<a[^>]*href="([^"]*)"[^>]*>/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(html)) !== null) {
+    anchors.push(createAnchor(match[1] ?? ''));
+  }
+  return anchors;
+}
+
+describe('initCatalog — pagination scroll to top (DOM glue, node env fakes)', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  function setup(search: string) {
+    // 20 products -> pageSize 9 -> 3 pages, so pagination anchors render.
+    const slugs = Array.from(
+      { length: 20 },
+      (_, i) => `p${String(i + 1).padStart(2, '0')}`,
+    );
+    const products = slugs.map((slug) =>
+      makeProduct({
+        slug,
+        categoriaId: 'cat-fluidos',
+        titulo: `Flujometro ${slug}`,
+      }),
+    );
+
+    const gridCards = slugs.map((slug) => ({
+      getAttribute: (name: string) => (name === 'data-product-id' ? slug : null),
+      classList: { toggle: vi.fn() },
+    }));
+    const gridEl = {
+      querySelectorAll: (selector: string) =>
+        selector === '.catalog-card' ? gridCards : [],
+      classList: { toggle: vi.fn() },
+    };
+
+    let anchors: AnchorStub[] = [];
+    const paginationEl = {
+      get innerHTML() {
+        return '';
+      },
+      set innerHTML(value: string) {
+        anchors = parseAnchorHrefs(value);
+      },
+      querySelectorAll: (selector: string) =>
+        selector === 'a[href]' ? anchors : [],
+    };
+
+    const emptyEl = { classList: { toggle: vi.fn() } };
+    const totalEl = { textContent: '' };
+    const dataEl = {
+      textContent: JSON.stringify({ products, categories: [], subcategorias: [] }),
+    };
+
+    const pushedUrls: string[] = [];
+    const scrollTo = vi.fn();
+
+    vi.stubGlobal(
+      'document',
+      {
+        getElementById: (id: string) =>
+          (
+            {
+              'catalog-data': dataEl,
+              'catalog-grid': gridEl,
+              'catalog-pagination': paginationEl,
+              'catalog-empty': emptyEl,
+              'catalog-total': totalEl,
+              'products-filter-form': null,
+            } as Record<string, unknown>
+          )[id] ?? null,
+        querySelectorAll: () => [],
+      },
+    );
+    vi.stubGlobal('window', {
+      location: { search },
+      scrollTo,
+      addEventListener: vi.fn(),
+    });
+    vi.stubGlobal('history', {
+      pushState: (_state: null, _title: string, url: string) => {
+        pushedUrls.push(url);
+      },
+    });
+
+    return { paginationEl, scrollTo, pushedUrls, gridEl };
+  }
+
+  it('scrolls the window to the top after a page change, preserving active filters', () => {
+    const { paginationEl, scrollTo, pushedUrls } = setup(
+      '?q=flujometro&categoriaId=cat-fluidos',
+    );
+    initCatalog();
+
+    const anchors = paginationEl.querySelectorAll('a[href]') as unknown as AnchorStub[];
+    const page2 = anchors.find((a) => a.getAttribute('href')?.includes('page=2'));
+    expect(page2, 'pagination anchor for page 2').toBeTruthy();
+
+    page2!.click({ preventDefault: vi.fn() });
+
+    expect(scrollTo).toHaveBeenCalledWith(0, 0);
+    expect(pushedUrls).toContain(
+      '/productos?q=flujometro&categoriaId=cat-fluidos&page=2',
+    );
+  });
+
+  it('scrolls to the top when using the "siguiente" chevron too', () => {
+    const { paginationEl, scrollTo, pushedUrls } = setup('');
+    initCatalog();
+
+    const anchors = paginationEl.querySelectorAll('a[href]') as unknown as AnchorStub[];
+    const next = anchors.find(
+      (a) => a.getAttribute('href')?.includes('page=2') && !a.getAttribute('href')?.includes('page=1'),
+    );
+    expect(next, 'next-page anchor').toBeTruthy();
+
+    next!.click({ preventDefault: vi.fn() });
+
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+    expect(scrollTo).toHaveBeenCalledWith(0, 0);
+    expect(pushedUrls).toContain('/productos?page=2');
   });
 });

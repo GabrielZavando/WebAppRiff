@@ -41,3 +41,14 @@ import { COTIZACION_PAGE_CONTENT } from '@/lib/config/cotizacion-page';
     </div>
   </main>
 </Layout>
+
+<script>
+  import { initFormSubmit } from '@/lib/forms/formSubmitClient';
+  // `astro:page-load` fires on the initial load AND after every client-side
+  // navigation (View Transitions), so the submit handler is always bound to the
+  // form of the page that is actually in the DOM.
+  document.addEventListener('astro:page-load', () => {
+    const form = document.querySelector<HTMLFormElement>('#cotizacion-form');
+    if (form) initFormSubmit(form);
+  });
+</script>

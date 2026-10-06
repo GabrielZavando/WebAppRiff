@@ -24,4 +24,8 @@ export class CotizacionCreateDto {
   @IsNotEmpty()
   @IsString()
   mensaje!: string;
+
+  @IsOptional()
+  @IsString()
+  website?: string;
 }
