@@ -158,6 +158,9 @@ export function initCatalog(): void {
           const pageSearch = href.includes('?') ? href.slice(href.indexOf('?') + 1) : '';
           history.pushState(null, '', href);
           renderFromSearch(pageSearch);
+          // Page change behaves like a fresh arrival: back to the top, instantly
+          // (no smooth-scroll to avoid a jarring transition with View Transitions).
+          window.scrollTo(0, 0);
         });
       });
     }

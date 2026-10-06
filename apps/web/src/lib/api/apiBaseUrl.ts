@@ -12,20 +12,18 @@ const DEFAULT_API_BASE_URL = 'http://localhost:3000/api/v1';
 const API_VERSION_SUFFIX = '/api/v1';
 
 /**
- * Resolves the API base URL from `NESTJS_API_URL`, guaranteeing the result
- * ends with `/api/v1`.
+ * Normalizes an API base URL, guaranteeing the result ends with `/api/v1`.
+ * Pure and environment-agnostic so it can be shared by the Node build-time
+ * data clients and the browser-side form client.
  *
  * - A configured URL without the suffix gets it appended
  *   (`https://api.somosriff.cl` → `https://api.somosriff.cl/api/v1`).
  * - A configured URL that already ends with the suffix is returned unchanged
  *   (never `/api/v1/api/v1`); a single trailing slash is tolerated and stripped.
- * - Unset or blank values fall back to `http://localhost:3000/api/v1`.
- *
- * Reads the environment at call time (not module load) so tests and builds
- * can inject `NESTJS_API_URL` without re-importing the module.
+ * - Empty/blank values fall back to `http://localhost:3000/api/v1`.
  */
-export function resolveApiBaseUrl(): string {
-  const configured = process.env.NESTJS_API_URL?.trim() ?? '';
+export function normalizeApiBaseUrl(raw: string): string {
+  const configured = raw.trim();
   if (configured === '') {
     return DEFAULT_API_BASE_URL;
   }
@@ -36,6 +34,18 @@ export function resolveApiBaseUrl(): string {
     return withoutTrailingSlash;
   }
   return `${withoutTrailingSlash}${API_VERSION_SUFFIX}`;
+}
+
+/**
+ * Resolves the API base URL from `NESTJS_API_URL` via `normalizeApiBaseUrl`.
+ * Reads the environment at call time (not module load) so tests and builds can
+ * inject `NESTJS_API_URL` without re-importing the module. Safe to import from
+ * the browser bundle (the `process` access is guarded and only runs in Node).
+ */
+export function resolveApiBaseUrl(): string {
+  const raw =
+    typeof process !== 'undefined' ? process.env.NESTJS_API_URL : undefined;
+  return normalizeApiBaseUrl(raw ?? '');
 }
 
 /**

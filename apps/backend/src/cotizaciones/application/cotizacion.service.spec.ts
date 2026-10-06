@@ -5,6 +5,8 @@ import {
   I_COTIZACION_REPOSITORY,
 } from '../domain/icotizacion.repository';
 import { Cotizacion } from '../domain/cotizacion.entity';
+import { IEmailNotifier } from '../../email/domain/iemail-notifier';
+import { EmailMessage } from '../../email/domain/iemail-notifier';
 
 const makeCotizacion = (overrides: Partial<Cotizacion> = {}): Cotizacion => ({
   id: 'c1',
@@ -28,6 +30,7 @@ describe('CotizacionService', () => {
     findById: jest.Mock;
     updateEstado: jest.Mock;
   };
+  let notifier: { sendEmail: jest.Mock };
 
   beforeEach(() => {
     repository = {
@@ -36,8 +39,10 @@ describe('CotizacionService', () => {
       findById: jest.fn(),
       updateEstado: jest.fn(),
     };
+    notifier = { sendEmail: jest.fn().mockResolvedValue(undefined) };
     service = new CotizacionService(
       repository as unknown as ICotizacionRepository,
+      notifier as unknown as IEmailNotifier,
     );
   });
 
@@ -58,6 +63,41 @@ describe('CotizacionService', () => {
         mensaje: 'Solicito cotización',
       });
       expect(result.id).toBe('c1');
+    });
+
+    it('notifies by email after persisting, with every quote field', async () => {
+      repository.create.mockResolvedValue(makeCotizacion());
+      await service.create({
+        nombre: 'Juan',
+        email: 'juan@example.com',
+        telefono: '+56912345678',
+        nombre_empresa: 'Riff SpA',
+        rut: '12345678-9',
+        mensaje: 'Solicito cotización',
+      });
+
+      expect(notifier.sendEmail).toHaveBeenCalledTimes(1);
+      const message: EmailMessage = notifier.sendEmail.mock.calls[0][0];
+      expect(message.subject).toContain('cotización');
+      expect(message.text).toContain('Nombre: Juan');
+      expect(message.text).toContain('Email: juan@example.com');
+      expect(message.text).toContain('Teléfono: +56912345678');
+      expect(message.text).toContain('Empresa: Riff SpA');
+      expect(message.text).toContain('RUT: 12345678-9');
+      expect(message.text).toContain('Mensaje: Solicito cotización');
+    });
+
+    it('propagates notifier failures after persisting', async () => {
+      repository.create.mockResolvedValue(makeCotizacion());
+      notifier.sendEmail.mockRejectedValue(new Error('Email delivery failed'));
+      await expect(
+        service.create({
+          nombre: 'Juan',
+          email: 'juan@example.com',
+          nombre_empresa: 'Riff SpA',
+          mensaje: 'Solicito cotización',
+        }),
+      ).rejects.toThrow('Email delivery failed');
     });
   });
 

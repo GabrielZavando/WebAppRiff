@@ -40,10 +40,17 @@ WORKDIR /app
 ARG SITE_URL=http://localhost:4321
 ARG NESTJS_API_URL=http://localhost:3000/api/v1
 ARG REQUIRE_API=true
+# Browser-facing API base for the client-side form fetches (public forms POST
+# here at runtime, from the visitor's browser). `NESTJS_API_URL` above only
+# feeds build-time data fetching in Node; Astro exposes `PUBLIC_*` vars to the
+# browser bundle, so this one MUST be passed separately or the shipped bundle
+# would fall back to http://localhost:3000/api/v1 in production.
+ARG PUBLIC_API_URL=http://localhost:3000/api/v1
 
 ENV SITE_URL=$SITE_URL \
     NESTJS_API_URL=$NESTJS_API_URL \
-    REQUIRE_API=$REQUIRE_API
+    REQUIRE_API=$REQUIRE_API \
+    PUBLIC_API_URL=$PUBLIC_API_URL
 
 # Manifests needed to resolve the workspace graph from the root lockfile.
 COPY package.json package-lock.json ./

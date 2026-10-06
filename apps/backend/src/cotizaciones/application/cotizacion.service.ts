@@ -9,16 +9,40 @@ import {
   ICotizacionRepository,
   I_COTIZACION_REPOSITORY,
 } from '../domain/icotizacion.repository';
+import {
+  IEmailNotifier,
+  I_EMAIL_NOTIFIER,
+} from '../../email/domain/iemail-notifier';
+import { buildLeadEmailMessage } from '../../email/application/lead-email-message';
 
 @Injectable()
 export class CotizacionService {
   constructor(
     @Inject(I_COTIZACION_REPOSITORY)
     private readonly repository: ICotizacionRepository,
+    @Inject(I_EMAIL_NOTIFIER)
+    private readonly notifier: IEmailNotifier,
   ) {}
 
   async create(input: CotizacionInput): Promise<Cotizacion> {
-    return this.repository.create(input);
+    const cotizacion = await this.repository.create(input);
+    await this.notifyQuoteRequest(input);
+    return cotizacion;
+  }
+
+  private async notifyQuoteRequest(input: CotizacionInput): Promise<void> {
+    const message = buildLeadEmailMessage(
+      'Nueva solicitud de cotización',
+      [
+        { label: 'Nombre', value: input.nombre },
+        { label: 'Email', value: input.email },
+        { label: 'Teléfono', value: input.telefono ?? '' },
+        { label: 'Empresa', value: input.nombre_empresa },
+        { label: 'RUT', value: input.rut ?? '' },
+        { label: 'Mensaje', value: input.mensaje },
+      ],
+    );
+    await this.notifier.sendEmail(message);
   }
 
   async findAll(filter: CotizacionFilter): Promise<CotizacionListResult> {

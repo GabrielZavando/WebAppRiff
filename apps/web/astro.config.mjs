@@ -16,6 +16,13 @@ export default defineConfig({
   output: 'static',
   devToolbar: { enabled: false },
   integrations: [astroIcon(), sitemap()],
+  server: {
+    proxy: {
+      // Dev convenience: maps any relative `/api/*` request (e.g. the native
+      // no-JS fallback of the public forms) to the local NestJS backend.
+      '/api': 'http://localhost:3000',
+    },
+  },
   vite: {
     plugins: [tailwindcss()],
     resolve: {

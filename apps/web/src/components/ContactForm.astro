@@ -15,6 +15,7 @@ const fieldIds = {
   empresa: 'contact-empresa',
   email: 'contact-email',
   telefono: 'contact-telefono',
+  website: 'contact-website',
   mensaje: 'contact-mensaje',
 } as const;
 
@@ -61,7 +62,29 @@ const inputLabels = {
   <!-- White box spanning the full page content width (same container/side
        margins as the site header). Flat design: 1px border, no shadow, no
        rounded corners. -->
-  <form method="post" action={action} class="bg-white border border-border">
+  <form
+    id="contact-form"
+    method="post"
+    action={action}
+    class="bg-white border border-border"
+    data-success-message="Mensaje enviado. Nuestro equipo de ingenieros lo contactará a la brevedad."
+    data-error-message="No pudimos enviar el mensaje. Verifique los datos e intente nuevamente."
+  >
+    <!-- Anti-spam honeypot: off-screen field a human never fills (not
+         display:none, so bots that skip hidden fields still trip the trap).
+         The backend rejects the submission silently when it carries a value. -->
+    <div class="sr-only" aria-hidden="true">
+      <label for={fieldIds.website}>No completar este campo</label>
+      <input
+        id={fieldIds.website}
+        name="website"
+        type="text"
+        tabindex="-1"
+        autocomplete="off"
+        aria-hidden="true"
+      />
+    </div>
+
     <div class="px-6 py-10 md:px-10 md:py-12">
       <!-- Header -->
       <h2 class="text-2xl md:text-3xl font-heading font-bold text-secondary">
@@ -70,6 +93,10 @@ const inputLabels = {
       <p class="mt-2 font-body text-sm text-text-2">
         Complete el formulario y nuestro equipo de ingenieros se pondrá en
         contacto con usted a la brevedad.
+      </p>
+      <p class="mt-2 font-body text-xs text-muted">
+        Los campos marcados con
+        <span aria-hidden="true">*</span> son obligatorios.
       </p>
 
       <!-- Text inputs: mobile stacked, desktop two columns -->
@@ -80,6 +107,7 @@ const inputLabels = {
             class="block font-heading text-xs font-semibold uppercase tracking-wider text-secondary"
           >
             {inputLabels.nombre}
+            <span aria-hidden="true" class="text-accent">*</span>
           </label>
           <input
             id={fieldIds.nombre}
@@ -97,6 +125,7 @@ const inputLabels = {
             class="block font-heading text-xs font-semibold uppercase tracking-wider text-secondary"
           >
             {inputLabels.empresa}
+            <span aria-hidden="true" class="text-accent">*</span>
           </label>
           <input
             id={fieldIds.empresa}
@@ -114,6 +143,7 @@ const inputLabels = {
             class="block font-heading text-xs font-semibold uppercase tracking-wider text-secondary"
           >
             {inputLabels.email}
+            <span aria-hidden="true" class="text-accent">*</span>
           </label>
           <input
             id={fieldIds.email}
@@ -131,6 +161,7 @@ const inputLabels = {
             class="block font-heading text-xs font-semibold uppercase tracking-wider text-secondary"
           >
             {inputLabels.telefono}
+            <span aria-hidden="true" class="text-accent">*</span>
           </label>
           <input
             id={fieldIds.telefono}
@@ -178,6 +209,7 @@ const inputLabels = {
           class="block font-heading text-xs font-semibold uppercase tracking-wider text-secondary"
         >
           MENSAJE O REQUERIMIENTO ESPECÍFICO
+          <span aria-hidden="true" class="text-accent">*</span>
         </label>
         <textarea
           id={fieldIds.mensaje}
@@ -199,6 +231,15 @@ const inputLabels = {
           <Icon name="lucide:arrow-right" class="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
+
+      <!-- Inline submit status: accessible live region for the fetch-based
+           submission (formSubmitClient). Tokens text-success/text-error. -->
+      <p
+        role="status"
+        aria-live="polite"
+        class="mt-4 font-body text-sm"
+        data-form-status
+      ></p>
     </div>
   </form>
 </div>

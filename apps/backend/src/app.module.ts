@@ -10,6 +10,8 @@ import { CategoriasModule } from './categorias/categorias.module';
 import { SubcategoriasModule } from './subcategorias/subcategorias.module';
 import { ProductosModule } from './productos/productos.module';
 import { CotizacionesModule } from './cotizaciones/cotizaciones.module';
+import { EmailModule } from './email/email.module';
+import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { CotizacionesModule } from './cotizaciones/cotizaciones.module';
     SubcategoriasModule,
     ProductosModule,
     CotizacionesModule,
+    EmailModule,
+    ContactsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

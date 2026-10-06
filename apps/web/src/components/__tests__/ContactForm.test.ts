@@ -194,6 +194,65 @@ describe('ContactForm — flat design', () => {
   });
 });
 
+describe('ContactForm — required field indicators', () => {
+  const REQUIRED_FIELDS = [
+    ['contact-nombre', 'nombre'],
+    ['contact-empresa', 'empresa'],
+    ['contact-email', 'email'],
+    ['contact-telefono', 'telefono'],
+    ['contact-mensaje', 'mensaje'],
+  ] as const;
+
+  it('marks every required label with an aria-hidden asterisk', async () => {
+    const html = await render();
+    for (const [labelFor, name] of REQUIRED_FIELDS) {
+      const label = getLabelFor(html, labelFor);
+      expect(label, `label for ${name}`).toMatch(
+        /<span aria-hidden="true"[^>]*>\*<\/span>/,
+      );
+      // `mensaje` is a textarea; the rest are inputs.
+      const control =
+        name === 'mensaje'
+          ? (html.match(/<textarea[^>]*name="mensaje"[^>]*>/) ?? [''])[0]
+          : getInputByName(html, name);
+      expect(control, `control ${name}`).toContain('required');
+    }
+  });
+
+  it('explains the asterisk convention above the fields', async () => {
+    const html = await render();
+    expect(html).toContain('son obligatorios');
+  });
+
+  it('does not mark the honeypot as required', async () => {
+    const html = await render();
+    expect(getInputByName(html, 'website')).not.toContain('required');
+  });
+});
+
+describe('ContactForm — honeypot and inline submit status', () => {
+  it('renders a hidden honeypot website field', async () => {
+    const html = await render();
+    const input = getInputByName(html, 'website');
+    expect(input).toContain('tabindex="-1"');
+    expect(input).toContain('autocomplete="off"');
+    expect(input).toContain('aria-hidden="true"');
+  });
+
+  it('renders an accessible inline status region inside the form', async () => {
+    const html = await render();
+    const form = getForm(html);
+    expect(form).toMatch(/role="status"/);
+    expect(form).toMatch(/aria-live="polite"/);
+  });
+
+  it('keeps the flat design with the honeypot and status elements', async () => {
+    const html = stripComments(await render());
+    expect(html).not.toMatch(/rounded/);
+    expect(html).not.toMatch(/shadow/);
+  });
+});
+
 describe('ContactForm — snapshot', () => {
   it('matches the snapshot', async () => {
     const html = await render();

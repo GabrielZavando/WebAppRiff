@@ -151,3 +151,78 @@ describe('CotizacionForm — flat design', () => {
     expect(html).not.toMatch(/shadow/);
   });
 });
+
+describe('CotizacionForm — required field indicators', () => {
+  // Mirrors CotizacionCreateDto.required: [nombre, email, nombre_empresa, mensaje].
+  // telefono and rut are optional in the DTO, so they must NOT be marked.
+  const REQUIRED_FIELDS = [
+    ['cotizacion-nombre', 'nombre'],
+    ['cotizacion-email', 'email'],
+    ['cotizacion-empresa', 'nombre_empresa'],
+    ['cotizacion-mensaje', 'mensaje'],
+  ] as const;
+  const OPTIONAL_FIELDS = ['telefono', 'rut'] as const;
+
+  it('marks every required label with an aria-hidden asterisk', async () => {
+    const html = await render();
+    for (const [labelFor, name] of REQUIRED_FIELDS) {
+      const label = getLabelFor(html, labelFor);
+      expect(label, `label for ${name}`).toMatch(
+        /<span aria-hidden="true"[^>]*>\*<\/span>/,
+      );
+      // `mensaje` is a textarea; the rest are inputs.
+      const control =
+        name === 'mensaje'
+          ? (html.match(/<textarea[^>]*name="mensaje"[^>]*>/) ?? [''])[0]
+          : getInputByName(html, name);
+      expect(control, `control ${name}`).toContain('required');
+    }
+  });
+
+  it('leaves the DTO-optional fields unmarked and not required', async () => {
+    const html = await render();
+    for (const name of OPTIONAL_FIELDS) {
+      const input = getInputByName(html, name);
+      expect(input, `input ${name}`).not.toContain('required');
+    }
+    expect(getLabelFor(html, 'cotizacion-telefono')).not.toMatch(
+      /<span aria-hidden="true"[^>]*>\*<\/span>/,
+    );
+    expect(getLabelFor(html, 'cotizacion-rut')).not.toMatch(
+      /<span aria-hidden="true"[^>]*>\*<\/span>/,
+    );
+  });
+
+  it('explains the asterisk convention above the fields', async () => {
+    const html = await render();
+    expect(html).toContain('son obligatorios');
+  });
+
+  it('does not mark the honeypot as required', async () => {
+    const html = await render();
+    expect(getInputByName(html, 'website')).not.toContain('required');
+  });
+});
+
+describe('CotizacionForm — honeypot and inline submit status', () => {
+  it('renders a hidden honeypot website field', async () => {
+    const html = await render();
+    const input = getInputByName(html, 'website');
+    expect(input).toContain('tabindex="-1"');
+    expect(input).toContain('autocomplete="off"');
+    expect(input).toContain('aria-hidden="true"');
+  });
+
+  it('renders an accessible inline status region inside the form', async () => {
+    const html = await render();
+    const form = getForm(html);
+    expect(form).toMatch(/role="status"/);
+    expect(form).toMatch(/aria-live="polite"/);
+  });
+
+  it('keeps the flat design with the honeypot and status elements', async () => {
+    const html = stripComments(await render());
+    expect(html).not.toMatch(/rounded/);
+    expect(html).not.toMatch(/shadow/);
+  });
+});

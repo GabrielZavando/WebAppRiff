@@ -632,6 +632,59 @@ components:
           type: string
         mensaje:
           type: string
+        website:
+          type: string
+          description: >
+            Anti-spam honeypot. Campo oculto que un humano nunca completa; si
+            viene con valor, el endpoint responde éxito simulado sin persistir
+            ni notificar. Opcional para retrocompatibilidad con frontends previos.
+
+    # === CONTACTOS ===
+    ContactCreate:
+      type: object
+      required: [nombre, empresa, email, telefono, mensaje]
+      properties:
+        nombre:
+          type: string
+        empresa:
+          type: string
+        email:
+          type: string
+          format: email
+        telefono:
+          type: string
+        areasDeInteres:
+          type: array
+          items:
+            type: string
+          description: Identificadores de las áreas de interés seleccionadas.
+        mensaje:
+          type: string
+        website:
+          type: string
+          description: >
+            Anti-spam honeypot. Campo oculto que un humano nunca completa; si
+            viene con valor, el endpoint responde éxito simulado sin notificar.
+            Opcional para retrocompatibilidad con frontends previos.
+
+    ContactSubmission:
+      type: object
+      description: Recibo devuelto por POST /api/v1/contacts (no persiste datos).
+      properties:
+        nombre:
+          type: string
+        empresa:
+          type: string
+        email:
+          type: string
+        telefono:
+          type: string
+        areasDeInteres:
+          type: array
+          items:
+            type: string
+        mensaje:
+          type: string
 
     CotizacionUpdate:
       type: object
@@ -1322,7 +1375,14 @@ paths:
   # === COTIZACIONES ===
   /api/v1/quotes:
     post:
-      summary: Crear cotización (público, sin auth)
+      summary: "Crear cotización (público, sin auth) — persiste y notifica por email"
+      description: >
+        Persiste la cotización en Firestore y notifica cada envío por correo a
+        `CONTACT_TO_EMAIL` (default contacto@somosriff.cl) a través del port
+        IEmailNotifier (proveedor Resend). Si el envío del correo falla, el
+        endpoint responde 502 (la cotización ya quedó persistida). El campo
+        `website` es un honeypot: si viene con valor, responde 201 simulado sin
+        persistir ni notificar. Rate limit: 10 req/min por IP.
       security: []
       requestBody:
         required: true
@@ -1339,6 +1399,11 @@ paths:
                 $ref: '#/components/schemas/Cotizacion'
         "400":
           $ref: '#/components/schemas/Error'
+        "429":
+          $ref: '#/components/schemas/Error'
+        "502":
+          $ref: '#/components/schemas/Error'
+          description: El proveedor de correo falló tras persistir
     get:
       summary: Listar cotizaciones (admin, con auth)
       security:
@@ -1377,6 +1442,39 @@ paths:
           $ref: '#/components/schemas/Error'
         "403":
           $ref: '#/components/schemas/Error'
+
+  # === CONTACTOS ===
+  /api/v1/contacts:
+    post:
+      summary: "Crear solicitud de contacto (público, sin auth) — notifica por email"
+      description: >
+        Acepta el formulario público de contacto y notifica cada envío por
+        correo a `CONTACT_TO_EMAIL` (default contacto@somosriff.cl) con todos
+        los campos. No persiste datos (la persistencia de leads de contacto se
+        difiere a un cambio post-MVP). El campo `website` es un honeypot: si
+        viene con valor, responde 201 simulado sin notificar. Si el envío del
+        correo falla, responde 502. Rate limit: 5 req/min por IP (estricto).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactCreate'
+      responses:
+        "201":
+          description: Solicitud de contacto recibida y notificada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactSubmission'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "429":
+          $ref: '#/components/schemas/Error'
+        "502":
+          $ref: '#/components/schemas/Error'
+          description: El proveedor de correo falló
 
   /api/v1/quotes/{id}:
     get:

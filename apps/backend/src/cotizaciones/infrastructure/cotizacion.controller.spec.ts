@@ -51,6 +51,20 @@ describe('CotizacionController', () => {
       expect(service.create).toHaveBeenCalledWith(dto);
       expect(result.id).toBe('c1');
     });
+
+    it('returns a simulated 201 without persisting nor notifying when the honeypot is filled', async () => {
+      const dto = {
+        nombre: 'Bot',
+        email: 'bot@spam.example',
+        nombre_empresa: 'Spam',
+        mensaje: 'spam',
+        website: 'http://spam.example',
+      };
+      const result = await controller.create(dto as never);
+      expect(service.create).not.toHaveBeenCalled();
+      expect(result.id).toBe('accepted');
+      expect(result.estado).toBe('pendiente');
+    });
   });
 
   describe('GET /', () => {

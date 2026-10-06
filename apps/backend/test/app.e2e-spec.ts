@@ -1,55 +1,29 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { FIREBASE_APP, FIREBASE_AUTH, FIRESTORE } from '../src/infrastructure/firebase/firebase.tokens';
-import { buildValidationOptions } from '../src/common/config/validation.config';
-import { createFakeFirestore } from './fake-firestore';
-import { SEED_DATA } from './fixtures/seed-data';
+import { createTestApp } from './testing-app';
 
 /**
  * End-to-end suite against the real NestJS AppModule (HTTP pipeline, pipes,
- * guards, envelope interceptor) with the in-memory Firestore fake and a mocked
- * Firebase Auth. No real Firebase credentials are needed.
+ * guards, envelope interceptor) with the in-memory Firestore fake, a mocked
+ * Firebase Auth and a faked email notifier. No real Firebase credentials are
+ * needed and no real email is ever sent from the test suite.
  */
-
 describe('App (e2e)', () => {
   let app: INestApplication;
-
-  const authMock = {
-    verifyIdToken: jest.fn(async (token: string) => {
-      switch (token) {
-        case 'admin-token':
-          return { uid: 'u-admin', role: 'admin' } as never;
-        case 'editor-token':
-          return { uid: 'u-editor', role: 'editor' } as never;
-        default:
-          throw new Error('Invalid token');
-      }
-    }),
-  };
+  let emailNotifierMock: { sendEmail: jest.Mock };
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(FIRESTORE)
-      .useValue(createFakeFirestore(SEED_DATA))
-      .overrideProvider(FIREBASE_APP)
-      .useValue({})
-      .overrideProvider(FIREBASE_AUTH)
-      .useValue(authMock)
-      .compile();
-
-    app = moduleFixture.createNestApplication();
-    // Mirrors apps/backend/src/main.ts (global pipe + prefix) so e2e matches prod.
-    app.useGlobalPipes(new ValidationPipe(buildValidationOptions()));
-    app.setGlobalPrefix('api/v1', { exclude: ['health'] });
-    await app.init();
+    const testApp = await createTestApp();
+    app = testApp.app;
+    emailNotifierMock = testApp.emailNotifierMock;
   });
 
   afterAll(async () => {
     await app.close();
+  });
+
+  beforeEach(() => {
+    emailNotifierMock.sendEmail.mockClear();
   });
 
   describe('GET /health', () => {
@@ -125,7 +99,7 @@ describe('App (e2e)', () => {
   });
 
   describe('POST /api/v1/quotes', () => {
-    it('creates a quote (201) with pendiente estado', () => {
+    it('creates a quote (201) with pendiente estado and notifies by email', () => {
       return request(app.getHttpServer())
         .post('/api/v1/quotes')
         .send({
@@ -145,6 +119,25 @@ describe('App (e2e)', () => {
           expect(res.body.data).toHaveProperty('rut', '12.345.678-9');
           expect(res.body.data).toHaveProperty('estado', 'pendiente');
           expect(res.body.data).toHaveProperty('creadoEn');
+        })
+        .then(() => {
+          expect(emailNotifierMock.sendEmail).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    it('simulates success for a honeypot-filled request without notifying', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/quotes')
+        .send({
+          nombre: 'Bot',
+          email: 'bot@spam.example',
+          nombre_empresa: 'Spam',
+          mensaje: 'spam',
+          website: 'http://spam.example',
+        })
+        .expect(201)
+        .then(() => {
+          expect(emailNotifierMock.sendEmail).not.toHaveBeenCalled();
         });
     });
 
@@ -193,15 +186,11 @@ describe('App (e2e)', () => {
     });
 
     it('exposes pagination meta merged at envelope level ({data, meta})', () => {
-      // estado=atendida is pollution-proof: the POST test above seeds a
-      // `pendiente` quote, so a pendiente filter count would be flaky.
       return request(app.getHttpServer())
         .get('/api/v1/quotes?estado=atendida&page=1&limit=1')
         .set('Authorization', 'Bearer admin-token')
         .expect(200)
         .expect((res) => {
-          // The response interceptor merges the handler meta: pagination fields
-          // land as top-level envelope meta, NOT nested inside `data`.
           expect(Array.isArray(res.body.data)).toBe(true);
           expect(res.body.data).toHaveLength(1);
           expect(res.body.data[0]).toHaveProperty('estado', 'atendida');
@@ -238,7 +227,7 @@ describe('App (e2e)', () => {
   });
 
   describe('PATCH /api/v1/quotes/:id (admin/editor)', () => {
-    it('editor can update estado to atendida', () => {
+    it('editor can update estado to pendiente', () => {
       return request(app.getHttpServer())
         .patch('/api/v1/quotes/quote-002')
         .set('Authorization', 'Bearer editor-token')
