@@ -1,0 +1,100 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  /** Initial variant of the SSG render (the form runtime overrides it per result). */
+  variant?: 'success' | 'error';
+  /** Initial message (default: empty — the live region starts empty; the runtime fills it). */
+  message?: string;
+}
+
+const { variant = 'success', message = '' } = Astro.props;
+
+// Per-variant live-region semantics (design.md D8): success announces politely
+// via role="status"; error asserts via role="alert".
+const roleByVariant = {
+  success: 'status',
+  error: 'alert',
+} as const;
+
+const liveByVariant = {
+  success: 'polite',
+  error: 'assertive',
+} as const;
+---
+
+<!--
+  Reusable, page-agnostic toast notification for the lead-capture forms
+  (design.md D4/D5/D8/D10):
+
+  - The root carries `data-form-toast` (the contract marker resolved by
+    `initFormToast` at event time), `data-variant` and `data-state`, and starts
+    hidden: the aria-live region exists EMPTY and pre-rendered in the initial
+    HTML (SSG) — never mounted on the fly — so screen readers register it
+    before any content change. The message is only filled upon receiving the
+    form result.
+  - Fixed at the top-right corner (`fixed top-6 right-6 z-40`), above the page
+    content (≤ z-10), the WhatsApp FAB (z-20) and the sticky header shell
+    (z-30, whose overlay/toggle are trapped in its stacking context), so it is
+    never occluded while scrolled. Non-blocking: no backdrop, the page keeps
+    scrolling and the focus stays in the form.
+  - Both icons (check + alert) are always in the markup; the inactive variant's
+    icon is hidden via CSS `group-data-[variant=...]` hooks resolved from the
+    root's `data-variant` (group class on the root) — no JS DOM manipulation of
+    the icons.
+  - Colors come from the design tokens of the success/error scales
+    (`bg-success-light`, `text-success-dark`, `bg-error-light`,
+    `text-error-dark`) — no raw hex in the markup. Flat design: 1px border, no
+    rounded corners, no shadows.
+  - The close button is a plain `type="button"` (never submits a form) with a
+    descriptive `aria-label` and a decorative lucide:x icon; its click is
+    handled by document-level delegation (see formToastClient).
+-->
+<div
+  data-form-toast
+  data-variant={variant}
+  data-state="hidden"
+  hidden
+  role={roleByVariant[variant]}
+  aria-live={liveByVariant[variant]}
+  class="group fixed top-6 right-6 z-40 flex w-[min(calc(100%_-_3rem),24rem)] items-start gap-3 border px-4 py-3 font-body text-sm text-text-2 data-[variant=success]:border-success data-[variant=success]:bg-success-light data-[variant=error]:border-error data-[variant=error]:bg-error-light"
+>
+  <Icon
+    name="lucide:circle-check"
+    class="h-5 w-5 shrink-0 group-data-[variant=success]:text-success-dark group-data-[variant=error]:hidden"
+    aria-hidden="true"
+  />
+  <Icon
+    name="lucide:circle-alert"
+    class="h-5 w-5 shrink-0 group-data-[variant=error]:text-error-dark group-data-[variant=success]:hidden"
+    aria-hidden="true"
+  />
+  <p data-toast-message class="flex-1 py-0.5">{message}</p>
+  <button
+    type="button"
+    aria-label="Cerrar notificación"
+    data-toast-close
+    class="shrink-0 p-1 text-text-2 transition-colors hover:text-secondary"
+  >
+    <Icon name="lucide:x" class="h-4 w-4" aria-hidden="true" />
+  </button>
+</div>
+
+<style>
+  /* Minimal fade-in on show (design.md D10): the browser plays it when the
+     `hidden` attribute is removed; hiding stays instant via `hidden`. */
+  [data-form-toast] {
+    animation: toast-in 200ms ease-out;
+  }
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

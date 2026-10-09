@@ -1,4 +1,8 @@
 import { normalizeApiBaseUrl } from '@/lib/api/apiBaseUrl';
+import {
+  FORM_RESULT_EVENT,
+  type FormResultDetail,
+} from '@/lib/forms/formToastClient';
 
 /**
  * Client-side submission for the public lead-capture forms (`/contacto` and
@@ -12,9 +16,11 @@ import { normalizeApiBaseUrl } from '@/lib/api/apiBaseUrl';
  *   form's API path — NOT to the relative `action` (a static site has no
  *   `/api/*` behind its own origin in production).
  * - The submit button is disabled while the request is in flight.
- * - The result is rendered in an inline `[role="status"]` region (aria-live):
- *   confirmation + `form.reset()` on 2xx, clear error keeping the fields on
- *   failure.
+ * - The result is published as a custom `riff:form-result` event on the
+ *   `<form>` (bubbling, detail: `{ kind, message }`): `form.reset()` on 2xx,
+ *   clear error keeping the fields on failure. The toast client
+ *   (`formToastClient`) consumes the event and renders the notification; this
+ *   module does not know the toast DOM.
  *
  * The success/error copy can come from the options object or from
  * `data-success-message` / `data-error-message` attributes on the `<form>`.
@@ -117,13 +123,14 @@ export function initFormSubmit(
     DEFAULT_ERROR_MESSAGE;
   const timeoutMs = options.timeoutMs ?? FORM_SUBMIT_TIMEOUT_MS;
   const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-  const statusEl = form.querySelector<HTMLElement>('[role="status"]');
 
-  function setStatus(message: string, kind: 'success' | 'error'): void {
-    if (!statusEl) return;
-    statusEl.textContent = message;
-    statusEl.classList.remove('text-success', 'text-error');
-    statusEl.classList.add(kind === 'success' ? 'text-success' : 'text-error');
+  function publishResult(detail: FormResultDetail): void {
+    form.dispatchEvent(
+      new CustomEvent<FormResultDetail>(FORM_RESULT_EVENT, {
+        detail,
+        bubbles: true,
+      }),
+    );
   }
 
   async function handleSubmit(event: SubmitEvent): Promise<void> {
@@ -143,13 +150,13 @@ export function initFormSubmit(
         signal,
       });
       if (!response.ok) {
-        setStatus(errorMessage, 'error');
+        publishResult({ kind: 'error', message: errorMessage });
         return;
       }
-      setStatus(successMessage, 'success');
+      publishResult({ kind: 'success', message: successMessage });
       form.reset();
     } catch {
-      setStatus(errorMessage, 'error');
+      publishResult({ kind: 'error', message: errorMessage });
     } finally {
       if (submitButton) submitButton.disabled = false;
     }

@@ -89,16 +89,17 @@ Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI func
 | `menu` | `lucide:menu` | Hamburguesa menú móvil |
 | `close` | `lucide:x` | Cerrar menú móvil |
 
-### Catálogo completo (22 iconos mínimos)
+### Catálogo completo (23 iconos mínimos)
 
 | Referencia | Icono (Iconify name) | Uso |
 |---|---|---|
 | `search` | `lucide:search` | Búsqueda |
 | `calendar` | `lucide:calendar` | Calendario / fecha |
 | `check` | `lucide:check` | Check / éxito |
+| `circle-check` | `lucide:circle-check` | Éxito de toast de formularios (`Toast.astro`, change `web-forms-toast`) |
 | `warning` | `lucide:triangle-alert` | Advertencia |
 | `info` | `lucide:info` | Información |
-| `error` | `lucide:circle-alert` | Error |
+| `error` | `lucide:circle-alert` | Error — también icono de error del toast de formularios |
 | `arrow-right` | `lucide:arrow-right` | Flecha derecha / siguiente |
 | `copy` | `lucide:copy` | Copiar al portapapeles |
 | `filters` | `lucide:list-filter` | Filtros |
@@ -107,6 +108,7 @@ Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI func
 | `clock` | `lucide:clock` | Reloj / tiempo |
 | `star` | `lucide:star` | Estrella / favorito |
 | `bookmark` | `lucide:bookmark` | Marcador |
+| `close` | `lucide:x` | Cierre — también botón X del toast de formularios |
 | `whatsapp` | `simple-icons:whatsapp` | Botón flotante global de contacto WhatsApp — excepción al set único Lucide |
 
 > **Nota:** Único set base: `lucide`. Los alias antiguos de Lucide (`alert-triangle`, `alert-circle`, `more-vertical`, `x-circle`) siguen resolviéndose en `@iconify-json/lucide`, pero se documentan los nombres canónicos actuales (`triangle-alert`, `circle-alert`, `ellipsis-vertical`, `x`).

@@ -1,6 +1,7 @@
 ---
 import type { ContactFormProps } from '@/lib/types/contact-form';
 import { resolveFormSubmitUrl } from '@/lib/forms/formSubmitClient';
+import Toast from '@/components/Toast.astro';
 import { Icon } from 'astro-icon/components';
 
 interface Props extends ContactFormProps {}
@@ -233,15 +234,12 @@ const inputLabels = {
           <Icon name="lucide:arrow-right" class="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
-
-      <!-- Inline submit status: accessible live region for the fetch-based
-           submission (formSubmitClient). Tokens text-success/text-error. -->
-      <p
-        role="status"
-        aria-live="polite"
-        class="mt-4 font-body text-sm"
-        data-form-status
-      ></p>
     </div>
   </form>
+
+  <!-- Toast notification (capability ui-toast): replaces the former inline
+       status block. Pre-rendered hidden with an empty live region (never
+       mounted on the fly); the form runtime (formSubmitClient) publishes the
+       result as the `riff:form-result` custom event and the toast shows it. -->
+  <Toast />
 </div>

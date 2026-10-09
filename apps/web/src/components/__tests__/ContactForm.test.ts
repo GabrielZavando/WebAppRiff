@@ -253,7 +253,7 @@ describe('ContactForm — required field indicators', () => {
   });
 });
 
-describe('ContactForm — honeypot and inline submit status', () => {
+describe('ContactForm — honeypot and toast notification', () => {
   it('renders a hidden honeypot website field', async () => {
     const html = await render();
     const input = getInputByName(html, 'website');
@@ -262,14 +262,36 @@ describe('ContactForm — honeypot and inline submit status', () => {
     expect(input).toContain('aria-hidden="true"');
   });
 
-  it('renders an accessible inline status region inside the form', async () => {
+  it('renders the toast as a sibling after the form (outside <form>), hidden and empty', async () => {
     const html = await render();
-    const form = getForm(html);
-    expect(form).toMatch(/role="status"/);
-    expect(form).toMatch(/aria-live="polite"/);
+    const formEnd = html.indexOf('</form>');
+    const toastMatch = html.match(/<div[^>]*data-form-toast[^>]*>/);
+    expect(toastMatch, 'toast root').toBeTruthy();
+    // The toast is a sibling AFTER the form in DOM order (outside <form>)
+    expect(toastMatch!.index ?? 0).toBeGreaterThan(formEnd);
+    // Hidden live region, pre-rendered (never mounted on the fly), empty content
+    const rootTag = toastMatch![0];
+    expect(rootTag).toContain('hidden');
+    expect(rootTag).toContain('data-state="hidden"');
+    expect(rootTag).toContain('role="status"');
+    expect(rootTag).toContain('aria-live="polite"');
   });
 
-  it('keeps the flat design with the honeypot and status elements', async () => {
+  it('no longer renders the inline status block in the DOM', async () => {
+    const html = stripComments(await render());
+    expect(html).not.toContain('data-form-status');
+    // The inline <p role="status"> block is gone (the toast root is a <div>).
+    expect(html).not.toMatch(/<p[^>]*role="status"/);
+  });
+
+  it('keeps the success/error message contract on the form data-* attributes', async () => {
+    const html = await render();
+    const form = getForm(html);
+    expect(form).toContain('data-success-message');
+    expect(form).toContain('data-error-message');
+  });
+
+  it('keeps the flat design with the honeypot and toast elements', async () => {
     const html = stripComments(await render());
     expect(html).not.toMatch(/rounded/);
     expect(html).not.toMatch(/shadow/);
