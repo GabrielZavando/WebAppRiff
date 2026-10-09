@@ -32,6 +32,14 @@ import { CONTACT_PAGE_CONTENT } from '@/lib/config/contact-page';
 
 <script>
   import { initFormSubmit } from '@/lib/forms/formSubmitClient';
+  import { initFormToast } from '@/lib/forms/formToastClient';
+
+  // One-time per session: the toast listener lives on `document` and survives
+  // View Transitions navigation (the module-level guard prevents re-binding).
+  // Registering it inside `astro:page-load` would be a no-op after the first
+  // call; the top level makes the one-time intent explicit.
+  initFormToast();
+
   // `astro:page-load` fires on the initial load AND after every client-side
   // navigation (View Transitions), so the submit handler is always bound to the
   // form of the page that is actually in the DOM.

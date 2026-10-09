@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Toast — snapshot > matches the snapshot 1`] = `
+"<!--
+  Reusable, page-agnostic toast notification for the lead-capture forms
+  (design.md D4/D5/D8/D10):
+
+  - The root carries \`data-form-toast\` (the contract marker resolved by
+    \`initFormToast\` at event time), \`data-variant\` and \`data-state\`, and starts
+    hidden: the aria-live region exists EMPTY and pre-rendered in the initial
+    HTML (SSG) — never mounted on the fly — so screen readers register it
+    before any content change. The message is only filled upon receiving the
+    form result.
+  - Fixed at the top-right corner (\`fixed top-6 right-6 z-40\`), above the page
+    content (≤ z-10), the WhatsApp FAB (z-20) and the sticky header shell
+    (z-30, whose overlay/toggle are trapped in its stacking context), so it is
+    never occluded while scrolled. Non-blocking: no backdrop, the page keeps
+    scrolling and the focus stays in the form.
+  - Both icons (check + alert) are always in the markup; the inactive variant's
+    icon is hidden via CSS \`group-data-[variant=...]\` hooks resolved from the
+    root's \`data-variant\` (group class on the root) — no JS DOM manipulation of
+    the icons.
+  - Colors come from the design tokens of the success/error scales
+    (\`bg-success-light\`, \`text-success-dark\`, \`bg-error-light\`,
+    \`text-error-dark\`) — no raw hex in the markup. Flat design: 1px border, no
+    rounded corners, no shadows.
+  - The close button is a plain \`type="button"\` (never submits a form) with a
+    descriptive \`aria-label\` and a decorative lucide:x icon; its click is
+    handled by document-level delegation (see formToastClient).
+--><div data-form-toast data-variant="success" data-state="hidden" hidden role="status" aria-live="polite" class="group fixed top-6 right-6 z-40 flex w-[min(calc(100%_-_3rem),24rem)] items-start gap-3 border px-4 py-3 font-body text-sm text-text-2 data-[variant=success]:border-success data-[variant=success]:bg-success-light data-[variant=error]:border-error data-[variant=error]:bg-error-light" data-astro-cid-hyvcqdav><svg width="1em" height="1em" viewBox="0 0 24 24" class="h-5 w-5 shrink-0 group-data-[variant=success]:text-success-dark group-data-[variant=error]:hidden" aria-hidden="true" data-astro-cid-hyvcqdav="true" data-icon="lucide:circle-check"><symbol id="ai:lucide:circle-check"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m16 9l-5.5 5.5L8 12"/></g></symbol><use href="#ai:lucide:circle-check"></use></svg><svg width="1em" height="1em" viewBox="0 0 24 24" class="h-5 w-5 shrink-0 group-data-[variant=error]:text-error-dark group-data-[variant=success]:hidden" aria-hidden="true" data-astro-cid-hyvcqdav="true" data-icon="lucide:circle-alert"><symbol id="ai:lucide:circle-alert"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></g></symbol><use href="#ai:lucide:circle-alert"></use></svg><p data-toast-message class="flex-1 py-0.5" data-astro-cid-hyvcqdav></p><button type="button" aria-label="Cerrar notificación" data-toast-close class="shrink-0 p-1 text-text-2 transition-colors hover:text-secondary" data-astro-cid-hyvcqdav><svg width="1em" height="1em" viewBox="0 0 24 24" class="h-4 w-4" aria-hidden="true" data-astro-cid-hyvcqdav="true" data-icon="lucide:x"><symbol id="ai:lucide:x"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6L6 18M6 6l12 12"/></symbol><use href="#ai:lucide:x"></use></svg></button></div>"
+`;

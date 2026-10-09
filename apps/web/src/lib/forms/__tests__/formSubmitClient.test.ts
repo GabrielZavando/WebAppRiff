@@ -31,16 +31,13 @@ interface FakeFormShape {
   getAttribute: (name: string) => string | null;
   addEventListener: (type: string, cb: (e: SubmitEvent) => Promise<void>) => void;
   removeEventListener: (type: string, cb: (e: SubmitEvent) => Promise<void>) => void;
+  dispatchEvent: (event: Event) => void;
   querySelector: (selector: string) => HTMLElement | HTMLButtonElement | null;
   reset: () => void;
   elements: HTMLInputElement[];
   submitHandlers: Array<(e: SubmitEvent) => Promise<void>>;
+  dispatchedEvents: Event[];
 }
-
-type MockClassList = {
-  remove: ReturnType<typeof vi.fn>;
-  add: ReturnType<typeof vi.fn>;
-};
 
 function createFakeForm(options: {
   fields: FieldStub[];
@@ -48,10 +45,7 @@ function createFakeForm(options: {
   errorMessage?: string;
 }) {
   const submitButton = { disabled: false } as HTMLButtonElement;
-  const statusEl = {
-    textContent: '',
-    classList: { remove: vi.fn(), add: vi.fn() } as MockClassList,
-  } as unknown as HTMLElement;
+  const dispatchedEvents: Event[] = [];
 
   const form: FakeFormShape = {
     getAttribute: (name: string) => {
@@ -66,24 +60,33 @@ function createFakeForm(options: {
     removeEventListener: (_type: string, cb) => {
       form.submitHandlers = form.submitHandlers.filter((h) => h !== cb);
     },
+    dispatchEvent: (event: Event) => {
+      dispatchedEvents.push(event);
+    },
     querySelector: (selector: string) => {
       if (selector === 'button[type="submit"]') return submitButton;
-      if (selector === '[role="status"]') return statusEl;
       return null;
     },
     reset: vi.fn(),
     elements: options.fields.map(field),
     submitHandlers: [],
+    dispatchedEvents,
   };
 
   return {
     form: form as unknown as HTMLFormElement,
     submitButton,
-    statusEl,
-    getStatusClassCalls: () =>
-      (statusEl.classList.add as unknown as { mock: { calls: string[][] } }).mock
-        .calls,
+    dispatchedEvents,
   };
+}
+
+/** Narrowing helper for the dispatched result events. */
+function getResultEvent(
+  dispatchedEvents: Event[],
+): CustomEvent<{ kind: string; message: string }> {
+  const event = dispatchedEvents[0];
+  if (!event) throw new Error('No result event was dispatched');
+  return event as CustomEvent<{ kind: string; message: string }>;
 }
 
 async function dispatchSubmit(form: HTMLFormElement): Promise<void> {
@@ -282,10 +285,10 @@ describe('initFormSubmit', () => {
     expect(submitButton.disabled).toBe(false);
   });
 
-  it('shows a confirmation and resets the form on a 2xx response', async () => {
+  it('publishes the success result as a custom event and resets the form on a 2xx response', async () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true });
     globalThis.fetch = fetchMock as unknown as typeof fetch;
-    const { form, statusEl, getStatusClassCalls } = createFakeForm({
+    const { form, dispatchedEvents } = createFakeForm({
       fields: BASE_FIELDS,
       successMessage: '¡Gracias! Mensaje enviado',
     });
@@ -293,15 +296,18 @@ describe('initFormSubmit', () => {
     initFormSubmit(form);
     await dispatchSubmit(form);
 
-    expect(statusEl.textContent).toBe('¡Gracias! Mensaje enviado');
-    expect(getStatusClassCalls()).toContainEqual(['text-success']);
+    expect(dispatchedEvents).toHaveLength(1);
+    const event = getResultEvent(dispatchedEvents);
+    expect(event.type).toBe('riff:form-result');
+    expect(event.detail.kind).toBe('success');
+    expect(event.detail.message).toBe('¡Gracias! Mensaje enviado');
     expect(form.reset).toHaveBeenCalledTimes(1);
   });
 
-  it('shows a clear error and keeps the fields on a non-2xx response', async () => {
+  it('publishes the error result as a custom event and keeps the fields on a non-2xx response', async () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: false, status: 502 });
     globalThis.fetch = fetchMock as unknown as typeof fetch;
-    const { form, statusEl, getStatusClassCalls } = createFakeForm({
+    const { form, dispatchedEvents } = createFakeForm({
       fields: BASE_FIELDS,
       errorMessage: 'Ocurrió un error, reintenta.',
     });
@@ -309,15 +315,17 @@ describe('initFormSubmit', () => {
     initFormSubmit(form);
     await dispatchSubmit(form);
 
-    expect(statusEl.textContent).toBe('Ocurrió un error, reintenta.');
-    expect(getStatusClassCalls()).toContainEqual(['text-error']);
+    const event = getResultEvent(dispatchedEvents);
+    expect(event.type).toBe('riff:form-result');
+    expect(event.detail.kind).toBe('error');
+    expect(event.detail.message).toBe('Ocurrió un error, reintenta.');
     expect(form.reset).not.toHaveBeenCalled();
   });
 
-  it('shows a clear error and keeps the fields on a network failure, re-enabling the button', async () => {
+  it('publishes the error result and keeps the fields on a network failure, re-enabling the button', async () => {
     const fetchMock = vi.fn().mockRejectedValue(new Error('network down'));
     globalThis.fetch = fetchMock as unknown as typeof fetch;
-    const { form, statusEl, submitButton } = createFakeForm({
+    const { form, dispatchedEvents, submitButton } = createFakeForm({
       fields: BASE_FIELDS,
       errorMessage: 'Fallo de red',
     });
@@ -325,7 +333,9 @@ describe('initFormSubmit', () => {
     initFormSubmit(form);
     await dispatchSubmit(form);
 
-    expect(statusEl.textContent).toBe('Fallo de red');
+    const event = getResultEvent(dispatchedEvents);
+    expect(event.detail.kind).toBe('error');
+    expect(event.detail.message).toBe('Fallo de red');
     expect(form.reset).not.toHaveBeenCalled();
     expect(submitButton.disabled).toBe(false);
   });
@@ -352,14 +362,16 @@ describe('initFormSubmit', () => {
     expect(submitButton.disabled).toBe(false);
   });
 
-  it('falls back to defaults when no messages are configured', async () => {
+  it('falls back to the default messages in the published event when none are configured', async () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: false, status: 500 });
     globalThis.fetch = fetchMock as unknown as typeof fetch;
-    const { form, statusEl } = createFakeForm({ fields: BASE_FIELDS });
+    const { form, dispatchedEvents } = createFakeForm({ fields: BASE_FIELDS });
 
     initFormSubmit(form);
     await dispatchSubmit(form);
-    expect(statusEl.textContent).toBe(
+    const event = getResultEvent(dispatchedEvents);
+    expect(event.detail.kind).toBe('error');
+    expect(event.detail.message).toBe(
       'No pudimos enviar el mensaje. Inténtalo nuevamente.',
     );
   });
@@ -424,7 +436,7 @@ describe('initFormSubmit', () => {
   });
 
   describe('timeout', () => {
-    it('cancels the submission and displays error when fetch times out via AbortSignal', async () => {
+    it('cancels the submission and publishes the error event when fetch times out via AbortSignal', async () => {
       const fetchMock = vi.fn((_url: string, init?: RequestInit) => {
         return new Promise<Response>((_resolve, reject) => {
           const signal = init?.signal;
@@ -436,7 +448,7 @@ describe('initFormSubmit', () => {
         });
       });
       globalThis.fetch = fetchMock as unknown as typeof fetch;
-      const { form, statusEl, submitButton } = createFakeForm({
+      const { form, dispatchedEvents, submitButton } = createFakeForm({
         fields: BASE_FIELDS,
         errorMessage: 'Tiempo de espera agotado',
       });
@@ -444,7 +456,9 @@ describe('initFormSubmit', () => {
       initFormSubmit(form, { timeoutMs: 50 });
       await dispatchSubmit(form);
 
-      expect(statusEl.textContent).toBe('Tiempo de espera agotado');
+      const event = getResultEvent(dispatchedEvents);
+      expect(event.detail.kind).toBe('error');
+      expect(event.detail.message).toBe('Tiempo de espera agotado');
       expect(form.reset).not.toHaveBeenCalled();
       expect(submitButton.disabled).toBe(false);
     });
@@ -452,12 +466,14 @@ describe('initFormSubmit', () => {
     it('does not interfere with the happy path when fetch completes before timeout', async () => {
       const fetchMock = vi.fn().mockResolvedValue({ ok: true });
       globalThis.fetch = fetchMock as unknown as typeof fetch;
-      const { form, statusEl } = createFakeForm({ fields: BASE_FIELDS });
+      const { form, dispatchedEvents } = createFakeForm({ fields: BASE_FIELDS });
 
       initFormSubmit(form, { timeoutMs: 50 });
       await dispatchSubmit(form);
 
-      expect(statusEl.textContent).toBe('Mensaje enviado correctamente');
+      const event = getResultEvent(dispatchedEvents);
+      expect(event.detail.kind).toBe('success');
+      expect(event.detail.message).toBe('Mensaje enviado correctamente');
       expect(form.reset).toHaveBeenCalledTimes(1);
     });
   });
