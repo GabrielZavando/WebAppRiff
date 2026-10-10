@@ -1,0 +1,102 @@
+---
+import type { NosotrosClientsProps } from '@/lib/types/nosotros-page';
+import { Icon } from 'astro-icon/components';
+
+interface Props extends NosotrosClientsProps {}
+
+const { eyebrow, eyebrowIcon, title, description, clients, cta } =
+  Astro.props;
+---
+
+<!--
+  Dumb presentational component for the /nosotros closing section
+  (section 6 of the approved reference, SC-207): the verbatim header, the
+  eight-tile client grid (name + sector subtitle, wordmark-style tiles) and
+  the closing CTA banner.
+
+  Layout (design.md § Decisions 4/7/10/11/12):
+    - Dark brand section (`bg-secondary`); client tiles collapse 2 → 4 → 8
+      columns (SC-211).
+    - Banner: `bg-primary-deep`, copy on 8/12 columns and the two CTAs on
+      4/12 — advisory button → the real `/contacto` route (never
+      `#contacto`, SC-208) and the canonical `tel:` phone resolved from
+      `getContactInfo()` via config (SC-207 / design.md D7).
+    - Flat design: no `rounded*`, no hex literals and **no shadow on the
+      buttons** (design.md D11 — buttons are not floating layers).
+    - Heading hierarchy: section `<h2>`, banner `<h3>`; icons decorative.
+-->
+<section class="w-full bg-secondary py-16 text-white md:py-20">
+  <div class="container mx-auto">
+    <div class="mx-auto mb-8 max-w-2xl text-center">
+      <div
+        class="mb-1 inline-flex items-center justify-center gap-1 font-heading text-sm font-semibold uppercase tracking-wider text-primary-light"
+      >
+        <Icon
+          name={`lucide:${eyebrowIcon}`}
+          class="h-5 w-5"
+          aria-hidden="true"
+        />
+        <span>{eyebrow}</span>
+      </div>
+      <h2 class="font-heading text-2xl uppercase tracking-tight text-white md:text-3xl"
+        >{title}</h2
+      >
+      <p class="mt-1 font-body text-base text-white/80">{description}</p>
+    </div>
+
+    <div class="mb-16 grid grid-cols-2 gap-1 sm:grid-cols-4 lg:grid-cols-8">
+      {
+        clients.map((client) => (
+          <div class="flex h-24 flex-col items-center justify-center bg-white/10 p-4 text-center transition-colors hover:bg-white/20">
+            <span class="font-heading text-sm font-semibold uppercase tracking-tight text-white/90">
+              {client.name}
+            </span>
+            <span class="mt-1 font-body text-xs text-primary-light">
+              {client.subtitle}
+            </span>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="relative overflow-hidden bg-primary-deep p-8 md:p-12">
+      <div class="relative z-10 grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
+        <div class="lg:col-span-8">
+          <span
+            class="mb-1 block font-heading text-xs font-semibold uppercase tracking-wider text-primary-light"
+            >{cta.eyebrow}</span
+          >
+          <h3
+            class="font-heading text-2xl uppercase leading-tight tracking-tight text-white lg:text-4xl"
+          >
+            {cta.title}
+          </h3>
+          <p class="mt-2 max-w-xl font-body text-base text-primary-light"
+            >{cta.description}</p
+          >
+        </div>
+        <div
+          class="flex flex-col justify-center gap-2 sm:flex-row lg:col-span-4 lg:flex-col lg:items-end"
+        >
+          <a
+            href={cta.primaryCta.href}
+            class="w-full bg-accent px-8 py-4 text-center font-heading text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-accent-dark sm:w-auto lg:w-full"
+          >
+            {cta.primaryCta.label}
+          </a>
+          <a
+            href={cta.phoneHref}
+            class="flex w-full items-center justify-center gap-1 bg-white px-8 py-4 text-center font-heading text-sm font-semibold uppercase tracking-wider text-primary transition-colors hover:bg-bg sm:w-auto lg:w-full"
+          >
+            <Icon
+              name={`lucide:${cta.phoneIcon}`}
+              class="h-5 w-5"
+              aria-hidden="true"
+            />
+            <span>{cta.phone}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

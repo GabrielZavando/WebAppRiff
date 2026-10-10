@@ -1,0 +1,158 @@
+---
+import type { NosotrosHeroProps } from '@/lib/types/nosotros-page';
+import { splitHeadline } from '@/lib/config/hero-banner';
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+
+interface Props extends NosotrosHeroProps {}
+
+const {
+  eyebrow,
+  eyebrowIcon,
+  title,
+  highlightedWord,
+  subtitle,
+  description,
+  ctas,
+  image,
+  imageAlt,
+  imageCaptionLeft,
+  imageCaptionRight,
+} = Astro.props;
+
+// Pure helper extracted to lib/config (same one used by HeroBanner and
+// ContactHero): `before` + `after` are the fragments around the single
+// highlighted occurrence; when the word is absent or empty, `after === ""`
+// and the highlighted <span> is skipped (frontend-standards § "Frontmatter
+// sin lógica de negocio no trivial").
+const [before, after] = splitHeadline(title, highlightedWord);
+const shouldRenderHighlight = highlightedWord !== '' && before !== title;
+---
+
+<!--
+  Dumb presentational component for the /nosotros institutional hero
+  (section 1 of the approved reference, SC-201/SC-202). All copy, icons and
+  the placeholder image come via props spread from
+  `NOSOTROS_PAGE_CONTENT.hero` by `apps/web/src/pages/nosotros.astro`.
+
+  Layout (design.md § Decisions 3/4/9/10/11/14):
+    - Dark brand background `bg-secondary` with a technical grid SVG that is
+      decorative (`aria-hidden`, desktop-only `hidden lg:block`).
+    - Left column: eyebrow pill, single <h1> "SOMOS RIFF" (the page's only
+      h1, highlight via the `text-primary` token), subtitle, paragraph and
+      the two CTAs — first as the orange accent style (`/contacto`), second
+      as the translucent style (`#historia` anchor; order comes from the
+      config contract).
+    - Right column: local placeholder image (astro:assets, eager — it is the
+      page's LCP candidate) under a teal multiply overlay, with the two
+      uppercase captions over a bottom gradient.
+    - Flat design: no `rounded*`, no hex literals; the image container uses
+      the reserved content shadow token `shadow-3` (design.md D11).
+-->
+<section class="relative w-full overflow-hidden bg-secondary text-white">
+  <div
+    class="pointer-events-none absolute inset-0 bg-linear-to-r from-secondary via-bg to-secondary opacity-90"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute right-0 top-0 hidden lg:block h-full w-1/2 opacity-10"
+  >
+    <svg
+      class="h-full w-full"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 400 400"
+      aria-hidden="true"
+    >
+      <path
+        d="M0 50 H400 M0 100 H400 M0 150 H400 M0 200 H400 M0 250 H400 M0 300 H400 M0 350 H400"
+        stroke-dasharray="4 8"
+        stroke-width="0.5"></path>
+      <path
+        d="M50 0 V400 M100 0 V400 M150 0 V400 M200 0 V400 M250 0 V400 M300 0 V400 M350 0 V400"
+        stroke-dasharray="4 8"
+        stroke-width="0.5"></path>
+    </svg>
+  </div>
+
+  <div class="container relative mx-auto py-16 md:py-20">
+    <div class="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
+      <div class="flex flex-col items-start lg:col-span-7">
+        <div
+          class="mb-4 inline-flex items-center gap-1 bg-primary/20 px-2 py-1 font-heading text-xs uppercase tracking-wider text-primary-light"
+        >
+          <Icon
+            name={`lucide:${eyebrowIcon}`}
+            class="h-4 w-4"
+            aria-hidden="true"
+          />
+          <span>{eyebrow}</span>
+        </div>
+        <h1
+          class="mb-2 font-heading text-3xl font-bold uppercase leading-none tracking-tight md:text-4xl lg:text-5xl"
+        >
+          {before}{shouldRenderHighlight && <span class="text-primary">{highlightedWord}</span>}{after}
+        </h1>
+        <p class="mb-4 font-heading text-xl text-primary-light">{subtitle}</p>
+        <p class="mb-8 max-w-2xl font-body text-lg leading-relaxed text-white/80"
+          >{description}</p
+        >
+        <div class="flex flex-wrap items-center gap-4">
+          {
+            ctas.map((cta, index) => (
+              <a
+                href={cta.href}
+                class={
+                  index === 0
+                    ? 'inline-flex items-center gap-1 bg-accent px-8 py-4 font-heading text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-accent-dark'
+                    : 'inline-flex items-center gap-1 bg-white/20 px-8 py-4 font-heading text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-white/30'
+                }
+              >
+                {index !== 0 && (
+                  <Icon
+                    name={`lucide:${cta.icon}`}
+                    class="h-5 w-5"
+                    aria-hidden="true"
+                  />
+                )}
+                <span>{cta.label}</span>
+                {index === 0 && (
+                  <Icon
+                    name={`lucide:${cta.icon}`}
+                    class="h-5 w-5"
+                    aria-hidden="true"
+                  />
+                )}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="relative mt-8 lg:col-span-5 lg:mt-0">
+        <div
+          class="relative aspect-[4/3] w-full overflow-hidden bg-white shadow-3"
+        >
+          <Image
+            src={image}
+            alt={imageAlt}
+            class="h-full w-full object-cover grayscale contrast-125"
+            loading="eager"
+          />
+          <div class="absolute inset-0 bg-primary-deep/20 mix-blend-multiply"
+          ></div>
+          <div
+            class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-secondary via-secondary/80 to-transparent p-4"
+          >
+            <div
+              class="flex items-center justify-between font-heading text-xs font-semibold uppercase tracking-wider text-primary-light"
+            >
+              <span>{imageCaptionLeft}</span>
+              <span>{imageCaptionRight}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

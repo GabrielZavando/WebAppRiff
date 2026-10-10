@@ -1,13 +1,26 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import NosotrosHero from '@/components/NosotrosHero.astro';
+import NosotrosTimeline from '@/components/NosotrosTimeline.astro';
+import NosotrosValueProp from '@/components/NosotrosValueProp.astro';
+import NosotrosIdentity from '@/components/NosotrosIdentity.astro';
+import NosotrosTeamGrid from '@/components/NosotrosTeamGrid.astro';
+import NosotrosClients from '@/components/NosotrosClients.astro';
+import { NOSOTROS_PAGE_CONTENT } from '@/lib/config/nosotros-page';
 ---
 
 <!--
-  Public about page (/nosotros). Empty for now (ticket
-  fix/header-scroll-regressions-and-about-page, Req 5): renders only the shared
-  chrome (Header + Footer) with no intermediate content — no hero shell and no
-  global search form (showSearch=false, same opt-out as /contacto). The main
-  slot is intentionally empty (SC-108, SC-109).
+  Public about page (/nosotros). Renders the shared chrome (Header + Footer
+  from the Layout, no hero shell and no global search form — hero={false},
+  showSearch={false}) plus the six institutional sections inside
+  `<main aria-label="Contenido de Nosotros">` (spec nosotros-page SC-201…
+  SC-212): hero "SOMOS RIFF", timeline (#historia), value proposition,
+  mission & vision, leadership team and clients + closing CTA.
+
+  Each section is a dumb component fed from `NOSOTROS_PAGE_CONTENT`
+  (copy, icons and placeholder images live in
+  `src/lib/config/nosotros-page.ts`). No offset padding is needed: the
+  Header+SearchForm group is sticky in-flow (design.md D9).
 -->
 <Layout
   title="Nosotros — Riff"
@@ -15,5 +28,12 @@ import Layout from '@/layouts/Layout.astro';
   hero={false}
   showSearch={false}
 >
-  <main aria-label="Contenido de Nosotros"></main>
+  <main aria-label="Contenido de Nosotros">
+    <NosotrosHero {...NOSOTROS_PAGE_CONTENT.hero} />
+    <NosotrosTimeline {...NOSOTROS_PAGE_CONTENT.timeline} />
+    <NosotrosValueProp {...NOSOTROS_PAGE_CONTENT.value} />
+    <NosotrosIdentity {...NOSOTROS_PAGE_CONTENT.identity} />
+    <NosotrosTeamGrid {...NOSOTROS_PAGE_CONTENT.team} />
+    <NosotrosClients {...NOSOTROS_PAGE_CONTENT.clients} />
+  </main>
 </Layout>

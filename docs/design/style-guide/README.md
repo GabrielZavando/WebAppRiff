@@ -89,7 +89,7 @@ Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI func
 | `menu` | `lucide:menu` | Hamburguesa menú móvil |
 | `close` | `lucide:x` | Cerrar menú móvil |
 
-### Catálogo completo (23 iconos mínimos)
+### Catálogo completo (36 iconos)
 
 | Referencia | Icono (Iconify name) | Uso |
 |---|---|---|
@@ -100,16 +100,35 @@ Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI func
 | `warning` | `lucide:triangle-alert` | Advertencia |
 | `info` | `lucide:info` | Información |
 | `error` | `lucide:circle-alert` | Error — también icono de error del toast de formularios |
-| `arrow-right` | `lucide:arrow-right` | Flecha derecha / siguiente |
+| `arrow-right` | `lucide:arrow-right` | Flecha derecha / siguiente — también CTA "SOLICITAR ASESORÍA TÉCNICA" del `/nosotros` |
 | `copy` | `lucide:copy` | Copiar al portapapeles |
 | `filters` | `lucide:list-filter` | Filtros |
 | `trash` | `lucide:trash` | Eliminar |
 | `more` | `lucide:ellipsis-vertical` | Menú más opciones |
 | `clock` | `lucide:clock` | Reloj / tiempo |
-| `star` | `lucide:star` | Estrella / favorito |
+| `star` | `lucide:star` | Estrella / favorito — marcador del hito 2024 de la timeline del `/nosotros` |
 | `bookmark` | `lucide:bookmark` | Marcador |
 | `close` | `lucide:x` | Cierre — también botón X del toast de formularios |
 | `whatsapp` | `simple-icons:whatsapp` | Botón flotante global de contacto WhatsApp — excepción al set único Lucide |
+| `badge-check` | `lucide:badge-check` | Eyebrow del hero del `/nosotros` (change `nosotros-page`) |
+| `book-open-text` | `lucide:book-open-text` | CTA "CONOCER NUESTRA HISTORIA" del `/nosotros` |
+| `cog` | `lucide:cog` | Pilar "Durabilidad Extrema" del `/nosotros` |
+| `sliders-horizontal` | `lucide:sliders-horizontal` | Pilar "Precisión Certificada" del `/nosotros` |
+| `droplet` | `lucide:droplet` | Pilar "Eficiencia Hídrica" del `/nosotros` |
+| `wrench` | `lucide:wrench` | Pilar "Servicio In-Situ" y badge "+100 años" del `/nosotros` |
+| `mountain` | `lucide:mountain` | Sector "Gran Minería & Pulpa" del `/nosotros` |
+| `utensils` | `lucide:utensils` | Sector "Alimentos & Bebidas" del `/nosotros` |
+| `users` | `lucide:users` | Sector "Redes Rurales (APR)" del `/nosotros` |
+| `building` | `lucide:building` | Sector "Edificación & Inmobiliario" del `/nosotros` |
+| `clipboard-list` | `lucide:clipboard-list` | Eyebrow de MISIÓN del `/nosotros` |
+| `eye` | `lucide:eye` | Eyebrow de VISIÓN del `/nosotros` |
+| `shield-check` | `lucide:shield-check` | Nota de MISIÓN del `/nosotros` |
+| `leaf` | `lucide:leaf` | Nota de VISIÓN del `/nosotros` |
+| `badge` | `lucide:badge` | Pie de tarjeta "Gestión Corporativa" del `/nosotros` |
+| `drafting-compass` | `lucide:drafting-compass` | Pie de tarjeta "Cálculo & Comisionamiento" del `/nosotros` |
+| `globe` | `lucide:globe` | Pie de tarjeta "Alianzas Globales" del `/nosotros` |
+| `gauge` | `lucide:gauge` | Pie de tarjeta "Metrología & Faena" del `/nosotros` |
+| `handshake` | `lucide:handshake` | Eyebrow de la sección de clientes del `/nosotros` |
 
 > **Nota:** Único set base: `lucide`. Los alias antiguos de Lucide (`alert-triangle`, `alert-circle`, `more-vertical`, `x-circle`) siguen resolviéndose en `@iconify-json/lucide`, pero se documentan los nombres canónicos actuales (`triangle-alert`, `circle-alert`, `ellipsis-vertical`, `x`).
 
