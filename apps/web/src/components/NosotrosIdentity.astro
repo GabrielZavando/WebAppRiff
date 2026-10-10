@@ -1,0 +1,108 @@
+---
+import type { NosotrosIdentityProps } from '@/lib/types/nosotros-page';
+import { Icon } from 'astro-icon/components';
+
+interface Props extends NosotrosIdentityProps {}
+
+const { mission, vision } = Astro.props;
+---
+
+<!--
+  Dumb presentational component for the /nosotros corporate identity
+  (section 4 of the approved reference, SC-205): the MISIÓN block on a light
+  surface and the VISIÓN block on a dark one, side by side on desktop and
+  stacked on mobile (mission first).
+
+  Each block renders its eyebrow (decorative Lucide icon + uppercase text),
+  the `<h2>` heading, the verbatim quoted statement, the supporting paragraph
+  and the closing note strip (icon + text) — all via props from
+  `NOSOTROS_PAGE_CONTENT.identity`.
+
+  Layout (design.md § Decisions 4/10/11/12):
+    - `grid-cols-1 lg:grid-cols-2 gap-0` so the two blocks touch, with the
+      reserved `shadow-3` on the pair (reference `shadow-xl`, design.md D11).
+    - Mission: `bg-white` + `text-primary` quote; vision: `bg-secondary` +
+      `text-primary-light` quote and `text-accent-light` eyebrow.
+    - Flat design: no `rounded*`, no hex literals; icons `aria-hidden`.
+-->
+<section class="w-full bg-bg py-16 md:py-20">
+  <div class="container mx-auto">
+    <div class="grid grid-cols-1 gap-0 shadow-3 lg:grid-cols-2">
+      <div class="flex flex-col justify-between bg-white p-8 md:p-12">
+        <div>
+          <div
+            class="mb-4 flex items-center gap-1 font-heading text-xs font-semibold uppercase tracking-wider text-primary"
+          >
+            <Icon
+              name={`lucide:${mission.eyebrowIcon}`}
+              class="h-5 w-5"
+              aria-hidden="true"
+            />
+            <span>{mission.eyebrow}</span>
+          </div>
+          <h2
+            class="mb-4 font-heading text-2xl uppercase tracking-tight text-text md:text-3xl"
+          >
+            {mission.title}
+          </h2>
+          <p class="mb-4 font-heading text-xl leading-snug text-primary"
+            >{mission.quote}</p
+          >
+          <p class="font-body text-base leading-relaxed text-text-2"
+            >{mission.description}</p
+          >
+        </div>
+        <div
+          class="mt-8 flex items-center gap-4 bg-bg p-2 pt-4"
+        >
+          <Icon
+            name={`lucide:${mission.noteIcon}`}
+            class="h-6 w-6 flex-shrink-0 text-primary"
+            aria-hidden="true"
+          />
+          <span class="font-body text-xs font-semibold text-text"
+            >{mission.noteText}</span
+          >
+        </div>
+      </div>
+
+      <div class="flex flex-col justify-between bg-secondary p-8 text-white md:p-12">
+        <div>
+          <div
+            class="mb-4 flex items-center gap-1 font-heading text-xs font-semibold uppercase tracking-wider text-accent-light"
+          >
+            <Icon
+              name={`lucide:${vision.eyebrowIcon}`}
+              class="h-5 w-5"
+              aria-hidden="true"
+            />
+            <span>{vision.eyebrow}</span>
+          </div>
+          <h2
+            class="mb-4 font-heading text-2xl uppercase tracking-tight text-white md:text-3xl"
+          >
+            {vision.title}
+          </h2>
+          <p class="mb-4 font-heading text-xl leading-snug text-primary-light"
+            >{vision.quote}</p
+          >
+          <p class="font-body text-base leading-relaxed text-white/80"
+            >{vision.description}</p
+          >
+        </div>
+        <div
+          class="mt-8 flex items-center gap-4 bg-secondary-dark p-2 pt-4"
+        >
+          <Icon
+            name={`lucide:${vision.noteIcon}`}
+            class="h-6 w-6 flex-shrink-0 text-accent"
+            aria-hidden="true"
+          />
+          <span class="font-body text-xs font-semibold text-white"
+            >{vision.noteText}</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

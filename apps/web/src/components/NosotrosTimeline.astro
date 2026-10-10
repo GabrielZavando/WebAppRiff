@@ -1,0 +1,188 @@
+---
+import type {
+  NosotrosTimelineProps,
+  TimelineCardTone,
+} from '@/lib/types/nosotros-page';
+import { splitHeadline } from '@/lib/config/hero-banner';
+import { Icon } from 'astro-icon/components';
+
+interface Props extends NosotrosTimelineProps {}
+
+const { eyebrow, title, description, milestones } = Astro.props;
+
+/**
+ * Card + badge color classes per milestone tone (design.md D4): `primary` =
+ * white card with deep-teal badge (1979, 2013), `secondary` = slate badge
+ * (2012), `accent` = orange-dark badge (2018), `dark` = deep-teal card with
+ * white text and orange badge (Diciembre 2024).
+ */
+const CARD_TONES: Record<
+  TimelineCardTone,
+  { card: string; title: string; body: string; badge: string }
+> = {
+  primary: {
+    card: 'bg-white p-8 shadow-1',
+    title: 'mb-1 font-heading text-xl text-text',
+    body: 'font-body text-base text-text-2',
+    badge: 'bg-primary-deep text-white',
+  },
+  secondary: {
+    card: 'bg-white p-8 shadow-1',
+    title: 'mb-1 font-heading text-xl text-text',
+    body: 'font-body text-base text-text-2',
+    badge: 'bg-secondary-light text-white',
+  },
+  accent: {
+    card: 'bg-white p-8 shadow-1',
+    title: 'mb-1 font-heading text-xl text-text',
+    body: 'font-body text-base text-text-2',
+    badge: 'bg-accent-dark text-white',
+  },
+  dark: {
+    card: 'bg-primary-deep p-8 shadow-3',
+    title: 'mb-1 font-heading text-xl text-white',
+    body: 'font-body text-base leading-relaxed text-primary-light',
+    badge: 'bg-accent text-white',
+  },
+};
+
+/**
+ * Precomputes the `<strong>` split for milestones that highlight a substring
+ * (Diciembre 2024 → "RIFF SpA", design.md D13) using the shared pure
+ * `splitHeadline()` helper, keeping the template declarative
+ * (frontend-standards § "Frontmatter sin lógica de negocio no trivial").
+ */
+const highlighted = new Map<string, { before: string; after: string }>();
+for (const milestone of milestones) {
+  if (milestone.highlight) {
+    const [before, after] = splitHeadline(
+      milestone.description,
+      milestone.highlight,
+    );
+    if (before !== milestone.description) {
+      highlighted.set(milestone.title, { before, after });
+    }
+  }
+}
+---
+
+<!--
+  Dumb presentational component for the /nosotros historical timeline
+  (section 2 of the approved reference, SC-203). All copy comes via props
+  spread from `NOSOTROS_PAGE_CONTENT.timeline` by the page.
+
+  Layout (design.md § Decisions 4/10/11/12):
+    - The outer section carries `id="historia"` — the target of the hero
+      "CONOCER NUESTRA HISTORIA" anchor (SC-208); smooth scroll is global.
+    - DOM order is always card → marker → note; odd milestones flip their
+      desktop placement via `order-*` utilities (card `order-1 lg:order-3`,
+      note `order-2 lg:order-1`), so mobile stacks card first, then note
+      (SC-211).
+    - The central line and the numeric markers (01..04, ★ on the last
+      milestone) are desktop-only (`hidden lg:*`, SC-211).
+    - Card tones via tokens; content shadows `shadow-1`/`shadow-3` only
+      (design.md D11); flat design: no `rounded*`, no hex literals.
+    - Section header is the page `<h2>`; milestone titles are `<h3>`
+      (heading hierarchy, SC-212).
+-->
+<section class="w-full bg-bg py-16 md:py-20" id="historia">
+  <div class="container mx-auto">
+    <div class="mb-16 max-w-3xl">
+      <div
+        class="mb-1 inline-flex items-center gap-1 font-heading text-sm font-semibold uppercase tracking-wider text-primary"
+      >
+        <span class="h-0.5 w-8 bg-primary"></span>
+        <span>{eyebrow}</span>
+      </div>
+      <h2 class="font-heading text-2xl uppercase tracking-tight text-text md:text-3xl"
+        >{title}</h2
+      >
+      <p class="mt-2 font-body text-lg text-text-2">{description}</p>
+    </div>
+
+    <div class="relative">
+      <div
+        class="absolute left-1/2 top-0 bottom-0 hidden lg:block w-0.5 -translate-x-1/2 bg-border/40"
+      >
+      </div>
+      <div class="space-y-8">
+        {
+          milestones.map((milestone, index) => {
+            const tones = CARD_TONES[milestone.tone];
+            const isDark = milestone.tone === 'dark';
+            const isLast = index === milestones.length - 1;
+            const isFlipped = index % 2 === 1;
+            const strong = highlighted.get(milestone.title);
+            return (
+              <div class="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
+                <div
+                  class={`lg:col-span-5 ${isFlipped ? 'order-1 lg:order-3' : ''}`}
+                >
+                  <div class={tones.card}>
+                    <div
+                      class={`mb-2 inline-block px-2 py-1 font-heading text-sm font-semibold uppercase tracking-wider ${tones.badge}`}
+                    >
+                      {milestone.badge}
+                    </div>
+                    <h3 class={tones.title}>{milestone.title}</h3>
+                    <p class={tones.body}>
+                      {strong ? (
+                        <>{strong.before}<strong>{milestone.highlight}</strong>{strong.after}</>
+                      ) : (
+                        milestone.description
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class={`hidden lg:flex lg:col-span-2 justify-center ${isFlipped ? 'order-1 lg:order-2' : ''}`}
+                >
+                  {isLast ? (
+                    <div class="flex h-12 w-12 items-center justify-center bg-accent text-white shadow-3">
+                      <Icon
+                        name="lucide:star"
+                        class="h-6 w-6"
+                        aria-hidden="true"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      class={`flex h-10 w-10 items-center justify-center font-heading text-sm font-semibold shadow-2 ${
+                        index % 2 === 0
+                          ? 'bg-primary-deep text-white'
+                          : 'border border-border bg-bg text-text'
+                      }`}
+                    >
+                      {String(index + 1).padStart(2, '0')}
+                    </div>
+                  )}
+                </div>
+                <div
+                  class={`lg:col-span-5 ${isFlipped ? 'order-2 lg:order-1 lg:text-right' : ''}`}
+                >
+                  {isDark ? (
+                    <div class="bg-white p-8 text-text shadow-1">
+                      <span class="mb-1 block font-heading font-semibold uppercase text-accent">
+                        {milestone.noteLabel}
+                      </span>
+                      <span class="font-body text-xs text-text-2">
+                        {milestone.noteText}
+                      </span>
+                    </div>
+                  ) : (
+                    <div class="bg-primary-100 p-4 font-body text-xs text-text-2">
+                      <span class="block font-heading font-semibold uppercase text-text">
+                        {milestone.noteLabel}
+                      </span>
+                      {milestone.noteText}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
+    </div>
+  </div>
+</section>
