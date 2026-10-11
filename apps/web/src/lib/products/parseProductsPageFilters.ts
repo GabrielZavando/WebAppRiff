@@ -1,9 +1,13 @@
-import type {
-  ProductsPageFilters,
-  ViewMode,
-  SortBy,
-  SortDir,
-} from '@/lib/types/products-page';
+import type { ProductsPageFilters } from '@/lib/types/products-page';
+
+function parseTrimmedText(params: URLSearchParams, key: string): string {
+  return (params.get(key) ?? '').trim();
+}
+
+function parsePositiveInt(raw: string | null, fallback: number): number {
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : fallback;
+}
 
 /**
  * Parses the catalog URL query params into a fully-typed `ProductsPageFilters`.
@@ -17,30 +21,24 @@ export function parseProductsPageFilters(
   params: URLSearchParams,
   defaultPageSize = 9,
 ): ProductsPageFilters {
-  const q = (params.get('q') ?? '').trim();
-  const categoriaId = (params.get('categoriaId') ?? '').trim();
-  const subcategoriaIds = params
-    .getAll('subcategoriaId')
-    .map((value) => value.trim())
-    .filter((value) => value !== '');
-
   const viewRaw = params.get('view');
-  const view: ViewMode = viewRaw === 'list' ? 'list' : 'grid';
-
   const sortByRaw = params.get('sortBy');
-  const sortBy: SortBy =
-    sortByRaw === 'titulo' || sortByRaw === 'precio.valor' ? sortByRaw : 'creadoEn';
-
   const sortDirRaw = params.get('sortDir');
-  const sortDir: SortDir = sortDirRaw === 'asc' ? 'asc' : 'desc';
 
-  const pageRaw = Number(params.get('page'));
-  const page =
-    Number.isFinite(pageRaw) && pageRaw > 0 ? Math.floor(pageRaw) : 1;
-
-  const pageSizeRaw = Number(params.get('pageSize'));
-  const pageSize =
-    Number.isFinite(pageSizeRaw) && pageSizeRaw > 0 ? Math.floor(pageSizeRaw) : defaultPageSize;
-
-  return { q, categoriaId, subcategoriaIds, sortBy, sortDir, view, page, pageSize };
+  return {
+    q: parseTrimmedText(params, 'q'),
+    categoriaId: parseTrimmedText(params, 'categoriaId'),
+    subcategoriaIds: params
+      .getAll('subcategoriaId')
+      .map((value) => value.trim())
+      .filter((value) => value !== ''),
+    view: viewRaw === 'list' ? 'list' : 'grid',
+    sortBy:
+      sortByRaw === 'titulo' || sortByRaw === 'precio.valor'
+        ? sortByRaw
+        : 'creadoEn',
+    sortDir: sortDirRaw === 'asc' ? 'asc' : 'desc',
+    page: parsePositiveInt(params.get('page'), 1),
+    pageSize: parsePositiveInt(params.get('pageSize'), defaultPageSize),
+  };
 }

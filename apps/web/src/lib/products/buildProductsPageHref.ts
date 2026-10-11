@@ -22,21 +22,37 @@ export interface ProductsPageHrefParams {
  * Pure helper (no IO): testable without mounting any component.
  */
 export function buildProductsPageHref(params: ProductsPageHrefParams): string {
-  const q = (params.q ?? '').trim();
-  const categoriaId = params.categoriaId ?? '';
-  const subcategoriaIds = params.subcategoriaIds ?? [];
-  const view = params.view ?? 'grid';
-  const page = params.page ?? 1;
+  const filters: ProductsPageHrefFilters = {
+    q: (params.q ?? '').trim(),
+    categoriaId: params.categoriaId ?? '',
+    subcategoriaIds: params.subcategoriaIds ?? [],
+    view: params.view ?? 'grid',
+    page: params.page ?? 1,
+  };
 
+  const queryString = buildProductsPageQuery(filters);
+  return queryString === '' ? '/productos' : `/productos?${queryString}`;
+}
+
+interface ProductsPageHrefFilters {
+  readonly q: string;
+  readonly categoriaId: string;
+  readonly subcategoriaIds: readonly string[];
+  readonly view: ViewMode;
+  readonly page: number;
+}
+
+function buildProductsPageQuery(filters: ProductsPageHrefFilters): string {
   const search = new URLSearchParams();
-  if (q !== '') search.set('q', q);
-  if (categoriaId !== '') search.set('categoriaId', categoriaId);
-  for (const id of subcategoriaIds) {
+  if (filters.q !== '') search.set('q', filters.q);
+  if (filters.categoriaId !== '') {
+    search.set('categoriaId', filters.categoriaId);
+  }
+  for (const id of filters.subcategoriaIds) {
     if (id !== '') search.append('subcategoriaId', id);
   }
-  if (view !== 'grid') search.set('view', view);
-  if (page !== 1) search.set('page', String(page));
+  if (filters.view !== 'grid') search.set('view', filters.view);
+  if (filters.page !== 1) search.set('page', String(filters.page));
 
-  const queryString = search.toString();
-  return queryString === '' ? '/productos' : `/productos?${queryString}`;
+  return search.toString();
 }
