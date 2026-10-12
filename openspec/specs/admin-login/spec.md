@@ -4,12 +4,13 @@
 Pantalla de login del panel admin (Angular): ruta con lazy loading, tarjeta centrada según design tokens, logo de Riff, campos email/password con labels y validación.
 ## Requirements
 ### Requirement: Login route with lazy loading
-The admin panel SHALL configure `@angular/router` so that the root path (`''`) redirects to `/login` and the `/login` route loads the `LoginPageComponent` lazily via `loadComponent`; the root `AppComponent` SHALL render a `<router-outlet/>`. (ADDED in `admin-login-panel`.)
+The admin panel SHALL configure `@angular/router` so that the root path (`''`) redirects to `/profile` and the `/login` route loads the `LoginPageComponent` lazily via `loadComponent`; the root `AppComponent` SHALL render a `<router-outlet/>`. Unauthenticated access to protected routes (`/profile`, etc.) SHALL be redirected to `/login` by the AuthGuard (defined in `admin-auth`). The redirect target is temporary for Foundation: `admin-panel-content` will re-point it to `/dashboard`. (ADDED in `admin-login-panel`; MODIFIED in `admin-panel-foundation`.)
 
 #### Scenario: SC-006 — the /login route is reachable and the root redirects
 - **GIVEN** the admin panel with the router configured
 - **WHEN** the user visits `/`
-- **THEN** the app redirects to `/login` (redirect `'' → /login`)
+- **THEN** the app redirects to `/profile` (redirect `'' → /profile`)
+- **AND** if the user has no session, the AuthGuard further redirects to `/login`
 - **AND** the `/login` route loads the `LoginPageComponent` in a separate chunk
 
 ### Requirement: Centered flat login card following the design tokens
@@ -63,15 +64,6 @@ The `INICIAR SESIÓN` button SHALL be disabled while the form is invalid and ena
 - **THEN** the `INICIAR SESIÓN` button becomes enabled
 - **AND** if either field becomes invalid again, the button returns to disabled
 
-### Requirement: UI-only submit handler
-The form submit (`ngSubmit`) SHALL invoke a no-op handler that prevents the native form submission; no Firebase Auth or backend call happens in this change. (ADDED in `admin-login-panel`.)
-
-#### Scenario: SC-005 — submitting invokes the handler (UI-only)
-- **GIVEN** the login form with valid fields
-- **WHEN** the user presses `INICIAR SESIÓN` (submit)
-- **THEN** the component submit handler runs (stub no-op: no Firebase Auth or backend call)
-- **AND** the page does not reload (native submit prevented)
-
 ### Requirement: Accessible login panel
 Each field SHALL have an associated `<label for>`/`id`, `aria-describedby` pointing to its error message, `autocomplete` (`email` / `current-password`); the logo SHALL carry `alt="Riff"`, the button a visible accessible text `INICIAR SESIÓN`, and the recovery link a descriptive `aria-label`. (ADDED in `admin-login-panel`.)
 
@@ -97,4 +89,23 @@ The login card SHALL be `w-full max-w-md` centered with `px-4`, without horizont
 - **WHEN** rendered at mobile (375px) and desktop (1440px) viewports
 - **THEN** the card stays centered and inside the viewport (`max-w-md`, `px-4`) with no horizontal overflow
 - **AND** on mobile the fields and the button use the full available card width
+
+### Requirement: Submit conectado a Firebase Authentication
+El submit del formulario de login SHALL invocar `AuthService.login(email, password)`: al éxito SHALL redirigir a `/profile` (o al `returnUrl` preservado); al fallo de autenticación SHALL mostrar un mensaje de error visible en la tarjeta de login y SHALL NOT redirigir. Mientras la autenticación está en curso, el botón SHALL deshabilitarse para evitar envíos duplicados. (ADDED in `admin-panel-foundation`.)
+
+#### Scenario: Submit con credenciales válidas redirige al perfil
+- **GIVEN** el formulario de login con credenciales válidas
+- **WHEN** el usuario presiona `INICIAR SESIÓN`
+- **THEN** se invoca `AuthService.login` con email y contraseña
+- **AND** al completarse la autenticación y la carga del perfil, el router redirige a `/profile`
+
+#### Scenario: Submit con credenciales inválidas muestra error
+- **GIVEN** el formulario de login con credenciales inválidas
+- **WHEN** el usuario presiona `INICIAR SESIÓN`
+- **THEN** se muestra un mensaje de error visible (texto claro de credenciales incorrectas, tono de error del design system)
+- **AND** no se produce redirección y la sesión no queda establecida
+
+#### Scenario: El botón se deshabilita mientras autentica
+- **WHEN** la autenticación está en curso
+- **THEN** el botón `INICIAR SESIÓN` queda deshabilitado hasta resolver la petición
 
