@@ -213,14 +213,18 @@ npm run seed:productos
 | `FIREBASE_STORAGE_BUCKET` | Cloud Run (variable de entorno, no secreto de clave privada) | Bucket por defecto de Firebase Storage para el Admin SDK (requerido en runtime) | `webappriff.firebasestorage.app` |
 | `FIREBASE_CLIENT_EMAIL` | **Solo CLI raw `migrate:firestore`** (fuera de NestJS) | Service account email — no se usa en runtime ni en CLIs NestJS | `firebase-adminsdk@...` |
 | `FIREBASE_PRIVATE_KEY` | **Solo CLI raw `migrate:firestore`** (fuera de NestJS) | Service account private key — no se usa en runtime ni en CLIs NestJS | `-----BEGIN PRIVATE KEY-----...` |
-| `NESTJS_API_URL` | Build de Astro (y runtime de admin) | Base URL del API. **Contrato: debe incluir `/api/v1`** (los clientes construyen `${base}/products`, etc.) | `https://api.somosriff.cl/api/v1` |
+| `NESTJS_API_URL` | Build de Astro | Base URL del API. **Contrato: debe incluir `/api/v1`** (los clientes construyen `${base}/products`, etc.) | `https://api.somosriff.cl/api/v1` |
 | `SITE_URL` | Build de Astro | URL pública del sitio (canonical, sitemap) — **no debe quedar en `localhost` en producción** | `https://somosriff.cl` |
 | `PRIMARY_PHONE` | Build de Astro | Teléfono de contacto público de Riff para TopHeader/Layout | `+56 2 29079067` |
 | `SOCIAL_FACEBOOK_URL` | Build de Astro (Coolify Build Variable) | URL pública de la página oficial de Facebook. Inyectada en build time SSG | `https://www.facebook.com/share/1DL9drgCDU/?mibextid=wwXIfr` |
 | `SOCIAL_INSTAGRAM_URL` | Build de Astro (Coolify Build Variable) | URL pública de la cuenta oficial de Instagram. Inyectada en build time SSG | `https://www.instagram.com/somosriff.cl?igsi=MTU2YXhqaThoNnFydA%3D%3D&utm_source=qr` |
 | `SOCIAL_LINKEDIN_URL` | Build de Astro (Coolify Build Variable) | URL pública del perfil oficial de LinkedIn. Inyectada en build time SSG | `https://www.linkedin.com/company/100252590` |
 | `SOCIAL_X_URL` | Build de Astro (Coolify Build Variable) | URL pública de X (Twitter). Permanecer vacía mientras Riff no entregue cuenta; omite el icono/enlace | `` |
-| `API_URL` | Runtime de Angular admin | Base URL del API para el panel (definir forma exacta en el ticket del admin) | `https://api.somosriff.cl/api/v1` |
+| `API_BASE_URL` | Build del admin (Coolify Build Variable / build arg Docker) | Base URL del API para el panel; alimenta `apiBaseUrl` del environment generado en build. **Contrato: incluir `/api/v1`**. Reemplaza a la antigua `API_URL` runtime | `https://api.somosriff.cl/api/v1` |
+| `FIREBASE_API_KEY` | Build del admin (Coolify Build Variable / build arg Docker) | Firebase web API key del proyecto correspondiente (staging/prod). Dato público del cliente Firebase | `AIza...` |
+| `FIREBASE_AUTH_DOMAIN` | Build del admin (Coolify Build Variable / build arg Docker) | Dominio de Firebase Auth del proyecto | `<proyecto>.firebaseapp.com` |
+| `FIREBASE_PROJECT_ID` | Build del admin (Coolify Build Variable / build arg Docker) | Project ID de Firebase del cliente web | `riff-catalogo-staging` |
+| `FIREBASE_APP_ID` | Build del admin (Coolify Build Variable / build arg Docker) | App ID web de Firebase | `1:123:web:abc` |
 | `ASTRO_SITE_URL` | Cloud Run (backend) | Origen del sitio Astro para la allowlist CORS en producción | `https://somosriff.cl` |
 | `ANGULAR_ADMIN_URL` | Cloud Run (backend) | Origen del admin para la allowlist CORS en producción | `https://admin.somosriff.cl` |
 | `GCP_REGION` | GitHub Actions / gcloud | Región de Artifact Registry y Cloud Run — **aprobada: `southamerica-west1`** | `southamerica-west1` |
@@ -291,6 +295,36 @@ npm run seed:productos
 - Rollback: `gcloud run services update-traffic riff-api-prod
   --to-revisions <previous>=100` (backend) y redeploy manual en panel Coolify
   (frontends — ver `Rollback`).
+
+### Build variables de las apps frontends (Coolify)
+
+**Web (Astro — `apps/web/Dockerfile`)**: `SITE_URL`, `NESTJS_API_URL`,
+`REQUIRE_API` y `PUBLIC_API_URL` (ver tabla `Environment Variables`).
+`REQUIRE_API=true` hace fallar el build si la API no sirve catálogo (sin
+publicación de catálogo vacío).
+
+**Admin (Angular — `apps/admin/Dockerfile`)** (change
+`deploy-docker-hardening`): el environment de producción es un archivo
+gitignored generado en build a partir de los build args
+`FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`,
+`FIREBASE_APP_ID` y `API_BASE_URL` (fila de `write-env.mjs`; excluido también
+del contexto Docker por `.dockerignore` para que credenciales locales nunca
+viajen a una imagen). Configurar como **Build Variables** en las apps Coolify
+`riff-admin-staging` y `riff-admin-prod` con los valores del proyecto Firebase
+correspondiente (staging → `riff-catalogo-staging`).
+
+> **Si falta una variable**: `write-env.mjs` escribe cadena vacía con warning y
+> el build completa igual — el bundle quedaría sin configuración. Detectarlo:
+> - **CI**: `make docker-build` (job `docker-build` en `.github/workflows/ci.yml`,
+>   lane paralela al job `ci`) construye ambas imágenes con args de prueba en
+>   cada PR. Alcance: detecta roturas de Dockerfile y de determinismo de
+>   checkout limpio (habría atrapado el Bug 1 de admin); **no** detecta fallos
+>   específicos del entorno del builder de Coolify (como el `MissingSharp` de
+>   sharp) — para esa clase, el Dockerfile de web hace fail-fast de sharp
+>   tras `npm ci` y los smokes post-deploy validan el sitio publicado.
+> - **Bundle**: `npm run test:build --workspace=@riff/admin` — regenera el
+>   environment con valores de prueba, corre el build producción y verifica
+>   que el bundle no contiene placeholders y sí los valores inyectados.
 
 ## Project-specific stack
 

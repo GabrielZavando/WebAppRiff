@@ -28,8 +28,12 @@ COPY packages/html-sanitize/src ./packages/html-sanitize/src
 
 # --ignore-scripts: inside Docker no lifecycle script may run (the root
 # `prepare: husky` and html-sanitize's `prepare` need devDeps that filtered
-# installs do not provide). sharp/esbuild ship prebuilt binaries as optional
-# dependencies, so skipping scripts is safe.
+# installs do not provide). esbuild and sharp need no postinstall scripts
+# (both ship prebuilt platform binaries as optional dependencies), but those
+# optional bindings are exactly what a filtered install can silently skip —
+# which broke the Coolify build with MissingSharp. The web stage therefore
+# pins the linux/x64 sharp bindings as direct optionalDependencies of
+# @riff/web (see D3) and verifies sharp right after the install.
 RUN npm ci --workspace=@riff/html-sanitize --include-workspace-root=false --ignore-scripts
 RUN npm run build --workspace=@riff/html-sanitize
 
@@ -63,6 +67,11 @@ COPY --from=html-sanitize-build /app/packages/html-sanitize/dist ./packages/html
 
 # Install only the web workspace dependencies (hoisted to /app/node_modules).
 RUN npm ci --workspace=@riff/web --include-workspace-root=false --ignore-scripts
+
+# Fail fast if sharp (or its native binding) did not land in the tree: a
+# missing sharp otherwise only surfaces as per-image MissingSharp warnings
+# deep in the prerender, minutes later (change deploy-docker-hardening, D3).
+RUN node -e "const sharp = require('sharp'); console.log('sharp OK:', sharp.versions.sharp, '| vips:', sharp.versions.vips)"
 
 COPY apps/web/package.json apps/web/tsconfig.json apps/web/astro.config.mjs ./apps/web/
 COPY apps/web/src ./apps/web/src

@@ -1,7 +1,10 @@
 name: CI
 
 # CI del proyecto Riff Catálogo Digital.
-# Validación de OpenSpec (specs + changes) + gate de proyecto vía Makefile.
+# Validación de OpenSpec (specs + changes) + gate de proyecto vía Makefile
+# + gate de builds Docker (admin y web) en una lane paralela: los builds en
+# contenedor son lentos (5-10 min) y no comparten dependencias con el job `ci`
+# (change deploy-docker-hardening).
 
 on:
   push:
@@ -26,3 +29,12 @@ jobs:
       - name: Project gate (openspec validate + lint + typecheck + test + audit)
         if: ${{ hashFiles('Makefile') != '' }}
         run: make ci
+
+  docker-build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build Docker images (admin + web, test args, no push)
+        if: ${{ hashFiles('Makefile') != '' }}
+        run: make docker-build
