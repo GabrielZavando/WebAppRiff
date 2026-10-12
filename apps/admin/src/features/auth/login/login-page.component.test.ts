@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LoginPageComponent } from './login-page.component';
+import { AuthService } from '../auth.service';
 
 /**
  * Unit tests for the admin login panel (UI-only change `admin-login-panel`,
@@ -21,17 +22,22 @@ import { LoginPageComponent } from './login-page.component';
 // is the same entry point TestBed uses internally during `compileComponents`.
 const testDir = dirname(fileURLToPath(import.meta.url));
 
+const loginMock = vi.fn();
+
 describe('LoginPageComponent', () => {
   let fixture: ComponentFixture<LoginPageComponent>;
   let component: LoginPageComponent;
 
   beforeEach(async () => {
+    loginMock.mockReset();
+
     await ɵresolveComponentResources(async (url: string) =>
       readFileSync(resolve(testDir, url), 'utf-8'),
     );
 
     await TestBed.configureTestingModule({
       imports: [LoginPageComponent],
+      providers: [{ provide: AuthService, useValue: { login: loginMock } }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginPageComponent);
@@ -192,7 +198,7 @@ describe('LoginPageComponent', () => {
     });
   });
 
-  describe('[SC-005] UI-only submit handler', () => {
+  describe('[SC-005] submit handler', () => {
     it('prevents the native form submission', () => {
       const onSubmit = vi.spyOn(component, 'onSubmit');
       const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
@@ -204,6 +210,81 @@ describe('LoginPageComponent', () => {
 
       expect(onSubmit).toHaveBeenCalledTimes(1);
       expect(event.defaultPrevented).toBe(true);
+    });
+  });
+
+  describe('[admin-panel-foundation] submit wired to Firebase Authentication', () => {
+    function fillValidForm(): void {
+      component.loginForm.controls['email'].setValue('admin@riff.cl');
+      component.loginForm.controls['password'].setValue('secret123');
+      fixture.detectChanges();
+    }
+
+    async function submit(): Promise<void> {
+      const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      fixture.detectChanges();
+    }
+
+    it('invokes AuthService.login with the form values on success', async () => {
+      loginMock.mockResolvedValue(undefined);
+      fillValidForm();
+
+      await submit();
+
+      expect(loginMock).toHaveBeenCalledWith('admin@riff.cl', 'secret123');
+    });
+
+    it('shows a visible error message when credentials are invalid', async () => {
+      loginMock.mockRejectedValue(new Error('Firebase: auth/invalid-credential.'));
+      fillValidForm();
+
+      await submit();
+
+      const element = fixture.nativeElement as HTMLElement;
+      const error = element.querySelector('[data-login-error]');
+      expect(error).not.toBeNull();
+      expect(error?.textContent).toContain('Correo o contraseña incorrectos');
+    });
+
+    it('shows a generic error message for unexpected failures', async () => {
+      loginMock.mockRejectedValue(new Error('network down'));
+      fillValidForm();
+
+      await submit();
+
+      const error = (fixture.nativeElement as HTMLElement).querySelector('[data-login-error]');
+      expect(error?.textContent).toContain('No se pudo iniciar sesión');
+    });
+
+    it('disables the submit button while the authentication is in flight', async () => {
+      let resolveLogin: () => void = () => undefined;
+      loginMock.mockReturnValue(
+        new Promise<void>((resolve) => {
+          resolveLogin = resolve;
+        }),
+      );
+      fillValidForm();
+
+      const submitPromise = submit();
+      // Let the async onSubmit flip `submitting()` and refresh the template.
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector(
+        'button[type="submit"]',
+      ) as HTMLButtonElement;
+      expect(button.disabled).toBe(true);
+
+      resolveLogin();
+      await submitPromise;
+      fixture.detectChanges();
+
+      const buttonAfter = fixture.nativeElement.querySelector(
+        'button[type="submit"]',
+      ) as HTMLButtonElement;
+      expect(buttonAfter.disabled).toBe(false);
     });
   });
 

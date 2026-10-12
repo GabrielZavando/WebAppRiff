@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -6,15 +6,18 @@ import {
   Validators,
 } from '@angular/forms';
 
+import { AuthService } from '../auth.service';
+
 /**
- * Smart container for the admin login panel (UI-only, change
- * `admin-login-panel`, ticket LOGIN-1).
+ * Smart container for the admin login panel (spec `admin-login`, wired to
+ * Firebase Authentication in change `admin-panel-foundation`, task 5.1).
  *
  * Owns the ReactiveForms state and validation for the Correo and Contraseña
- * fields. The submit handler is a documented no-op stub: Firebase Auth wiring
- * is out of scope for this change (SC-005) — it only prevents the native form
- * submission. Follows the flat design system (no `rounded*`, only `@theme`
- * utilities, no raw hex).
+ * fields. The submit handler invokes `AuthService.login` (Firebase Auth +
+ * profile load + redirect): on success the service navigates to the
+ * `returnUrl`/`/profile`; on failure a visible error message is rendered and
+ * the button is disabled while the authentication is in flight. Flat design
+ * system (no `rounded*`, only `@theme` utilities, no raw hex).
  */
 @Component({
   selector: 'app-login-page',
@@ -24,6 +27,11 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPageComponent {
+  private readonly authService = inject(AuthService);
+
+  readonly submitting = signal(false);
+  readonly errorMessage = signal<string | null>(null);
+
   readonly loginForm = new FormGroup({
     email: new FormControl<string>('', {
       nonNullable: true,
@@ -69,11 +77,34 @@ export class LoginPageComponent {
     return 'La contraseña debe tener al menos 6 caracteres.';
   }
 
-  /**
-   * UI-only submit handler (SC-005): prevents the native submission. The real
-   * authentication (Firebase Auth) is connected in a future change.
-   */
-  onSubmit(event: Event): void {
+  /** Submits the credentials to Firebase Auth via `AuthService` (task 5.1). */
+  async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
+    if (this.loginForm.invalid || this.submitting()) {
+      return;
+    }
+
+    this.errorMessage.set(null);
+    this.submitting.set(true);
+    try {
+      await this.authService.login(this.email.value, this.password.value);
+    } catch (error: unknown) {
+      this.errorMessage.set(this.toUserMessage(error));
+    } finally {
+      this.submitting.set(false);
+    }
+  }
+
+  /** Maps auth failures to the visible message (delta `admin-login`). */
+  private toUserMessage(error: unknown): string {
+    const message = error instanceof Error ? error.message : String(error);
+    if (
+      message.includes('auth/invalid-credential') ||
+      message.includes('auth/wrong-password') ||
+      message.includes('auth/user-not-found')
+    ) {
+      return 'Correo o contraseña incorrectos.';
+    }
+    return 'No se pudo iniciar sesión. Intenta de nuevo.';
   }
 }
