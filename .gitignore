@@ -42,3 +42,5 @@ Thumbs.db
 # Admin environment: production values are generated at build time (design D3)
 apps/admin/src/environments/environment.production.ts
 apps/admin/src/environments/environment.development.local.ts
+# Admin favicon: copied from apps/web/public at build time (scripts/sync-favicon.mjs)
+apps/admin/src/favicon/

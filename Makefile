@@ -4,7 +4,7 @@
 # Todos los targets delegan en scripts npm de la raíz (package.json),
 # salvo `openspec-validate` que ejecuta la CLI de OpenSpec (Fission-AI).
 
-.PHONY: help install lint typecheck test build audit smoke test-ci openspec-validate commitlint ci
+.PHONY: help install lint typecheck test build audit smoke test-ci openspec-validate commitlint ci docker-build
 
 help:
 	@echo ""
@@ -20,6 +20,7 @@ help:
 	@echo "  openspec-validate  Validar specs/changes de OpenSpec (--all --strict)"
 	@echo "  commitlint         Validar commits Git"
 	@echo "  ci                 CI gate: openspec-validate + lint + typecheck + build + test-ci + audit"
+	@echo "  docker-build       Builds Docker de admin y web con args de prueba (sin push)"
 	@echo "  help               Esta ayuda"
 	@echo ""
 
@@ -62,3 +63,24 @@ commitlint:
 ci: openspec-validate lint typecheck build test-ci audit
 	@echo ""
 	@echo "✅ CI del proyecto completado"
+
+# Gate de builds Docker (change deploy-docker-hardening): construye las imágenes
+# de admin y web como lo haría Coolify desde un checkout limpio, con args de
+# PRUEBA (nunca secretos reales). Web usa REQUIRE_API=false para no depender de
+# una API viva durante el CI. Falla si alguno de los dos builds falla; sin push.
+docker-build:
+	docker build -f apps/admin/Dockerfile -t riff-admin:ci \
+		--build-arg FIREBASE_API_KEY=ci-test-firebase-api-key \
+		--build-arg FIREBASE_AUTH_DOMAIN=ci-test.firebaseapp.com \
+		--build-arg FIREBASE_PROJECT_ID=ci-test-project \
+		--build-arg FIREBASE_APP_ID=ci-test-app \
+		--build-arg API_BASE_URL=http://localhost:3000/api/v1 \
+		.
+	docker build -f apps/web/Dockerfile -t riff-web:ci \
+		--build-arg SITE_URL=http://localhost:4321 \
+		--build-arg NESTJS_API_URL=http://localhost:3000/api/v1 \
+		--build-arg REQUIRE_API=false \
+		--build-arg PUBLIC_API_URL=http://localhost:3000/api/v1 \
+		.
+	@echo ""
+	@echo "✅ Builds Docker de admin y web completados"

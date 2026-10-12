@@ -17,3 +17,10 @@ coverage/
 apps/web/.astro/
 apps/web/test-results/
 apps/admin/.angular/
+# Generated at build time from build args (apps/admin/Dockerfile runs
+# scripts/write-env.mjs). Keeping it out of the context (1) prevents real
+# credentials from a dev machine from being baked into images and (2) makes
+# local builds identical to a clean checkout (Coolify/CI).
+apps/admin/src/environments/environment.production.ts
+apps/admin/src/favicon/
+apps/admin/src/environments/environment.development.local.ts
