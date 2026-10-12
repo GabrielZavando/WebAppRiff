@@ -1,0 +1,16 @@
+<div class="min-h-screen xl:flex bg-bg">
+  <div>
+    <app-sidebar />
+    <app-backdrop />
+  </div>
+  <div
+    class="flex-1 transition-all duration-300 ease-in-out"
+    [ngClass]="containerClasses"
+  >
+    <!-- app header -->
+    <app-header />
+    <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+      <router-outlet />
+    </div>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<section class="mx-auto max-w-2xl">
+  <h1 class="font-heading font-bold text-2xl text-secondary">Mi perfil</h1>
+  <p class="mt-1 text-sm text-text-2">
+    Datos de tu cuenta. Esta página es de solo lectura.
+  </p>
+
+  @if (loading()) {
+    <p class="mt-8 text-sm text-text-2" role="status">Cargando perfil…</p>
+  } @else if (error() !== null) {
+    <p class="mt-8 text-sm text-error" role="alert">{{ error() }}</p>
+  } @else if (profile(); as user) {
+    <dl class="mt-8 border border-border bg-white">
+      <div class="flex items-center justify-between gap-4 border-b border-border px-4 py-3">
+        <dt class="text-sm font-medium text-text-2">Nombre</dt>
+        <dd class="text-sm font-semibold text-text">{{ user.nombre }}</dd>
+      </div>
+      <div class="flex items-center justify-between gap-4 border-b border-border px-4 py-3">
+        <dt class="text-sm font-medium text-text-2">Correo</dt>
+        <dd class="text-sm font-semibold text-text">{{ user.email }}</dd>
+      </div>
+      <div class="flex items-center justify-between gap-4 px-4 py-3">
+        <dt class="text-sm font-medium text-text-2">Rol</dt>
+        <dd class="text-sm font-semibold text-text">{{ roleLabel }}</dd>
+      </div>
+    </dl>
+  }
+</section>

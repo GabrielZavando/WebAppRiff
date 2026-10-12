@@ -1,16 +1,13 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter } from '@angular/router';
 import { AppComponent } from './app/app.component';
-import { appRoutes } from './app/app.routes';
+import { appConfig } from './app/app.config';
 
 /**
- * Bootstrap del panel admin: standalone root `AppComponent` + router with the
- * `/login` route (lazy). The previous inline placeholder is gone — the first
- * real page of the admin panel is the login screen (change
- * `admin-login-panel`, ticket LOGIN-1).
+ * Bootstrap del panel admin: standalone root `AppComponent` + `appConfig`
+ * (router, HttpClient, Firebase Auth). The `/login` page is the first real
+ * screen (change `admin-login-panel`); the full shell lands with change
+ * `admin-panel-foundation`.
  */
-bootstrapApplication(AppComponent, {
-  providers: [provideRouter(appRoutes)],
-}).catch((err: unknown) => {
+bootstrapApplication(AppComponent, appConfig).catch((err: unknown) => {
   console.error(err);
 });

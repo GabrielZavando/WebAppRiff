@@ -1,0 +1,47 @@
+<aside
+  class="fixed flex flex-col top-0 px-5 start-0 bg-white text-text h-screen transition-all duration-300 ease-in-out z-50 border-e border-border xl:translate-x-0"
+  [ngClass]="asideClasses"
+  (mouseenter)="onSidebarMouseEnter()"
+  (mouseleave)="onSidebarMouseLeave()"
+>
+  <div class="py-8 flex" [ngClass]="logoClasses">
+    <a routerLink="/profile" class="flex items-center gap-3">
+      <img
+        class="max-w-[150px]"
+        src="assets/img/logo-web.webp"
+        alt="Riff"
+        width="150"
+        height="40"
+      />
+    </a>
+  </div>
+
+  <nav class="flex-1 overflow-y-auto">
+    <ul class="flex flex-col gap-1">
+      @for (nav of navItems; track nav.path) {
+        <li>
+          <a
+            [routerLink]="nav.path"
+            class="group relative flex w-full items-center gap-3 px-3 py-2 text-sm font-medium"
+            [ngClass]="
+              isActive(nav.path)
+                ? 'bg-primary-100 text-primary-deep'
+                : 'text-text hover:bg-border/40'
+            "
+          >
+            <span
+              class="[&_svg]:size-6 shrink-0"
+              [ngClass]="isActive(nav.path) ? 'text-primary-deep' : 'text-text-2 group-hover:text-text'"
+              [innerHTML]="nav.icon | safeHtml"
+            ></span>
+            <span [ngClass]="{ hidden: !expanded }">{{ nav.name }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  @if (expanded) {
+    <app-sidebar-widget />
+  }
+</aside>
