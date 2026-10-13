@@ -18,6 +18,7 @@
 @import '@fontsource/open-sans/400-italic.css';
 
 @import "tailwindcss";
+@source "../**/*.{html,ts}";
 
 @theme {
   /* ── Marca (13 tokens) ── */
