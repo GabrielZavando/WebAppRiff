@@ -10,7 +10,9 @@
 
 ## Environments
 
-- `staging`: Cloud Run `riff-api-staging` (URL `*.run.app` provisional) + apps Coolify `web-staging` → `https://staging.somosriff.cl` y `admin-staging` → `https://admin-staging.somosriff.cl`. Proyecto Firebase separado: `riff-catalogo-staging`.
+- `staging`: Cloud Run `riff-api-staging` **en el proyecto `riff-catalogo-staging`** (región `southamerica-west1`; URL `https://riff-api-staging-345601325361.southamerica-west1.run.app`; escalado `min-instances=0` / `max-instances=2`; runtime SA `riff-api-runtime@riff-catalogo-staging.iam.gserviceaccount.com` con `roles/datastore.user` + `roles/storage.objectAdmin`; webhook de catálogo no-op — se activará con el pipeline de rebuild del sitio, change posterior) + apps Coolify `web-staging` → `https://staging.somosriff.cl` y `admin-staging` → `https://admin-staging.somosriff.cl`. Proyecto Firebase: `riff-catalogo-staging` (identidad Auth, datos y API alineados en un solo proyecto; change `backend-staging-deploy`). Runbook: [`docs/runbooks/backend-staging-cloud-run.md`](runbooks/backend-staging-cloud-run.md).
+  > API staging en uso: `https://riff-api-staging-345601325361.southamerica-west1.run.app/api/v1` (base para el `API_BASE_URL` del admin staging).
+  > Existe además un servicio homónimo `riff-api-staging` en el proyecto infra `webappriff` (era del workflow `deploy.yml` eliminado): **congelado** — no recibe deploys ni tráfico; su decomisión es deuda futura (change `backend-staging-deploy`).
 - `production`: Cloud Run `riff-api-prod` → `https://api.somosriff.cl` + apps Coolify de producción → `https://somosriff.cl` (Astro) y `https://admin.somosriff.cl` (Angular). Proyecto Firebase de producción: `riff-catalogo`.
 - Promotion: manual, **aprobada por Gabriel**, tras smoke tests verdes en staging (prohibido promover con health checks o smoke en rojo).
 
@@ -42,6 +44,13 @@
 ## Deploy Flow
 
 ### Lane backend — Cloud Run
+
+> Mientras no exista el workflow propio de la lane backend (pendiente), el
+> despliegue manual de staging sigue el runbook
+> [`docs/runbooks/backend-staging-cloud-run.md`](runbooks/backend-staging-cloud-run.md)
+> (proyecto `riff-catalogo-staging`; build → push a Artifact Registry →
+> `gcloud run deploy` → smoke). El flujo automatizado de abajo describe la
+> lane prevista cuando se implemente el workflow.
 
 1. Merge a `main` (trigger staging tras CI en verde; el release se dispara por `workflow_dispatch` manual).
 2. GitHub Actions: build → push a Artifact Registry.
@@ -143,6 +152,12 @@
    definitivas.
 
 ## Acciones humanas pendientes antes del primer deploy de staging
+
+> ⚠️ Esta sección corresponde al **servicio legacy** `riff-api-staging` de
+> `webappriff` (congelado; deuda de decomisión futura — ver `Environments`).
+> El servicio de staging vigente vive en `riff-catalogo-staging` y su
+> despliegue sigue el runbook
+> [`docs/runbooks/backend-staging-cloud-run.md`](runbooks/backend-staging-cloud-run.md).
 
 > El deploy-cloudrun de staging ya está programado para entregar runtime SA,
 > env vars, secrets y acceso público. Pero **el primer deploy requiere que el

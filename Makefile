@@ -4,7 +4,7 @@
 # Todos los targets delegan en scripts npm de la raíz (package.json),
 # salvo `openspec-validate` que ejecuta la CLI de OpenSpec (Fission-AI).
 
-.PHONY: help install lint typecheck test build audit smoke test-ci openspec-validate commitlint ci docker-build
+.PHONY: help install lint typecheck test build audit smoke test-ci openspec-validate commitlint ci docker-build docker-build-backend
 
 help:
 	@echo ""
@@ -21,6 +21,7 @@ help:
 	@echo "  commitlint         Validar commits Git"
 	@echo "  ci                 CI gate: openspec-validate + lint + typecheck + build + test-ci + audit"
 	@echo "  docker-build       Builds Docker de admin y web con args de prueba (sin push)"
+	@echo "  docker-build-backend  Build Docker del backend (sin push; tag de prueba)"
 	@echo "  help               Esta ayuda"
 	@echo ""
 
@@ -84,3 +85,12 @@ docker-build:
 		.
 	@echo ""
 	@echo "✅ Builds Docker de admin y web completados"
+
+# Build Docker del backend (change backend-staging-deploy): valida que la imagen
+# multi-stage del BFF se construye desde un checkout limpio de la raíz del
+# monorepo (mismo comando que el runbook de staging). Sin push; el tag de
+# Artifact Registry (sha-<commit>) lo aplica el runbook al desplegar.
+docker-build-backend:
+	docker build -f apps/backend/Dockerfile -t riff-backend:ci .
+	@echo ""
+	@echo "✅ Build Docker del backend completado"
