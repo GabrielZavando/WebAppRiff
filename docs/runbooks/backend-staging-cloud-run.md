@@ -1,0 +1,186 @@
+# Runbook — Deploy del backend a Cloud Run (staging, proyecto `riff-catalogo-staging`)
+
+> Change `backend-staging-deploy`. Despliega el backend NestJS
+> (`apps/backend`) como servicio Cloud Run `riff-api-staging` **dentro del
+> proyecto `riff-catalogo-staging`**, para alinear identidad Firebase, datos y
+> API en un solo proyecto y desbloquear la verificación 7.5 de
+> `deploy-docker-hardening`.
+>
+> Contexto y decisiones: `docs/deploy-standards.md` y
+> `openspec/changes/backend-staging-deploy/design.md`.
+
+## 0. Parámetros y prerrequisitos
+
+Variables usadas en todos los comandos (copiar y ajustar `SHA`):
+
+```bash
+export PROJECT_ID=riff-catalogo-staging
+export REGION=southamerica-west1
+export SA_NAME=riff-api-runtime
+export SA_EMAIL=${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
+export REPO=riff
+export IMAGE=${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/riff-backend
+export SHA=$(git rev-parse --short HEAD)   # tag sha-<commit>; `latest` prohibido
+export SERVICE=riff-api-staging
+```
+
+- **Billing**: ya habilitado en `riff-catalogo-staging` (confirmado por el
+  owner el 2026-10-13).
+- **Autenticación local**: `gcloud auth login` y
+  `gcloud config set project ${PROJECT_ID}`.
+- **Permisos sugeridos del operador** (o de quien ejecute cada paso):
+  `roles/run.admin` (deploy), `roles/iam.serviceAccountUser` sobre
+  `${SA_EMAIL}` (adjuntarla al servicio), `roles/iam.serviceAccountAdmin`
+  (crear la SA), `roles/resourcemanager.projectIamAdmin` (policy bindings),
+  `roles/artifactregistry.admin` (crear repo) y `roles/artifactregistry.writer`
+  (push).
+- El servicio homónimo `riff-api-staging` del proyecto `webappriff` está
+  **congelado** (deuda de decomisión futura): no desplegar ni modificar ese
+  proyecto. Distinguir siempre con `--project`.
+
+## 1. Habilitar APIs
+
+```bash
+gcloud services enable run.googleapis.com artifactregistry.googleapis.com \
+  --project=${PROJECT_ID}
+```
+
+## 2. Runtime service account (ADC, mínimo privilegio)
+
+Crear la SA dedicada y otorgar **exactamente dos roles** a nivel de proyecto:
+
+```bash
+gcloud iam service-accounts create ${SA_NAME} \
+  --display-name="Riff API runtime (staging)" \
+  --project=${PROJECT_ID}
+
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member="serviceAccount:${SA_EMAIL}" \
+  --role="roles/datastore.user"
+
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member="serviceAccount:${SA_EMAIL}" \
+  --role="roles/storage.objectAdmin"
+```
+
+> El runtime autentica contra Firebase Admin por **ADC** (sin JSON keys ni
+> `FIREBASE_PRIVATE_KEY`). Estos dos roles cubren Firestore y Storage; la
+> verificación de tokens del Admin SDK no requiere permisos adicionales.
+
+## 3. Repo de Artifact Registry
+
+```bash
+gcloud artifacts repositories create ${REPO} \
+  --repository-format=docker \
+  --location=${REGION} \
+  --project=${PROJECT_ID}
+```
+
+## 4. Build y push de la imagen
+
+Desde la **raíz del monorepo** (el Dockerfile exige el lockfile raíz como
+contexto):
+
+```bash
+gcloud auth configure-docker ${REGION}-docker.pkg.dev
+
+docker build -f apps/backend/Dockerfile \
+  -t ${IMAGE}:sha-${SHA} .
+
+docker push ${IMAGE}:sha-${SHA}
+```
+
+> Verificación local previa opcional: `make docker-build-backend`
+> (mismo build, tag de prueba, sin push).
+
+## 5. Deploy en Cloud Run
+
+```bash
+gcloud run deploy ${SERVICE} \
+  --project=${PROJECT_ID} \
+  --region=${REGION} \
+  --image=${IMAGE}:sha-${SHA} \
+  --service-account=${SA_EMAIL} \
+  --allow-unauthenticated \
+  --min-instances=0 \
+  --max-instances=2 \
+  --set-env-vars "NODE_ENV=production,FIREBASE_PROJECT_ID=${PROJECT_ID},FIREBASE_STORAGE_BUCKET=${PROJECT_ID}.firebasestorage.app,ASTRO_SITE_URL=https://staging.somosriff.cl,ANGULAR_ADMIN_URL=https://admin-staging.somosriff.cl"
+```
+
+Notas:
+
+- `PORT` **no** se fija: Cloud Run inyecta `PORT=8080` y `resolvePort` lo lee.
+- Sin `RESEND_API_KEY` (notifier no-op con warning) y **sin secretos**: el
+  webhook de catálogo queda no-op en staging (se activará con el pipeline de
+  rebuild del sitio, change posterior).
+- Escalado a cero (`--min-instances=0`); techo `--max-instances=2`.
+- Sin dominio propio: usar la URL `*.run.app` que imprime el comando y
+  anótala:
+
+```bash
+export API_URL=$(gcloud run services describe ${SERVICE} \
+  --project=${PROJECT_ID} --region=${REGION} --format='value(status.url)')
+echo "URL staging: ${API_URL}"
+```
+
+## 6. Smoke post-deploy
+
+```bash
+SMOKE_API_URL=${API_URL} npm run smoke:api
+# Esperado: /health OK (status healthy, firebase up) + products/categories/
+# subcategories con arreglo `data`.
+
+curl -i ${API_URL}/api/v1/auth/me
+# Esperado: HTTP 401 (FirebaseAuthGuard, sin token).
+
+# CORS (allowlist estricta en NODE_ENV=production):
+curl -s -i -X OPTIONS ${API_URL}/api/v1/products \
+  -H "Origin: https://admin-staging.somosriff.cl" \
+  -H "Access-Control-Request-Method: GET" | grep -i access-control-allow-origin
+# Esperado: access-control-allow-origin: https://admin-staging.somosriff.cl
+```
+
+Si `/health` responde `firebase: down`, revisar los IAM del paso 2.
+
+## 7. Coolify (panel, manual)
+
+En la app `riff-admin-staging`:
+
+1. Build Variable `API_BASE_URL=${API_URL}/api/v1` (contrato: incluir
+   `/api/v1`).
+2. Build Variables Firebase del proyecto staging, si faltan:
+   `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN` (`riff-catalogo-staging
+   .firebaseapp.com`), `FIREBASE_PROJECT_ID=riff-catalogo-staging`,
+   `FIREBASE_APP_ID`.
+3. Redeploy de la app y verificar que el bundle quedó con los valores
+   (`npm run test:build --workspace=@riff/admin` detecta placeholders).
+
+## 8. Verificación final del admin (desbloquea 7.5)
+
+Desde `https://admin-staging.somosriff.cl`: login con
+`soporte@gabrielzavando.cl` y carga del perfil (`/api/v1/auth/me` → 200 con
+datos del usuario). Al confirmarse, actualizar la nota de bloqueo de la tarea
+7.5 en `openspec/changes/archive/2026-10-12-deploy-docker-hardening/tasks.md`.
+
+## Rollback
+
+- **Sin consumidores aún** (paso 7 pendiente):
+  `gcloud run services delete ${SERVICE} --project=${PROJECT_ID} --region=${REGION}`.
+- **Con deploys buenos previos**: dirigir el tráfico a la revisión sana:
+  ```bash
+  gcloud run services update-traffic ${SERVICE} \
+    --project=${PROJECT_ID} --region=${REGION} --to-revisions=<REVISION>=100
+  ```
+- El servicio antiguo de `webappriff` **no se toca en ningún caso**.
+
+## Notas
+
+- **Webhook de catálogo no-op**: en staging no se configuran
+  `CATALOG_REBUILD_WEBHOOK_URL`/`_TOKEN`; el rebuild automático de Astro se
+  activará en un change posterior (pipeline de rebuild del sitio).
+- **Catálogo vacío**: el smoke solo exige arreglo `data`; para smoke "no
+  vacío", ejecutar `npm run seed:catalog` / `npm run seed:productos` apuntando
+  a `riff-catalogo-staging` (ADC local: `gcloud auth application-default
+  login`).
+- **Deuda de decomisión**: el `riff-api-staging` legacy de `webappriff` queda
+  congelado; su baja se resuelve en un change futuro.
