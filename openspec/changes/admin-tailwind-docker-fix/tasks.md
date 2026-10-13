@@ -4,10 +4,12 @@
 > (Coolify + navegador); el bloque 4 (cierre de changes archivados) se ejecuta
 > **solo tras la confirmación del operador** de la verificación del bloque 3.
 
-## 1. Fix del CSS en Docker (ya aplicado)
+## 1. Fix del CSS en Docker (plugin PostCSS en la imagen)
 
-- [x] 1.1 Añadir `@source "../**/*.{html,ts}"` en `apps/admin/src/styles/globals.css` justo después de `@import "tailwindcss";` — **ya aplicado** (línea 21), no re-implementar
-- [x] 1.2 Verificar con `docker build` local (`docker build -f apps/admin/Dockerfile -t riff-admin:ci --build-arg FIREBASE_API_KEY=... --build-arg FIREBASE_AUTH_DOMAIN=... --build-arg FIREBASE_PROJECT_ID=... --build-arg FIREBASE_APP_ID=... --build-arg API_BASE_URL=<url>/api/v1 .`) que el CSS de la imagen pasa de ~11 KB a ~50 KB con utilidades — **verificado**
+- [x] 1.1 Añadir `@source "../**/*.{html,ts}"` en `apps/admin/src/styles/globals.css` justo después de `@import "tailwindcss";` — **ya aplicado** (línea 21), no re-implementar; sigue siendo correcto y necesario (escaneo explícito cuando el plugin corre)
+- [x] 1.2 Verificación previa con `docker build` local por tamaño de CSS (~50 KB) — **insuficiente**: no comprobaba utilidades (la causa real es la falta de `.postcssrc.json` en la imagen, ver 1.3); la verificación definitiva es 1.4
+- [x] 1.3 Añadir `COPY apps/admin/.postcssrc.json ./apps/admin/` a `apps/admin/Dockerfile` junto a los demás COPY de configuración (antes de `COPY apps/admin/src`): sin ese archivo Angular CLI no ejecuta PostCSS y el plugin `@tailwindcss/postcss` no procesa `globals.css` (directivas `@theme`/`@source`/`@layer`/`@font-face` emitidas en crudo)
+- [x] 1.4 Verificar con `docker build` local (`docker build -f apps/admin/Dockerfile -t riff-admin:debug --build-arg FIREBASE_API_KEY=test --build-arg FIREBASE_AUTH_DOMAIN=test.firebaseapp.com --build-arg FIREBASE_PROJECT_ID=test --build-arg FIREBASE_APP_ID=test --build-arg API_BASE_URL=http://localhost:3000/api/v1 .`) + `docker run` grep del bundle: utilidades presentes (`.flex`/`.grid`/`.bg-primary`), sin directivas en crudo (`@theme`/`@source` ausentes del CSS compilado) y tamaño ~50 KB
 
 ## 2. Despliegue (operador)
 

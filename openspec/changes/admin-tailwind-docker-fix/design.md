@@ -1,39 +1,50 @@
-# Design: Fix CSS del admin en build Docker (Tailwind v4 `@source`)
+# Design: Fix CSS del admin en build Docker (plugin PostCSS/Tailwind en la imagen)
 
 ## Context
 
 El admin de staging (`https://admin-staging.somosriff.cl/`) carga sin estilos.
-Diagnóstico confirmado empíricamente:
+Diagnóstico confirmado empíricamente (dos iteraciones):
 
-- **Síntoma**: el CSS emitido en el build Docker pesa ~11 KB y contiene solo
-  design tokens + preflight de Tailwind, sin ninguna utilidad. En local, el
-  mismo build produce ~49 KB con todas las utilidades.
-- **Causa raíz**: Tailwind CSS v4 (dependencia `@tailwindcss/postcss` en
-  `apps/admin/package.json`) usa **detección automática de fuentes** basada en
-  la raíz del repositorio git. El build Docker:
-  - copia al contenedor solo manifiestos npm + `apps/admin` + favicon
-    (`apps/admin/Dockerfile:45-60`), y
-  - excluye `.git/` del contexto (`.dockerignore:10`).
-
-  Sin `.git` dentro de la imagen, el escaneo automático no resuelve la raíz del
-  monorepo como base y no encuentra los archivos fuente del admin
-  (`.html`/`.ts`), por lo que emite CSS sin utilidades. En local el directorio
-  sí es un repo git y la detección automática funciona: de ahí la diferencia
-  11 KB vs 49 KB.
-- **Fix ya aplicado y verificado**: directiva explícita
+- **Síntoma**: el CSS desplegado desde la imagen Docker contiene las
+  directivas de Tailwind **en crudo** (`@theme`, `@source`, `@layer`,
+  `@font-face`) y no tiene utilidades. Es decir: **Tailwind no se está
+  ejecutando** durante el build Docker.
+- **Causa raíz confirmada**: `apps/admin/.postcssrc.json` declara el plugin
+  `@tailwindcss/postcss` y existe en local, pero el `Dockerfile` del admin
+  **no lo copia a la imagen**. Sin ese archivo en el working directory de la
+  app, Angular CLI no configura PostCSS, el plugin de Tailwind nunca procesa
+  `globals.css` y las directivas se emiten tal cual. En local funciona porque
+  el archivo sí está junto a `angular.json`.
+- **Hipótesis previa descartada**: la primera iteración atribuyó el bug a la
+  detección automática de fuentes de Tailwind basada en la raíz git (`.git/`
+  excluido por `.dockerignore`). Era insuficiente: la verificación se hizo
+  solo por tamaño de archivo (11 KB → 50 KB) sin comprobar utilidades, y el
+  CSS resultante seguía conteniendo directivas en crudo. El tamaño creció por
+  el CSS de @fontsource + tokens, no porque Tailwind hubiera corrido.
+- **Fix 1 (ya aplicado, se mantiene)**: directiva explícita
   `@source "../**/*.{html,ts}"` en `apps/admin/src/styles/globals.css:21`,
-  justo después de `@import "tailwindcss";` (resuelta desde
-  `apps/admin/src/` → escanea todo el admin). Verificación con
-  `docker build` local:
+  justo después de `@import "tailwindcss";`. Es correcto y necesario: cuando
+  el plugin sí corre, sustituye la heurística de detección automática por un
+  escaneo explícito de los fuentes del admin. Sin el plugin, no tiene efecto.
+- **Fix 2 (esta corrección)**: copiar `.postcssrc.json` a la imagen:
 
   ```
-  docker build -f apps/admin/Dockerfile -t riff-admin:ci \
-    --build-arg FIREBASE_API_KEY=... \
-    --build-arg FIREBASE_AUTH_DOMAIN=... \
-    --build-arg FIREBASE_PROJECT_ID=... \
-    --build-arg FIREBASE_APP_ID=... \
-    --build-arg API_BASE_URL=<url>/api/v1 .
-  # CSS en la imagen: ~11 KB → ~50 KB, con utilidades
+  COPY apps/admin/.postcssrc.json ./apps/admin/
+  ```
+
+  Verificación definitiva por **contenido** (no solo tamaño):
+
+  ```
+  docker build -f apps/admin/Dockerfile \
+    --build-arg FIREBASE_API_KEY=test \
+    --build-arg FIREBASE_AUTH_DOMAIN=test.firebaseapp.com \
+    --build-arg FIREBASE_PROJECT_ID=test \
+    --build-arg FIREBASE_APP_ID=test \
+    --build-arg API_BASE_URL=http://localhost:3000/api/v1 \
+    -t riff-admin:debug .
+  docker run --rm --entrypoint sh riff-admin:debug -c \
+    "grep -c '\\.flex\\|\\.grid\\|\\.bg-primary' /usr/share/nginx/html/*.css"
+  # Esperado: conteo > 0, sin directivas en crudo, ~50 KB
   ```
 
 - **Impacto en cambios archivados**: este bug bloquea 5.2, 6.1 y 6.2 de
@@ -45,8 +56,11 @@ Diagnóstico confirmado empíricamente:
 
 **Goals:**
 
-- Documentar el fix de CSS (ya aplicado) como completado, con la evidencia
-  empírica de la causa raíz (11 KB vs 50 KB, comando de build).
+- Corregir el build Docker del admin para que PostCSS/Tailwind se ejecuten:
+  copiar `.postcssrc.json` a la imagen (única pieza que faltaba).
+- Documentar la causa raíz real con la evidencia empírica (directivas en
+  crudo, verificación por contenido) y dejar registro de la hipótesis previa
+  descartada.
 - Dejar trazado el camino de despliegue (Coolify) y verificación end-to-end
   (login real contra el backend de staging) como acciones del operador.
 - Cerrar las tareas bloqueadas de los dos changes archivados, con resultado,
@@ -54,9 +68,9 @@ Diagnóstico confirmado empíricamente:
 
 **Non-Goals:**
 
-- No re-implementar ni modificar el fix (ya está en el repo y verificado).
-- No tocar Dockerfiles, `.dockerignore`, nginx, configs de Angular/Tailwind ni
-  gates de CI.
+- No tocar el `@source` de `globals.css` (sigue siendo correcto y necesario).
+- No tocar otros Dockerfiles (backend, web), `.dockerignore`, nginx, configs
+  de Angular/Tailwind ni gates de CI.
 - No cambiar requisitos de specs existentes ni producir deltas de specs
   (`skip_specs: true`; el CSS correcto ya es el comportamiento especificado
   del admin, no un requisito nuevo).
@@ -65,18 +79,25 @@ Diagnóstico confirmado empíricamente:
 
 ## Decisions
 
-- **D1 — `@source` explícito en `globals.css`** (aplicado): declarar las rutas
-  de escaneo en el CSS en lugar de confiar en la detección automática.
-  - Alternativas descartadas: configurar `content`/`source` vía PostCSS o
-    `angular.json` (más invasivo y duplicaría la config de estilos); copiar
-    `.git` al contenedor (frágil, agranda el contexto y acopla el build al VCS);
-    downgrade de Tailwind (regresión). La directiva `@source` es el mecanismo
-    nativo de Tailwind v4 para entornos sin git y queda contenida en un solo
-    archivo ya cubierto por specs de design tokens.
-- **D2 — Bloque 1 documentado como completado**: el fix está aplicado y
-  verificado con `docker build` local; tasks.md lo marca `[x]` con la evidencia
-  en este design. No se re-ejecuta trabajo ya hecho.
-- **D3 — Cierre de tareas bloqueadas condicionado a verificación manual**: las
+- **D1 — `@source` explícito en `globals.css`** (aplicado, se mantiene):
+  declarar las rutas de escaneo en el CSS en lugar de confiar en la detección
+  automática. Necesario pero insuficiente: solo tiene efecto cuando el plugin
+  de Tailwind corre.
+- **D2 — `COPY` de `.postcssrc.json` en el Dockerfile** (esta corrección):
+  añadir `COPY apps/admin/.postcssrc.json ./apps/admin/` junto a los demás
+  COPY de configuración, antes de `COPY apps/admin/src`. Es la pieza que hace
+  que Angular CLI ejecute PostCSS con el plugin `@tailwindcss/postcss`,
+  garantizando paridad exacta entre el build local y el de Docker.
+  - Alternativas descartadas: inline de la config PostCSS en `angular.json`
+    (duplicaría la config y divergería del setup local); `RUN echo` del JSON
+    dentro del Dockerfile (frágil, duplica el archivo); declarar el plugin en
+    el package.json (mecanismo no soportado por Angular CLI).
+- **D3 — Verificación por contenido, no por tamaño**: la verificación previa
+  (peso del CSS) resultó insuficiente y enmascaró el bug. La verificación
+  definitiva comprueba utilidades presentes (`.flex`/`.grid`/`.bg-primary`),
+  ausencia de directivas en crudo (`@theme`/`@source` no deben aparecer en el
+  CSS compilado) y tamaño ~50 KB.
+- **D4 — Cierre de tareas bloqueadas condicionado a verificación manual**: las
   tareas 5.2/6.1/6.2 (`backend-staging-deploy`) y 7.5
   (`deploy-docker-hardening`) solo se marcan `[x]` cuando el usuario confirme
   el checklist del bloque 3 (login real, `/auth/me` → 200, header
@@ -86,15 +107,18 @@ Diagnóstico confirmado empíricamente:
 
 ## Risks / Trade-offs
 
-- [Coolify redespliega con caché de capas y sirve el CSS viejo (~11 KB)] →
-  verificar el tamaño del CSS servido en
-  `https://admin-staging.somosriff.cl/` tras el redeploy; si sigue sin
-  utilidades, relanzar el build con `--no-cache` (mismo protocolo de
+- [Coolify redespliega con caché de capas y sirve el CSS viejo] → verificar el
+  CSS servido en `https://admin-staging.somosriff.cl/` tras el redeploy; si
+  sigue en crudo, relanzar el build con `--no-cache` (mismo protocolo de
   contingencia del change `deploy-docker-hardening`).
 - [`@source` duplica implícitamente el layout de carpetas de `apps/admin`] →
   el patrón `../**/*.{html,ts}` es relativo al propio CSS y estable ante
   reorganizaciones menores; si se moviera `src/`, el build lo evidenciaría
-  inmediatamente con CSS sin utilidades (mismo síntoma, diagnóstico directo).
+  inmediatamente (mismo síntoma, diagnóstico directo).
+- [`.postcssrc.json` se renombra/mueve a futuro y el build Docker vuelve a
+  perder el plugin en silencio] → mitigado por la verificación por contenido
+  (D3, tarea 1.4) y por el gate `make docker-build` de CI que compila el
+  admin en cada pipeline; `.dockerignore` no excluye el archivo (verificado).
 - [Cierre prematuro de tareas bloqueadas sin verificación real] → mitigado por
   restricción explícita: bloque 4 ejecutado solo tras confirmación del usuario
   del checklist de verification.md (bloque 3).
@@ -106,17 +130,19 @@ Diagnóstico confirmado empíricamente:
 
 ## Migration Plan
 
-1. Merge de la rama del fix → Coolify detecta el push en
-   `riff-admin-staging` y redespliega (acción del operador).
-2. Verificación visual de estilos en `https://admin-staging.somosriff.cl/`
+1. Commit del fix (Dockerfile + artefactos del change) y PR — el usuario hace
+   commit y PR; no se commitea desde el apply.
+2. Merge de la rama → Coolify detecta el push en `riff-admin-staging` y
+   redespliega (acción del operador).
+3. Verificación visual de estilos en `https://admin-staging.somosriff.cl/`
    (operador).
-3. Checklist end-to-end de verification.md: login con
+4. Checklist end-to-end de verification.md: login con
    `soporte@gabrielzavando.cl` → `/profile`, `/auth/me` → 200 en Network tab,
    header `Authorization: Bearer` presente (operador).
-4. Con la confirmación del operador: marcar tareas bloqueadas en los tasks.md
+5. Con la confirmación del operador: marcar tareas bloqueadas en los tasks.md
    de los changes archivados y actualizar sus verification.md con resultado,
    fecha y ejecutor.
-5. Rollback: no aplica a código (fix de una línea ya probado); si el redeploy
+6. Rollback: revertir el COPY del Dockerfile (una línea); si el redeploy
    fallara, Coolify permite relanzar el build con `--no-cache` o volver al
    despliegue anterior desde su historial.
 
