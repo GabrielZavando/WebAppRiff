@@ -1,25 +1,33 @@
-# Proposal: Fix CSS del admin en build Docker (Tailwind v4 `@source`)
+# Proposal: Fix CSS del admin en build Docker (plugin PostCSS/Tailwind en la imagen)
 
 ## Why
 
 El admin de staging (`https://admin-staging.somosriff.cl/`) carga sin estilos:
-Tailwind CSS v4 en el build Docker no detecta los archivos fuente
-(`.html`/`.ts`) y emite un CSS de ~11 KB con solo tokens + preflight, sin
-utilidades (en local el mismo build genera ~49 KB con todas las utilidades).
-Sin CSS el login no es usable, lo que bloquea el cierre de las tareas 5.2, 6.1
-y 6.2 del change archivado `backend-staging-deploy` y la tarea 7.5 del change
-archivado `deploy-docker-hardening`.
+en el build Docker **Tailwind no se ejecuta** — el CSS desplegado contiene las
+directivas en crudo (`@theme`, `@source`, `@layer`, `@font-face`) sin
+utilidades. Causa raíz confirmada: `apps/admin/.postcssrc.json` (que declara
+el plugin `@tailwindcss/postcss`) no se copia a la imagen, así que Angular CLI
+no ejecuta PostCSS y el plugin nunca procesa `globals.css` (en local funciona
+porque el archivo está en el working directory). Sin CSS el login no es
+usable, lo que bloquea el cierre de las tareas 5.2, 6.1 y 6.2 del change
+archivado `backend-staging-deploy` y la tarea 7.5 del change archivado
+`deploy-docker-hardening`.
 
 ## What Changes
 
-- **Fix del CSS en Docker (ya aplicado y verificado)**: añadir
-  `@source "../**/*.{html,ts}"` en `apps/admin/src/styles/globals.css` justo
-  después de `@import "tailwindcss";`, para que Tailwind v4 escanee los fuentes
-  del admin aunque el build corra dentro de Docker (los patrones de detección
-  automática de Tailwind no cubren el layout del contenedor).
-  - El fix ya está en el repo y verificado con `docker build` local: el CSS
-    dentro de la imagen pasó de ~11 KB a ~50 KB, con utilidades. Este change
-    lo documenta como completado; no se re-implementa.
+- **Fix del plugin en Docker (esta corrección)**: añadir
+  `COPY apps/admin/.postcssrc.json ./apps/admin/` a `apps/admin/Dockerfile`,
+  junto a los demás COPY de configuración y antes de `COPY apps/admin/src`.
+  Verificado con `docker build` local comprobando **contenido** (utilidades
+  presentes, sin directivas en crudo), no solo tamaño.
+- **Fix de escaneo (ya aplicado, se mantiene)**: `@source "../**/*.{html,ts}"`
+  en `apps/admin/src/styles/globals.css` tras `@import "tailwindcss";`. Es
+  correcto y necesario (escaneo explícito de fuentes cuando el plugin corre),
+  pero sin el plugin no tiene efecto. No se re-implementa ni se toca.
+  - Nota: la verificación previa por tamaño (CSS ~11 KB → ~50 KB) resultó
+    insuficiente — no comprobaba utilidades — y llevó a una primera hipótesis
+    de causa raíz (detección automática basada en `.git`) hoy descartada; la
+    evidencia corregida vive en design.md.
 - **Despliegue y verificación end-to-end (operador)**: redespliegue del admin
   en Coolify tras el merge, verificación visual de estilos en
   `https://admin-staging.somosriff.cl/` y login real con
@@ -45,13 +53,15 @@ un requisito nuevo. No se producen deltas de specs ni se crean archivos bajo
 
 ## Impact
 
-- **Código**: `apps/admin/src/styles/globals.css` (directiva `@source`; ya
-  aplicada, no se toca de nuevo).
-- **Build output**: CSS del bundle de admin en Docker de ~11 KB → ~50 KB con
-  utilidades (verificado con `docker build` local).
+- **Código**: `apps/admin/Dockerfile` (nuevo `COPY` de `.postcssrc.json`);
+  `apps/admin/src/styles/globals.css` (directiva `@source`, ya aplicada, no se
+  toca de nuevo).
+- **Build output**: CSS del bundle de admin en Docker con utilidades y sin
+  directivas en crudo (~50 KB), verificado por contenido con `docker build`
+  local.
 - **Infra**: redeploy de `riff-admin-staging` en Coolify tras el merge.
 - **Cambios archivados**: tasks.md y verification.md de
   `2026-10-13-backend-staging-deploy` y `2026-10-12-deploy-docker-hardening`
   (solo cierre de tareas bloqueadas, tras confirmación del usuario).
-- **Sin cambios**: specs de producto, dependencias, Dockerfiles, nginx, gates
-  de CI.
+- **Sin cambios**: specs de producto, dependencias, otros Dockerfiles
+  (backend, web), `.dockerignore`, nginx, gates de CI.

@@ -50,7 +50,7 @@ COPY apps/admin/package.json ./apps/admin/package.json
 # and any workspace prepare need deps that filtered installs do not provide).
 RUN npm ci --workspace=@riff/admin --include-workspace-root=false --ignore-scripts
 
-COPY apps/admin/package.json apps/admin/angular.json apps/admin/tsconfig.json apps/admin/tsconfig.app.json ./apps/admin/
+COPY apps/admin/package.json apps/admin/angular.json apps/admin/tsconfig.json apps/admin/tsconfig.app.json apps/admin/.postcssrc.json ./apps/admin/
 COPY apps/admin/scripts ./apps/admin/scripts
 COPY apps/admin/src ./apps/admin/src
 # Favicon source: the single binary lives in apps/web/public (design D4). The
