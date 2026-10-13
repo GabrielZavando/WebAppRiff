@@ -49,4 +49,21 @@
 - [x] 7.2 `make docker-build` en verde (target nuevo) _(caché fría: exit 0, 93s)_
 - [x] 7.3 `npx openspec validate --all --strict` sin errores _(77 passed, 0 failed)_
 - [x] 7.4 Builds Docker locales de admin y web completados con éxito, documentando comandos exactos y salida en el reporte del change _(openspec/changes/deploy-docker-hardening/verification.md)_
-- [ ] 7.5 Tras el merge: configurar Build Variables en Coolify (`riff-admin-staging`) y confirmar que ambos deploys de Coolify (`web-staging`, `admin-staging`) pasan + smokes de staging en verde _(requiere merge + panel de Coolify — acción humana post-merge, checklist en verification.md §6)_
+- [ ] 7.5 Verificación en Coolify (BLOQUEADA por desajuste de proyectos Firebase + Build Variables sin configurar; ver nota abajo)
+
+> **Bloqueada — pendiente de change posterior `backend-staging-deploy`**
+>
+> Causa 1: las Build Variables de Coolify para `riff-admin-staging` no
+> están configuradas aún (FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN,
+> FIREBASE_PROJECT_ID, FIREBASE_APP_ID, API_BASE_URL como Build Variables).
+>
+> Causa 2: desajuste de proyectos Firebase. El panel admin está
+> configurado contra `riff-catalogo-staging`; el backend desplegado en
+> Cloud Run está en el proyecto `WebAppRiff`. El backend rechazará los
+> tokens emitidos por el admin (firma no coincide), y el superadmin
+> creado en `riff-catalogo-staging` no existe en `WebAppRiff`.
+>
+> Se completará cuando exista una instancia del backend NestJS en Cloud
+> Run dentro del proyecto `riff-catalogo-staging`, configurada la
+> correspondiente API_BASE_URL en Coolify, y las Build Variables del
+> admin.
