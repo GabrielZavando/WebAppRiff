@@ -1,0 +1,127 @@
+# Design: Fix CSS del admin en build Docker (Tailwind v4 `@source`)
+
+## Context
+
+El admin de staging (`https://admin-staging.somosriff.cl/`) carga sin estilos.
+Diagnóstico confirmado empíricamente:
+
+- **Síntoma**: el CSS emitido en el build Docker pesa ~11 KB y contiene solo
+  design tokens + preflight de Tailwind, sin ninguna utilidad. En local, el
+  mismo build produce ~49 KB con todas las utilidades.
+- **Causa raíz**: Tailwind CSS v4 (dependencia `@tailwindcss/postcss` en
+  `apps/admin/package.json`) usa **detección automática de fuentes** basada en
+  la raíz del repositorio git. El build Docker:
+  - copia al contenedor solo manifiestos npm + `apps/admin` + favicon
+    (`apps/admin/Dockerfile:45-60`), y
+  - excluye `.git/` del contexto (`.dockerignore:10`).
+
+  Sin `.git` dentro de la imagen, el escaneo automático no resuelve la raíz del
+  monorepo como base y no encuentra los archivos fuente del admin
+  (`.html`/`.ts`), por lo que emite CSS sin utilidades. En local el directorio
+  sí es un repo git y la detección automática funciona: de ahí la diferencia
+  11 KB vs 49 KB.
+- **Fix ya aplicado y verificado**: directiva explícita
+  `@source "../**/*.{html,ts}"` en `apps/admin/src/styles/globals.css:21`,
+  justo después de `@import "tailwindcss";` (resuelta desde
+  `apps/admin/src/` → escanea todo el admin). Verificación con
+  `docker build` local:
+
+  ```
+  docker build -f apps/admin/Dockerfile -t riff-admin:ci \
+    --build-arg FIREBASE_API_KEY=... \
+    --build-arg FIREBASE_AUTH_DOMAIN=... \
+    --build-arg FIREBASE_PROJECT_ID=... \
+    --build-arg FIREBASE_APP_ID=... \
+    --build-arg API_BASE_URL=<url>/api/v1 .
+  # CSS en la imagen: ~11 KB → ~50 KB, con utilidades
+  ```
+
+- **Impacto en cambios archivados**: este bug bloquea 5.2, 6.1 y 6.2 de
+  `backend-staging-deploy` (tasks.md con nota "BLOQUEADA" y su verification.md
+  sección 5 "Estado bloqueado") y 7.5 de `deploy-docker-hardening`
+  (verification.md sección 6 "Pendiente post-merge").
+
+## Goals / Non-Goals
+
+**Goals:**
+
+- Documentar el fix de CSS (ya aplicado) como completado, con la evidencia
+  empírica de la causa raíz (11 KB vs 50 KB, comando de build).
+- Dejar trazado el camino de despliegue (Coolify) y verificación end-to-end
+  (login real contra el backend de staging) como acciones del operador.
+- Cerrar las tareas bloqueadas de los dos changes archivados, con resultado,
+  fecha y ejecutor, **solo tras confirmación del usuario**.
+
+**Non-Goals:**
+
+- No re-implementar ni modificar el fix (ya está en el repo y verificado).
+- No tocar Dockerfiles, `.dockerignore`, nginx, configs de Angular/Tailwind ni
+  gates de CI.
+- No cambiar requisitos de specs existentes ni producir deltas de specs
+  (`skip_specs: true`; el CSS correcto ya es el comportamiento especificado
+  del admin, no un requisito nuevo).
+- No desplegar ni verificar en este repo: el despliegue en Coolify y el login
+  son acciones del operador (usuario).
+
+## Decisions
+
+- **D1 — `@source` explícito en `globals.css`** (aplicado): declarar las rutas
+  de escaneo en el CSS en lugar de confiar en la detección automática.
+  - Alternativas descartadas: configurar `content`/`source` vía PostCSS o
+    `angular.json` (más invasivo y duplicaría la config de estilos); copiar
+    `.git` al contenedor (frágil, agranda el contexto y acopla el build al VCS);
+    downgrade de Tailwind (regresión). La directiva `@source` es el mecanismo
+    nativo de Tailwind v4 para entornos sin git y queda contenida en un solo
+    archivo ya cubierto por specs de design tokens.
+- **D2 — Bloque 1 documentado como completado**: el fix está aplicado y
+  verificado con `docker build` local; tasks.md lo marca `[x]` con la evidencia
+  en este design. No se re-ejecuta trabajo ya hecho.
+- **D3 — Cierre de tareas bloqueadas condicionado a verificación manual**: las
+  tareas 5.2/6.1/6.2 (`backend-staging-deploy`) y 7.5
+  (`deploy-docker-hardening`) solo se marcan `[x]` cuando el usuario confirme
+  el checklist del bloque 3 (login real, `/auth/me` → 200, header
+  `Authorization: Bearer`). La verificación no es replicable desde el repo
+  (requiere navegador + credenciales), así que la confirmación del operador es
+  la única fuente de verdad.
+
+## Risks / Trade-offs
+
+- [Coolify redespliega con caché de capas y sirve el CSS viejo (~11 KB)] →
+  verificar el tamaño del CSS servido en
+  `https://admin-staging.somosriff.cl/` tras el redeploy; si sigue sin
+  utilidades, relanzar el build con `--no-cache` (mismo protocolo de
+  contingencia del change `deploy-docker-hardening`).
+- [`@source` duplica implícitamente el layout de carpetas de `apps/admin`] →
+  el patrón `../**/*.{html,ts}` es relativo al propio CSS y estable ante
+  reorganizaciones menores; si se moviera `src/`, el build lo evidenciaría
+  inmediatamente con CSS sin utilidades (mismo síntoma, diagnóstico directo).
+- [Cierre prematuro de tareas bloqueadas sin verificación real] → mitigado por
+  restricción explícita: bloque 4 ejecutado solo tras confirmación del usuario
+  del checklist de verification.md (bloque 3).
+- [El login end-to-end falla por causas ajenas al CSS (credenciales, Firebase
+  project, CORS)] → fuera del alcance de este change: el backend ya está
+  verificado (`/health` ok, `/auth/me` → 401 sin token, CORS del admin OK en
+  el verification.md de `backend-staging-deploy`); si apareciera un fallo
+  nuevo, se trataría en un change aparte.
+
+## Migration Plan
+
+1. Merge de la rama del fix → Coolify detecta el push en
+   `riff-admin-staging` y redespliega (acción del operador).
+2. Verificación visual de estilos en `https://admin-staging.somosriff.cl/`
+   (operador).
+3. Checklist end-to-end de verification.md: login con
+   `soporte@gabrielzavando.cl` → `/profile`, `/auth/me` → 200 en Network tab,
+   header `Authorization: Bearer` presente (operador).
+4. Con la confirmación del operador: marcar tareas bloqueadas en los tasks.md
+   de los changes archivados y actualizar sus verification.md con resultado,
+   fecha y ejecutor.
+5. Rollback: no aplica a código (fix de una línea ya probado); si el redeploy
+   fallara, Coolify permite relanzar el build con `--no-cache` o volver al
+   despliegue anterior desde su historial.
+
+## Open Questions
+
+- Ninguna pendiente de decisión técnica. Único dependencia externa: la
+  confirmación del operador tras ejecutar el checklist de verification.md
+  (bloques 2-3) para habilitar el cierre del bloque 4.
