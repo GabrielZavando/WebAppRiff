@@ -25,34 +25,38 @@
   `.bg-primary-100{`); sin directivas en crudo (`@theme`/`@source`: 0
   coincidencias en el CSS compilado). El `@source` de globals.css no se tocó.
 
-## 2. Despliegue (pendiente — operador)
+## 2. Despliegue (completado — operador)
 
-- [ ] Redespliegue de `riff-admin-staging` en Coolify con el fix merged.
-- [ ] `https://admin-staging.somosriff.cl/` muestra los estilos correctamente
+- [x] Redespliegue de `riff-admin-staging` en Coolify con el fix merged.
+- [x] `https://admin-staging.somosriff.cl/` muestra los estilos correctamente
       (tokens, tipografías Montserrat/Open Sans y utilidades en login y panel).
-- Resultado: _(pendiente)_
-- Fecha / ejecutor: _(pendiente)_
+- Resultado: **OK** — estilos cargan correctamente en producción tras el fix
+  del `.postcssrc.json`.
+- Fecha / ejecutor: 2026-10-13 / Gabriel Zavando.
 
-## 3. Verificación end-to-end (pendiente — operador)
+## 3. Verificación end-to-end (completada — operador)
 
 Checklist desde el navegador en `https://admin-staging.somosriff.cl/`:
 
-- [ ] Login con `soporte@gabrielzavando.cl` redirige a `/profile`.
-- [ ] `/auth/me` devuelve **200** desde el navegador (Network tab).
-- [ ] Header `Authorization: Bearer` presente en las peticiones al backend
+- [x] Login con `soporte@gabrielzavando.cl` redirige a `/profile`.
+- [x] `/auth/me` devuelve **200** desde el navegador (Network tab).
+- [x] Header `Authorization: Bearer` presente en las peticiones al backend
       (Network tab, pestaña Request Headers).
-- Resultado: _(pendiente)_
-- Fecha / ejecutor: _(pendiente)_
+- Resultado: **OK** — login → `/profile` con los datos del usuario; GET
+  `/api/v1/auth/me` → 200 con `Authorization: Bearer eyJ...` contra
+  `https://riff-api-staging-345601325361.southamerica-west1.run.app`.
+- Fecha / ejecutor: 2026-10-13 / Gabriel Zavando.
 
-## 4. Cierre de tareas bloqueadas (pendiente — tras confirmar el bloque 3)
+## 4. Cierre de tareas bloqueadas (completado — tras confirmar el bloque 3)
 
-Una vez el operador confirme el checklist del bloque 3:
+Con la confirmación del operador del checklist del bloque 3:
 
-- [ ] Marcar 5.2, 6.1 y 6.2 en
+- [x] Marcar 5.2, 6.1 y 6.2 en
       `openspec/changes/archive/2026-10-13-backend-staging-deploy/tasks.md`.
-- [ ] Marcar 7.5 en
+- [x] Marcar 7.5 en
       `openspec/changes/archive/2026-10-12-deploy-docker-hardening/tasks.md`.
-- [ ] Actualizar el `verification.md` de ambos changes con: resultado del
+- [x] Actualizar el `verification.md` de ambos changes con: resultado del
       login real, resultado del `/auth/me` 200, fecha y ejecutor.
-- Resultado: _(pendiente)_
-- Fecha / ejecutor: _(pendiente)_
+- Resultado: **OK** — 5.2/6.1/6.2 y 7.5 marcadas; ambos verification.md
+  actualizados (fecha 2026-10-13, ejecutor Gabriel Zavando).
+- Fecha / ejecutor: 2026-10-13 / Gabriel Zavando.

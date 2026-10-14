@@ -49,21 +49,10 @@
 - [x] 7.2 `make docker-build` en verde (target nuevo) _(caché fría: exit 0, 93s)_
 - [x] 7.3 `npx openspec validate --all --strict` sin errores _(77 passed, 0 failed)_
 - [x] 7.4 Builds Docker locales de admin y web completados con éxito, documentando comandos exactos y salida en el reporte del change _(openspec/changes/deploy-docker-hardening/verification.md)_
-- [ ] 7.5 Verificación en Coolify (BLOQUEADA por desajuste de proyectos Firebase + Build Variables sin configurar; ver nota abajo)
+- [x] 7.5 Verificación en Coolify (completada el 2026-10-13 tras desbloquear el bug del CSS; ver nota de cierre abajo)
 
-> **Bloqueada — pendiente de change posterior `backend-staging-deploy`**
->
-> Causa 1: las Build Variables de Coolify para `riff-admin-staging` no
-> están configuradas aún (FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN,
-> FIREBASE_PROJECT_ID, FIREBASE_APP_ID, API_BASE_URL como Build Variables).
->
-> Causa 2: desajuste de proyectos Firebase. El panel admin está
-> configurado contra `riff-catalogo-staging`; el backend desplegado en
-> Cloud Run está en el proyecto `WebAppRiff`. El backend rechazará los
-> tokens emitidos por el admin (firma no coincide), y el superadmin
-> creado en `riff-catalogo-staging` no existe en `WebAppRiff`.
->
-> Se completará cuando exista una instancia del backend NestJS en Cloud
-> Run dentro del proyecto `riff-catalogo-staging`, configurada la
-> correspondiente API_BASE_URL en Coolify, y las Build Variables del
-> admin.
+> **Cierre (2026-10-13)**: la verificación end-to-end del admin staging
+> (login real → /profile + /auth/me 200) se completó tras desbloquear el
+> bug del CSS con el change admin-tailwind-docker-fix. Backend en
+> https://riff-api-staging-345601325361.southamerica-west1.run.app
+> (proyecto riff-catalogo-staging).
