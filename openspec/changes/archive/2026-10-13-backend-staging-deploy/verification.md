@@ -52,21 +52,22 @@ $ curl -s -i -X OPTIONS https://riff-api-staging-345601325361.southamerica-west1
 Allowlist CORS estricta (`NODE_ENV=production`) aceptando el origen del admin
 de staging: OK.
 
-## 5. Estado bloqueado — verificación end-to-end del admin
+## 5. Verificación end-to-end del admin (cerrada 2026-10-13)
 
 La verificación de login (tareas 5.2, 6.1 y 6.2; desbloqueo de la 7.5 de
-`deploy-docker-hardening`) **no puede ejecutarse todavía**:
+`deploy-docker-hardening`) se completó tras resolver el bug del CSS del
+admin (change `admin-tailwind-docker-fix`: `COPY .postcssrc.json` en el
+Dockerfile + `@source` en `globals.css`):
 
-- El admin en `https://admin-staging.somosriff.cl/` carga **sin estilos**.
-- Causa diagnosticada: Tailwind CSS v4 en el build Docker no detecta los
-  archivos fuente (`.html`/`.ts`) y emite ~11 KB de CSS (solo tokens +
-  preflight, sin utilidades; en local el mismo build genera ~49 KB).
-- Sin CSS el login no es usable, por lo que no se puede autenticar contra el
-  backend real.
-- El fix (directiva `@source` explícita en
-  `apps/admin/src/styles/globals.css`, a confirmar) se resolverá en el change
-  `admin-tailwind-docker-fix`, ajeno a este change.
+- **Login**: `soporte@gabrielzavando.cl` → redirección a `/profile` con los
+  datos del usuario. **OK**.
+- **`/api/v1/auth/me`** (GET): **200** con datos del usuario; peticiones al
+  backend con header `Authorization: Bearer eyJ...`. **OK**.
+- **Backend**: `https://riff-api-staging-345601325361.southamerica-west1.run.app`
+  (proyecto `riff-catalogo-staging`).
+- **Estilos**: el admin de `https://admin-staging.somosriff.cl/` carga con
+  utilidades Tailwind correctas en producción.
 
-Cuando el admin funcione: ejecutar el login con `soporte@gabrielzavando.cl`,
-confirmar `/auth/me` → 200 y cerrar 5.2, 6.1, 6.2 y la tarea 7.5 del change
-archivado.
+- Estado: **verificado**.
+- Fecha: 2026-10-13.
+- Ejecutor: Gabriel Zavando.

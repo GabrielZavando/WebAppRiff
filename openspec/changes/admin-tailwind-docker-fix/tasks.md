@@ -13,19 +13,19 @@
 
 ## 2. Despliegue (operador)
 
-- [ ] 2.1 En Coolify, redesplegar `riff-admin-staging` con la rama del fix merged (si el CSS servido siguiera sin utilidades por caché de capas, relanzar el build con `--no-cache`)
-- [ ] 2.2 Verificar en `https://admin-staging.somosriff.cl/` que los estilos se ven correctamente (tokens, tipografías y utilidades aplicadas en login y panel)
+- [x] 2.1 En Coolify, redesplegar `riff-admin-staging` con la rama del fix merged (si el CSS servido siguiera sin utilidades por caché de capas, relanzar el build con `--no-cache`)
+- [x] 2.2 Verificar en `https://admin-staging.somosriff.cl/` que los estilos se ven correctamente (tokens, tipografías y utilidades aplicadas en login y panel)
 
 ## 3. Verificación end-to-end (operador)
 
-- [ ] 3.1 Ejecutar el checklist completo de `verification.md`: login con `soporte@gabrielzavando.cl` → redirección a `/profile`; `/auth/me` → 200 desde el navegador (Network tab); header `Authorization: Bearer` presente en las peticiones al backend
-- [ ] 3.2 Confirmar al aplicador el resultado del checklist (habilita el bloque 4)
+- [x] 3.1 Ejecutar el checklist completo de `verification.md`: login con `soporte@gabrielzavando.cl` → redirección a `/profile`; `/auth/me` → 200 desde el navegador (Network tab); header `Authorization: Bearer` presente en las peticiones al backend
+- [x] 3.2 Confirmar al aplicador el resultado del checklist (habilita el bloque 4)
 
 ## 4. Cierre de tareas bloqueadas (tras confirmación del bloque 3)
 
-- [ ] 4.1 Marcar 5.2 en `openspec/changes/archive/2026-10-13-backend-staging-deploy/tasks.md`
-- [ ] 4.2 Marcar 6.1 en `openspec/changes/archive/2026-10-13-backend-staging-deploy/tasks.md`
-- [ ] 4.3 Marcar 6.2 en `openspec/changes/archive/2026-10-13-backend-staging-deploy/tasks.md`
-- [ ] 4.4 Marcar 7.5 en `openspec/changes/archive/2026-10-12-deploy-docker-hardening/tasks.md`
-- [ ] 4.5 Actualizar `verification.md` de `2026-10-13-backend-staging-deploy`: resultado del login real, resultado del `/auth/me` 200, fecha y ejecutor (sustituir la sección 5 "Estado bloqueado" por la evidencia)
-- [ ] 4.6 Actualizar `verification.md` de `2026-10-12-deploy-docker-hardening`: resultado del login real, resultado del `/auth/me` 200, fecha y ejecutor (cerrar la sección 6 "Pendiente post-merge")
+- [x] 4.1 Marcar 5.2 en `openspec/changes/archive/2026-10-13-backend-staging-deploy/tasks.md`
+- [x] 4.2 Marcar 6.1 en `openspec/changes/archive/2026-10-13-backend-staging-deploy/tasks.md`
+- [x] 4.3 Marcar 6.2 en `openspec/changes/archive/2026-10-13-backend-staging-deploy/tasks.md`
+- [x] 4.4 Marcar 7.5 en `openspec/changes/archive/2026-10-12-deploy-docker-hardening/tasks.md`
+- [x] 4.5 Actualizar `verification.md` de `2026-10-13-backend-staging-deploy`: resultado del login real, resultado del `/auth/me` 200, fecha y ejecutor (sustituir la sección 5 "Estado bloqueado" por la evidencia)
+- [x] 4.6 Actualizar `verification.md` de `2026-10-12-deploy-docker-hardening`: resultado del login real, resultado del `/auth/me` 200, fecha y ejecutor (cerrar la sección 6 "Pendiente post-merge")

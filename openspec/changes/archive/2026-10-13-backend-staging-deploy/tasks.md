@@ -28,26 +28,15 @@
 ## 5. Coolify y verificación del admin (operador)
 
 - [x] 5.1 En el panel Coolify, configurar en `riff-admin-staging` la Build Variable `API_BASE_URL` (`<URL>.run.app/api/v1`) y las Build Variables Firebase del proyecto staging si faltan (`FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`, `FIREBASE_APP_ID`); redeploy del admin
-- [ ] 5.2 Login desde el panel admin de staging con `soporte@gabrielzavando.cl` y carga del perfil (`/auth/me` → 200 con datos del usuario) — **BLOQUEADA**: requiere el admin funcional (bug CSS en build Docker; ver nota en 6.x y change `admin-tailwind-docker-fix`)
+- [x] 5.2 Login desde el panel admin de staging con `soporte@gabrielzavando.cl` y carga del perfil (`/auth/me` → 200 con datos del usuario) — **completada**: login → /profile OK; `/auth/me` → 200 con `Authorization: Bearer` (ver nota de cierre al pie)
 
 ## 6. Cierre y desbloqueo 7.5
 
-- [ ] 6.1 Verificar login del admin staging contra el backend real (BLOQUEADA)
-- [ ] 6.2 Cerrar la tarea 7.5 del change archivado deploy-docker-hardening (BLOQUEADA)
+- [x] 6.1 Verificar login del admin staging contra el backend real (login → /profile OK; `/auth/me` → 200 con Bearer)
+- [x] 6.2 Cerrar la tarea 7.5 del change archivado deploy-docker-hardening (cerrada el 2026-10-13)
 
-> **Bloqueadas por bug del admin (fuera de alcance de este change)**
->
-> El backend de staging está operativo y verificado:
-> - URL: https://riff-api-staging-345601325361.southamerica-west1.run.app
-> - /health: status ok, firebase up.
-> - /api/v1/auth/me: 401 sin token (FirebaseAuthGuard funcionando).
-> - CORS hacia https://admin-staging.somosriff.cl: OK.
->
-> El admin staging no puede autenticarse todavía porque su CSS no se
-> genera correctamente en el build Docker (Tailwind v4 no encuentra los
-> archivos fuente, CSS resultante de ~11 KB en lugar de ~49 KB, sin
-> utilidades). Sin CSS el login no es usable.
->
-> Se resolverá en el change `admin-tailwind-docker-fix`. Cuando el admin
-> funcione, se ejecutará el login real y se cerrarán 6.1/6.2 + la tarea
-> 7.5 del change archivado deploy-docker-hardening.
+> **Cierre (2026-10-13)**: las tareas 5.2, 6.1 y 6.2 se completaron tras
+> la verificación end-to-end del admin staging, desbloqueadas por el fix
+> de Tailwind (change admin-tailwind-docker-fix). Login con
+> soporte@gabrielzavando.cl → /profile OK; GET /api/v1/auth/me → 200 con
+> Authorization: Bearer.

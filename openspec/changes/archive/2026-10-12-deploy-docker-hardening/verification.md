@@ -143,10 +143,21 @@ Totals: 77 passed, 0 failed (77 items)
 VALIDATE_EXIT=0
 ```
 
-## 6. Pendiente post-merge (tarea 7.5)
+## 6. Cierre post-merge (tarea 7.5) — completado 2026-10-13
 
-1. Merge de la PR → Coolify despliega staging.
+1. Merge de la PR → Coolify despliega staging. **OK**: `riff-admin-staging`
+   redesplegado; estilos del admin cargando correctamente tras el fix del
+   CSS (change `admin-tailwind-docker-fix`: `COPY .postcssrc.json` +
+   `@source`).
 2. Configurar en Coolify las Build Variables de `riff-admin-staging` (5
-   variables documentadas en `docs/deploy-standards.md`).
-3. Confirmar ambos deploys (`web-staging`, `admin-staging`) en verde + smokes
-   (`smoke:api`, `smoke:web`, `smoke:admin`).
+   variables documentadas en `docs/deploy-standards.md`). **OK**.
+3. Confirmar deploys en verde + verificación end-to-end. **OK**:
+   - Login real con `soporte@gabrielzavando.cl` → `/profile` con datos del
+     usuario.
+   - GET `/api/v1/auth/me` → **200** con `Authorization: Bearer eyJ...`.
+   - Backend: `https://riff-api-staging-345601325361.southamerica-west1.run.app`
+     (proyecto `riff-catalogo-staging`).
+
+- Estado: **verificado**.
+- Fecha: 2026-10-13.
+- Ejecutor: Gabriel Zavando.
