@@ -61,4 +61,6 @@
 - [x] 8.2 `npm run lint && npm run typecheck && npm run test` en `apps/admin` en verde.
 - [x] 8.3 `make ci` en verde (gate completo: openspec-validate + lint + typecheck + test + audit).
 - [ ] 8.4 Verificación manual contra staging: flujo completo crear/editar/eliminar categoría, subcategoría y producto con usuario `admin` y con `editor` (validar ocultamiento y 403 del backend si se fuerza).
-- [ ] 8.5 Confirmar que no existe ninguna petición a endpoints inexistentes (p. ej. uploads) en la pestaña Network de la verificación manual.
+  - **Diferida parcialmente (2026-10-15):** flujo completo verificado con usuario `admin` contra staging (`riff-admin-staging`). La verificación con rol `editor` (ocultamiento de Crear/Eliminar, 403 al forzar) se difiere al change `admin-panel-operations`, que introduce la gestión de usuarios y permite crear un editor real. No bloquea el archive; se documenta como deuda.
+- [x] 8.5 Confirmar que no existe ninguna petición a endpoints inexistentes (p. ej. uploads) en la pestaña Network de la verificación manual.
+  - **Verificada (2026-10-15):** recorrido completo contra staging — login, `/auth/me`, listado de productos (con `?search` y `?categoriaId`), formulario de producto (categories + subcategories cascade), edición de producto, listado de categorías, formulario de categoría, subcategorías anidadas. Sin 404 por endpoints inexistentes. `meta.total` presente y correcto en listado de productos.
