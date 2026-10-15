@@ -4,12 +4,12 @@
 Pantalla de login del panel admin (Angular): ruta con lazy loading, tarjeta centrada según design tokens, logo de Riff, campos email/password con labels y validación.
 ## Requirements
 ### Requirement: Login route with lazy loading
-The admin panel SHALL configure `@angular/router` so that the root path (`''`) redirects to `/profile` and the `/login` route loads the `LoginPageComponent` lazily via `loadComponent`; the root `AppComponent` SHALL render a `<router-outlet/>`. Unauthenticated access to protected routes (`/profile`, etc.) SHALL be redirected to `/login` by the AuthGuard (defined in `admin-auth`). The redirect target is temporary for Foundation: `admin-panel-content` will re-point it to `/dashboard`. (ADDED in `admin-login-panel`; MODIFIED in `admin-panel-foundation`.)
+The admin panel SHALL configure `@angular/router` so that the root path (`''`) redirects to `/products` and the `/login` route loads the `LoginPageComponent` lazily via `loadComponent`; the root `AppComponent` SHALL render a `<router-outlet/>`. Unauthenticated access to protected routes (`/products`, `/profile`, etc.) SHALL be redirected to `/login` by the AuthGuard (defined in `admin-auth`). The redirect target is defined in `admin-panel-content`: the dashboard promised during Foundation is deferred and the root now points to the product list. (ADDED in `admin-login-panel`; MODIFIED in `admin-panel-foundation`; MODIFIED in `admin-panel-content`.)
 
 #### Scenario: SC-006 — the /login route is reachable and the root redirects
 - **GIVEN** the admin panel with the router configured
 - **WHEN** the user visits `/`
-- **THEN** the app redirects to `/profile` (redirect `'' → /profile`)
+- **THEN** the app redirects to `/products` (redirect `'' → /products`)
 - **AND** if the user has no session, the AuthGuard further redirects to `/login`
 - **AND** the `/login` route loads the `LoginPageComponent` in a separate chunk
 
@@ -89,15 +89,14 @@ The login card SHALL be `w-full max-w-md` centered with `px-4`, without horizont
 - **WHEN** rendered at mobile (375px) and desktop (1440px) viewports
 - **THEN** the card stays centered and inside the viewport (`max-w-md`, `px-4`) with no horizontal overflow
 - **AND** on mobile the fields and the button use the full available card width
+### Requirement: Submit de login conectado a Firebase Authentication
+El submit del formulario de login SHALL invocar `AuthService.login(email, password)`: al éxito SHALL redirigir a `/products` (o al `returnUrl` preservado); al fallo de autenticación SHALL mostrar un mensaje de error visible en la tarjeta de login y SHALL NOT redirigir. Mientras la autenticación está en curso, el botón SHALL deshabilitarse para evitar envíos duplicados. (ADDED in `admin-panel-content`; reemplaza a «Submit conectado a Firebase Authentication» de `admin-panel-foundation`, cuyo destino post-login era `/profile`.)
 
-### Requirement: Submit conectado a Firebase Authentication
-El submit del formulario de login SHALL invocar `AuthService.login(email, password)`: al éxito SHALL redirigir a `/profile` (o al `returnUrl` preservado); al fallo de autenticación SHALL mostrar un mensaje de error visible en la tarjeta de login y SHALL NOT redirigir. Mientras la autenticación está en curso, el botón SHALL deshabilitarse para evitar envíos duplicados. (ADDED in `admin-panel-foundation`.)
-
-#### Scenario: Submit con credenciales válidas redirige al perfil
+#### Scenario: Submit con credenciales válidas redirige al listado de productos
 - **GIVEN** el formulario de login con credenciales válidas
 - **WHEN** el usuario presiona `INICIAR SESIÓN`
 - **THEN** se invoca `AuthService.login` con email y contraseña
-- **AND** al completarse la autenticación y la carga del perfil, el router redirige a `/profile`
+- **AND** al completarse la autenticación y la carga del perfil, el router redirige a `/products`
 
 #### Scenario: Submit con credenciales inválidas muestra error
 - **GIVEN** el formulario de login con credenciales inválidas
@@ -108,4 +107,3 @@ El submit del formulario de login SHALL invocar `AuthService.login(email, passwo
 #### Scenario: El botón se deshabilita mientras autentica
 - **WHEN** la autenticación está en curso
 - **THEN** el botón `INICIAR SESIÓN` queda deshabilitado hasta resolver la petición
-

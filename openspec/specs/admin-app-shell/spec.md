@@ -25,25 +25,39 @@ El panel SHALL renderizar, para todas las rutas protegidas, un layout shell basa
 - **THEN** no importan `styles.css` del template ni referencian paletas `brand-*`/`gray-*` de TailAdmin
 - **AND** sus templates usan utilities de los tokens Riff y no contienen clases `rounded*` ni `shadow*`
 
-### Requirement: Estructura de rutas base y redirecciones
-El panel SHALL configurar el router con: redirect `'' → /profile` (`pathMatch: 'full'`; destino post-login temporal hasta que el change de contenido introduzca `/dashboard`), la ruta `/profile` protegida por el `AuthGuard` y renderizada dentro del shell, `/login` público y sin shell, y una ruta wildcard (`**`) que renderiza la página 404. Las páginas SHALL cargarse lazy (`loadComponent`/`loadChildren`). Los changes posteriores añadirán sus rutas bajo el shell.
-
-#### Scenario: La raíz redirige al perfil
-- **WHEN** el usuario autenticado visita `/`
-- **THEN** el router redirige a `/profile`
-
-#### Scenario: La página protegida carga lazy dentro del shell
-- **WHEN** el usuario navega a `/profile` autenticado
-- **THEN** la página de perfil se carga en un chunk separado (`loadComponent`) dentro del `router-outlet` del shell
-
-#### Scenario: Wildcard muestra 404
-- **WHEN** el usuario navega a una ruta inexistente (ej. `/no-existe`) autenticado
-- **THEN** se renderiza la página 404 sin romper el shell
-
 ### Requirement: Página 404 con vuelta al panel
 La página 404 (basada en la de TailAdmin, adaptada a tokens Riff) SHALL informar que la ruta no existe con un mensaje claro y SHALL ofrecer un enlace visible hacia `/profile` para recuperar la navegación.
 
 #### Scenario: El enlace de la 404 vuelve al perfil
 - **WHEN** el usuario activa el enlace de la página 404
 - **THEN** el router navega a `/profile`
+### Requirement: Configuración de rutas y redirecciones
+El panel SHALL configurar el router con: redirect `'' → /products` (`pathMatch: 'full'`; el destino post-login es la lista de productos — el dashboard prometido inicialmente queda diferido sin fecha, ver `admin-panel-content`), las rutas de catálogo `/products`, `/products/new`, `/products/:id`, `/categories`, `/categories/new`, `/categories/:id`, `/categories/:id/subcategories/new` y `/categories/:id/subcategories/:subId` protegidas por el `AuthGuard` y renderizadas dentro del shell, la ruta `/profile` protegida y renderizada dentro del shell (sin cambios), `/login` público y sin shell, y una ruta wildcard (`**`) que renderiza la página 404. El destino del redirect SHALL tener una única fuente (`POST_LOGIN_REDIRECT` en `app-navigation.ts`, importada por `app.routes.ts`; elimina la duplicación previa en `app.routes.ts`). Las páginas SHALL cargarse lazy (`loadComponent`/`loadChildren`). Los changes posteriores añadirán sus rutas bajo el shell.
 
+#### Scenario: La raíz redirige al listado de productos
+- **WHEN** el usuario autenticado visita `/`
+- **THEN** el router redirige a `/products`
+
+#### Scenario: La página protegida carga lazy dentro del shell
+- **WHEN** el usuario navega a `/profile` autenticado
+- **THEN** la página de perfil se carga en un chunk separado (`loadComponent`) dentro del `router-outlet` del shell
+
+#### Scenario: Las rutas de catálogo viven bajo el shell y están protegidas
+- **WHEN** el usuario autenticado navega a `/products` o a `/categories/c1/subcategories/new`
+- **THEN** la página se renderiza dentro del shell (sidebar + header) y en un chunk separado
+- **AND** si no hay sesión, el `AuthGuard` redirige a `/login`
+
+#### Scenario: Wildcard muestra 404
+- **WHEN** el usuario navega a una ruta inexistente (ej. `/no-existe`) autenticado
+- **THEN** se renderiza la página 404 sin romper el shell
+
+### Requirement: Secciones de catálogo en el sidebar
+El sidebar SHALL listar las secciones del panel en el orden: Productos (`/products`), Categorías (`/categories`) y Perfil (`/profile`), añadiendo los ítems de catálogo a los existentes (`navItems` de `app-sidebar.component.ts`). Los ítems nuevos SHALL seguir el patrón actual de `NavItem` (icono SVG inline renderizado vía `SafeHtmlPipe`, coherente con el icono de Perfil existente y con los design tokens Riff). El ítem activo SHALL distinguirse visualmente igual que en Foundation.
+
+#### Scenario: El sidebar muestra las tres secciones en orden
+- **WHEN** un usuario autenticado visualiza el shell
+- **THEN** el sidebar lista, en este orden, Productos, Categorías y Perfil
+
+#### Scenario: El ítem activo de catálogo se marca
+- **WHEN** el usuario navega a `/categories/c1`
+- **THEN** el ítem «Categorías» del sidebar se distingue como activo

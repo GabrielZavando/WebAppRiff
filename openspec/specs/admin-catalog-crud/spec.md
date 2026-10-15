@@ -1,7 +1,8 @@
-# Delta admin-catalog-crud
+# admin-catalog-crud Specification
 
-## ADDED Requirements
-
+## Purpose
+Pantallas del panel admin para operar el catálogo: listado paginado de productos (búsqueda y filtro server-side, contador total desde `meta.total`), CRUD de categorías, subcategorías anidadas en el detalle de categoría y productos con el DTO completo del backend. La galería y la ficha técnica se editan como data (sin subida de archivos: no existe endpoint de uploads); los conflictos 409 se mapean por campo y el éxito se notifica con banners inline (sin toasts). Las acciones de crear/eliminar se ocultan para el rol editor.
+## Requirements
 ### Requirement: Listado de productos con paginación y total server-side
 La página `/products` SHALL renderizar una tabla de productos con, al menos, las columnas: título (acompañado del SKU), categoría, precio, stock, publicado, destacado y acciones por fila. El listado SHALL consumir `GET /api/v1/products` con paginación server-side (`?page` y `?limit`, límite por defecto 24) y SHALL mostrar sobre la tabla un contador con el total real de productos leído de `meta.total` de la respuesta (formato «N productos en total»), aunque la página visible muestre menos filas. El contador SHALL mostrarse únicamente cuando `meta.total` es numérico; en cualquier otro caso (sin `meta`, sin `total`, o `total` no numérico) SHALL omitirse el contador — sin valor de respaldo — mientras la tabla sigue renderizando con normalidad. La petición SHALL llevar el token Bearer (interceptor existente) para que el backend devuelva también los productos no publicados con proyección completa. La tabla SHALL mostrar un estado vacío cuando no hay resultados y un mensaje de error visible (banner) cuando la petición falla.
 
