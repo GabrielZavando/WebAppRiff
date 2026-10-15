@@ -1,19 +1,21 @@
 import type { Routes } from '@angular/router';
 import { authGuard } from '../features/auth/auth.guard';
+import { POST_LOGIN_REDIRECT } from './app-navigation';
 
 /**
- * Admin panel routes (change `admin-panel-foundation`, tasks 4.1 + 3.3).
+ * Admin panel routes (change `admin-panel-foundation`, tasks 4.1 + 3.3;
+ * catalog routes added by `admin-panel-content`, design D8).
  *
- * - The root redirects to the post-login target (`/profile` for Foundation;
- *   `admin-panel-content` re-points it to `/dashboard`).
+ * - The root redirects to the post-login target (`/products` since
+ *   `admin-panel-content`; single source in `app-navigation.ts`).
  * - `/login` stays public, lazy and outside the shell (spec `admin-login`).
  * - Protected pages live under the shell layout (sidebar + header) guarded by
- *   `authGuard`; the wildcard renders the 404 inside the shell.
- * - Future module routes (dashboard, categories, ..., users) extend
- *   `SHELL_CHILDREN` with their own guards.
+ *   `authGuard`; the wildcard renders the 404 inside the shell. Catalog child
+ *   routes are ordered literals-before-params so the router never shadows
+ *   `/products/new` or `/categories/:id/subcategories/new`.
+ * - Future module routes (quotes, users) extend the shell children with their
+ *   own guards.
  */
-export const POST_LOGIN_REDIRECT = '/profile';
-
 export const appRoutes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: POST_LOGIN_REDIRECT },
   {
@@ -31,6 +33,62 @@ export const appRoutes: Routes = [
         (m) => m.AppLayoutComponent,
       ),
     children: [
+      {
+        path: 'products',
+        loadComponent: () =>
+          import('../features/catalog/pages/products-page.component').then(
+            (m) => m.ProductsPageComponent,
+          ),
+      },
+      {
+        path: 'products/new',
+        loadComponent: () =>
+          import('../features/catalog/pages/producto-form-page.component').then(
+            (m) => m.ProductoFormPageComponent,
+          ),
+      },
+      {
+        path: 'products/:id',
+        loadComponent: () =>
+          import('../features/catalog/pages/producto-form-page.component').then(
+            (m) => m.ProductoFormPageComponent,
+          ),
+      },
+      {
+        path: 'categories',
+        loadComponent: () =>
+          import('../features/catalog/pages/categories-page.component').then(
+            (m) => m.CategoriesPageComponent,
+          ),
+      },
+      {
+        path: 'categories/new',
+        loadComponent: () =>
+          import('../features/catalog/pages/categoria-form-page.component').then(
+            (m) => m.CategoriaFormPageComponent,
+          ),
+      },
+      {
+        path: 'categories/:id',
+        loadComponent: () =>
+          import('../features/catalog/pages/categoria-form-page.component').then(
+            (m) => m.CategoriaFormPageComponent,
+          ),
+      },
+      {
+        path: 'categories/:id/subcategories/new',
+        loadComponent: () =>
+          import('../features/catalog/pages/subcategoria-form-page.component').then(
+            (m) => m.SubcategoriaFormPageComponent,
+          ),
+      },
+      {
+        path: 'categories/:id/subcategories/:subId',
+        loadComponent: () =>
+          import('../features/catalog/pages/subcategoria-form-page.component').then(
+            (m) => m.SubcategoriaFormPageComponent,
+          ),
+      },
       {
         path: 'profile',
         loadComponent: () =>

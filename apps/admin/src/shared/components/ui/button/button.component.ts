@@ -11,7 +11,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <button
-      type="button"
+      [attr.type]="type"
       [ngClass]="
         'inline-flex items-center justify-center gap-2 transition font-heading font-semibold uppercase tracking-wide text-xs ' +
         className +
@@ -31,6 +31,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
   imports: [NgClass],
 })
 export class ButtonComponent {
+  @Input() type: 'button' | 'submit' = 'button';
   @Input() size: 'sm' | 'md' = 'md';
   @Input() variant: 'primary' | 'outline' = 'primary';
   @Input() disabled = false;

@@ -1,0 +1,320 @@
+<app-page-breadcrumb [pageTitle]="isEdit() ? 'Editar producto' : 'Nuevo producto'" />
+
+@if (formError(); as message) {
+  <app-alert variant="error" [message]="message" class="mb-4 block" />
+}
+
+<form [formGroup]="form" (submit)="onSubmit($event)">
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-start">
+    <!-- Columna principal -->
+    <div class="flex-1 space-y-4">
+      <section class="border border-border bg-white p-6">
+        <h2 class="mb-4 font-heading text-base font-semibold text-secondary">Datos base</h2>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label for="p-sku" class="mb-1 block text-sm font-medium text-text"
+              >SKU <span aria-hidden="true" class="text-error">*</span></label
+            >
+            <input
+              id="p-sku"
+              data-form-sku
+              type="text"
+              class="h-11 w-full border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+              [ngClass]="skuConflict() ? 'border-error' : 'border-border'"
+              formControlName="sku"
+            />
+            @if (skuConflict(); as message) {
+              <p data-error-sku class="mt-1 text-xs text-error">{{ message }}</p>
+            }
+          </div>
+          <div>
+            <label for="p-titulo" class="mb-1 block text-sm font-medium text-text"
+              >Título <span aria-hidden="true" class="text-error">*</span></label
+            >
+            <input
+              id="p-titulo"
+              data-form-titulo
+              type="text"
+              class="h-11 w-full border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+              [ngClass]="showTituloError ? 'border-error' : 'border-border'"
+              formControlName="titulo"
+            />
+            @if (showTituloError) {
+              <p data-error-titulo class="mt-1 text-xs text-error">{{ tituloErrorMessage }}</p>
+            }
+          </div>
+          <div>
+            <label for="p-slug" class="mb-1 block text-sm font-medium text-text">Slug</label>
+            <input
+              id="p-slug"
+              data-form-slug
+              type="text"
+              class="h-11 w-full border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+              [ngClass]="slugConflict() ? 'border-error' : 'border-border'"
+              formControlName="slug"
+            />
+            @if (slugConflict(); as message) {
+              <p data-error-slug class="mt-1 text-xs text-error">{{ message }}</p>
+            }
+          </div>
+          <div>
+            <label for="p-desc-breve" class="mb-1 block text-sm font-medium text-text"
+              >Descripción breve</label
+            >
+            <input
+              id="p-desc-breve"
+              data-form-desc-breve
+              type="text"
+              class="h-11 w-full border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+              formControlName="descripcionBreve"
+            />
+          </div>
+          <div class="sm:col-span-2">
+            <label for="p-desc-larga" class="mb-1 block text-sm font-medium text-text"
+              >Descripción larga</label
+            >
+            <textarea
+              id="p-desc-larga"
+              data-form-desc-larga
+              rows="4"
+              class="w-full border border-border bg-white px-3 py-2 text-sm focus:outline-none focus:border-primary"
+              formControlName="descripcionLarga"
+            ></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="border border-border bg-white p-6">
+        <h2 class="mb-4 font-heading text-base font-semibold text-secondary">
+          Atributos
+        </h2>
+        <div formArrayName="atributos" class="flex flex-col gap-2">
+          @for (atributo of atributosArray.controls; track $index) {
+            <div [formGroupName]="$index" class="flex items-center gap-2">
+              <input
+                [attr.data-atributo-nombre]="$index"
+                type="text"
+                placeholder="Nombre"
+                class="h-10 flex-1 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+                formControlName="nombre"
+              />
+              <input
+                [attr.data-atributo-valor]="$index"
+                type="text"
+                placeholder="Valor"
+                class="h-10 flex-1 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+                formControlName="valor"
+              />
+              <button
+                type="button"
+                [attr.data-remove-atributo]="$index"
+                class="px-2 py-1 text-sm text-error hover:text-error-dark"
+                (click)="removeAtributo($index)"
+              >
+                Quitar
+              </button>
+            </div>
+          }
+        </div>
+        <button
+          type="button"
+          data-add-atributo
+          class="mt-2 text-sm font-medium text-primary hover:text-primary-dark"
+          (click)="addAtributo()"
+        >
+          + Añadir atributo
+        </button>
+      </section>
+
+      <section class="border border-border bg-white p-6">
+        <h2 class="mb-4 font-heading text-base font-semibold text-secondary">
+          Galería (URLs)
+        </h2>
+        <p class="mb-3 text-xs text-text-2">
+          Edición por data: url, ruta de Storage, alt y orden. La subida de archivos no está
+          disponible (sin endpoint de uploads).
+        </p>
+        <div formArrayName="galeria" class="flex flex-col gap-2">
+          @for (item of galeriaArray.controls; track $index) {
+            <div [formGroupName]="$index" class="grid gap-2 sm:grid-cols-[2fr_2fr_1fr_80px_auto]">
+              <input
+                [attr.data-galeria-url]="$index"
+                type="text"
+                placeholder="URL pública"
+                class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+                formControlName="url"
+              />
+              <input
+                [attr.data-galeria-storage]="$index"
+                type="text"
+                placeholder="storagePath"
+                class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+                formControlName="storagePath"
+              />
+              <input
+                [attr.data-galeria-alt]="$index"
+                type="text"
+                placeholder="alt"
+                class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+                formControlName="alt"
+              />
+              <input
+                [attr.data-galeria-orden]="$index"
+                type="number"
+                class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+                formControlName="orden"
+              />
+              <button
+                type="button"
+                [attr.data-remove-galeria]="$index"
+                class="px-2 py-1 text-sm text-error hover:text-error-dark"
+                (click)="removeGaleria($index)"
+              >
+                Quitar
+              </button>
+            </div>
+          }
+        </div>
+        <button
+          type="button"
+          data-add-galeria
+          class="mt-2 text-sm font-medium text-primary hover:text-primary-dark"
+          (click)="addGaleria()"
+        >
+          + Añadir imagen
+        </button>
+      </section>
+    </div>
+
+    <!-- Columna lateral -->
+    <div class="w-full space-y-4 lg:w-80">
+      <section class="border border-border bg-white p-6">
+        <h2 class="mb-4 font-heading text-base font-semibold text-secondary">Clasificación</h2>
+        <div class="flex flex-col gap-4">
+          <div>
+            <label for="p-categoria" class="mb-1 block text-sm font-medium text-text"
+              >Categoría</label
+            >
+            <select
+              id="p-categoria"
+              data-form-categoria
+              class="h-11 w-full border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+              formControlName="categoriaId"
+            >
+              <option value="">Sin categoría</option>
+              @for (categoria of categorias(); track categoria.id) {
+                <option [value]="categoria.id">{{ categoria.nombre }}</option>
+              }
+            </select>
+          </div>
+          <div>
+            <label for="p-subcategoria" class="mb-1 block text-sm font-medium text-text"
+              >Subcategoría</label
+            >
+            <select
+              id="p-subcategoria"
+              data-form-subcategoria
+              class="h-11 w-full border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+              formControlName="subcategoriaId"
+            >
+              <option value="">Sin subcategoría</option>
+              @for (subcategoria of subcategorias(); track subcategoria.id) {
+                <option [value]="subcategoria.id">{{ subcategoria.nombre }}</option>
+              }
+            </select>
+          </div>
+          <label class="flex items-center gap-2 text-sm font-medium text-text">
+            <input type="checkbox" data-form-destacado formControlName="destacado" class="size-4" />
+            Destacado
+          </label>
+          <label class="flex items-center gap-2 text-sm font-medium text-text">
+            <input type="checkbox" data-form-publicado formControlName="publicado" class="size-4" />
+            Publicado
+          </label>
+        </div>
+      </section>
+
+      <section class="border border-border bg-white p-6">
+        <h2 class="mb-4 font-heading text-base font-semibold text-secondary">Precio y stock</h2>
+        <div class="flex flex-col gap-4">
+          <div>
+            <label for="p-precio" class="mb-1 block text-sm font-medium text-text">Precio</label>
+            <input
+              id="p-precio"
+              data-form-precio-valor
+              type="number"
+              min="0"
+              class="h-11 w-full border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+              formControlName="precioValor"
+            />
+          </div>
+          <label class="flex items-center gap-2 text-sm font-medium text-text">
+            <input type="checkbox" data-form-precio-visible formControlName="precioVisible" class="size-4" />
+            Precio visible
+          </label>
+          <label class="flex items-center gap-2 text-sm font-medium text-text">
+            <input type="checkbox" data-form-stock-disponible formControlName="stockDisponible" class="size-4" />
+            Stock disponible
+          </label>
+          <div>
+            <label for="p-stock-cantidad" class="mb-1 block text-sm font-medium text-text"
+              >Cantidad (opcional)</label
+            >
+            <input
+              id="p-stock-cantidad"
+              data-form-stock-cantidad
+              type="number"
+              min="0"
+              class="h-11 w-full border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+              formControlName="stockCantidad"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="border border-border bg-white p-6">
+        <h2 class="mb-4 font-heading text-base font-semibold text-secondary">
+          Ficha técnica (URL)
+        </h2>
+        <div class="flex flex-col gap-3">
+          <input
+            data-ficha-url
+            type="text"
+            placeholder="URL pública"
+            class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+            formControlName="fichaUrl"
+          />
+          <input
+            data-ficha-storage
+            type="text"
+            placeholder="storagePath"
+            class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+            formControlName="fichaStorage"
+          />
+          <input
+            data-ficha-nombre
+            type="text"
+            placeholder="Nombre de archivo"
+            class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+            formControlName="fichaNombre"
+          />
+        </div>
+      </section>
+
+      <div class="flex items-center justify-end gap-3">
+        <button
+          type="button"
+          data-form-back
+          class="bg-white px-4 py-2.5 text-xs font-heading font-semibold uppercase tracking-wide text-text border border-border transition hover:bg-bg"
+          (click)="backToList()"
+        >
+          Volver al listado
+        </button>
+        <app-button data-form-save type="submit" [disabled]="form.invalid || saving()">
+          {{ isEdit() ? 'Guardar cambios' : 'Crear producto' }}
+        </app-button>
+      </div>
+    </div>
+  </div>
+</form>
+  

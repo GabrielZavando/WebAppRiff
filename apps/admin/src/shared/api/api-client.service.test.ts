@@ -110,4 +110,57 @@ describe('ApiClientService', () => {
     expect(caught).toBeInstanceOf(ApiError);
     expect((caught as ApiError).status).toBe(503);
   });
+
+  describe('getWithMeta (task 1.1 / design D1)', () => {
+    it('returns both data and meta from the envelope (unwrap discards meta)', () => {
+      let result: { data: unknown; meta: Record<string, unknown> | null } | undefined;
+
+      client
+        .getWithMeta<{ items: string[] }>('products?page=1&limit=24')
+        .subscribe((value) => (result = value));
+
+      const req = http.expectOne('http://localhost:3000/api/v1/products?page=1&limit=24');
+      expect(req.request.method).toBe('GET');
+      req.flush({
+        data: { items: ['p1'] },
+        error: null,
+        meta: { page: 1, limit: 24, total: 100 },
+      });
+
+      expect(result).toEqual({
+        data: { items: ['p1'] },
+        meta: { page: 1, limit: 24, total: 100 },
+      });
+    });
+
+    it('returns a null meta when the envelope carries none', () => {
+      let result: { data: unknown; meta: Record<string, unknown> | null } | undefined;
+
+      client.getWithMeta<string>('categories').subscribe((value) => (result = value));
+
+      const req = http.expectOne('http://localhost:3000/api/v1/categories');
+      req.flush({ data: ['c1'], error: null, meta: null });
+
+      expect(result).toEqual({ data: ['c1'], meta: null });
+    });
+
+    it('maps backend failures to ApiError like the plain get', () => {
+      let caught: unknown;
+
+      client.getWithMeta('products').subscribe({
+        next: () => fail('should not succeed'),
+        error: (error: unknown) => (caught = error),
+      });
+
+      const req = http.expectOne('http://localhost:3000/api/v1/products');
+      req.flush(
+        { data: null, error: { message: 'Invalid page', code: 'BAD_REQUEST' }, meta: null },
+        { status: 400, statusText: 'Bad Request' },
+      );
+
+      expect(caught).toBeInstanceOf(ApiError);
+      expect((caught as ApiError).message).toBe('Invalid page');
+      expect((caught as ApiError).status).toBe(400);
+    });
+  });
 });

@@ -123,7 +123,7 @@ describe('AuthService (task 2.1 / spec admin-auth)', () => {
     expect(service.isAuthenticated()).toBe(false);
   });
 
-  it('login authenticates, loads the profile and redirects to /profile', async () => {
+  it('login authenticates, loads the profile and redirects to POST_LOGIN_REDIRECT (/products)', async () => {
     vi.mocked(signInWithEmailAndPassword).mockResolvedValue({
       user: fakeUser(),
     } as never);
@@ -141,7 +141,7 @@ describe('AuthService (task 2.1 / spec admin-auth)', () => {
     );
     expect(service.currentUser()).toEqual(PROFILE);
     expect(service.isAuthenticated()).toBe(true);
-    expect(router.navigateByUrl).toHaveBeenCalledWith('/profile');
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/products');
   });
 
   it('login redirects to returnUrl when present', async () => {

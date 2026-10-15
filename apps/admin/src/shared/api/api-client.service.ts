@@ -49,6 +49,24 @@ export class ApiClientService {
     return this.request<T>('GET', path);
   }
 
+  /**
+   * GET that exposes both `data` and `meta` (task 1.1, design D1). The plain
+   * `get` unwraps `envelope.data` only, which is insufficient for the paginated
+   * product list — its pagination stats ride on the envelope `meta`
+   * (contract `api-products-pagination`).
+   */
+  getWithMeta<T>(
+    path: string,
+  ): Observable<{ data: T; meta: Record<string, unknown> | null }> {
+    const url = `${this.baseUrl}/${path.replace(/^\//, '')}`;
+    return this.http
+      .request<ApiEnvelope<T>>('GET', url, { observe: 'response' })
+      .pipe(
+        map((response) => this.unwrapWithMeta<T>(response)),
+        catchError((error: unknown) => throwError(() => this.toApiError(error))),
+      );
+  }
+
   post<T>(path: string, body: unknown): Observable<T> {
     return this.request<T>('POST', path, body);
   }
@@ -93,6 +111,24 @@ export class ApiClientService {
       );
     }
     return envelope.data;
+  }
+
+  /** Same envelope checks as `unwrap`, but hands `meta` to the caller too. */
+  private unwrapWithMeta<T>(
+    response: HttpResponse<ApiEnvelope<T>>,
+  ): { data: T; meta: Record<string, unknown> | null } {
+    const envelope = response.body;
+    if (envelope === null || envelope === undefined) {
+      throw new ApiError('Empty response from backend', response.status, null);
+    }
+    if (envelope.error !== null && envelope.error !== undefined) {
+      throw new ApiError(
+        envelope.error.message ?? 'Unexpected backend error',
+        response.status,
+        envelope.error.code ?? null,
+      );
+    }
+    return { data: envelope.data, meta: envelope.meta };
   }
 
   private toApiError(error: unknown): ApiError {
