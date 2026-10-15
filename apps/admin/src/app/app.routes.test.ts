@@ -1,24 +1,37 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { POST_LOGIN_REDIRECT, appRoutes } from './app.routes';
+import { POST_LOGIN_REDIRECT } from './app-navigation';
+import { appRoutes } from './app.routes';
 import { authGuard } from '../features/auth/auth.guard';
 
 /**
  * Base routing contract (task 4.1 / spec `admin-app-shell`, delta
- * `admin-login`): root redirects to the post-login target, `/login` stays
- * public and lazy outside the shell, protected pages live under an
- * auth-guarded shell with a nested outlet, and the wildcard renders the 404
+ * `admin-panel-content`): root redirects to `/products` from a single source,
+ * `/login` stays public and lazy outside the shell, protected pages live under
+ * an auth-guarded shell with a nested outlet, and the wildcard renders the 404
  * inside the shell. Redirect/guard behavior itself is covered by
  * `auth.guard.test.ts`; this test pins the route table structure.
  */
-describe('appRoutes (task 4.1)', () => {
-  it('redirects the root to POST_LOGIN_REDIRECT (/profile)', () => {
+describe('appRoutes (spec delta admin-app-shell / admin-panel-content)', () => {
+  it('redirects the root to POST_LOGIN_REDIRECT (/products) from a single source', () => {
     const root = appRoutes.find((route) => route.path === '' && route.redirectTo !== undefined);
 
     expect(root).toBeDefined();
     expect(root?.redirectTo).toBe(POST_LOGIN_REDIRECT);
-    expect(POST_LOGIN_REDIRECT).toBe('/profile');
+    expect(POST_LOGIN_REDIRECT).toBe('/products');
     expect(root?.pathMatch).toBe('full');
+
+    // Single source (task 2.1): app.routes.ts imports the constant from
+    // app-navigation.ts and must not re-declare it.
+    const routesSource = readFileSync(
+      resolve(dirname(fileURLToPath(import.meta.url)), 'app.routes.ts'),
+      'utf-8',
+    );
+    expect(routesSource).not.toMatch(/POST_LOGIN_REDIRECT\s*=\s*['"]/);
+    expect(routesSource).toContain("from './app-navigation'");
   });
 
   it('keeps /login public and lazy outside the shell', () => {
@@ -37,6 +50,35 @@ describe('appRoutes (task 4.1)', () => {
 
     const childPaths = (shell?.children ?? []).map((child) => child.path);
     expect(childPaths).toContain('profile');
+  });
+
+  it('registers the catalog routes as lazy shell children, literals before params', () => {
+    const shell = appRoutes.find((route) => route.canActivate !== undefined);
+    const childPaths = (shell?.children ?? []).map((child) => child.path);
+
+    const expected = [
+      'products',
+      'products/new',
+      'products/:id',
+      'categories',
+      'categories/new',
+      'categories/:id',
+      'categories/:id/subcategories/new',
+      'categories/:id/subcategories/:subId',
+    ];
+    for (const path of expected) {
+      expect(childPaths, `missing child route ${path}`).toContain(path);
+    }
+
+    // Literal segments must precede their parameterized counterparts so the
+    // router never shadows them (design D8).
+    const indexOf = (path: string): number => childPaths.indexOf(path);
+    expect(indexOf('products/new')).toBeLessThan(indexOf('products/:id'));
+    expect(indexOf('categories/new')).toBeLessThan(indexOf('categories/:id'));
+    expect(indexOf('categories/:id')).toBeLessThan(indexOf('categories/:id/subcategories/new'));
+    expect(indexOf('categories/:id/subcategories/new')).toBeLessThan(
+      indexOf('categories/:id/subcategories/:subId'),
+    );
   });
 
   it('renders the wildcard inside the shell (404 without leaving the layout)', () => {
