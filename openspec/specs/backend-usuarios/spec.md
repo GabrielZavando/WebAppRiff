@@ -35,7 +35,7 @@ The backend-usuarios SHALL provide a `@Roles(...)` decorator and a `RolesGuard` 
 - **THEN** the response status is 403
 
 ### Requirement: Backend SHALL synchronize the role custom claim with Firestore on user create/update
-The backend-usuarios SHALL, when a user is created, create the Firebase Auth user (email + initial password), set the `role` custom claim via `setCustomUserClaims(uid, { role })`, and persist a `usuarios` document (id = UID) with the entity fields. When a user's role is updated, it SHALL also update the custom claim.
+The backend-usuarios SHALL, when a user is created, create the Firebase Auth user (email — without a password when created through the panel invitation flow), set the `role` custom claim via `setCustomUserClaims(uid, { role })`, and persist a `usuarios` document (id = UID) with the entity fields. When a user's role is updated, it SHALL also update the custom claim.
 
 #### Scenario: Creating a user sets the custom claim and persists the document
 - **WHEN** a user is created with `rol: editor`
@@ -52,7 +52,9 @@ The backend-usuarios SHALL, when a user is created, create the Firebase Auth use
 The backend-usuarios SHALL implement `GET /users`, `POST /users`, `GET /users/{id}`, `PUT /users/{id}`, `PATCH /users/{id}` from `docs/api/api-spec.yml`. Access control follows `docs/data-model/data-model.md`:
 - Listing and reading users requires `superadmin` OR `admin`.
 - Creating a user: `rol=superadmin` or `rol=admin` → only `superadmin`; `rol=editor` → `superadmin` OR `admin`.
+- Creating a user SHALL NOT require a password: users created through the panel invitation flow are created in Firebase Auth without one; the user defines the password later via the Firebase password reset email (triggered by the admin panel with the Firebase client SDK).
 - Updating a user: changing `rol` to `superadmin`/`admin` → only `superadmin`; deactivating (`activo=false`) → an `admin` cannot deactivate themselves nor another `admin`; `superadmin` can.
+- Listing users SHALL enrich each entry with a derived `estado` — `invitado` when the Firebase Auth user has never signed in (`lastSignInTime` null), `activo` otherwise — read from Firebase Auth metadata and NOT persisted in Firestore. When a user's password is defined and they sign in for the first time, the listing SHALL report `activo` without any write from this change.
 - The system SHALL never be left without at least one active `superadmin`.
 
 #### Scenario: Admin lists users
@@ -74,6 +76,17 @@ The backend-usuarios SHALL implement `GET /users`, `POST /users`, `GET /users/{i
 #### Scenario: Superadmin can create an admin
 - **WHEN** a `superadmin` creates a user with `rol: admin`
 - **THEN** the response is 201
+
+#### Scenario: User created via the invitation flow has no password and starts as invitado
+- **WHEN** a user is created without a password
+- **THEN** the Firebase Auth user exists with no password and `lastSignInTime` is null
+- **AND** `GET /users` reports `estado: 'invitado'` for that user
+
+#### Scenario: Listing derives the state from Firebase Auth metadata
+- **GIVEN** a user who has signed in at least once
+- **WHEN** `GET /users` is requested
+- **THEN** the entry reports `estado: 'activo'` (derived from `lastSignInTime`)
+- **AND** no `estado` field is persisted in the Firestore document
 
 #### Scenario: Admin cannot deactivate another admin
 - **WHEN** an `admin` deactivates (`activo=false`) another `admin`
