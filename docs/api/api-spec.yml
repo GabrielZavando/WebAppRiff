@@ -523,6 +523,10 @@ components:
           enum: [superadmin, admin, editor]
         activo:
           type: boolean
+        estado:
+          type: string
+          enum: [invitado, activo]
+          description: "Derivado, no persistido: 'invitado' hasta el primer inicio de sesión (lastSignInTime de Firebase Auth), 'activo' después"
         creadoPor:
           type: string
         creadoEn:
@@ -548,7 +552,7 @@ components:
         password:
           type: string
           format: password
-          description: "Contraseña inicial (Firebase Auth la gestiona)"
+          description: "Contraseña inicial (Firebase Auth la gestiona). Omitible en el flujo de invitación: el usuario la define desde el email de restablecimiento que dispara el panel"
 
     UsuarioUpdate:
       type: object
