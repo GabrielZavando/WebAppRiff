@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Firestore } from 'firebase-admin/firestore';
 import { App } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
@@ -86,7 +86,19 @@ export class UsuarioRepository implements IUsuarioRepository {
         ? 'activo'
         : 'invitado';
       return { ...usuario, estado };
-    } catch {
+    } catch (err) {
+      // 'auth/user-not-found' es esperado (doc huérfano de Auth): degrada sin
+      // ruido. Cualquier otro fallo (p. ej. permisos de la service account
+      // contra Identity Toolkit) degrada también, pero se registra para poder
+      // diagnosticarlo en los logs de Cloud Run.
+      const code = (err as { code?: string }).code;
+      if (code !== 'auth/user-not-found') {
+        Logger.error(
+          `Cannot read auth user ${usuario.id} to derive estado: ${String((err as Error).message)}`,
+          (err as Error).stack,
+          'UsuarioRepository',
+        );
+      }
       return { ...usuario, estado: 'invitado' };
     }
   }

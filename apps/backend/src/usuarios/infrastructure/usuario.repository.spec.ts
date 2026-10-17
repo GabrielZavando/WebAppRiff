@@ -1,4 +1,5 @@
 import { getAuth } from 'firebase-admin/auth';
+import { Logger } from '@nestjs/common';
 jest.mock('firebase-admin/auth');
 import { UsuarioRepository } from './usuario.repository';
 import { CreateUsuarioInput, UpdateUsuarioInput } from '../domain/iusuario.repository';
@@ -201,6 +202,33 @@ describe('UsuarioRepository', () => {
       const all = await repo.findAll();
 
       expect(all[0]?.estado).toBe('invitado');
+    });
+
+    it('reports invitado, without logging, for a missing auth user (expected orphan)', async () => {
+      store.set('u1', { nombre: 'Ana', email: 'ana@riff.cl', rol: 'editor', activo: true, creadoPor: 'sa-1', creadoEn: 't', actualizadoEn: 't' });
+      fakeAuth.getUser.mockRejectedValue(Object.assign(new Error('auth/user-not-found'), { code: 'auth/user-not-found' }));
+      const loggerError = jest.spyOn(Logger, 'error').mockImplementation(() => undefined);
+
+      await repo.findAll();
+
+      expect(loggerError).not.toHaveBeenCalled();
+      loggerError.mockRestore();
+    });
+
+    it('reports invitado and logs an error for unexpected auth failures (e.g. permissions)', async () => {
+      store.set('u1', { nombre: 'Ana', email: 'ana@riff.cl', rol: 'editor', activo: true, creadoPor: 'sa-1', creadoEn: 't', actualizadoEn: 't' });
+      fakeAuth.getUser.mockRejectedValue(
+        Object.assign(new Error('Insufficient permission'), { code: 'auth/insufficient-permission' }),
+      );
+      const loggerError = jest.spyOn(Logger, 'error').mockImplementation(() => undefined);
+      const loggerWarn = jest.spyOn(Logger, 'warn').mockImplementation(() => undefined);
+
+      const all = await repo.findAll();
+
+      expect(all[0]?.estado).toBe('invitado');
+      expect(loggerError).toHaveBeenCalledWith(expect.stringContaining('u1'), expect.anything(), 'UsuarioRepository');
+      loggerError.mockRestore();
+      loggerWarn.mockRestore();
     });
   });
 
