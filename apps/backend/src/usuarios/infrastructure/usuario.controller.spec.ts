@@ -23,10 +23,10 @@ describe('UsuarioController', () => {
   const authedReq = (role: string, uid = 'u1') => ({ user: { uid, role } }) as never;
 
   it('findAll delegates to service with actor role', async () => {
-    service.findAll.mockResolvedValue([{ id: 'u1' }]);
+    service.findAll.mockResolvedValue([{ id: 'u1', estado: 'invitado' }]);
     const result = await controller.findAll(authedReq('admin'));
     expect(service.findAll).toHaveBeenCalledWith('admin');
-    expect(result).toEqual([{ id: 'u1' }]);
+    expect(result).toEqual([{ id: 'u1', estado: 'invitado' }]);
   });
 
   it('create merges creadoPor and delegates to service', async () => {

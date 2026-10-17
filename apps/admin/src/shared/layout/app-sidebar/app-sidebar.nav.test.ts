@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 import { AppSidebarComponent } from './app-sidebar.component';
 import { SidebarService } from '../../services/sidebar.service';
+import { RoleService } from '../../../features/auth/role.service';
 
 // External templateUrl must be resolved from disk before TestBed compiles
 // (same pattern as the login component test; see test-setup.ts).
@@ -20,19 +21,25 @@ const testDir = dirname(fileURLToPath(import.meta.url));
  * in that order, every item carries an inline SVG icon, and catalog child
  * URLs (e.g. `/categories/c1`) mark their section active.
  */
-describe('AppSidebarComponent navigation (task 2.3)', () => {
+describe('AppSidebarComponent navigation (task 2.3 + users item, task 5.3)', () => {
   let fixture: ComponentFixture<AppSidebarComponent>;
   let component: AppSidebarComponent;
   let urlSpy: ReturnType<typeof vi.fn>;
+  let roleSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     await ɵresolveComponentResources(async (url: string) =>
       readFileSync(resolve(testDir, url), 'utf-8'),
     );
 
+    roleSpy = vi.fn(() => true);
     TestBed.configureTestingModule({
       imports: [AppSidebarComponent],
-      providers: [SidebarService, provideRouter([])],
+      providers: [
+        SidebarService,
+        provideRouter([]),
+        { provide: RoleService, useValue: { hasRole: roleSpy } },
+      ],
     });
     const router = TestBed.inject(Router);
     // events: the component just closes the mobile drawer on NavigationEnd.
@@ -44,18 +51,31 @@ describe('AppSidebarComponent navigation (task 2.3)', () => {
     component = fixture.componentInstance;
   });
 
-  it('lists Productos, Categorías and Perfil in that order', () => {
+  it('lists Productos, Categorías, Usuarios and Perfil in that order', () => {
     const names = component.navItems.map((item) => item.name);
     const paths = component.navItems.map((item) => item.path);
 
-    expect(names).toEqual(['Productos', 'Categorías', 'Perfil']);
-    expect(paths).toEqual(['/products', '/categories', '/profile']);
+    expect(names).toEqual(['Productos', 'Categorías', 'Usuarios', 'Perfil']);
+    expect(paths).toEqual(['/products', '/categories', '/users', '/profile']);
   });
 
   it('keeps inline SVG icons for every section', () => {
     for (const item of component.navItems) {
       expect(item.icon, `icon for ${item.name}`).toContain('<svg');
     }
+  });
+
+  it('shows Usuarios to admin and superadmin and hides it from editors (task 5.3)', () => {
+    roleSpy.mockReturnValue(true);
+    const adminFixture = TestBed.createComponent(AppSidebarComponent);
+    const adminNames = adminFixture.componentInstance.visibleNavItems.map((i: { name: string }) => i.name);
+    expect(adminNames).toContain('Usuarios');
+
+    roleSpy.mockReturnValue(false);
+    const editorFixture = TestBed.createComponent(AppSidebarComponent);
+    const editorNames = editorFixture.componentInstance.visibleNavItems.map((i: { name: string }) => i.name);
+    expect(editorNames).not.toContain('Usuarios');
+    expect(editorNames).toEqual(['Productos', 'Categorías', 'Perfil']);
   });
 
   it('marks a catalog child URL as the active section', () => {

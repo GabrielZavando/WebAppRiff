@@ -34,6 +34,7 @@ const fakeAuth = {
   createUser: jest.fn(),
   updateUser: jest.fn(),
   setCustomUserClaims: jest.fn(),
+  getUser: jest.fn(),
 };
 
 describe('UsuarioRepository', () => {
@@ -46,6 +47,7 @@ describe('UsuarioRepository', () => {
     fakeAuth.createUser.mockResolvedValue({ uid: 'uid-1' });
     fakeAuth.updateUser.mockResolvedValue({});
     fakeAuth.setCustomUserClaims.mockResolvedValue({});
+    fakeAuth.getUser.mockResolvedValue({ metadata: { lastSignInTime: null } });
     repo = new UsuarioRepository(fakeFirestore, fakeApp);
   });
 
@@ -64,7 +66,7 @@ describe('UsuarioRepository', () => {
         email: 'ana@riff.cl',
         disabled: false,
       });
-      expect(fakeAuth.setCustomUserClaims).toHaveBeenCalledWith('uid-1', { rol: 'editor' });
+      expect(fakeAuth.setCustomUserClaims).toHaveBeenCalledWith('uid-1', { role: 'editor' });
       expect(result.id).toBe('uid-1');
       expect(result.rol).toBe('editor');
       expect(store.get('uid-1')).toMatchObject({
@@ -91,6 +93,22 @@ describe('UsuarioRepository', () => {
         password: 'secret1',
       });
     });
+
+    it('creates the auth user without a password for the invitation flow', async () => {
+      const input: CreateUsuarioInput = {
+        nombre: 'Ana',
+        email: 'ana@riff.cl',
+        rol: 'editor',
+        creadoPor: 'sa-1',
+      };
+
+      await repo.create(input);
+
+      const createUserParams = fakeAuth.createUser.mock.calls[0][0] as {
+        password?: string;
+      };
+      expect(createUserParams.password).toBeUndefined();
+    });
   });
 
   describe('findById', () => {
@@ -108,6 +126,25 @@ describe('UsuarioRepository', () => {
       expect(user).not.toBeNull();
       expect(user?.id).toBe('u1');
       expect(user?.email).toBe('ana@riff.cl');
+    });
+
+    it('derives estado from the Firebase Auth last sign-in metadata', async () => {
+      store.set('u1', {
+        nombre: 'Ana',
+        email: 'ana@riff.cl',
+        rol: 'editor',
+        activo: true,
+        creadoPor: 'sa-1',
+        creadoEn: '2026-01-01T00:00:00.000Z',
+        actualizadoEn: '2026-01-01T00:00:00.000Z',
+      });
+      fakeAuth.getUser.mockResolvedValue({
+        metadata: { lastSignInTime: 'Mon, 02 Feb 2026 10:00:00 GMT' },
+      });
+
+      const user = await repo.findById('u1');
+
+      expect(user?.estado).toBe('activo');
     });
 
     it('returns null when it does not exist', async () => {
@@ -138,6 +175,32 @@ describe('UsuarioRepository', () => {
       const all = await repo.findAll();
       expect(all).toHaveLength(2);
       expect(all.map((u) => u.id)).toEqual(['u1', 'u2']);
+    });
+
+    it('derives estado from the Firebase Auth last sign-in metadata', async () => {
+      store.set('u1', { nombre: 'Ana', email: 'ana@riff.cl', rol: 'editor', activo: true, creadoPor: 'sa-1', creadoEn: 't', actualizadoEn: 't' });
+      store.set('u2', { nombre: 'Bob', email: 'bob@riff.cl', rol: 'admin', activo: true, creadoPor: 'sa-1', creadoEn: 't', actualizadoEn: 't' });
+      fakeAuth.getUser.mockImplementation(async (uid: string) => ({
+        metadata: {
+          lastSignInTime: uid === 'u1' ? 'Mon, 02 Feb 2026 10:00:00 GMT' : null,
+        },
+      }));
+
+      const all = await repo.findAll();
+
+      expect(all.find((u) => u.id === 'u1')?.estado).toBe('activo');
+      expect(all.find((u) => u.id === 'u2')?.estado).toBe('invitado');
+      expect(store.get('u1')?.estado).toBeUndefined();
+      expect(store.get('u2')?.estado).toBeUndefined();
+    });
+
+    it('reports invitado when the auth user cannot be read', async () => {
+      store.set('u1', { nombre: 'Ana', email: 'ana@riff.cl', rol: 'editor', activo: true, creadoPor: 'sa-1', creadoEn: 't', actualizadoEn: 't' });
+      fakeAuth.getUser.mockRejectedValue(new Error('auth/user-not-found'));
+
+      const all = await repo.findAll();
+
+      expect(all[0]?.estado).toBe('invitado');
     });
   });
 
@@ -210,7 +273,7 @@ describe('UsuarioRepository', () => {
   describe('setRoleClaim', () => {
     it('delegates to auth.setCustomUserClaims', async () => {
       await repo.setRoleClaim('u1', 'admin');
-      expect(fakeAuth.setCustomUserClaims).toHaveBeenCalledWith('u1', { rol: 'admin' });
+      expect(fakeAuth.setCustomUserClaims).toHaveBeenCalledWith('u1', { role: 'admin' });
     });
   });
 });

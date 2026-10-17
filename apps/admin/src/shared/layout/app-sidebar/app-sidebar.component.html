@@ -18,7 +18,7 @@
 
   <nav class="flex-1 overflow-y-auto">
     <ul class="flex flex-col gap-1">
-      @for (nav of navItems; track nav.path) {
+      @for (nav of visibleNavItems; track nav.path) {
         <li>
           <a
             [routerLink]="nav.path"

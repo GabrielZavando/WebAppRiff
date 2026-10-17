@@ -69,6 +69,12 @@ describe('UsuarioService', () => {
       await expect(service.findAll('editor')).rejects.toBeInstanceOf(ForbiddenException);
     });
 
+    it('passes the derived estado through from the repository', async () => {
+      repo.findAll.mockResolvedValue([makeUsuario({ estado: 'invitado' })]);
+      const result = await service.findAll('admin');
+      expect(result[0]?.estado).toBe('invitado');
+    });
+
     it('forbids an editor from reading a user', async () => {
       await expect(service.findById('u1', 'editor')).rejects.toBeInstanceOf(ForbiddenException);
     });

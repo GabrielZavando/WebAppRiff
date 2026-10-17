@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { POST_LOGIN_REDIRECT } from './app-navigation';
 import { appRoutes } from './app.routes';
 import { authGuard } from '../features/auth/auth.guard';
+import { usersGuard } from '../features/users/users.guard';
 
 /**
  * Base routing contract (task 4.1 / spec `admin-app-shell`, delta
@@ -79,6 +80,26 @@ describe('appRoutes (spec delta admin-app-shell / admin-panel-content)', () => {
     expect(indexOf('categories/:id/subcategories/new')).toBeLessThan(
       indexOf('categories/:id/subcategories/:subId'),
     );
+  });
+
+  it('registers the users routes as lazy shell children with the role guard', () => {
+    const shell = appRoutes.find((route) => route.canActivate !== undefined);
+    const children = shell?.children ?? [];
+    const childPaths = children.map((child) => child.path);
+
+    for (const path of ['users', 'users/new', 'users/:id']) {
+      expect(childPaths, `missing child route ${path}`).toContain(path);
+    }
+
+    // Literal before parameter (design D8 pattern).
+    const indexOf = (path: string): number => childPaths.indexOf(path);
+    expect(indexOf('users/new')).toBeLessThan(indexOf('users/:id'));
+
+    // All three carry the module role guard on top of the inherited authGuard.
+    for (const route of children.filter((child) => child.path?.startsWith('users'))) {
+      expect(route.canActivate, `usersGuard on /${route.path}`).toContain(usersGuard);
+      expect(route.canActivateChild ?? route.canActivate).toBeDefined();
+    }
   });
 
   it('renders the wildcard inside the shell (404 without leaving the layout)', () => {

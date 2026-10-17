@@ -48,7 +48,30 @@ COPY apps/admin/package.json ./apps/admin/package.json
 # Install only the admin workspace dependencies (hoisted to /app/node_modules).
 # --ignore-scripts: no lifecycle script runs inside Docker (the root postinstall
 # and any workspace prepare need deps that filtered installs do not provide).
-RUN npm ci --workspace=@riff/admin --include-workspace-root=false --ignore-scripts
+#
+# Network resilience (change admin-panel-operations, D10): the 2026-10-15
+# Coolify build failed with a transient ECONNRESET against the npm registry.
+# npm's own fetch retries plus an outer retry loop (up to 5 attempts, 15s
+# apart) absorb transient registry failures; a persistent outage still fails
+# the build loudly.
+RUN set -eux; \
+    npm config set fetch-retries 5; \
+    npm config set fetch-retry-mintimeout 20000; \
+    npm config set fetch-retry-maxtimeout 120000; \
+    npm config set fetch-timeout 600000; \
+    ok=0; \
+    for i in 1 2 3 4 5; do \
+        if npm ci --workspace=@riff/admin --include-workspace-root=false --ignore-scripts; then \
+            ok=1; \
+            break; \
+        fi; \
+        echo "npm ci attempt ${i}/5 failed; retrying in 15s"; \
+        sleep 15; \
+    done; \
+    if [ "$ok" -ne 1 ]; then \
+        echo "npm ci failed after 5 attempts" >&2; \
+        exit 1; \
+    fi
 
 COPY apps/admin/package.json apps/admin/angular.json apps/admin/tsconfig.json apps/admin/tsconfig.app.json apps/admin/.postcssrc.json ./apps/admin/
 COPY apps/admin/scripts ./apps/admin/scripts

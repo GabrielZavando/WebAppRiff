@@ -8,7 +8,7 @@ import {
   IUsuarioRepository,
   UpdateUsuarioInput,
 } from '../domain/iusuario.repository';
-import { Usuario, UsuarioRol } from '../domain/usuario.entity';
+import { Usuario, UsuarioEstado, UsuarioRol } from '../domain/usuario.entity';
 
 /**
  * Persistencia de usuarios: Firebase Auth (identidad + custom claim `rol`) como
@@ -35,7 +35,7 @@ export class UsuarioRepository implements IUsuarioRepository {
     }
 
     const userRecord = await auth.createUser(createParams);
-    await auth.setCustomUserClaims(userRecord.uid, { rol: input.rol });
+    await auth.setCustomUserClaims(userRecord.uid, { role: input.rol });
 
     const now = new Date();
     const doc: Omit<Usuario, 'id'> = {
@@ -52,18 +52,43 @@ export class UsuarioRepository implements IUsuarioRepository {
       .doc(userRecord.uid)
       .set(doc);
 
-    return { id: userRecord.uid, ...doc };
+    return { id: userRecord.uid, ...doc, estado: 'invitado' };
   }
 
   async findAll(): Promise<Usuario[]> {
     const snapshot = await this.firestore.collection(this.collection).get();
-    return snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Usuario, 'id'>) }));
+    const users: Usuario[] = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...(d.data() as Omit<Usuario, 'id'>),
+    }));
+    return Promise.all(users.map((u) => this.withAuthState(u)));
   }
 
   async findById(id: string): Promise<Usuario | null> {
     const snap = await this.firestore.collection(this.collection).doc(id).get();
     if (!snap.exists) return null;
-    return { id: snap.id, ...(snap.data() as Omit<Usuario, 'id'>) };
+    return this.withAuthState({
+      id: snap.id,
+      ...(snap.data() as Omit<Usuario, 'id'>),
+    });
+  }
+
+  /**
+   * Merges the Firestore document with the Firebase Auth sign-in metadata to
+   * derive `estado` ('invitado' until the first sign-in). Never persists the
+   * derived field; an unreadable/missing auth user degrades to 'invitado'
+   * (an account that cannot authenticate cannot have signed in).
+   */
+  private async withAuthState(usuario: Usuario): Promise<Usuario> {
+    try {
+      const record = await getAuth(this.app).getUser(usuario.id);
+      const estado: UsuarioEstado = record.metadata.lastSignInTime
+        ? 'activo'
+        : 'invitado';
+      return { ...usuario, estado };
+    } catch {
+      return { ...usuario, estado: 'invitado' };
+    }
   }
 
   async update(id: string, input: UpdateUsuarioInput): Promise<Usuario> {
@@ -94,6 +119,6 @@ export class UsuarioRepository implements IUsuarioRepository {
   }
 
   async setRoleClaim(id: string, rol: UsuarioRol): Promise<void> {
-    await getAuth(this.app).setCustomUserClaims(id, { rol });
+    await getAuth(this.app).setCustomUserClaims(id, { role: rol });
   }
 }
