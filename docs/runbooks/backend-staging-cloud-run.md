@@ -137,9 +137,12 @@ echo "URL staging: ${API_URL}"
 1. En Coolify, abrir el recurso del sitio público de staging (`web-staging`, que
    sirve `https://staging.somosriff.cl`).
 2. Ir a **Webhooks → Deploy Webhook** y copiar la URL generada
-   (p. ej. `https://coolify.<host>/api/v1/deploy?uuid=<uuid>&force=false`).
-   El deploy webhook de Coolify acepta un `POST` autenticado con el token
-   configurado en el recurso; ese token es el valor de
+   (p. ej. `https://coolify.<host>/api/v1/deploy?uuid=<uuid>&force=true`).
+   La URL **debe** llevar `&force=true` (no `force=false`): Coolify reutiliza la
+   caché de Docker entre builds y, sin `force=true`, el build de Astro puede
+   salir de capas cacheadas y publicar HTML obsoleto (el catálogo no refleja los
+   cambios). El deploy webhook de Coolify acepta un `POST` autenticado con el
+   token configurado en el recurso; ese token es el valor de
    `CATALOG_REBUILD_WEBHOOK_TOKEN`.
 3. (Recomendado) rotar/definir un token dedicado para el backend y guardarlo; no
    se expone en logs ni en el cuerpo de la petición.
@@ -147,7 +150,7 @@ echo "URL staging: ${API_URL}"
 **b. Guardar URL y token como secretos en Secret Manager**:
 
 ```bash
-printf '%s' "https://coolify.<host>/api/v1/deploy?uuid=<uuid>&force=false" | \
+printf '%s' "https://coolify.<host>/api/v1/deploy?uuid=<uuid>&force=true" | \
   gcloud secrets create CATALOG_REBUILD_WEBHOOK_URL \
   --project=${PROJECT_ID} --data-file=-
 

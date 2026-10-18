@@ -35,10 +35,10 @@
 
 ## 3. Ops — configuración del webhook en staging y runbook
 
-- [ ] 3.1 Crear el deploy webhook del recurso `web-staging` en Coolify y anotar su
+- [x] 3.1 Crear el deploy webhook del recurso `web-staging` en Coolify y anotar su
   URL y token. Verificación: `curl -X POST <webhook-url>` dispara un deploy (o
   responde aceptado) en el panel de Coolify.
-- [ ] 3.2 Inyectar `CATALOG_REBUILD_WEBHOOK_URL` y `CATALOG_REBUILD_WEBHOOK_TOKEN`
+- [x] 3.2 Inyectar `CATALOG_REBUILD_WEBHOOK_URL` y `CATALOG_REBUILD_WEBHOOK_TOKEN`
   en el servicio Cloud Run `riff-api-staging`. Verificación:
   `gcloud run services describe riff-api-staging --region=southamerica-west1`
   muestra ambas variables.
@@ -49,10 +49,10 @@
 
 ## 4. Verificación de integración
 
-- [ ] 4.1 Ciclo end-to-end en staging: editar el título de un producto en el admin,
+- [x] 4.1 Ciclo end-to-end en staging: editar el título de un producto en el admin,
   confirmar el disparo del webhook, esperar el rebuild de Coolify y ver el título
   nuevo en `staging.somosriff.cl`. Verificación: título actualizado visible.
-- [ ] 4.2 Verificar el catálogo completo en staging: el listado muestra los productos
+- [x] 4.2 Verificar el catálogo completo en staging: el listado muestra los productos
   publicados (≈70) con su paginación correcta (≈8 páginas de 9) y las páginas de
   detalle generadas para todos. Verificación: conteo de cards y de páginas coincide
   con `meta.total`.

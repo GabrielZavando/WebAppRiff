@@ -5,19 +5,20 @@ Página de catálogo de productos: datos en build-time, filtrado client-side (SS
 ## Requirements
 ### Requirement: Build-time data sources
 
-The page SHALL obtain the public catalog at build time by calling
-`GET /api/v1/products` (public, returns only `publicado: true` products)
-through `apps/web/src/lib/api/products.ts`, and the active subcategories at
-build time by calling `GET /api/v1/subcategories?activa=true` through
-`apps/web/src/lib/api/subcategories.ts`. Both modules SHALL cache their
-result at module scope (one fetch per build) and SHALL return `[]` on any
-fetch or parse error so that `astro build` never fails.
+The page SHALL obtain the COMPLETE public catalog at build time by calling
+`GET /api/v1/products` (public, only `publicado: true`) through
+`apps/web/src/lib/api/products.ts`, paginating in blocks of `limit=100` and
+reading `meta.total` until every published product is loaded. It SHALL obtain the
+active subcategories via `GET /api/v1/subcategories?activa=true`. Both modules
+SHALL cache their result at module scope and return `[]` on any fetch or parse
+error so `astro build` never fails.
 
 #### Scenario: Products fetched and cached per build
 - **WHEN** `astro build` runs and `pages/productos/index.astro` is rendered
-- **THEN** exactly one HTTP `GET` is made to `${NESTJS_API_URL}/products`
-  across all page renders of that build (module-level cache)
-- **AND** the returned `data` array is passed to the page frontmatter
+- **THEN** `getPublicProducts()` paginates `GET /api/v1/products` with `limit=100`
+  until `meta.total` published products are collected, caching the full array at
+  module scope (no per-page refetch)
+- **AND** the returned `data` includes products beyond the API default limit of 24
 
 #### Scenario: API unreachable at build time
 - **WHEN** `GET /api/v1/products` returns a non-2xx response or the network request throws

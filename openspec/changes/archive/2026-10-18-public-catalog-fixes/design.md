@@ -89,8 +89,11 @@ porque el contrato actual exige que una mutación nunca dependa del webhook.
 
 El webhook apunta al deploy hook de **Coolify** del recurso `web-staging`. En Cloud
 Run `riff-api-staging` se inyectan `CATALOG_REBUILD_WEBHOOK_URL` y
-`CATALOG_REBUILD_WEBHOOK_TOKEN` (Bearer). El runbook
-`docs/runbooks/backend-staging-cloud-run.md` documentará cómo crear el webhook en
+`CATALOG_REBUILD_WEBHOOK_TOKEN` (Bearer). La URL del deploy webhook **debe** incluir
+`&force=true` (no `force=false`): Coolify reutiliza la caché de Docker entre builds
+y, sin `force=true`, el build de Astro puede resolver desde capas cacheadas y
+publicar HTML obsoleto, dejando el catálogo sin reflejar los cambios. El runbook
+`docs/runbooks/backend-staging-cloud-run.md` documenta cómo crear el webhook en
 Coolify y cómo pasarlo al servicio. Producción queda fuera de alcance de este
 change (su lane se activa cuando existan sus propias variables).
 
