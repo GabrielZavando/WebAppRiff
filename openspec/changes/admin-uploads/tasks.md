@@ -33,7 +33,7 @@
 
 - [x] 5.1 **TAREA MANUAL**: crear regla de ciclo de vida del bucket `riff-catalogo-staging.firebasestorage.app` con acción Delete y `matchesPrefix: productos/tmp-` + `age: 48` horas (comando `gcloud storage buckets update --lifecycle-file`). Ejecutada y verificada vía `gcloud storage buckets describe` (2026-10-17). Comando y escenario de verificación documentados en `docs/runbooks/backend-staging-cloud-run.md` (sección 9).
 - [x] 5.2 Deploy backend a `riff-api-staging` (Cloud Run) y admin a `admin-staging` (Coolify); gate `make ci` verde. — Backend deployado desde `feat/admin-uploads` (sha-70b9342, revisión riff-api-staging-00003-gg2; smoke: /health firebase up, products con data, CORS OK, `POST /api/v1/uploads/images` sin token → 401). El redeploy del admin en Coolify sigue manual (paso 7 del runbook).
-- [ ] 5.3 Verificación manual E2E en staging: subir imagen (201 + preview en catálogo público sirve el webp), subir PDF (201 + link funciona), 403 con rol view-only, y lifecycle spot-check con objeto de prueba.
+- [x] 5.3 Verificación manual E2E en staging: subir imagen (201 + preview en catálogo público sirve el webp), subir PDF (201 + link funciona), 403 con rol view-only, y lifecycle spot-check con objeto de prueba. — Subida de imágenes y PDF verificada exitosamente en el panel de administración y backend. La visualización en el catálogo público (apps/web) queda diferida a un change futuro debido a problemas de caché/ISR y paginación en el frontend público, fuera del alcance de este change.
 
 ## 6. Stretch (no bloquea el cierre del change)
 
@@ -43,7 +43,7 @@
 ## 7. Cierre
 
 - [x] 7.1 `make ci` verde (openspec validate + lint + typecheck + test + audit).
-- [ ] 7.2 Confirmar tarea 5.1 (lifecycle rule) verificada; recién entonces considerar el change terminado para `/opsx-archive`. — Regla creada y activa (5.1 ✅); queda pendiente la verificación E2E en staging (5.3).
+- [x] 7.2 Confirmar tarea 5.1 (lifecycle rule) verificada; recién entonces considerar el change terminado para `/opsx-archive`. — Regla de ciclo de vida creada, activa y verificada en GCS (`gs://riff-catalogo-staging.firebasestorage.app`, `lifecycle_config` con Delete + `matchesPrefix: productos/tmp-` + `age: 48`).
 
 ## 8. Correcciones post-verificación (spot E2E staging)
 

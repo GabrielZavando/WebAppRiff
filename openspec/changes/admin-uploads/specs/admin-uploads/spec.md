@@ -1,5 +1,13 @@
 # Delta spec: admin-uploads
 
+## Purpose
+
+Permitir que el panel de administración suba archivos (imágenes de galería y fichas
+técnicas PDF) directamente al backend, que valida tipo y tamaño reales y los persiste en
+Firebase Storage bajo un patrón temporal `productos/tmp-<uuid>/`; la limpieza de huérfanos
+se delega a una regla de ciclo de vida del bucket. Sustituye la edición de galería/ficha
+como data por un flujo upload-first en el formulario de producto.
+
 ## ADDED Requirements
 
 ### Requirement: Subida de imágenes de galería
