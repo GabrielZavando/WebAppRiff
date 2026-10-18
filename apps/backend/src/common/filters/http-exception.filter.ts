@@ -4,6 +4,7 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 
 interface ResponseLike {
@@ -36,6 +37,8 @@ interface ErrorEnvelope {
  */
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(HttpExceptionFilter.name);
+
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<ResponseLike>();
@@ -60,6 +63,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
         errorName = exception.name;
       }
     } else {
+      // Unexpected failure: log the full stack so production 500s are
+      // diagnosable in the Cloud Run logs (envelope stays generic).
+      this.logger.error(
+        `ERROR: ${exception instanceof Error ? exception.message : String(exception)}`,
+        exception instanceof Error ? exception.stack : undefined,
+      );
       message = 'Internal server error';
       errorName = 'Internal Server Error';
     }

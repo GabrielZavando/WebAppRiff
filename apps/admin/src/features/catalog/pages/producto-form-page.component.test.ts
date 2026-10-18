@@ -335,6 +335,76 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
       fixture.detectChanges();
     });
 
+    it('autocompletes fichaTecnica.nombreArchivo with the uploaded file name (no manual input)', async () => {
+      await setup({});
+      await expectCategoriesFlushed();
+
+      const el = fixture.nativeElement as HTMLElement;
+
+      setInput('[data-form-sku]', 'RIF-200');
+      setInput('[data-form-titulo]', 'Producto con galería');
+
+      (el.querySelector('[data-add-galeria]') as HTMLButtonElement).click();
+      fixture.detectChanges();
+
+      const galeriaFile = new File(['图片'], 'frente.webp', { type: 'image/webp' });
+      chooseFile(el, '[data-upload-galeria]', galeriaFile);
+      http
+        .expectOne(`${API_BASE}/uploads/images`)
+        .flush({
+          data: {
+            url: 'https://storage.googleapis.com/riff-catalogo-staging/productos/tmp-abc/frente.webp',
+            storagePath: 'productos/tmp-abc/frente.webp',
+          },
+          error: null,
+          meta: null,
+        });
+      await fixture.whenStable();
+      fixture.detectChanges();
+      setInput('[data-galeria-alt="0"]', 'Frente');
+      setInput('[data-galeria-orden="0"]', '0');
+
+      // Ficha upload response carries a sanitized storagePath that differs
+      // from the raw file name: nombreArchivo must come from that basename.
+      const fichaFile = new File(['%PDF-1.7'], 'Catálogo General 2025.pdf', { type: 'application/pdf' });
+      chooseFile(el, '[data-ficha-upload]', fichaFile);
+      http
+        .expectOne(`${API_BASE}/uploads/tech-sheet`)
+        .flush({
+          data: {
+            url: 'https://storage.googleapis.com/riff-catalogo-staging/productos/tmp-abc/catalogo-general-riff-2025.pdf',
+            storagePath: 'productos/tmp-abc/catalogo-general-riff-2025.pdf',
+          },
+          error: null,
+          meta: null,
+        });
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      submit();
+
+      const req = http.expectOne(`${API_BASE}/products`);
+      expect(req.request.body).toMatchObject({
+        galeria: [
+          {
+            url: 'https://storage.googleapis.com/riff-catalogo-staging/productos/tmp-abc/frente.webp',
+            storagePath: 'productos/tmp-abc/frente.webp',
+            alt: 'Frente',
+            orden: 0,
+          },
+        ],
+        fichaTecnica: {
+          url: 'https://storage.googleapis.com/riff-catalogo-staging/productos/tmp-abc/catalogo-general-riff-2025.pdf',
+          storagePath: 'productos/tmp-abc/catalogo-general-riff-2025.pdf',
+          nombreArchivo: 'catalogo-general-riff-2025.pdf',
+        },
+      });
+      req.flush({ data: EXISTING, error: null, meta: null });
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+    });
+
     it('renders a file input per gallery row plus the ficha and no manual data inputs', async () => {
       await setup({});
       await expectCategoriesFlushed();

@@ -39,6 +39,12 @@ El panel SHALL implementar el formulario de producto en páginas dedicadas (`/pr
 - **THEN** se muestra un mensaje de error accionable en español junto al control de subida (o banner de error del formulario)
 - **AND** el formulario no queda alterado (ningún ítem de galería/ficha parcial es registrado)
 
+#### Scenario: Nombre de archivo de ficha técnica autocompletado
+- **GIVEN** el usuario ha subido un PDF de ficha técnica y no ha editado manualmente «nombre de archivo»
+- **WHEN** el formulario arma el payload de guardado
+- **THEN** `fichaTecnica.nombreArchivo` es el nombre del archivo saneado por el backend (última segmento de `storagePath`), nunca la URL pública
+- **AND** si el usuario edita manualmente «nombre de archivo», su valor prevalece
+
 #### Scenario: Volver al listado
 - **WHEN** el usuario activa «Volver al listado» (o el breadcrumb)
 - **THEN** el router navega a `/products` sin emitir ninguna petición de guardado

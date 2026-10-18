@@ -1,4 +1,4 @@
-import { ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, ConflictException, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpExceptionFilter } from './http-exception.filter';
 
 interface ResponseLike {
@@ -79,5 +79,33 @@ describe('HttpExceptionFilter', () => {
     };
     expect(body.error.message).toBe('Http Exception');
     expect(body.error.error).toBe('HttpException');
+  });
+
+  it('logs the unexpected exception stack for non-HttpException errors (diagnosable 500s)', () => {
+    const errorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+    const json = jest.fn();
+    const status = jest.fn().mockReturnValue({ json });
+    const host = makeHost('/api/v1/products', { status });
+
+    new HttpExceptionFilter().catch(new Error('unexpected boom'), host);
+
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0][0]).toMatch(/unexpected boom/);
+    expect(errorSpy.mock.calls[0][0]).toMatch(/ERROR: unexpected boom/u);
+    expect(status).toHaveBeenCalledWith(500);
+    errorSpy.mockRestore();
+  });
+
+  it('does not log unexpected stacks for handled HttpExceptions', () => {
+    const errorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+    const json = jest.fn();
+    const status = jest.fn().mockReturnValue({ json });
+    const host = makeHost('/api/v1/products', { status });
+
+    new HttpExceptionFilter().catch(new ConflictException('SKU already in use'), host);
+
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(status).toHaveBeenCalledWith(409);
+    errorSpy.mockRestore();
   });
 });
