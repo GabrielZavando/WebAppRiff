@@ -33,21 +33,30 @@ describe('WebhookCatalogChangeNotifier', () => {
     jest.restoreAllMocks();
   });
 
-  describe('SC-006 unset URL/token is a no-op', () => {
-    it('sends nothing when the URL is unset', () => {
+  describe('SC-006 unset URL/token is an observable no-op (warns)', () => {
+    it('sends nothing and warns naming the URL when the URL is unset', () => {
       delete process.env.CATALOG_REBUILD_WEBHOOK_URL;
       process.env.CATALOG_REBUILD_WEBHOOK_TOKEN = TOKEN;
       const notifier = new WebhookCatalogChangeNotifier();
       notifier.notifyChange(SAMPLE_EVENT);
       expect(fetchMock).not.toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      const message = String(warnSpy.mock.calls[0][0]);
+      expect(message).toContain('CATALOG_REBUILD_WEBHOOK_URL');
+      expect(message).toContain('category');
+      expect(message).not.toContain(TOKEN);
     });
 
-    it('sends nothing when the token is unset', () => {
+    it('sends nothing and warns naming the token when the token is unset', () => {
       process.env.CATALOG_REBUILD_WEBHOOK_URL = URL;
       delete process.env.CATALOG_REBUILD_WEBHOOK_TOKEN;
       const notifier = new WebhookCatalogChangeNotifier();
       notifier.notifyChange(SAMPLE_EVENT);
       expect(fetchMock).not.toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      const message = String(warnSpy.mock.calls[0][0]);
+      expect(message).toContain('CATALOG_REBUILD_WEBHOOK_TOKEN');
+      expect(message).not.toContain(URL);
     });
   });
 

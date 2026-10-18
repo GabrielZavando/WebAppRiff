@@ -110,9 +110,10 @@ gcloud run deploy ${SERVICE} \
 Notas:
 
 - `PORT` **no** se fija: Cloud Run inyecta `PORT=8080` y `resolvePort` lo lee.
-- Sin `RESEND_API_KEY` (notifier no-op con warning) y **sin secretos**: el
-  webhook de catálogo queda no-op en staging (se activará con el pipeline de
-  rebuild del sitio, change posterior).
+- Sin `RESEND_API_KEY` (notifier no-op con warning). El webhook de rebuild del
+  catálogo se activa en el paso 5.1 (Coolify + Secret Manager); si no se
+  configura, el backend registra un `warn` explícito y no dispara rebuilds
+  (no-op observable, sin fallo silencioso).
 - Escalado a cero (`--min-instances=0`); techo `--max-instances=2`.
 - Sin dominio propio: usar la URL `*.run.app` que imprime el comando y
   anótala:
@@ -121,6 +122,69 @@ Notas:
 export API_URL=$(gcloud run services describe ${SERVICE} \
   --project=${PROJECT_ID} --region=${REGION} --format='value(status.url)')
 echo "URL staging: ${API_URL}"
+```
+
+## 5.1 Activar el rebuild del catálogo (webhook de Coolify + secretos)
+
+> Change `public-catalog-fixes`. El backend dispara un rebuild del sitio Astro
+> (SSG) cuando cambia cualquier entidad pública del catálogo, haciendo `POST` al
+> `CATALOG_REBUILD_WEBHOOK_URL` con `Authorization: Bearer
+> CATALOG_REBUILD_WEBHOOK_TOKEN`. Sin estas variables el backend solo registra un
+> `warn` (no-op observable).
+
+**a. Crear el deploy webhook del frontend en Coolify** (panel, manual):
+
+1. En Coolify, abrir el recurso del sitio público de staging (`web-staging`, que
+   sirve `https://staging.somosriff.cl`).
+2. Ir a **Webhooks → Deploy Webhook** y copiar la URL generada
+   (p. ej. `https://coolify.<host>/api/v1/deploy?uuid=<uuid>&force=false`).
+   El deploy webhook de Coolify acepta un `POST` autenticado con el token
+   configurado en el recurso; ese token es el valor de
+   `CATALOG_REBUILD_WEBHOOK_TOKEN`.
+3. (Recomendado) rotar/definir un token dedicado para el backend y guardarlo; no
+   se expone en logs ni en el cuerpo de la petición.
+
+**b. Guardar URL y token como secretos en Secret Manager**:
+
+```bash
+printf '%s' "https://coolify.<host>/api/v1/deploy?uuid=<uuid>&force=false" | \
+  gcloud secrets create CATALOG_REBUILD_WEBHOOK_URL \
+  --project=${PROJECT_ID} --data-file=-
+
+printf '%s' "<coolify-deploy-token>" | \
+  gcloud secrets create CATALOG_REBUILD_WEBHOOK_TOKEN \
+  --project=${PROJECT_ID} --data-file=-
+```
+
+**c. Permitir al runtime SA leer los secretos**:
+
+```bash
+for SECRET in CATALOG_REBUILD_WEBHOOK_URL CATALOG_REBUILD_WEBHOOK_TOKEN; do
+  gcloud secrets add-iam-policy-binding ${SECRET} \
+    --project=${PROJECT_ID} \
+    --member="serviceAccount:${SA_EMAIL}" \
+    --role="roles/secretmanager.secretAccessor"
+done
+```
+
+**d. Montarlos en el servicio** (añadir al `gcloud run deploy` del paso 5; repetir
+el deploy con los mismos flags más esta línea):
+
+```bash
+  --set-secrets "CATALOG_REBUILD_WEBHOOK_URL=CATALOG_REBUILD_WEBHOOK_URL:latest,CATALOG_REBUILD_WEBHOOK_TOKEN=CATALOG_REBUILD_WEBHOOK_TOKEN:latest"
+```
+
+**e. Verificar**:
+
+```bash
+gcloud run services describe ${SERVICE} \
+  --project=${PROJECT_ID} --region=${REGION} \
+  --format='value(spec.template.spec.containers[0].env)' | tr ',' '\n' | grep CATALOG_REBUILD
+# Esperado: ambas variables presentes (referenciando el secreto, sin valor plano).
+
+# Ciclo end-to-end: editar el título de un producto en el admin de staging,
+# confirmar el deploy disparado en Coolify y ver el título nuevo en
+# https://staging.somosriff.cl (tras terminar el build de Astro).
 ```
 
 ## 6. Smoke post-deploy
@@ -241,9 +305,10 @@ El borrado real (> 48 h) se verifica en stage posterior (tarea 5.3 del change
 
 ## Notas
 
-- **Webhook de catálogo no-op**: en staging no se configuran
-  `CATALOG_REBUILD_WEBHOOK_URL`/`_TOKEN`; el rebuild automático de Astro se
-  activará en un change posterior (pipeline de rebuild del sitio).
+- **Rebuild del catálogo**: se activa en el paso 5.1 (webhook de Coolify +
+  Secret Manager). Sin `CATALOG_REBUILD_WEBHOOK_URL`/`_TOKEN`, el backend solo
+  emite un `warn` explícito al mutar catálogo (no-op observable). El rebuild es
+  un build completo de Astro (tarda minutos), no una revalidación parcial.
 - **Catálogo vacío**: el smoke solo exige arreglo `data`; para smoke "no
   vacío", ejecutar `npm run seed:catalog` / `npm run seed:productos` apuntando
   a `riff-catalogo-staging` (ADC local: `gcloud auth application-default
