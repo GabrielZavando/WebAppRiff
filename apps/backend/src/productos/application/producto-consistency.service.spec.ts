@@ -1,3 +1,5 @@
+import { ConflictException, NotFoundException } from '@nestjs/common';
+
 import { ProductoConsistencyService } from './producto-consistency.service';
 
 // Mock the shared sanitization lib: real sanitization correctness is covered by
@@ -44,5 +46,44 @@ describe('ProductoConsistencyService.sanitizeDescriptions', () => {
     expect(stripHtmlToText).toHaveBeenCalledWith('<i>x</i>');
     expect(sanitizeRichHtml).not.toHaveBeenCalled();
     expect(out.descripcionLarga).toBeUndefined();
+  });
+});
+
+describe('ProductoConsistencyService.assertConsistency', () => {
+  const findById = jest.fn();
+  const belongsToCategoria = jest.fn();
+  const service = new ProductoConsistencyService(
+    { findById } as never,
+    { belongsToCategoria } as never,
+    { sanitizeRichHtml, stripHtmlToText } as never,
+  );
+
+  beforeEach(() => jest.clearAllMocks());
+
+  it('defaults a missing categoriaId to sin-categoria and validates it exists', async () => {
+    findById.mockResolvedValue({ id: 'sin-categoria' });
+    await expect(service.assertConsistency(undefined, null)).resolves.toBe('sin-categoria');
+    expect(findById).toHaveBeenCalledWith('sin-categoria');
+  });
+
+  it('throws 404 when the effective category does not exist (no subcategoria)', async () => {
+    findById.mockResolvedValue(null);
+    await expect(service.assertConsistency('c-missing', null)).rejects.toThrow(
+      new NotFoundException('Category not found'),
+    );
+  });
+
+  it('accepts a subcategoria that belongs to the effective category without category lookup', async () => {
+    belongsToCategoria.mockResolvedValue(true);
+    await expect(service.assertConsistency('c1', 's1')).resolves.toBe('c1');
+    expect(belongsToCategoria).toHaveBeenCalledWith('s1', 'c1');
+    expect(findById).not.toHaveBeenCalled();
+  });
+
+  it('throws 409 when the subcategoria does not belong to the category', async () => {
+    belongsToCategoria.mockResolvedValue(false);
+    await expect(service.assertConsistency('c1', 's9')).rejects.toThrow(
+      new ConflictException('Subcategoria does not belong to the category'),
+    );
   });
 });

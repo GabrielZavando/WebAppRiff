@@ -2,15 +2,27 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { FIREBASE_APP, FIREBASE_AUTH, FIRESTORE } from '../src/infrastructure/firebase/firebase.tokens';
+import { FILE_STORAGE_PORT } from '../src/infrastructure/storage/file-storage.port';
 import { I_EMAIL_NOTIFIER } from '../src/email/domain/iemail-notifier';
 import { buildValidationOptions } from '../src/common/config/validation.config';
 import { createFakeFirestore } from './fake-firestore';
 import { SEED_DATA } from './fixtures/seed-data';
 
+export interface RecordedUpload {
+  buffer: Buffer;
+  storagePath: string;
+  contentType: string;
+}
+
 export interface TestApp {
   app: INestApplication;
   /** Fake email port that records every notification (never sends a real email). */
   emailNotifierMock: { sendEmail: jest.Mock };
+  /** Fake storage port recording every upload (never touches real GCS). */
+  fileStoragePort: {
+    upload: jest.Mock;
+    recordedUploads: RecordedUpload[];
+  };
 }
 
 /**
@@ -29,9 +41,20 @@ export async function createTestApp(): Promise<TestApp> {
           return { uid: 'u-admin', role: 'admin' } as never;
         case 'editor-token':
           return { uid: 'u-editor', role: 'editor' } as never;
+        case 'readonly-token':
+          return { uid: 'u-readonly', role: 'view-only' } as never;
         default:
           throw new Error('Invalid token');
       }
+    }),
+  };
+
+  const recordedUploads: RecordedUpload[] = [];
+  const fileStoragePort = {
+    recordedUploads,
+    upload: jest.fn(async (buffer: Buffer, storagePath: string, contentType: string) => {
+      recordedUploads.push({ buffer, storagePath, contentType });
+      return `https://storage.googleapis.com/fake-bucket/${storagePath}`;
     }),
   };
 
@@ -44,6 +67,8 @@ export async function createTestApp(): Promise<TestApp> {
     .useValue({})
     .overrideProvider(FIREBASE_AUTH)
     .useValue(authMock)
+    .overrideProvider(FILE_STORAGE_PORT)
+    .useValue(fileStoragePort)
     .overrideProvider(I_EMAIL_NOTIFIER)
     .useValue(emailNotifierMock)
     .compile();
@@ -57,5 +82,5 @@ export async function createTestApp(): Promise<TestApp> {
   // Belt-and-suspenders: never let a developer .env fire real emails.
   delete process.env.RESEND_API_KEY;
 
-  return { app, emailNotifierMock };
+  return { app, emailNotifierMock, fileStoragePort };
 }

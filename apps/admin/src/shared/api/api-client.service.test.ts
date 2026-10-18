@@ -163,4 +163,75 @@ describe('ApiClientService', () => {
       expect((caught as ApiError).status).toBe(400);
     });
   });
+
+  describe('postFormData (uploads, change admin-uploads)', () => {
+    it('POSTs the FormData as-is to the backend and unwraps data', () => {
+      let result: { url: string } | undefined;
+
+      const formData = new FormData();
+      formData.append('file', new Blob(['x'], { type: 'image/webp' }), 'a.webp');
+
+      client
+        .postFormData<{ url: string }>('uploads/images', formData)
+        .subscribe((value) => (result = value));
+
+      const req = http.expectOne('http://localhost:3000/api/v1/uploads/images');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toBeInstanceOf(FormData);
+      req.flush({ data: { url: 'https://x/y.webp' }, error: null, meta: null });
+
+      expect(result).toEqual({ url: 'https://x/y.webp' });
+    });
+
+    it('does not override the multipart Content-Type (browser sets the boundary)', () => {
+      const formData = new FormData();
+      formData.append('file', new Blob(['x']), 'a.webp');
+
+      client.postFormData('uploads/images', formData).subscribe();
+
+      const req = http.expectOne('http://localhost:3000/api/v1/uploads/images');
+      expect(req.request.body).toBeInstanceOf(FormData);
+      const headerKeys = Object.keys(req.request.headers as unknown as Record<string, unknown>)
+        .map((key) => key.toLowerCase());
+      expect(headerKeys).not.toContain('content-type');
+    });
+
+    it('maps backend failures to ApiError with the envelope message', () => {
+      const formData = new FormData();
+
+      let caught: unknown;
+      client.postFormData('uploads/images', formData).subscribe({
+        next: () => fail('should not succeed'),
+        error: (error: unknown) => (caught = error),
+      });
+
+      const req = http.expectOne('http://localhost:3000/api/v1/uploads/images');
+      req.flush(
+        { data: null, error: { message: 'Failed to upload file', code: null }, meta: null },
+        { status: 500, statusText: 'Internal Server Error' },
+      );
+
+      expect(caught).toBeInstanceOf(ApiError);
+      expect((caught as ApiError).message).toBe('Failed to upload file');
+      expect((caught as ApiError).status).toBe(500);
+    });
+
+    it('propagates 400 validation failures with the backend message', () => {
+      const formData = new FormData();
+
+      let caught: unknown;
+      client.postFormData('uploads/images', formData).subscribe({
+        next: () => fail('should not succeed'),
+        error: (error: unknown) => (caught = error),
+      });
+
+      const req = http.expectOne('http://localhost:3000/api/v1/uploads/images');
+      req.flush(
+        { data: null, error: { message: 'Only jpg, jpeg, png or webp files are allowed', code: null }, meta: null },
+        { status: 400, statusText: 'Bad Request' },
+      );
+
+      expect((caught as ApiError).status).toBe(400);
+    });
+  });
 });
