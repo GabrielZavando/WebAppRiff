@@ -23,7 +23,7 @@ import { AlertComponent } from '../../../shared/components/ui/alert/alert.compon
 import { ButtonComponent } from '../../../shared/components/ui/button/button.component';
 import { PageBreadcrumbComponent } from '../../../shared/components/common/page-breadcrumb/page-breadcrumb.component';
 import { RoleService } from '../../auth/role.service';
-import { fieldConflictMessage } from '../api-error-mapping';
+import { fieldConflictMessage, saveErrorMessage } from '../api-error-mapping';
 import { UploadFieldComponent } from '../components/upload-field/upload-field.component';
 import { UploadedAsset } from '../upload.service';
 import {
@@ -270,7 +270,7 @@ export class ProductoFormPageComponent implements OnInit {
         } else if (conflict !== null && conflict.field === 'slug') {
           this.slugConflict.set(conflict.message);
         } else {
-          this.formError.set(error.message);
+          this.formError.set(saveErrorMessage(error));
         }
       } else {
         this.formError.set('No se pudo guardar el producto.');

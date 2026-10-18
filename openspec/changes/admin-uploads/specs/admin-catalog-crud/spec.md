@@ -45,6 +45,12 @@ El panel SHALL implementar el formulario de producto en páginas dedicadas (`/pr
 - **THEN** `fichaTecnica.nombreArchivo` es el nombre del archivo saneado por el backend (última segmento de `storagePath`), nunca la URL pública
 - **AND** si el usuario edita manualmente «nombre de archivo», su valor prevalece
 
+#### Scenario: Guardar un producto inexistente (404) muestra mensaje amigable
+- **GIVEN** el usuario guarda una edición (`PATCH /products/:id`) de un producto que ya no existe
+- **WHEN** el backend responde `404`
+- **THEN** el formulario muestra un mensaje en español («No se pudo encontrar el producto. Puede que haya sido eliminado.») en lugar del texto crudo del backend
+- **AND** la edición `PUT`/`PATCH` de productos existentes sigue funcionando: el controlador expone ambos verbos sobre `/api/v1/products/{id}`
+
 #### Scenario: Volver al listado
 - **WHEN** el usuario activa «Volver al listado» (o el breadcrumb)
 - **THEN** el router navega a `/products` sin emitir ninguna petición de guardado
