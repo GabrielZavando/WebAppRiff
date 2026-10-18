@@ -63,3 +63,4 @@ Spot E2E del 2026-10-18 (edición de un producto recién creado) reveló `404 Ca
 
 - [x] 9.1 `ProductoController`: separar en dos handlers `@Patch(':id')` y `@Put(':id')` que delegan en un método privado compartido (spec `docs/api/api-spec.yml` documenta ambos verbos). TDD: e2e `productos.e2e-spec.ts` (PATCH y PUT → 200/401).
 - [x] 9.2 Formulario admin: mapear `404` al mensaje amigable «No se pudo encontrar el producto. Puede que haya sido eliminado.» vía `saveErrorMessage` en `api-error-mapping.ts`. TDD: test de página con `PATCH` 404.
+- [x] 9.3 Deploy a staging (imagen `sha-48f6d3b7`, revisión `riff-api-staging-00005-sv5`) y verificación E2E: `PATCH /api/v1/products/:id` sin token → 401 (antes 404); flujo autenticado POST `201` → PATCH `200` → DELETE `200`. El redeploy del admin en Coolify (mensaje amigable 404) sigue manual.
