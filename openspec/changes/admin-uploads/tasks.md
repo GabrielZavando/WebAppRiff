@@ -32,7 +32,7 @@
 ## 5. Infraestructura y despliegue (manual, bloqueante para el cierre)
 
 - [x] 5.1 **TAREA MANUAL**: crear regla de ciclo de vida del bucket `riff-catalogo-staging.firebasestorage.app` con acción Delete y `matchesPrefix: productos/tmp-` + `age: 48` horas (comando `gcloud storage buckets update --lifecycle-file`). Ejecutada y verificada vía `gcloud storage buckets describe` (2026-10-17). Comando y escenario de verificación documentados en `docs/runbooks/backend-staging-cloud-run.md` (sección 9).
-- [ ] 5.2 Deploy backend a `riff-api-staging` (Cloud Run) y admin a `admin-staging` (Coolify); gate `make ci` verde.
+- [x] 5.2 Deploy backend a `riff-api-staging` (Cloud Run) y admin a `admin-staging` (Coolify); gate `make ci` verde. — Backend deployado desde `feat/admin-uploads` (sha-70b9342, revisión riff-api-staging-00003-gg2; smoke: /health firebase up, products con data, CORS OK, `POST /api/v1/uploads/images` sin token → 401). El redeploy del admin en Coolify sigue manual (paso 7 del runbook).
 - [ ] 5.3 Verificación manual E2E en staging: subir imagen (201 + preview en catálogo público sirve el webp), subir PDF (201 + link funciona), 403 con rol view-only, y lifecycle spot-check con objeto de prueba.
 
 ## 6. Stretch (no bloquea el cierre del change)
@@ -44,3 +44,15 @@
 
 - [x] 7.1 `make ci` verde (openspec validate + lint + typecheck + test + audit).
 - [ ] 7.2 Confirmar tarea 5.1 (lifecycle rule) verificada; recién entonces considerar el change terminado para `/opsx-archive`. — Regla creada y activa (5.1 ✅); queda pendiente la verificación E2E en staging (5.3).
+
+## 8. Correcciones post-verificación (spot E2E staging)
+
+Spot E2E del 2026-10-18 reveló 500 al guardar producto con imagen + PDF. Diagnóstico:
+(a) el filtro global de excepciones tragaba el stack sin loguearlo; (b) Firestore
+rechazaba el documento porque `plainToInstance` (ValidationPipe) entrega `galeria`/
+`fichaTecnica` como instancias de DTO (prototipos custom); (c) adicionalmente el
+frontend enviaba `nombreArchivo` con la URL pública completa.
+
+- [x] 8.1 `HttpExceptionFilter`: loguear mensaje completo + stack via `Logger.error` para errores no-`HttpException` (envelope sigue genérico). TDD con spies (`http-exception.filter.spec.ts`).
+- [x] 8.2 `ProductoRepository`: normalizar documentos a objetos plain (`toPlainDocument`, preservando `Date`) antes de `.set()`/`.update()`. TDD: create + update con instancias de DTO (`producto.repository.spec.ts`); repro local con Firestore de staging → 201.
+- [x] 8.3 Formulario admin: `onFichaUploaded` autocompleta `fichaNombre` con el basename saneado de `storagePath` (helper `fileNameFromStoragePath`; fallback del payload también hace basename, nunca la URL). TDD: test de payload sin input manual (`producto-form-page.component.test.ts`).

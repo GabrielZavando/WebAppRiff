@@ -72,6 +72,11 @@ type ProductoFormRawValue = {
   publicado: boolean;
 };
 
+/** Last path segment of a storage path (e.g. `productos/tmp-x/a.pdf` → `a.pdf`). */
+function fileNameFromStoragePath(storagePath: string): string {
+  return storagePath.split('/').pop() ?? '';
+}
+
 /**
  * Product create/edit page (spec `admin-catalog-crud` + change
  * `admin-uploads`): dedicated pages (`/products/new`, `/products/:id`)
@@ -224,10 +229,11 @@ export class ProductoFormPageComponent implements OnInit {
     this.galeriaArray.at(index).patchValue({ url: asset.url, storagePath: asset.storagePath });
   }
 
-  /** Autocompletes the hidden ficha técnica `url`/`storagePath` (task 4.2). */
+  /** Autocompletes the hidden ficha técnica `url`/`storagePath` + display name (task 4.2). */
   onFichaUploaded(asset: UploadedAsset): void {
     this.form.controls.fichaUrl.setValue(asset.url);
     this.form.controls.fichaStorage.setValue(asset.storagePath);
+    this.form.controls.fichaNombre.setValue(fileNameFromStoragePath(asset.storagePath));
   }
 
   /** True when the form can be submitted (valid, not saving, no uploads). */
@@ -354,7 +360,9 @@ export class ProductoFormPageComponent implements OnInit {
       url: value.fichaUrl.trim(),
       storagePath: value.fichaStorage.trim(),
       nombreArchivo:
-        value.fichaNombre.trim() !== '' ? value.fichaNombre.trim() : value.fichaUrl.trim(),
+        value.fichaNombre.trim() !== ''
+          ? value.fichaNombre.trim()
+          : fileNameFromStoragePath(value.fichaStorage.trim()),
     } satisfies FichaTecnica;
   }
 

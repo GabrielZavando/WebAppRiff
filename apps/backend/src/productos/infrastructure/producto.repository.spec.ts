@@ -209,6 +209,45 @@ describe('ProductoRepository', () => {
         categoriaId: 'cat-1',
       });
     });
+
+    it('serializes DTO instances in galeria/fichaTecnica as plain objects (Firestore-safe)', async () => {
+      class GaleriaItemDto {
+        url = 'https://cdn/img.webp';
+        storagePath = 'productos/persistentes/i.webp';
+        alt = 'Frente';
+        orden = 0;
+      }
+      class FichaTecnicaDto {
+        nombreArchivo = 'ficha.pdf';
+        storagePath = 'productos/persistentes/ficha.pdf';
+        url = 'https://cdn/ficha.pdf';
+      }
+      const result = await repo.create({
+        sku: 'SKU-DTO',
+        titulo: 'Válvula',
+        slug: 'valvula',
+        descripcionBreve: 'Breve',
+        descripcionLarga: '',
+        categoriaId: 'cat-1',
+        subcategoriaId: null,
+        atributos: [],
+        precio: { valor: 100, visible: true },
+        stock: { disponible: true, cantidad: null },
+        galeria: [new GaleriaItemDto()],
+        fichaTecnica: new FichaTecnicaDto(),
+        destacado: false,
+        publicado: true,
+      });
+      expect(result.id).toBeTruthy();
+      const saved = store.get(`productos/${result.id}`) as {
+        galeria: Record<string, unknown>[];
+        fichaTecnica: Record<string, unknown>;
+      };
+      expect(saved.galeria).toEqual([{ url: 'https://cdn/img.webp', storagePath: 'productos/persistentes/i.webp', alt: 'Frente', orden: 0 }]);
+      expect(saved.fichaTecnica).toEqual({ nombreArchivo: 'ficha.pdf', storagePath: 'productos/persistentes/ficha.pdf', url: 'https://cdn/ficha.pdf' });
+      expect(Object.getPrototypeOf(saved.galeria[0])).toBe(Object.prototype);
+      expect(Object.getPrototypeOf(saved.fichaTecnica)).toBe(Object.prototype);
+    });
   });
 
   describe('findById', () => {
@@ -333,6 +372,20 @@ describe('ProductoRepository', () => {
       expect(store.get('productos/p1')?.titulo).toBe('Nuevo');
       expect(updated.titulo).toBe('Nuevo');
       expect(updated.publicado).toBe(false);
+    });
+
+    it('serializes DTO instances passed to update as plain objects (Firestore-safe)', async () => {
+      store.set('productos/p1', baseProduct());
+      class GaleriaItemDto {
+        url = 'https://cdn/img.webp';
+        storagePath = 'productos/persistentes/i.webp';
+        alt = 'Perfil';
+        orden = 1;
+      }
+      await repo.update('p1', { galeria: [new GaleriaItemDto()] });
+      const saved = store.get('productos/p1') as { galeria: Record<string, unknown>[] };
+      expect(saved.galeria).toEqual([{ url: 'https://cdn/img.webp', storagePath: 'productos/persistentes/i.webp', alt: 'Perfil', orden: 1 }]);
+      expect(Object.getPrototypeOf(saved.galeria[0])).toBe(Object.prototype);
     });
 
     it('throws when the doc does not exist after update', async () => {

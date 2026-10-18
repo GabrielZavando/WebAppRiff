@@ -40,6 +40,27 @@ const MEMORY_SORT_FIELDS: readonly string[] = ['titulo', 'precio.valor', 'actual
 
 type WhereClause = { field: string; op: string; value: unknown };
 
+/**
+ * Firestore rejects objects with custom prototypes (e.g. DTO instances
+ * produced by class-transformer). Nested maps such as `galeria` and
+ * `fichaTecnica` must be re-serialized as plain objects while keeping
+ * `Date` values as-is for Firestore to map them to timestamps.
+ */
+function toPlainDocument(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(toPlainDocument);
+  }
+  if (value instanceof Date) {
+    return value;
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, v]) => [key, toPlainDocument(v)]),
+    );
+  }
+  return value;
+}
+
 function buildWhereClauses(filter: ProductoFilter): WhereClause[] {
   const clauses: WhereClause[] = [];
   if (filter.categoriaId !== undefined) clauses.push({ field: 'categoriaId', op: '==', value: filter.categoriaId });
@@ -83,7 +104,9 @@ export class ProductoRepository implements IProductRepository, IProductQueryRepo
       creadoEn: now,
       actualizadoEn: now,
     };
-    await this.firestore.collection(COLLECTION).doc(id).set(doc);
+    await this.firestore.collection(COLLECTION).doc(id).set(
+      toPlainDocument(doc) as Omit<Producto, 'id'>,
+    );
     return { id, ...doc };
   }
 
@@ -211,7 +234,7 @@ export class ProductoRepository implements IProductRepository, IProductQueryRepo
     await this.firestore
       .collection(COLLECTION)
       .doc(id)
-      .update({ ...input, actualizadoEn: new Date() });
+      .update(toPlainDocument({ ...input, actualizadoEn: new Date() }) as Record<string, unknown>);
     const updated = await this.findById(id);
     if (!updated) {
       throw new Error('Producto not found after update');
