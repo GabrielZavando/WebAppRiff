@@ -71,6 +71,22 @@ export class ApiClientService {
     return this.request<T>('POST', path, body);
   }
 
+  /**
+   * POST with a raw `FormData` (multipart uploads, change `admin-uploads`).
+   * Sends the form untouched so the browser applies the
+   * `multipart/form-data; boundary=...` header itself; `authInterceptor` still
+   * attaches the Bearer token. Same envelope unwrap / `toApiError` mapping.
+   */
+  postFormData<T>(path: string, formData: FormData): Observable<T> {
+    const url = `${this.baseUrl}/${path.replace(/^\//, '')}`;
+    return this.http
+      .request<ApiEnvelope<T>>('POST', url, { body: formData, observe: 'response' })
+      .pipe(
+        map((response) => this.unwrap<T>(response)),
+        catchError((error: unknown) => throwError(() => this.toApiError(error))),
+      );
+  }
+
   put<T>(path: string, body: unknown): Observable<T> {
     return this.request<T>('PUT', path, body);
   }

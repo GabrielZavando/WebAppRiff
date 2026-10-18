@@ -173,6 +173,72 @@ datos del usuario). Al confirmarse, actualizar la nota de bloqueo de la tarea
   ```
 - El servicio antiguo de `webappriff` **no se toca en ningún caso**.
 
+## 9. Regla de ciclo de vida del bucket (uploads huérfanos)
+
+> Requisito de `admin-uploads` (task 5.1). Los endpoints
+> `POST /api/v1/uploads/*` escriben siempre bajo
+> `productos/<productoId>/tmp-<uuid>/` (o `productos/tmp-<uuid>/` en creación).
+> La limpieza de los huérfanos es responsabilidad del **bucket**, no del
+> backend: sin esta regla, cada subida descartada del formulario se acumula
+> para siempre en Storage.
+
+Ejecutar una sola vez con el operador autenticado en
+`riff-catalogo-staging` (permisos: `roles/storage.admin` sobre el proyecto o el
+bucket). El bucket real de Storage del proyecto es
+`riff-catalogo-staging.firebasestorage.app` (nomenclatura actual de Firebase;
+coincide con `FIREBASE_STORAGE_BUCKET` en `apps/backend/.env`):
+
+```bash
+gcloud storage buckets update gs://riff-catalogo-staging.firebasestorage.app \
+  --project=${PROJECT_ID} \
+  --lifecycle-file=<(cat <<'JSON'
+[
+  {
+    "action": {"type": "Delete"},
+    "condition": {
+      "age": 48,
+      "matchesPrefix": ["productos/tmp-"]
+    }
+  }
+]
+JSON
+)
+```
+
+Notas sobre la regla:
+
+- `age: 48` + `matchesPrefix: productos/tmp-` borra **solo** objetos cuyo path
+  comience con ese prefijo literal: los objetos finales de migración
+  (`productos/<id>/<nombre>.webp`) no se tocan. Los uploads HTTP del backend
+  (`admin-uploads`, design D5) van siempre a `productos/tmp-<uuid>/` (creación
+  y edición), así que el prefijo único matchea el 100% de los huérfanos.
+  Nota: si el formato del archivo de la regla es un array plano, `gcloud
+  storage buckets update` falla con `'list' object has no attribute 'items'`;
+  usar el objeto envuelto en `"rule"`, como arriba.
+- La condición por edad es > 48 horas desde la última modificación del objeto
+  (creación, en la práctica).
+
+Verificación (escenario de prueba, siempre con objeto desechable bajo `tmp-`):
+
+```bash
+# 1. Subir un objeto de prueba (el propio endpoint crea tmp-<uuid>):
+curl -fsS -X POST "${API_URL}/api/v1/uploads/images" \
+  -H "Authorization: Bearer <token-valido-editor>" \
+  -F "file=@/tmp/spotcheck.webp" | tee /tmp/spotcheck.json
+SPOT_PATH=$(node -e "console.log(JSON.parse(require('fs').readFileSync('/tmp/spotcheck.json')).data.storagePath)")
+
+# 2. Confirmar que el objeto existe y cae bajo un directorio tmp-:
+gcloud storage ls "gs://riff-catalogo-staging.firebasestorage.app/${SPOT_PATH}" --project=${PROJECT_ID}
+# → debe imprimir la URL del objeto y NO debe faltar 'tmp-' en el path.
+
+# 3. Confirmar la regla activa en el bucket:
+gcloud storage buckets describe gs://riff-catalogo-staging.firebasestorage.app \
+  --project=${PROJECT_ID} --format=json | jq '.lifecycle_config'
+```
+
+El borrado real (> 48 h) se verifica en stage posterior (tarea 5.3 del change
+`admin-uploads`): spot-check con objeto de prueba cuya edad supere la ventana.
+
 ## Notas
 
 - **Webhook de catálogo no-op**: en staging no se configuran

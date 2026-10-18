@@ -51,6 +51,40 @@ components:
               type: string
               description: Correlation id for tracing (generated per request)
 
+    UploadedAsset:
+      type: object
+      description: Activo subido al bucket público (cambios `admin-uploads`).
+      properties:
+        url:
+          type: string
+          format: uri
+          description: URL pública de descarga (`https://storage.googleapis.com/<bucket>/<storagePath>`)
+          example: "https://storage.googleapis.com/riff-catalogo-staging/productos/tmp-a1b2c3/frente.webp"
+        storagePath:
+          type: string
+          description: Ruta relativa dentro del bucket
+          example: "productos/tmp-a1b2c3/frente.webp"
+
+    UploadResponse:
+      type: object
+      description: Envelope estándar con el activo subido.
+      properties:
+        data:
+          allOf:
+            - $ref: "#/components/schemas/UploadedAsset"
+        error:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/Error"
+        meta:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+            requestId:
+              type: string
+
     HealthResponse:
       type: object
       properties:
@@ -1374,6 +1408,89 @@ paths:
         "403":
           $ref: '#/components/schemas/Error'
         "404":
+          $ref: '#/components/schemas/Error'
+
+  # === UPLOADS ===
+  /api/v1/uploads/images:
+    post:
+      summary: "Subir imagen de galería (superadmin/admin/editor)"
+      description: >
+        Cambio `admin-uploads` (task 4.5). Multipart con campo `file`.
+        Valida magic bytes reales con sharp (no confía en el MIME declarado),
+        acepta jpg/jpeg/png/webp y normaliza jpeg/png a webp. La ruta es
+        siempre `productos/tmp-<uuid>/` (creación y edición; único prefijo
+        literal que matchea la regla de ciclo de vida del bucket: Delete con
+        edad > 48 h). Máximo 5 MB.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "Imagen jpg/jpeg/png/webp, máximo 5 MB (límite multer 5*1024*1024 bytes)"
+      responses:
+        "201":
+          description: Imagen normalizada a webp subida (envuelta en { data, error, meta })
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "413":
+          $ref: '#/components/schemas/Error'
+        "500":
+          $ref: '#/components/schemas/Error'
+
+  /api/v1/uploads/tech-sheet:
+    post:
+      summary: "Subir ficha técnica PDF (superadmin/admin/editor)"
+      description: >
+        Cambio `admin-uploads` (task 4.5). Multipart con campo `file`
+        (mismo patrón de Storage que `/uploads/images`: `productos/tmp-<uuid>/`).
+        Requiere firma `%PDF-` en los primeros bytes y MIME `application/pdf`;
+        se sube sin transformar. Máximo 10 MB.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "PDF válido, máximo 10 MB (límite multer 10*1024*1024 bytes)"
+      responses:
+        "201":
+          description: PDF subido sin transformación (envuelta en { data, error, meta })
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+        "400":
+          $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/schemas/Error'
+        "403":
+          $ref: '#/components/schemas/Error'
+        "413":
+          $ref: '#/components/schemas/Error'
+        "500":
           $ref: '#/components/schemas/Error'
 
   # === COTIZACIONES ===

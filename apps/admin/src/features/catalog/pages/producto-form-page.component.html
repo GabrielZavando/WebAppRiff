@@ -127,51 +127,49 @@
       </section>
 
       <section class="border border-border bg-white p-6">
-        <h2 class="mb-4 font-heading text-base font-semibold text-secondary">
-          Galería (URLs)
-        </h2>
+        <h2 class="mb-4 font-heading text-base font-semibold text-secondary">Galería</h2>
         <p class="mb-3 text-xs text-text-2">
-          Edición por data: url, ruta de Storage, alt y orden. La subida de archivos no está
-          disponible (sin endpoint de uploads).
+          Sube imágenes JPG, PNG o WEBP (máx. 5 MB); se convierten a WEBP automáticamente. Edita
+          solo alt y orden.
         </p>
-        <div formArrayName="galeria" class="flex flex-col gap-2">
+        <div formArrayName="galeria" class="flex flex-col gap-4">
           @for (item of galeriaArray.controls; track $index) {
-            <div [formGroupName]="$index" class="grid gap-2 sm:grid-cols-[2fr_2fr_1fr_80px_auto]">
-              <input
-                [attr.data-galeria-url]="$index"
-                type="text"
-                placeholder="URL pública"
-                class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
-                formControlName="url"
-              />
-              <input
-                [attr.data-galeria-storage]="$index"
-                type="text"
-                placeholder="storagePath"
-                class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
-                formControlName="storagePath"
-              />
-              <input
-                [attr.data-galeria-alt]="$index"
-                type="text"
-                placeholder="alt"
-                class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
-                formControlName="alt"
-              />
-              <input
-                [attr.data-galeria-orden]="$index"
-                type="number"
-                class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
-                formControlName="orden"
-              />
-              <button
-                type="button"
-                [attr.data-remove-galeria]="$index"
-                class="px-2 py-1 text-sm text-error hover:text-error-dark"
-                (click)="removeGaleria($index)"
-              >
-                Quitar
-              </button>
+            <div [formGroupName]="$index" class="flex flex-col gap-2">
+              <div class="flex flex-wrap items-start gap-3">
+                <app-upload-field
+                  kind="gallery-image"
+                  data-upload-galeria
+                  [previewUrl]="item.controls.url.value"
+                  (uploaded)="onGaleriaUploaded($index, $event)"
+                  (uploadingChange)="onUploadingChange($event)"
+                />
+              </div>
+              <div class="grid gap-2 sm:grid-cols-[2fr_80px_auto]">
+                <input
+                  [attr.data-galeria-alt]="$index"
+                  type="text"
+                  placeholder="alt"
+                  class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+                  formControlName="alt"
+                />
+                <input
+                  [attr.data-galeria-orden]="$index"
+                  type="number"
+                  class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+                  formControlName="orden"
+                />
+                <button
+                  type="button"
+                  [attr.data-remove-galeria]="$index"
+                  class="px-2 py-1 text-sm text-error hover:text-error-dark"
+                  (click)="removeGaleria($index)"
+                >
+                  Quitar
+                </button>
+              </div>
+              <!-- Hidden, autocompleted by the upload control (task 4.1). -->
+              <input type="hidden" formControlName="url" />
+              <input type="hidden" formControlName="storagePath" />
             </div>
           }
         </div>
@@ -273,31 +271,29 @@
       </section>
 
       <section class="border border-border bg-white p-6">
-        <h2 class="mb-4 font-heading text-base font-semibold text-secondary">
-          Ficha técnica (URL)
-        </h2>
+        <h2 class="mb-4 font-heading text-base font-semibold text-secondary">Ficha técnica</h2>
         <div class="flex flex-col gap-3">
-          <input
-            data-ficha-url
-            type="text"
-            placeholder="URL pública"
-            class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
-            formControlName="fichaUrl"
+          <app-upload-field
+            kind="tech-sheet"
+            data-ficha-upload
+            [previewFileName]="form.controls.fichaNombre.value"
+            (uploaded)="onFichaUploaded($event)"
+            (uploadingChange)="onUploadingChange($event)"
           />
+          <label for="p-ficha-nombre" class="block text-sm font-medium text-text"
+            >Nombre de archivo</label
+          >
           <input
-            data-ficha-storage
-            type="text"
-            placeholder="storagePath"
-            class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
-            formControlName="fichaStorage"
-          />
-          <input
+            id="p-ficha-nombre"
             data-ficha-nombre
             type="text"
             placeholder="Nombre de archivo"
             class="h-10 border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
             formControlName="fichaNombre"
           />
+          <!-- Hidden, autocompleted by the upload control (task 4.2). -->
+          <input type="hidden" formControlName="fichaUrl" />
+          <input type="hidden" formControlName="fichaStorage" />
         </div>
       </section>
 
@@ -310,7 +306,7 @@
         >
           Volver al listado
         </button>
-        <app-button data-form-save type="submit" [disabled]="form.invalid || saving()">
+        <app-button data-form-save type="submit" [disabled]="form.invalid || saving() || uploading()">
           {{ isEdit() ? 'Guardar cambios' : 'Crear producto' }}
         </app-button>
       </div>

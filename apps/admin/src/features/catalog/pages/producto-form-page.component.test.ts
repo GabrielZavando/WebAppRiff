@@ -109,6 +109,14 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
     history.replaceState({}, '');
   });
 
+  /** Flushes the categories query for the cascading select (common preamble). */
+  async function expectCategoriesFlushed(): Promise<void> {
+    const catsReq = http.expectOne(`${API_BASE}/categories`);
+    catsReq.flush({ data: CATEGORIAS, error: null, meta: null });
+    await fixture.whenStable();
+    fixture.detectChanges();
+  }
+
   afterEach(() => {
     http.verify();
   });
@@ -117,10 +125,7 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
     it('creates: POSTs the typed payload and returns to the list with flash', async () => {
       await setup({});
       // Categories load for the cascading select.
-      const catsReq = http.expectOne(`${API_BASE}/categories`);
-      catsReq.flush({ data: CATEGORIAS, error: null, meta: null });
-      await fixture.whenStable();
-      fixture.detectChanges();
+      await expectCategoriesFlushed();
 
       setInput('[data-form-sku]', 'RIF-100');
       setInput('[data-form-titulo]', 'Amoladora angular');
@@ -190,6 +195,11 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
       );
       expect((el.querySelector('[data-form-subcategoria]') as HTMLSelectElement).value).toBe('s1');
 
+      // Task 4.3: the preloaded gallery row shows its thumbnail and allows
+      // replacement via the upload control.
+      const galeriaPreview = el.querySelector('app-upload-field[data-upload-galeria] img');
+      expect(galeriaPreview?.getAttribute('src')).toBe('https://storage.googleapis.com/b/p1/0.webp');
+
       setInput('[data-form-titulo]', 'Taladro 18V con maletín');
       submit();
 
@@ -206,10 +216,7 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
   describe('[6.7] cascada categoría → subcategoría', () => {
     it('loads subcategories for the selected category and clears the selection on change', async () => {
       await setup({});
-      const catsReq = http.expectOne(`${API_BASE}/categories`);
-      catsReq.flush({ data: CATEGORIAS, error: null, meta: null });
-      await fixture.whenStable();
-      fixture.detectChanges();
+      await expectCategoriesFlushed();
 
       setInput('[data-form-categoria]', 'c1');
       const subs1 = http.expectOne(`${API_BASE}/subcategories?categoriaId=c1`);
@@ -234,13 +241,24 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
     });
   });
 
-  describe('[6.8] galería y ficha técnica como data', () => {
-    it('adds gallery rows and ficha técnica fields to the payload; no file inputs', async () => {
+  describe('[4.1–4.3] galería y ficha técnica upload-first', () => {
+    /** Assigns a File to a file input (jsdom lacks DataTransfer). */
+    function chooseFile(scope: HTMLElement, selector: string, file: File): void {
+      const input = scope.querySelector(`${selector} input[type="file"]`) as HTMLInputElement;
+      Object.defineProperty(input, 'files', {
+        value: [file] as unknown as FileList,
+        configurable: true,
+      });
+      input.dispatchEvent(new Event('change'));
+    }
+
+    function makeFile(name: string): File {
+      return new File(['x'.repeat(1024)], name, { type: 'image/webp' });
+    }
+
+    it('uploads a gallery image, autocompletes the hidden url/storagePath and posts them', async () => {
       await setup({});
-      const catsReq = http.expectOne(`${API_BASE}/categories`);
-      catsReq.flush({ data: CATEGORIAS, error: null, meta: null });
-      await fixture.whenStable();
-      fixture.detectChanges();
+      await expectCategoriesFlushed();
 
       const el = fixture.nativeElement as HTMLElement;
 
@@ -249,13 +267,48 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
 
       (el.querySelector('[data-add-galeria]') as HTMLButtonElement).click();
       fixture.detectChanges();
-      setInput('[data-galeria-url="0"]', 'https://storage.googleapis.com/b/p2/0.webp');
-      setInput('[data-galeria-storage="0"]', 'productos/p2/0.webp');
+
+      chooseFile(el, '[data-upload-galeria]', makeFile('frente.png'));
+      const uploadReq = http.expectOne(`${API_BASE}/uploads/images`);
+      expect(uploadReq.request.method).toBe('POST');
+      expect(uploadReq.request.headers.get('Content-Type')).toBeNull();
+      expect((uploadReq.request.body as FormData).get('file')).not.toBeNull();
+      uploadReq.flush({
+        data: {
+          url: 'https://storage.googleapis.com/riff-catalogo-staging/productos/tmp-abc/frente.webp',
+          storagePath: 'productos/tmp-abc/frente.webp',
+        },
+        error: null,
+        meta: null,
+      });
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      // The uploaded url renders as thumbnail preview (task 4.3 reload path).
+      const preview = el.querySelector('img');
+      expect(preview?.getAttribute('src')).toBe(
+        'https://storage.googleapis.com/riff-catalogo-staging/productos/tmp-abc/frente.webp',
+      );
+
+      // Only alt/orden remain as manual, editable inputs.
       setInput('[data-galeria-alt="0"]', 'Frente');
       setInput('[data-galeria-orden="0"]', '0');
 
-      setInput('[data-ficha-url]', 'https://storage.googleapis.com/b/p2/ficha.pdf');
-      setInput('[data-ficha-storage]', 'productos/p2/ficha.pdf');
+      // Ficha técnica upload autocompletes url/storagePath; only the display
+      // name stays editable (hidden fields are not text inputs).
+      const fichaFile = new File(['%PDF-1.7'], 'ficha.pdf', { type: 'application/pdf' });
+      chooseFile(el, '[data-ficha-upload]', fichaFile);
+      const fichaUploadReq = http.expectOne(`${API_BASE}/uploads/tech-sheet`);
+      fichaUploadReq.flush({
+        data: {
+          url: 'https://storage.googleapis.com/riff-catalogo-staging/productos/tmp-abc/ficha.pdf',
+          storagePath: 'productos/tmp-abc/ficha.pdf',
+        },
+        error: null,
+        meta: null,
+      });
+      await fixture.whenStable();
+      fixture.detectChanges();
       setInput('[data-ficha-nombre]', 'ficha.pdf');
 
       submit();
@@ -264,15 +317,15 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
       expect(req.request.body).toMatchObject({
         galeria: [
           {
-            url: 'https://storage.googleapis.com/b/p2/0.webp',
-            storagePath: 'productos/p2/0.webp',
+            url: 'https://storage.googleapis.com/riff-catalogo-staging/productos/tmp-abc/frente.webp',
+            storagePath: 'productos/tmp-abc/frente.webp',
             alt: 'Frente',
             orden: 0,
           },
         ],
         fichaTecnica: {
-          url: 'https://storage.googleapis.com/b/p2/ficha.pdf',
-          storagePath: 'productos/p2/ficha.pdf',
+          url: 'https://storage.googleapis.com/riff-catalogo-staging/productos/tmp-abc/ficha.pdf',
+          storagePath: 'productos/tmp-abc/ficha.pdf',
           nombreArchivo: 'ficha.pdf',
         },
       });
@@ -282,24 +335,62 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
       fixture.detectChanges();
     });
 
-    it('renders no <input type="file"> anywhere in the page', async () => {
+    it('renders a file input per gallery row plus the ficha and no manual data inputs', async () => {
       await setup({});
-      const catsReq = http.expectOne(`${API_BASE}/categories`);
-      catsReq.flush({ data: CATEGORIAS, error: null, meta: null });
+      await expectCategoriesFlushed();
+
+      const el = fixture.nativeElement as HTMLElement;
+      // One upload input for the ficha técnica before adding gallery rows...
+      expect(el.querySelectorAll('input[type="file"]').length).toBe(1);
+      (el.querySelector('[data-add-galeria]') as HTMLButtonElement).click();
+      fixture.detectChanges();
+      // ...and one per gallery row after adding them.
+      expect(el.querySelectorAll('input[type="file"]').length).toBe(2);
+
+      // Manual url/storagePath inputs are gone: they are hidden autocompleted
+      // fields now.
+      expect(el.querySelector('[data-galeria-url="0"]')).toBeNull();
+      expect(el.querySelector('[data-galeria-storage="0"]')).toBeNull();
+      expect(el.querySelector('[data-ficha-url]')).toBeNull();
+      expect(el.querySelector('[data-ficha-storage]')).toBeNull();
+    });
+
+    it('disables saving while an upload is in flight and re-enables afterwards', async () => {
+      await setup({});
+      await expectCategoriesFlushed();
+
+      const el = fixture.nativeElement as HTMLElement;
+      setInput('[data-form-sku]', 'RIF-400');
+      setInput('[data-form-titulo]', 'Producto subiendo');
+      (el.querySelector('[data-add-galeria]') as HTMLButtonElement).click();
+      fixture.detectChanges();
+
+      chooseFile(el, '[data-upload-galeria]', makeFile('frente.png'));
+      // Zoneless render is async; flush the pending render before asserting.
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const uploadReq = http.expectOne(`${API_BASE}/uploads/images`);
+      const save = el.querySelector('[data-form-save] button') as HTMLButtonElement;
+      expect(save.disabled).toBe(true);
+
+      uploadReq.flush({
+        data: {
+          url: 'https://storage.googleapis.com/riff-catalogo-staging/productos/tmp-abc/frente.webp',
+          storagePath: 'productos/tmp-abc/frente.webp',
+        },
+        error: null,
+        meta: null,
+      });
       await fixture.whenStable();
       fixture.detectChanges();
 
-      expect(
-        (fixture.nativeElement as HTMLElement).querySelector('input[type="file"]'),
-      ).toBeNull();
+      const saveAfter = el.querySelector('[data-form-save] button') as HTMLButtonElement;
+      expect(saveAfter.disabled).toBe(false);
     });
 
     it('omits galería, ficha técnica, atributos and precio when empty', async () => {
       await setup({});
-      const catsReq = http.expectOne(`${API_BASE}/categories`);
-      catsReq.flush({ data: CATEGORIAS, error: null, meta: null });
-      await fixture.whenStable();
-      fixture.detectChanges();
+      await expectCategoriesFlushed();
 
       setInput('[data-form-sku]', 'RIF-300');
       setInput('[data-form-titulo]', 'Producto mínimo');
@@ -321,10 +412,7 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
   describe('[6.9] errores 409 y validación', () => {
     it('maps the 409 SKU conflict to the sku field', async () => {
       await setup({});
-      const catsReq = http.expectOne(`${API_BASE}/categories`);
-      catsReq.flush({ data: CATEGORIAS, error: null, meta: null });
-      await fixture.whenStable();
-      fixture.detectChanges();
+      await expectCategoriesFlushed();
 
       setInput('[data-form-sku]', 'RIF-001');
       setInput('[data-form-titulo]', 'Duplicado');
@@ -347,10 +435,7 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
 
     it('maps the 409 slug conflict to the slug field', async () => {
       await setup({});
-      const catsReq = http.expectOne(`${API_BASE}/categories`);
-      catsReq.flush({ data: CATEGORIAS, error: null, meta: null });
-      await fixture.whenStable();
-      fixture.detectChanges();
+      await expectCategoriesFlushed();
 
       setInput('[data-form-sku]', 'RIF-400');
       setInput('[data-form-titulo]', 'Slug ocupado');
@@ -373,10 +458,7 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
 
     it('keeps save disabled while invalid and shows required errors per field', async () => {
       await setup({});
-      const catsReq = http.expectOne(`${API_BASE}/categories`);
-      catsReq.flush({ data: CATEGORIAS, error: null, meta: null });
-      await fixture.whenStable();
-      fixture.detectChanges();
+      await expectCategoriesFlushed();
 
       const el = fixture.nativeElement as HTMLElement;
       const saveButton = el.querySelector('[data-form-save] button') as HTMLButtonElement;
@@ -396,10 +478,7 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
   describe('navegación', () => {
     it('returns to the list without saving on Volver al listado', async () => {
       await setup({});
-      const catsReq = http.expectOne(`${API_BASE}/categories`);
-      catsReq.flush({ data: CATEGORIAS, error: null, meta: null });
-      await fixture.whenStable();
-      fixture.detectChanges();
+      await expectCategoriesFlushed();
 
       (fixture.nativeElement as HTMLElement)
         .querySelector('[data-form-back]')

@@ -24,6 +24,8 @@ import { ButtonComponent } from '../../../shared/components/ui/button/button.com
 import { PageBreadcrumbComponent } from '../../../shared/components/common/page-breadcrumb/page-breadcrumb.component';
 import { RoleService } from '../../auth/role.service';
 import { fieldConflictMessage } from '../api-error-mapping';
+import { UploadFieldComponent } from '../components/upload-field/upload-field.component';
+import { UploadedAsset } from '../upload.service';
 import {
   Atributo,
   FichaTecnica,
@@ -71,19 +73,29 @@ type ProductoFormRawValue = {
 };
 
 /**
- * Product create/edit page (tasks 6.6–6.9, spec `admin-catalog-crud`):
- * dedicated pages (`/products/new`, `/products/:id`) covering the full
- * backend DTO. Gallery and ficha técnica are edited as data (`url`,
- * `storagePath`, `alt`, `orden`) — there is deliberately NO file input, since
- * the backend has no HTTP upload endpoint (design Contexto; future domain
- * `admin-uploads`). Category → subcategory selects cascade (design D7):
- * changing the category re-queries `?categoriaId=` and clears the selection.
- * The 409 conflicts map to their fields (design D9) and success returns to
- * the list with a flash banner (D5).
+ * Product create/edit page (spec `admin-catalog-crud` + change
+ * `admin-uploads`): dedicated pages (`/products/new`, `/products/:id`)
+ * covering the full backend DTO. Gallery rows and the ficha técnica are
+ * upload-first: each row exposes an upload control (gallery accepts
+ * jpg/jpeg/png/webp up to 5 MB, the ficha accepts a PDF up to 10 MB) and the
+ * returned `url`/`storagePath` fill hidden, autocompleted form controls —
+ * only `alt`/`orden` (galería) and `nombreArchivo` (ficha) stay editable
+ * (tasks 4.1–4.3, design D7). Editing preloads the thumbnail (or PDF name)
+ * and a re-upload overwrites both hidden fields. Separate category →
+ * subcategory selects cascade (design D7); 409 conflicts map to their fields
+ * (design D9) and success returns to the list with a flash banner (D5).
+ * Saving stays disabled while any upload is in flight.
  */
 @Component({
   selector: 'app-producto-form-page',
-  imports: [ReactiveFormsModule, NgClass, AlertComponent, ButtonComponent, PageBreadcrumbComponent],
+  imports: [
+    ReactiveFormsModule,
+    NgClass,
+    AlertComponent,
+    ButtonComponent,
+    PageBreadcrumbComponent,
+    UploadFieldComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './producto-form-page.component.html',
 })
@@ -103,6 +115,10 @@ export class ProductoFormPageComponent implements OnInit {
   readonly formError = signal<string | null>(null);
   readonly skuConflict = signal<string | null>(null);
   readonly slugConflict = signal<string | null>(null);
+
+  /** Number of in-flight uploads; saving stays disabled while > 0 (task 4.2). */
+  readonly uploadingCount = signal(0);
+  readonly uploading = computed(() => this.uploadingCount() > 0);
 
   readonly categorias = signal<{ id: string; nombre: string }[]>([]);
   readonly subcategorias = signal<Subcategoria[]>([]);
@@ -198,9 +214,30 @@ export class ProductoFormPageComponent implements OnInit {
     this.galeriaArray.removeAt(index);
   }
 
+  /** Tracks in-flight uploads so the save button stays disabled while uploading. */
+  onUploadingChange(active: boolean): void {
+    this.uploadingCount.update((count) => Math.max(0, count + (active ? 1 : -1)));
+  }
+
+  /** Autocompletes the hidden `url`/`storagePath` of a gallery row (task 4.1). */
+  onGaleriaUploaded(index: number, asset: UploadedAsset): void {
+    this.galeriaArray.at(index).patchValue({ url: asset.url, storagePath: asset.storagePath });
+  }
+
+  /** Autocompletes the hidden ficha técnica `url`/`storagePath` (task 4.2). */
+  onFichaUploaded(asset: UploadedAsset): void {
+    this.form.controls.fichaUrl.setValue(asset.url);
+    this.form.controls.fichaStorage.setValue(asset.storagePath);
+  }
+
+  /** True when the form can be submitted (valid, not saving, no uploads). */
+  private canSubmit(): boolean {
+    return !this.form.invalid && !this.saving() && !this.uploading();
+  }
+
   async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
-    if (this.form.invalid || this.saving()) {
+    if (!this.canSubmit()) {
       this.form.markAllAsTouched();
       return;
     }
