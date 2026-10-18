@@ -84,6 +84,16 @@ describe('Products catalog page (/productos)', () => {
     expect(html).toContain('xl:grid-cols-3');
   });
 
+  it('bakes every product beyond the API default limit of 24', async () => {
+    mockFetch(makeProducts(30));
+    const html = await render();
+    const productIds = [
+      ...html.matchAll(/data-product-id="([^"]+)"/g),
+    ].map((m) => m[1]);
+    expect(productIds.length).toBe(30);
+    expect(productIds).toContain('producto-29');
+  });
+
   it('embeds the catalog data as JSON and includes the client runtime', async () => {
     mockFetch(makeProducts(5));
     const html = await render();

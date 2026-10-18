@@ -12,41 +12,72 @@ import {
  *
  * The public site is statically generated (SSG): this module is imported from
  * `pages/productos/index.astro` frontmatter during `astro build`, fetches the
- * public products once, and bakes them into the static HTML. There is NO
- * per-page-load API call at runtime. The backend returns only `publicado: true`
- * products for unauthenticated requests. If the API is unreachable the page
- * degrades to an empty catalog so the build never fails.
+ * complete public catalog (paginating until `meta.total` is covered), and bakes
+ * it into the static HTML. There is NO per-page-load API call at runtime. The
+ * backend returns only `publicado: true` products for unauthenticated requests.
+ * If the API is unreachable the page degrades to an empty catalog so the build
+ * never fails.
  *
  * Mirrors `lib/api/categories.ts` (module-level cache + safe fallback).
  */
 
 let cached: readonly ProductoApi[] | null = null;
 
+/** Transport page size used to walk the catalog until `meta.total` is covered. */
+const PAGE_LIMIT = 100;
+/** Safety cap so a misbehaving API can never spin the build forever. */
+const MAX_PAGES = 100;
+
 interface ProductsListResponse {
   readonly data: ProductoApi[];
+  readonly meta?: {
+    readonly page?: number;
+    readonly limit?: number;
+    readonly total?: number;
+  };
 }
 
 /**
  * Returns the public product list baked into the static site. Fetches from the
- * backend at build time, caches the result, and falls back to `[]` if the API
- * is unreachable so `astro build` never fails.
+ * backend at build time, walking every page (`limit=100`) until `meta.total`
+ * published products are collected — the API's default limit is 24, so a single
+ * unpaginated call would silently drop the rest. Caches the full result at module
+ * scope and falls back to `[]` if the API is unreachable so `astro build` never
+ * fails.
  */
 export async function getPublicProducts(): Promise<readonly ProductoApi[]> {
   if (cached) {
     return cached;
   }
   try {
-    const response = await fetch(`${resolveApiBaseUrl()}/products`, {
-      headers: { accept: 'application/json' },
-    });
-    if (!response.ok) {
-      throw new Error(`Products API responded with ${response.status}`);
+    const collected: ProductoApi[] = [];
+    let page = 1;
+    for (;;) {
+      const response = await fetch(
+        `${resolveApiBaseUrl()}/products?page=${page}&limit=${PAGE_LIMIT}`,
+        { headers: { accept: 'application/json' } },
+      );
+      if (!response.ok) {
+        throw new Error(`Products API responded with ${response.status}`);
+      }
+      const body = (await response.json()) as ProductsListResponse;
+      const batch = body.data ?? [];
+      if (mustFailOnCatalogError() && page === 1 && batch.length === 0) {
+        throw new Error('Products API returned an empty catalog (SC-env-04).');
+      }
+      collected.push(...batch);
+
+      const total = body.meta?.total;
+      const hasTotal = typeof total === 'number';
+      const reachedTotal = hasTotal && collected.length >= total;
+      const lastShortPage = batch.length < PAGE_LIMIT;
+      // Without a total we cannot safely page further: stop after the first page.
+      if (!hasTotal || reachedTotal || lastShortPage || page >= MAX_PAGES) {
+        break;
+      }
+      page += 1;
     }
-    const body = (await response.json()) as ProductsListResponse;
-    if (mustFailOnCatalogError() && body.data.length === 0) {
-      throw new Error('Products API returned an empty catalog (SC-env-04).');
-    }
-    cached = body.data;
+    cached = collected;
   } catch (error) {
     assertCatalogSourceAvailable('products', error);
     warnCatalogFallback('products', error);

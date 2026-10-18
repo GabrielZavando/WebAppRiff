@@ -32,6 +32,14 @@ export class WebhookCatalogChangeNotifier implements ICatalogChangeNotifier {
     const url = process.env[REBUILD_URL_ENV];
     const token = process.env[REBUILD_TOKEN_ENV];
     if (!url || !token) {
+      const missing = [
+        !url ? REBUILD_URL_ENV : null,
+        !token ? REBUILD_TOKEN_ENV : null,
+      ].filter((name): name is string => name !== null);
+      this.logger.warn(
+        `[catalog-rebuild] not configured (missing ${missing.join(', ')}); ` +
+          `skipping rebuild notification for ${event.entityType}/${event.action}`,
+      );
       return;
     }
     void this.dispatch(url, token, event);
