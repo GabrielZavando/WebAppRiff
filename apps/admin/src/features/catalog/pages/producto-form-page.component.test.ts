@@ -526,6 +526,42 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
       expect(error.textContent).toContain('El slug ya está en uso.');
     });
 
+    it('shows a friendly Spanish message when saving a product that no longer exists (404)', async () => {
+      await setup({ id: 'p1' });
+      http.expectOne(`${API_BASE}/categories`).flush({ data: CATEGORIAS, error: null, meta: null });
+      http.expectOne(`${API_BASE}/products/p1`).flush({ data: EXISTING, error: null, meta: null });
+      await fixture.whenStable();
+      fixture.detectChanges();
+      http
+        .expectOne(`${API_BASE}/subcategories?categoriaId=c1`)
+        .flush({ data: [{ id: 's1', categoriaId: 'c1', nombre: 'Taladros' }], error: null, meta: null });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      submit();
+
+      const patchReq = http.expectOne(`${API_BASE}/products/p1`);
+      expect(patchReq.request.method).toBe('PATCH');
+      patchReq.flush(
+        {
+          data: null,
+          error: { message: 'Cannot PATCH /api/v1/products/p1', code: 'NOT_FOUND' },
+          meta: null,
+        },
+        { status: 404, statusText: 'Not Found' },
+      );
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const alert = (fixture.nativeElement as HTMLElement).querySelector('app-alert');
+      expect(alert?.textContent).toContain(
+        'No se pudo encontrar el producto. Puede que haya sido eliminado.',
+      );
+      expect(alert?.textContent).not.toContain('Cannot PATCH');
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
     it('keeps save disabled while invalid and shows required errors per field', async () => {
       await setup({});
       await expectCategoriesFlushed();

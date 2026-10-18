@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { ApiError } from '../../shared/api/api-client.service';
-import { deleteErrorMessage, fieldConflictMessage, genericErrorMessage } from './api-error-mapping';
+import { deleteErrorMessage, fieldConflictMessage, genericErrorMessage, saveErrorMessage } from './api-error-mapping';
 
 function conflict(message: string): ApiError {
   return new ApiError(message, 409, 'CONFLICT');
@@ -64,6 +64,24 @@ describe('api-error-mapping (design D9)', () => {
     it('falls back to the backend message, then to a generic Spanish copy', () => {
       expect(deleteErrorMessage(new ApiError('Boom', 500, null))).toBe('Boom');
       expect(deleteErrorMessage(new ApiError('', 0, null))).toBe(genericErrorMessage);
+    });
+  });
+
+  describe('saveErrorMessage', () => {
+    it('maps a 404 to the friendly Spanish copy instead of the raw backend text', () => {
+      expect(
+        saveErrorMessage(new ApiError('Cannot PATCH /api/v1/products/abc', 404, null)),
+      ).toBe('No se pudo encontrar el producto. Puede que haya sido eliminado.');
+    });
+
+    it('keeps the backend message for non-404 errors', () => {
+      expect(saveErrorMessage(new ApiError('SKU already in use', 409, null))).toBe(
+        'SKU already in use',
+      );
+    });
+
+    it('falls back to a generic Spanish copy when the message is empty', () => {
+      expect(saveErrorMessage(new ApiError('', 500, null))).toBe(genericErrorMessage);
     });
   });
 });

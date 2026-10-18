@@ -56,3 +56,11 @@ frontend enviaba `nombreArchivo` con la URL pública completa.
 - [x] 8.1 `HttpExceptionFilter`: loguear mensaje completo + stack via `Logger.error` para errores no-`HttpException` (envelope sigue genérico). TDD con spies (`http-exception.filter.spec.ts`).
 - [x] 8.2 `ProductoRepository`: normalizar documentos a objetos plain (`toPlainDocument`, preservando `Date`) antes de `.set()`/`.update()`. TDD: create + update con instancias de DTO (`producto.repository.spec.ts`); repro local con Firestore de staging → 201.
 - [x] 8.3 Formulario admin: `onFichaUploaded` autocompleta `fichaNombre` con el basename saneado de `storagePath` (helper `fileNameFromStoragePath`; fallback del payload también hace basename, nunca la URL). TDD: test de payload sin input manual (`producto-form-page.component.test.ts`).
+
+## 9. Correcciones post-verificación (edición en staging)
+
+Spot E2E del 2026-10-18 (edición de un producto recién creado) reveló `404 Cannot PATCH /api/v1/products/:id`. Causa: el controlador apilaba `@Put(':id')` + `@Patch(':id')` sobre el mismo handler; ambos decoradores escriben la misma metadata de ruta, por lo que solo PUT quedaba registrado. Adicionalmente el formulario mostraba el texto crudo del error.
+
+- [x] 9.1 `ProductoController`: separar en dos handlers `@Patch(':id')` y `@Put(':id')` que delegan en un método privado compartido (spec `docs/api/api-spec.yml` documenta ambos verbos). TDD: e2e `productos.e2e-spec.ts` (PATCH y PUT → 200/401).
+- [x] 9.2 Formulario admin: mapear `404` al mensaje amigable «No se pudo encontrar el producto. Puede que haya sido eliminado.» vía `saveErrorMessage` en `api-error-mapping.ts`. TDD: test de página con `PATCH` 404.
+- [x] 9.3 Deploy a staging (imagen `sha-48f6d3b7`, revisión `riff-api-staging-00005-sv5`) y verificación E2E: `PATCH /api/v1/products/:id` sin token → 401 (antes 404); flujo autenticado POST `201` → PATCH `200` → DELETE `200`. El redeploy del admin en Coolify (mensaje amigable 404) sigue manual.

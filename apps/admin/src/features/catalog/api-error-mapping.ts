@@ -48,3 +48,11 @@ export function deleteErrorMessage(error: ApiError): string {
 export function loadErrorMessage(error: ApiError): string {
   return error.message !== '' ? error.message : genericErrorMessage;
 }
+
+/** Maps a create/update (save) failure to a Spanish banner message. */
+export function saveErrorMessage(error: ApiError): string {
+  if (error.status === 404) {
+    return 'No se pudo encontrar el producto. Puede que haya sido eliminado.';
+  }
+  return error.message !== '' ? error.message : genericErrorMessage;
+}

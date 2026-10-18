@@ -132,11 +132,20 @@ export class ProductoController {
     return this.writeService.create(dto);
   }
 
-  @Put(':id')
   @Patch(':id')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles('superadmin', 'admin', 'editor')
   update(@Param('id') id: string, @Body() dto: ProductoUpdateDto): Promise<Producto> {
+    return this.writeService.update(id, dto);
+  }
+
+  // PUT and PATCH must be declared on separate handlers: stacking both
+  // decorators on the same method makes them collide on the route metadata
+  // (only the last one registers).
+  @Put(':id')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles('superadmin', 'admin', 'editor')
+  replace(@Param('id') id: string, @Body() dto: ProductoUpdateDto): Promise<Producto> {
     return this.writeService.update(id, dto);
   }
 
