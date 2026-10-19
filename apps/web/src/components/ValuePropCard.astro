@@ -1,0 +1,40 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { ValueProp } from '@/lib/types/representaciones-page';
+
+interface Props extends ValueProp {}
+
+const { icon, indexLabel, title, description, accent } = Astro.props;
+
+// Accent token remapping (design.md § D5): the Stitch mockup used `tertiary`
+// (no Riff token) for pillar 04, mapped here to `secondary`.
+const accentClasses: Record<ValueProp['accent'], string> = {
+  primary: 'bg-primary-100 text-primary',
+  accent: 'bg-accent-light text-accent',
+  secondary: 'bg-bg text-secondary',
+};
+---
+
+<!--
+  Value-proposition pillar card (design.md § D4/D6). Square icon tile (flat,
+  no rounded corners), indexed label, <h4> title and paragraph. The icon is a
+  Lucide name from config rendered via astro-icon. No rounded-*, no shadow-*.
+-->
+<article
+  data-value-prop
+  class="bg-white border border-border p-6 flex flex-col h-full"
+>
+  <div
+    class:list={[
+      'w-12 h-12 flex items-center justify-center mb-6',
+      accentClasses[accent],
+    ]}
+  >
+    <Icon name={icon} class="h-6 w-6" aria-hidden="true" />
+  </div>
+  <span class="font-heading text-xs font-semibold uppercase text-text-2">
+    {indexLabel}
+  </span>
+  <h4 class="font-heading text-lg font-bold text-text mt-2 mb-3">{title}</h4>
+  <p class="font-body text-text-2">{description}</p>
+</article>

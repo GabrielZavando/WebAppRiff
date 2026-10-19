@@ -20,7 +20,7 @@ describe('NAVIGATION_ITEMS', () => {
       'Nosotros',
       'Productos',
       'Servicios',
-      'Marcas',
+      'Representaciones',
       'Contacto',
     ]);
   });
@@ -31,9 +31,26 @@ describe('NAVIGATION_ITEMS', () => {
       '/nosotros',
       '/productos',
       '/servicios',
-      '/marcas',
+      '/representaciones',
       '/contacto',
     ]);
+  });
+
+  it('includes the Representaciones item with href /representaciones (SC-REP-NAV)', () => {
+    const labels = NAVIGATION_ITEMS.map(item => item.label);
+    expect(labels).toContain('Representaciones');
+
+    const representacionesItem = NAVIGATION_ITEMS.find(
+      item => item.href === '/representaciones',
+    );
+    expect(representacionesItem).toEqual({
+      label: 'Representaciones',
+      href: '/representaciones',
+    });
+
+    // The former "Marcas" item must no longer exist anywhere in the menu.
+    expect(labels).not.toContain('Marcas');
+    expect(NAVIGATION_ITEMS.some(item => item.href === '/marcas')).toBe(false);
   });
 
   it('includes the Nosotros item with href /nosotros placed after Inicio (SC-006)', () => {

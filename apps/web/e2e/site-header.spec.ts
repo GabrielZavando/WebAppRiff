@@ -1,6 +1,6 @@
 import { test, expect } from 'playwright/test';
 
-const NAV_ITEMS = ['Inicio', 'Productos', 'Servicios', 'Marcas', 'Contacto'];
+const NAV_ITEMS = ['Inicio', 'Productos', 'Servicios', 'Representaciones', 'Contacto'];
 
 test.describe('Site header (main navigation)', () => {
   test('renders logo, the five nav items and the CTA inside the nav on desktop', async ({ page }) => {

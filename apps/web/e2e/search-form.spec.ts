@@ -371,11 +371,13 @@ test.describe('Search visibility & variant per page (search-bar-pages-scope)', (
     ).toBeVisible();
   });
 
-  test('/marcas renders the placeholder page WITHOUT a search bar', async ({ page }) => {
+  test('/representaciones renders WITHOUT a search bar', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
-    const response = await page.goto('/marcas');
+    const response = await page.goto('/representaciones');
     expect(response?.status()).toBe(200);
+    // representaciones.astro sets showSearch={false}: the search landmark is omitted.
     await expect(page.getByRole('search')).toHaveCount(0);
+    await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
   });
 
   test('/cotizacion renders WITHOUT a search bar (focused form page)', async ({ page }) => {

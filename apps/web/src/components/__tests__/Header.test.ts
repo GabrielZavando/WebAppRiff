@@ -75,7 +75,7 @@ describe('Header', () => {
 
     const hrefs = [...nav.matchAll(/href="([^"]+)"/g)].map((m) => m[1] ?? '');
     // Six nav items + CTA as the last item inside the nav
-    expect(hrefs).toEqual(['/', '/nosotros', '/productos', '/servicios', '/marcas', '/contacto', '/cotizacion']);
+    expect(hrefs).toEqual(['/', '/nosotros', '/productos', '/servicios', '/representaciones', '/contacto', '/cotizacion']);
 
     const labels = [...nav.matchAll(/>([^<>]+)<\/a>/g)].map((m) => (m[1] ?? '').trim());
     expect(labels).toEqual([
@@ -83,7 +83,7 @@ describe('Header', () => {
       'Nosotros',
       'Productos',
       'Servicios',
-      'Marcas',
+      'Representaciones',
       'Contacto',
       'SOLICITAR COTIZACIÓN',
     ]);
@@ -108,7 +108,7 @@ describe('Header', () => {
       '/nosotros',
       '/productos',
       '/servicios',
-      '/marcas',
+      '/representaciones',
       '/contacto',
       '/cotizacion',
     ]);
@@ -119,7 +119,7 @@ describe('Header', () => {
       'Nosotros',
       'Productos',
       'Servicios',
-      'Marcas',
+      'Representaciones',
       'Contacto',
       'SOLICITAR COTIZACIÓN',
     ]);
@@ -253,7 +253,7 @@ describe('Header', () => {
       'Nosotros',
       'Productos',
       'Servicios',
-      'Marcas',
+      'Representaciones',
       'Contacto',
       'SOLICITAR COTIZACIÓN',
     ]);
@@ -277,7 +277,7 @@ describe('Header', () => {
       'Nosotros',
       'Productos',
       'Servicios',
-      'Marcas',
+      'Representaciones',
       'Contacto',
       'SOLICITAR COTIZACIÓN',
     ]);

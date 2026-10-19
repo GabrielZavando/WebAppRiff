@@ -1,0 +1,123 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import RepresentacionesHero from '@/components/RepresentacionesHero.astro';
+import RepresentacionBrandCard from '@/components/RepresentacionBrandCard.astro';
+import DistribuidorCard from '@/components/DistribuidorCard.astro';
+import ValuePropCard from '@/components/ValuePropCard.astro';
+import { REPRESENTACIONES_PAGE_CONTENT } from '@/lib/config/representaciones-page';
+
+/**
+ * Public "Representaciones" page (/representaciones).
+ *
+ * Composed inside the existing `Layout.astro` (full site chrome: TopHeader,
+ * Header, Footer, SiteCredits, WhatsApp float and View Transitions). The Stitch
+ * mockup only showed the central content, but the final page keeps the chrome
+ * (design.md § D1). `showSearch={false}` matches the non-catalog pages
+ * (/marcas, /contacto) — the mockup has no catalog search (design.md § D2).
+ *
+ * The four sections mirror `docs/design/components/representaciones/reference.html`,
+ * with Material/Stitch colors and typography remapped to Riff design tokens
+ * (design.md § D5). Content comes from `REPRESENTACIONES_PAGE_CONTENT`; the page
+ * is a dumb composition.
+ */
+const {
+  title,
+  description,
+  hero,
+  brandsSection,
+  distributorsSection,
+  valuePropsSection,
+} = REPRESENTACIONES_PAGE_CONTENT;
+---
+
+<Layout title={title} description={description} showSearch={false}>
+  <main class="flex-grow">
+    <RepresentacionesHero {...hero} />
+
+    <!-- Section: Marcas de Representación Exclusiva (5 brand cards) -->
+    <section class="w-full bg-bg py-16">
+      <div class="mx-auto max-w-[1280px] px-6 flex flex-col gap-12">
+        <div class="flex flex-col md:flex-row md:items-end justify-between pb-6">
+          <div>
+            <span
+              class="font-heading text-xs font-semibold uppercase tracking-widest text-accent"
+            >
+              {brandsSection.eyebrow}
+            </span>
+            <h2
+              class="font-heading text-2xl md:text-3xl font-bold uppercase text-text mt-1"
+            >
+              {brandsSection.headline}
+            </h2>
+          </div>
+        </div>
+        <div class="flex flex-col gap-4">
+          {
+            brandsSection.brands.map((brand) => (
+              <RepresentacionBrandCard {...brand} />
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: Distribuidores Autorizados (PIUSI & SENSUS) -->
+    <section class="w-full bg-primary-100 py-16">
+      <div class="mx-auto max-w-[1280px] px-6 flex flex-col gap-10">
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-1 bg-accent"></span>
+            <span
+              class="font-heading text-xs font-semibold uppercase tracking-widest text-accent"
+            >
+              {distributorsSection.eyebrow}
+            </span>
+          </div>
+          <h2
+            class="font-heading text-2xl md:text-3xl font-extrabold uppercase text-text"
+          >
+            {distributorsSection.headline}
+          </h2>
+          <p class="font-body text-text-2 max-w-2xl">
+            {distributorsSection.intro}
+          </p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {
+            distributorsSection.distributors.map((distributor) => (
+              <DistribuidorCard {...distributor} />
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: Propuesta de valor (4 pillars) -->
+    <section class="w-full bg-bg py-20">
+      <div class="mx-auto max-w-[1280px] px-6 flex flex-col gap-12">
+        <div class="max-w-3xl flex flex-col gap-3">
+          <span
+            class="font-heading text-xs font-semibold uppercase tracking-widest text-primary"
+          >
+            {valuePropsSection.eyebrow}
+          </span>
+          <h2 class="font-heading text-2xl md:text-3xl font-bold text-text">
+            {valuePropsSection.headline}
+          </h2>
+          <p class="font-body text-base text-text-2">
+            {valuePropsSection.intro}
+          </p>
+        </div>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
+          {
+            valuePropsSection.valueProps.map((pillar) => (
+              <ValuePropCard {...pillar} />
+            ))
+          }
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
