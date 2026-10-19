@@ -1,0 +1,65 @@
+---
+import type { RepresentacionBrand } from '@/lib/types/representaciones-page';
+
+interface Props extends RepresentacionBrand {}
+
+const { wordmark, note, chip, sublabel, title, category, description } =
+  Astro.props;
+---
+
+<!--
+  Brand card for the "Marcas de Representación Exclusiva" section
+  (design.md § D4/D7). Left panel (md:w-64) holds the typographic wordmark
+  placeholder inside a `data-brand-logo` container so a future <Image> can
+  replace it without re-laying out the card. Buttons/cards stay flat: bg-white,
+  border-border, no rounded-*, no shadow-*.
+-->
+<article
+  data-brand-card
+  class="bg-white border border-border flex flex-col md:flex-row items-start md:items-center gap-6 p-6 md:p-8"
+>
+  <div
+    class="w-full md:w-64 bg-bg p-6 flex flex-col justify-center items-start shrink-0"
+    data-brand-logo
+  >
+    <span
+      class="bg-primary text-white font-heading text-xs font-semibold px-2 py-0.5 uppercase tracking-wider mb-2"
+    >
+      {chip}
+    </span>
+    <div class="flex items-center gap-2">
+      {
+        wordmark.map((segment) => (
+          <span
+            class:list={[
+              'font-heading text-2xl font-extrabold tracking-tight',
+              segment.accent ? 'text-primary' : 'text-text',
+            ]}
+          >
+            {segment.text}
+          </span>
+        ))
+      }
+    </div>
+    {
+      note && (
+        <span class="font-body text-xs text-text-2 uppercase mt-1">
+          {note}
+        </span>
+      )
+    }
+    <span class="font-body text-xs text-text-2 mt-2">{sublabel}</span>
+  </div>
+  <div class="flex-1 flex flex-col gap-2">
+    <div class="flex flex-wrap items-center gap-3">
+      <h3 class="font-heading text-xl font-bold text-text">{title}</h3>
+      <span class="text-border">|</span>
+      <span class="font-heading text-xs font-semibold text-primary">
+        {category}
+      </span>
+    </div>
+    <p class="font-body text-text-2 leading-relaxed max-w-3xl">
+      {description}
+    </p>
+  </div>
+</article>
