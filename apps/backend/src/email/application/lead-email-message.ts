@@ -1,4 +1,5 @@
 import { EmailMessage } from '../domain/iemail-notifier';
+import { renderLeadEmailHtml } from './lead-email-template';
 
 const CONTACT_TO_EMAIL_ENV = 'CONTACT_TO_EMAIL';
 const CONTACT_FROM_EMAIL_ENV = 'CONTACT_FROM_EMAIL';
@@ -18,6 +19,7 @@ export interface LeadEmailField {
  * - `from` from `CONTACT_FROM_EMAIL`, falling back to the default inbox (the
  *   `somosriff.cl` domain must be verified in Resend).
  * - `text` is a plain-text block with every field as a `Label: value` line.
+ * - `html` is the branded email template rendering the same fields.
  */
 export function buildLeadEmailMessage(
   subject: string,
@@ -26,5 +28,5 @@ export function buildLeadEmailMessage(
   const to = process.env[CONTACT_TO_EMAIL_ENV] || DEFAULT_TO_EMAIL;
   const from = process.env[CONTACT_FROM_EMAIL_ENV] || DEFAULT_TO_EMAIL;
   const text = fields.map((field) => `${field.label}: ${field.value}`).join('\n');
-  return { from, to: [to], subject, text };
+  return { from, to: [to], subject, text, html: renderLeadEmailHtml(subject, fields) };
 }

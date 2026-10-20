@@ -1,8 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
   IEmailNotifier,
   I_EMAIL_NOTIFIER,
 } from '../../email/domain/iemail-notifier';
+import {
+  IContactRepository,
+  I_CONTACT_REPOSITORY,
+} from '../domain/icontact.repository';
 import { buildLeadEmailMessage } from '../../email/application/lead-email-message';
 import { isHoneypotFilled } from '../../common/utils/honeypot';
 
@@ -29,23 +33,36 @@ export interface ContactSubmission {
 }
 
 /**
- * Application service for the public contact endpoint. It is intentionally
- * persistence-free (see design.md Non-Goals: contact persistence is deferred to
- * a post-MVP change): it validates the honeypot, sends the notification email
- * with every field and returns a receipt.
+ * Application service for the public contact endpoint. It validates the
+ * honeypot, persists the lead in Firestore and then sends the notification
+ * email. Delivery is best-effort: a failed email is logged but never loses the
+ * persisted lead nor fails the request.
  */
 @Injectable()
 export class ContactService {
+  private readonly logger = new Logger(ContactService.name);
+
   constructor(
+    @Inject(I_CONTACT_REPOSITORY)
+    private readonly repository: IContactRepository,
     @Inject(I_EMAIL_NOTIFIER)
     private readonly notifier: IEmailNotifier,
   ) {}
 
   async submit(input: ContactSubmitInput): Promise<ContactSubmission> {
     if (isHoneypotFilled(input.website)) {
-      // Silent simulated success: never notify a bot, never confirm the trap.
+      // Silent simulated success: never persist/notify a bot, never confirm the trap.
       return this.toSubmission(input);
     }
+
+    const contacto = await this.repository.create({
+      nombre: input.nombre,
+      empresa: input.empresa,
+      email: input.email,
+      telefono: input.telefono,
+      areasDeInteres: input.areasDeInteres,
+      mensaje: input.mensaje,
+    });
 
     const message = buildLeadEmailMessage(
       'Nuevo mensaje desde el formulario de contacto',
@@ -61,7 +78,15 @@ export class ContactService {
         { label: 'Mensaje', value: input.mensaje },
       ],
     );
-    await this.notifier.sendEmail(message);
+    try {
+      await this.notifier.sendEmail(message);
+    } catch (error) {
+      this.logger.error(
+        `Failed to send contact notification email (contact ${contacto.id}): ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
 
     return this.toSubmission(input);
   }

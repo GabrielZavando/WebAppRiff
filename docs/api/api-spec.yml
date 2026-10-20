@@ -702,12 +702,15 @@ components:
           type: string
           description: >
             Anti-spam honeypot. Campo oculto que un humano nunca completa; si
-            viene con valor, el endpoint responde éxito simulado sin notificar.
-            Opcional para retrocompatibilidad con frontends previos.
+            viene con valor, el endpoint responde éxito simulado sin persistir
+            ni notificar. Opcional para retrocompatibilidad con frontends
+            previos.
 
     ContactSubmission:
       type: object
-      description: Recibo devuelto por POST /api/v1/contacts (no persiste datos).
+      description: >
+        Recibo devuelto por POST /api/v1/contacts. El contacto se persiste en la
+        colección Firestore `contactos`; este recibo refleja los campos enviados.
       properties:
         nombre:
           type: string
@@ -1500,10 +1503,11 @@ paths:
       description: >
         Persiste la cotización en Firestore y notifica cada envío por correo a
         `CONTACT_TO_EMAIL` (default contacto@somosriff.cl) a través del port
-        IEmailNotifier (proveedor Resend). Si el envío del correo falla, el
-        endpoint responde 502 (la cotización ya quedó persistida). El campo
-        `website` es un honeypot: si viene con valor, responde 201 simulado sin
-        persistir ni notificar. Rate limit: 10 req/min por IP.
+        IEmailNotifier (proveedor Resend). La notificación es best-effort: si el
+        envío del correo falla, el backend lo registra en logs y responde 201
+        igualmente porque la cotización ya quedó persistida. El campo `website`
+        es un honeypot: si viene con valor, responde 201 simulado sin persistir
+        ni notificar. Rate limit: 10 req/min por IP.
       security: []
       requestBody:
         required: true
@@ -1522,9 +1526,6 @@ paths:
           $ref: '#/components/schemas/Error'
         "429":
           $ref: '#/components/schemas/Error'
-        "502":
-          $ref: '#/components/schemas/Error'
-          description: El proveedor de correo falló tras persistir
     get:
       summary: Listar cotizaciones (admin, con auth)
       security:
@@ -1567,14 +1568,16 @@ paths:
   # === CONTACTOS ===
   /api/v1/contacts:
     post:
-      summary: "Crear solicitud de contacto (público, sin auth) — notifica por email"
+      summary: "Crear solicitud de contacto (público, sin auth) — persiste y notifica por email"
       description: >
-        Acepta el formulario público de contacto y notifica cada envío por
-        correo a `CONTACT_TO_EMAIL` (default contacto@somosriff.cl) con todos
-        los campos. No persiste datos (la persistencia de leads de contacto se
-        difiere a un cambio post-MVP). El campo `website` es un honeypot: si
-        viene con valor, responde 201 simulado sin notificar. Si el envío del
-        correo falla, responde 502. Rate limit: 5 req/min por IP (estricto).
+        Acepta el formulario público de contacto, lo persiste en la colección
+        Firestore `contactos` y notifica cada envío por correo a
+        `CONTACT_TO_EMAIL` (default contacto@somosriff.cl) con todos los campos.
+        La notificación es best-effort: si el envío del correo falla, el backend
+        lo registra en logs y responde 201 igualmente porque el contacto ya
+        quedó persistido. El campo `website` es un honeypot: si viene con valor,
+        responde 201 simulado sin persistir ni notificar. Rate limit: 5 req/min
+        por IP (estricto).
       security: []
       requestBody:
         required: true
@@ -1593,9 +1596,6 @@ paths:
           $ref: '#/components/schemas/Error'
         "429":
           $ref: '#/components/schemas/Error'
-        "502":
-          $ref: '#/components/schemas/Error'
-          description: El proveedor de correo falló
 
   /api/v1/quotes/{id}:
     get:

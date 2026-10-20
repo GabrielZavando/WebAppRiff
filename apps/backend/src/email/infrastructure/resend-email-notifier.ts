@@ -48,6 +48,7 @@ export class ResendEmailNotifier implements IEmailNotifier {
           to: [...message.to],
           subject: message.subject,
           text: message.text,
+          ...(message.html !== undefined ? { html: message.html } : {}),
         }),
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });

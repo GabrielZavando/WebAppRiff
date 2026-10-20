@@ -45,4 +45,17 @@ describe('buildLeadEmailMessage', () => {
       'Nombre: Juan Pérez\nEmail: juan@example.com\nÁreas de interés: Medición de Fluidos',
     );
   });
+
+  it('renders the branded html body with the same fields', () => {
+    const message = buildLeadEmailMessage('Nuevo contacto', [
+      { label: 'Nombre', value: 'Juan Pérez' },
+      { label: 'Email', value: 'juan@example.com' },
+    ]);
+
+    expect(message.html).toContain('Nuevo contacto');
+    expect(message.html).toContain('Juan Pérez');
+    expect(message.html).toContain('juan@example.com');
+    expect(message.html).toContain('#41B3C4');
+    expect(message.html).toContain('#1F2D40');
+  });
 });
