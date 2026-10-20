@@ -16,6 +16,8 @@ export interface RecordedUpload {
 
 export interface TestApp {
   app: INestApplication;
+  /** In-memory Firestore used by the app (never touches real Firebase). */
+  firestore: ReturnType<typeof createFakeFirestore>;
   /** Fake email port that records every notification (never sends a real email). */
   emailNotifierMock: { sendEmail: jest.Mock };
   /** Fake storage port recording every upload (never touches real GCS). */
@@ -49,6 +51,7 @@ export async function createTestApp(): Promise<TestApp> {
     }),
   };
 
+  const firestore = createFakeFirestore(SEED_DATA);
   const recordedUploads: RecordedUpload[] = [];
   const fileStoragePort = {
     recordedUploads,
@@ -62,7 +65,7 @@ export async function createTestApp(): Promise<TestApp> {
     imports: [AppModule],
   })
     .overrideProvider(FIRESTORE)
-    .useValue(createFakeFirestore(SEED_DATA))
+    .useValue(firestore)
     .overrideProvider(FIREBASE_APP)
     .useValue({})
     .overrideProvider(FIREBASE_AUTH)
@@ -76,11 +79,13 @@ export async function createTestApp(): Promise<TestApp> {
   const app = moduleFixture.createNestApplication();
   // Mirrors apps/backend/src/main.ts (global pipe + prefix) so e2e matches prod.
   app.useGlobalPipes(new ValidationPipe(buildValidationOptions()));
+  // Let e2e tests isolate the rate limiter with per-test X-Forwarded-For values.
+  app.getHttpAdapter().getInstance().set('trust proxy', true);
   app.setGlobalPrefix('api/v1', { exclude: ['health'] });
   await app.init();
 
   // Belt-and-suspenders: never let a developer .env fire real emails.
   delete process.env.RESEND_API_KEY;
 
-  return { app, emailNotifierMock, fileStoragePort };
+  return { app, firestore, emailNotifierMock, fileStoragePort };
 }

@@ -110,7 +110,8 @@ gcloud run deploy ${SERVICE} \
 Notas:
 
 - `PORT` **no** se fija: Cloud Run inyecta `PORT=8080` y `resolvePort` lo lee.
-- Sin `RESEND_API_KEY` (notifier no-op con warning). El webhook de rebuild del
+- Sin `RESEND_API_KEY` el notifier es no-op con warning: los leads se persisten
+  en Firestore pero no se notifican. Ver paso 5.2. El webhook de rebuild del
   catálogo se activa en el paso 5.1 (Coolify + Secret Manager); si no se
   configura, el backend registra un `warn` explícito y no dispara rebuilds
   (no-op observable, sin fallo silencioso).
@@ -189,6 +190,76 @@ gcloud run services describe ${SERVICE} \
 # confirmar el deploy disparado en Coolify y ver el título nuevo en
 # https://staging.somosriff.cl (tras terminar el build de Astro).
 ```
+
+## 5.2 Activar el email transaccional (Resend + subdominio `send.somosriff.cl`)
+
+> Change `email-notifications-resilience`. Los formularios públicos persisten el
+> lead en Firestore antes de notificar; la notificación es best-effort (si
+> Resend falla, el backend lo registra en logs y responde éxito igualmente). Sin
+> `RESEND_API_KEY` el adaptador es no-op con warning: los leads se guardan pero
+> no se envían correos.
+
+**a. Verificar el subdominio en Resend** (panel, manual — cliente/ops):
+
+1. En Resend → **Domains**, añadir `send.somosriff.cl` (subdominio dedicado para
+   no tocar el DNS principal de `somosriff.cl`).
+2. Publicar en el DNS los registros SPF/DKIM que Resend indique.
+3. Esperar el estado **Verified**. El remitente debe ser un buzón de ese
+   subdominio (p. ej. `notificaciones@send.somosriff.cl`).
+
+**b. Crear el secreto con la API key**:
+
+```bash
+printf '%s' "<resend-api-key>" | \
+  gcloud secrets create RESEND_API_KEY \
+  --project=${PROJECT_ID} --data-file=-
+```
+
+Si el secreto ya existe, agregar una versión nueva:
+
+```bash
+printf '%s' "<resend-api-key>" | \
+  gcloud secrets versions add RESEND_API_KEY \
+  --project=${PROJECT_ID} --data-file=-
+```
+
+**c. Permitir al runtime SA leer el secreto**:
+
+```bash
+gcloud secrets add-iam-policy-binding RESEND_API_KEY \
+  --project=${PROJECT_ID} \
+  --member="serviceAccount:${SA_EMAIL}" \
+  --role="roles/secretmanager.secretAccessor"
+```
+
+**d. Montarlo en el servicio** (usar `--update-*` para no borrar los secretos y
+variables del paso 5.1):
+
+```bash
+gcloud run services update ${SERVICE} \
+  --project=${PROJECT_ID} \
+  --region=${REGION} \
+  --update-secrets "RESEND_API_KEY=RESEND_API_KEY:latest" \
+  --update-env-vars "CONTACT_TO_EMAIL=contacto@somosriff.cl,CONTACT_FROM_EMAIL=notificaciones@send.somosriff.cl"
+```
+
+**e. Verificar**:
+
+```bash
+gcloud run services describe ${SERVICE} \
+  --project=${PROJECT_ID} --region=${REGION} \
+  --format='value(spec.template.spec.containers[0].env)' | tr ',' '\n' | grep -E 'RESEND|CONTACT_'
+# Esperado: RESEND_API_KEY referenciando el secreto (sin valor plano) y las
+# variables CONTACT_TO_EMAIL / CONTACT_FROM_EMAIL presentes.
+
+# Smoke funcional: enviar un contacto y una cotización desde staging, confirmar
+# el documento en Firestore (colecciones `contactos` / `cotizaciones`) y el
+# correo recibido en contacto@somosriff.cl.
+```
+
+> Rollback: quitar el secreto del servicio (`--remove-secrets RESEND_API_KEY`) o
+> dejar de montarlo. El backend vuelve al modo no-op con warning sin afectar la
+> persistencia de leads.
 
 ## 6. Smoke post-deploy
 

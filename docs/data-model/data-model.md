@@ -88,6 +88,19 @@ Captura de solicitudes de cotización desde el sitio público (formulario sin au
 | creadoEn | timestamp | Fecha de creación. |
 | actualizadoEn | timestamp | Fecha de última actualización. |
 
+### 6. contactos
+Captura de mensajes del formulario de contacto desde el sitio público (formulario sin auth). Se persiste antes de enviar la notificación por correo para no perder leads si el proveedor falla. No tiene endpoint de lectura en el MVP (consulta vía consola Firestore).
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| nombre | string | Nombre de la persona que contacta. |
+| empresa | string | Empresa. |
+| email | string | Email de contacto. |
+| telefono | string | Teléfono de contacto. |
+| areasDeInteres | array<string> | Identificadores de áreas de interés (vacío si no se envían). |
+| mensaje | string | Mensaje del formulario. |
+| creadoEn | timestamp | Fecha de creación. |
+
 ## Relaciones
 
 ```
@@ -119,7 +132,7 @@ productos --N cotizaciones (NO referenciado directamente en MVP; cotización es 
 
 ## Convenciones de nombres (Firestore)
 
-- Colecciones: plural, camelCase (`productos`, `categorias`, `subcategorias`, `usuarios`, `cotizaciones`)
+- Colecciones: plural, camelCase (`productos`, `categorias`, `subcategorias`, `usuarios`, `cotizaciones`, `contactos`)
 - Documentos: ID autogenerado por Firestore, excepto `categorias/sin-categoria` (id fijo)
 - Campos: camelCase (`categoriaId`, `subcategoriaId`, `precio.valor`, `stock.disponible`, `creadoEn`, `actualizadoEn`)
 - Timestamps: `creadoEn` y `actualizadoEn` (Firestore server timestamps)

@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
 import { CotizacionService } from './cotizacion.service';
 import {
   ICotizacionRepository,
@@ -31,8 +31,10 @@ describe('CotizacionService', () => {
     updateEstado: jest.Mock;
   };
   let notifier: { sendEmail: jest.Mock };
+  let errorSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    errorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
     repository = {
       create: jest.fn(),
       findAll: jest.fn(),
@@ -44,6 +46,10 @@ describe('CotizacionService', () => {
       repository as unknown as ICotizacionRepository,
       notifier as unknown as IEmailNotifier,
     );
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   describe('create', () => {
@@ -87,17 +93,24 @@ describe('CotizacionService', () => {
       expect(message.text).toContain('Mensaje: Solicito cotización');
     });
 
-    it('propagates notifier failures after persisting', async () => {
+    it('logs the notifier failure and returns the persisted cotizacion', async () => {
       repository.create.mockResolvedValue(makeCotizacion());
       notifier.sendEmail.mockRejectedValue(new Error('Email delivery failed'));
-      await expect(
-        service.create({
-          nombre: 'Juan',
-          email: 'juan@example.com',
-          nombre_empresa: 'Riff SpA',
-          mensaje: 'Solicito cotización',
-        }),
-      ).rejects.toThrow('Email delivery failed');
+
+      const result = await service.create({
+        nombre: 'Juan',
+        email: 'juan@example.com',
+        nombre_empresa: 'Riff SpA',
+        mensaje: 'Solicito cotización',
+      });
+
+      expect(result.id).toBe('c1');
+      expect(repository.create).toHaveBeenCalledTimes(1);
+      expect(errorSpy).toHaveBeenCalledTimes(1);
+      const logged = String(errorSpy.mock.calls[0][0]);
+      expect(logged).toContain('cotizacion');
+      expect(logged).toContain('c1');
+      expect(logged).not.toContain('re_');
     });
   });
 

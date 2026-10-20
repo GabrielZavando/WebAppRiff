@@ -34,6 +34,19 @@ describe('IEmailNotifier contract', () => {
     expect(notifier.messages).toEqual([message]);
   });
 
+  it('accepts an optional html body while keeping text', async () => {
+    const notifier = new InMemoryNotifier();
+    await notifier.sendEmail({
+      from: 'contacto@somosriff.cl',
+      to: ['contacto@somosriff.cl'],
+      subject: 'Nuevo contacto',
+      text: 'Nombre: Juan',
+      html: '<p>Nombre: Juan</p>',
+    });
+    expect(notifier.messages[0].html).toBe('<p>Nombre: Juan</p>');
+    expect(notifier.messages[0].text).toBe('Nombre: Juan');
+  });
+
   it('accepts multiple recipients', async () => {
     const notifier = new InMemoryNotifier();
     await notifier.sendEmail({

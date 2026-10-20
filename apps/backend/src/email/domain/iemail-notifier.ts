@@ -19,6 +19,8 @@ export interface EmailMessage {
   readonly subject: string;
   /** Plain-text body with all the form fields. */
   readonly text: string;
+  /** Optional HTML body; `text` remains the fallback for non-HTML clients. */
+  readonly html?: string;
 }
 
 export interface IEmailNotifier {

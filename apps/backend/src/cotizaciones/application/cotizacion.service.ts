@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   Cotizacion,
   CotizacionFilter,
@@ -17,6 +17,8 @@ import { buildLeadEmailMessage } from '../../email/application/lead-email-messag
 
 @Injectable()
 export class CotizacionService {
+  private readonly logger = new Logger(CotizacionService.name);
+
   constructor(
     @Inject(I_COTIZACION_REPOSITORY)
     private readonly repository: ICotizacionRepository,
@@ -26,7 +28,15 @@ export class CotizacionService {
 
   async create(input: CotizacionInput): Promise<Cotizacion> {
     const cotizacion = await this.repository.create(input);
-    await this.notifyQuoteRequest(input);
+    try {
+      await this.notifyQuoteRequest(input);
+    } catch (error) {
+      this.logger.error(
+        `Failed to send quote notification email (cotizacion ${cotizacion.id}): ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
     return cotizacion;
   }
 

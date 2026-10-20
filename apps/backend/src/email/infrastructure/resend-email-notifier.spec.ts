@@ -69,6 +69,33 @@ describe('ResendEmailNotifier', () => {
       });
     });
 
+    it('sends the html body alongside text when provided', async () => {
+      process.env.RESEND_API_KEY = API_KEY;
+      const notifier = new ResendEmailNotifier();
+      await notifier.sendEmail({
+        ...SAMPLE_MESSAGE,
+        html: '<p>Nombre: Juan</p>',
+      });
+
+      const [, init] = fetchMock.mock.calls[0];
+      expect(JSON.parse(String(init.body))).toEqual({
+        from: SAMPLE_MESSAGE.from,
+        to: [...SAMPLE_MESSAGE.to],
+        subject: SAMPLE_MESSAGE.subject,
+        text: SAMPLE_MESSAGE.text,
+        html: '<p>Nombre: Juan</p>',
+      });
+    });
+
+    it('omits the html field when the message has no html body', async () => {
+      process.env.RESEND_API_KEY = API_KEY;
+      const notifier = new ResendEmailNotifier();
+      await notifier.sendEmail(SAMPLE_MESSAGE);
+
+      const [, init] = fetchMock.mock.calls[0];
+      expect(JSON.parse(String(init.body))).not.toHaveProperty('html');
+    });
+
     it('uses a bounded timeout via AbortSignal', async () => {
       process.env.RESEND_API_KEY = API_KEY;
       const notifier = new ResendEmailNotifier();
