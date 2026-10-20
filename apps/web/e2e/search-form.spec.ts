@@ -341,10 +341,11 @@ test.describe('Search visibility & variant per page (search-bar-pages-scope)', (
     const search = page.getByRole('search', { name: 'Buscar productos' });
     await expect(search).toBeVisible();
 
-    // Navy (bg-secondary) wrapper, never the white wrapper.
+    // Solid secondary wrapper, never the white wrapper or the old gradient.
     const wrapperClass = (await search.getAttribute('class')) ?? '';
-    expect(wrapperClass).toContain('bg-linear-to-r');
-    expect(wrapperClass).toContain('from-secondary');
+    expect(wrapperClass).toContain('bg-secondary');
+    expect(wrapperClass).not.toContain('bg-linear-to-r');
+    expect(wrapperClass).not.toContain('from-secondary');
     expect(wrapperClass).not.toContain('bg-white');
 
     // The category <select> is hidden on /productos (own sidebar filter);
@@ -401,8 +402,9 @@ test.describe('Search visibility & variant per page (search-bar-pages-scope)', (
     const search = page.getByRole('search', { name: 'Buscar productos' });
     await expect(search).toBeVisible();
     const wrapperClass = (await search.getAttribute('class')) ?? '';
-    expect(wrapperClass).toContain('bg-linear-to-r');
-    expect(wrapperClass).toContain('from-secondary');
+    expect(wrapperClass).toContain('bg-secondary');
+    expect(wrapperClass).not.toContain('bg-linear-to-r');
+    expect(wrapperClass).not.toContain('from-secondary');
 
     // The category <select> IS visible on the product-detail page.
     await expect(search.getByRole('combobox')).toBeVisible();
