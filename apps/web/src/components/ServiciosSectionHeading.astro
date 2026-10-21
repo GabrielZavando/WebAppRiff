@@ -1,0 +1,44 @@
+---
+import type { ServiciosSectionHeadingProps } from '@/lib/types/services-page';
+
+interface Props extends ServiciosSectionHeadingProps {}
+
+const { eyebrow, headline, intro, markerTone } = Astro.props;
+
+const markerClass = markerTone === 'accent' ? 'bg-accent' : 'bg-primary';
+const eyebrowClass =
+  markerTone === 'accent' ? 'text-secondary' : 'text-primary';
+---
+
+<!--
+  Shared section heading for the two /servicios sections. Renders a square
+  marker (primary/accent), an uppercase eyebrow, the section <h2> and the intro
+  paragraph, separated from the content by a 1px border. Flat design: no
+  rounded-* or shadow-* in the static state (design.md D2/D8).
+-->
+<div class="border-b border-border pb-6 mb-8">
+  <div class="flex flex-col gap-1">
+    <div class="flex items-center gap-2 mb-1">
+      <span
+        data-marker
+        class:list={['w-3 h-3 shrink-0', markerClass]}
+        aria-hidden="true"></span>
+      <span
+        data-eyebrow
+        class:list={[
+          'text-xs font-heading font-bold uppercase tracking-wider',
+          eyebrowClass,
+        ]}>
+        {eyebrow}
+      </span>
+    </div>
+    <h2
+      class="text-2xl sm:text-3xl font-heading font-extrabold text-secondary tracking-tight"
+    >
+      {headline}
+    </h2>
+    <p class="text-sm md:text-base text-text-2 max-w-3xl mt-1 font-body">
+      {intro}
+    </p>
+  </div>
+</div>

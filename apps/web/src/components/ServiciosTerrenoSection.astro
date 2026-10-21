@@ -1,0 +1,39 @@
+---
+import type { ServiciosTerrenoSectionProps } from '@/lib/types/services-page';
+import ServiciosSectionHeading from '@/components/ServiciosSectionHeading.astro';
+import ServicioTerrenoCard from '@/components/ServicioTerrenoCard.astro';
+
+interface Props extends ServiciosTerrenoSectionProps {}
+
+const { eyebrow, headline, intro, services } = Astro.props;
+---
+
+<!--
+  Section 2 of /servicios (design.md D2/D3/D7): four alternating service rows
+  with images from @/assets/img/ and a single body variant per card.
+  Background: bg-primary-100 with top/bottom borders. All content comes from
+  props; the image side alternates from the render index (even = left).
+-->
+<section
+  data-section="field-services"
+  class="w-full bg-primary-100 border-y border-border py-16"
+>
+  <div class="container">
+    <ServiciosSectionHeading
+      eyebrow={eyebrow}
+      headline={headline}
+      intro={intro}
+      markerTone="accent"
+    />
+    <div class="flex flex-col gap-12">
+      {
+        services.map((service, i) => (
+          <ServicioTerrenoCard
+            {...service}
+            imagePosition={i % 2 === 0 ? 'left' : 'right'}
+          />
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,143 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { SolucionPortafolioCardProps } from '@/lib/types/services-page';
+
+interface Props extends SolucionPortafolioCardProps {}
+
+const {
+  id,
+  icon,
+  category,
+  title,
+  description,
+  specsTitle,
+  specs,
+  tagsLabel,
+  tags,
+  ctaLabel,
+  ctaHref,
+} = Astro.props;
+
+const hasSpecs = specs.length > 0;
+const hasTags = tags.length > 0;
+const specsGridClass =
+  specs.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2';
+---
+
+<!--
+  Row for the "Nuestras Soluciones — Portafolio Técnico" section (design.md
+  D2/D4/D5). Left column: icon tile, category, <h3>, description and accent CTA.
+  Right column: specifications panel and tag chips, separated by a vertical
+  border from lg+. Flat: bg-white/bg-primary-100, border-border, no rounded-*,
+  no shadow-*, Lucide icons only.
+-->
+<article
+  id={id}
+  data-solucion-card
+  class="scroll-mt-72 md:scroll-mt-40 lg:scroll-mt-44 p-6 lg:p-8"
+>
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <div class="lg:col-span-6 flex flex-col justify-between h-full">
+      <div>
+        <div class="flex items-center gap-3 mb-3">
+          <span
+            class="inline-flex p-2 bg-primary-light text-primary-dark border border-border"
+          >
+            <Icon name={icon} class="h-6 w-6" aria-hidden="true" />
+          </span>
+          <div>
+            <span
+              data-category
+              class="block text-xs font-bold text-primary uppercase tracking-wider font-heading"
+            >
+              {category}
+            </span>
+            <h3 class="text-2xl font-bold font-heading text-secondary mt-1">
+              {title}
+            </h3>
+          </div>
+        </div>
+        <p
+          data-description
+          class="text-sm sm:text-base text-text-2 leading-relaxed mb-6 font-body"
+        >
+          {description}
+        </p>
+      </div>
+      <div>
+        <a
+          href={ctaHref}
+          class="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white px-5 py-2.5 text-xs font-bold font-heading uppercase tracking-wider transition-colors"
+        >
+          <span>{ctaLabel}</span>
+          <Icon
+            name="lucide:arrow-right"
+            data-icon="arrow-right"
+            class="h-4 w-4"
+            aria-hidden="true"
+          />
+        </a>
+      </div>
+    </div>
+
+    <div
+      class="lg:col-span-6 flex flex-col justify-between h-full border-t lg:border-t-0 lg:border-l border-border pt-6 lg:pt-0 lg:pl-8"
+    >
+      {
+        hasSpecs && (
+          <div
+            data-spec-panel
+            class="bg-primary-100 border border-border p-4 mb-4"
+          >
+            <h4 class="text-xs font-bold uppercase tracking-wider text-secondary mb-3 flex items-center gap-1.5 font-heading">
+              <Icon
+                name="lucide:sliders-horizontal"
+                class="h-4 w-4 text-primary-dark"
+                aria-hidden="true"
+              />
+              {specsTitle}
+            </h4>
+            <div
+              class:list={[
+                'grid grid-cols-1 gap-3 text-xs',
+                specsGridClass,
+              ]}
+            >
+              {specs.map((spec) => (
+                <div data-spec class="bg-white p-2.5 border border-border">
+                  <span class="text-muted block">{spec.label}</span>
+                  <strong class="text-secondary font-bold text-sm">
+                    {spec.value}
+                  </strong>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      {
+        hasTags && (
+          <div>
+            <span
+              data-tags-label
+              class="text-xs font-semibold text-muted uppercase tracking-wider block mb-2 font-heading"
+            >
+              {tagsLabel}
+            </span>
+            <div class="flex flex-wrap gap-1.5">
+              {tags.map((tag) => (
+                <span
+                  data-tag
+                  class="px-2.5 py-1 text-xs bg-bg border border-border text-text-2"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</article>

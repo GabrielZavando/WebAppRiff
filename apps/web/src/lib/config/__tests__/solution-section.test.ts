@@ -27,9 +27,16 @@ describe('SOLUTION_SECTION_CONTENT', () => {
     ]);
   });
 
-  it('every solution href equals "/soluciones" (task 1.6)', () => {
-    for (const solution of SOLUTIONS_DATA) {
-      expect(solution.href).toBe('/soluciones');
+  it('each solution deep-links to its /servicios portfolio anchor (task 7.2)', () => {
+    const hrefs = SOLUTIONS_DATA.map((solution) => solution.href);
+    expect(hrefs).toEqual([
+      '/servicios#solucion-medicion-fluidos',
+      '/servicios#solucion-tratamiento-agua',
+      '/servicios#solucion-productos-quimicos',
+      '/servicios#solucion-control-accesorios',
+    ]);
+    for (const href of hrefs) {
+      expect(href).not.toBe('/soluciones');
     }
   });
 

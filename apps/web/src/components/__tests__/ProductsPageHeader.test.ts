@@ -26,6 +26,14 @@ describe('ProductsPageHeader', () => {
     expect(html).toContain('Explora nuestro catálogo.');
   });
 
+  it('renders the <h1> fully uppercase', async () => {
+    const html = await render('grid');
+    const clean = html.replace(/<!--[\s\S]*?-->/g, '');
+    const h1Match = clean.match(/<h1[^>]*>/);
+    if (!h1Match) throw new Error('h1 not found');
+    expect(h1Match[0]).toContain('uppercase');
+  });
+
   it('renders the total product count', async () => {
     const html = await render('grid', 12);
     expect(html).toContain('12 productos');

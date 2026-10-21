@@ -202,9 +202,18 @@ describe('HeroBanner — content only (no background shell)', () => {
 });
 
 describe('HeroBanner — responsive typography & padding', () => {
+  it('renders the <h1> fully uppercase', async () => {
+    const html = await render();
+    const clean = html.replace(/<!--[\s\S]*?-->/g, '');
+    const h1Match = clean.match(/<h1[^>]*>/);
+    if (!h1Match) throw new Error('h1 not found');
+    expect(h1Match[0]).toContain('uppercase');
+  });
+
   it('the <h1> has responsive text size (text-5xl base + md:text-7xl)', async () => {
     const html = await render();
-    const h1Match = html.match(/<h1[^>]*>/);
+    const clean = html.replace(/<!--[\s\S]*?-->/g, '');
+    const h1Match = clean.match(/<h1[^>]*>/);
     if (!h1Match) throw new Error('h1 not found');
     expect(h1Match[0]).toContain('text-5xl');
     expect(h1Match[0]).toContain('md:text-7xl');

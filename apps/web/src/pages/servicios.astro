@@ -1,22 +1,24 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import ServicesHero from '@/components/ServicesHero.astro';
-import ServiceCard from '@/components/ServiceCard.astro';
+import ServiciosPortafolioSection from '@/components/ServiciosPortafolioSection.astro';
+import ServiciosTerrenoSection from '@/components/ServiciosTerrenoSection.astro';
 import tratamientoAgua from '@/assets/img/tratamiento-agua.webp';
 import { SERVICIOS_PAGE_CONTENT } from '@/lib/config/services-page';
 ---
 
 <!--
   Public services page (/servicios). Composes the transparent ServicesHero (no
-  own background) with the four alternating ServiceCard components fed by
-  SERVICIOS_PAGE_CONTENT (dumb components + hardcoded config, site-wide
-  pattern). The page passes the hero flag to Layout so the full-bleed hero image
-  is rendered with the color overlay; heroImage overrides the default home image
-  with tratamiento-agua.webp (design.md Decision 3). The transparent header and
-  search bar become solid on scroll, exactly like the home page. The cards sit on
-  a neutral surface to separate them from the hero (design.md Decision 11). Image
-  position alternates per card: even indices (1st, 3rd) image-left, odd indices
-  (2nd, 4th) image-right.
+  own background) with two sections fed by SERVICIOS_PAGE_CONTENT (dumb
+  components + hardcoded config, site-wide pattern):
+  1. Portafolio Técnico: four technical solution rows with specs and tags.
+  2. Servicios en Terreno: four alternating service rows with images.
+  The page passes the hero flag to Layout so the full-bleed hero image is
+  rendered with the color overlay; heroImage overrides the default home image
+  with tratamiento-agua.webp (design.md D1). The transparent header and search
+  bar become solid on scroll, exactly like the home page. Section 1 sits on the
+  neutral bg surface and section 2 on primary-100 to create rhythm without
+  shadows (design.md D8).
 -->
 <Layout
   title="Servicios — Riff"
@@ -26,19 +28,7 @@ import { SERVICIOS_PAGE_CONTENT } from '@/lib/config/services-page';
 >
   <main class="flex-grow">
     <ServicesHero {...SERVICIOS_PAGE_CONTENT.hero} />
-    <section class="bg-bg py-12 md:py-20">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col gap-12 md:gap-16">
-          {
-            SERVICIOS_PAGE_CONTENT.services.map((service, index) => (
-              <ServiceCard
-                {...service}
-                imagePosition={index % 2 === 0 ? 'left' : 'right'}
-              />
-            ))
-          }
-        </div>
-      </div>
-    </section>
+    <ServiciosPortafolioSection {...SERVICIOS_PAGE_CONTENT.portfolioSection} />
+    <ServiciosTerrenoSection {...SERVICIOS_PAGE_CONTENT.fieldServicesSection} />
   </main>
 </Layout>

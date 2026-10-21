@@ -89,18 +89,19 @@ Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI func
 | `menu` | `lucide:menu` | Hamburguesa menú móvil |
 | `close` | `lucide:x` | Cerrar menú móvil |
 
-### Catálogo completo (36 iconos)
+### Catálogo completo (40 iconos)
 
 | Referencia | Icono (Iconify name) | Uso |
 |---|---|---|
 | `search` | `lucide:search` | Búsqueda |
 | `calendar` | `lucide:calendar` | Calendario / fecha |
 | `check` | `lucide:check` | Check / éxito |
-| `circle-check` | `lucide:circle-check` | Éxito de toast de formularios (`Toast.astro`, change `web-forms-toast`) |
+| `circle-check` | `lucide:circle-check` | Éxito de toast de formularios (`Toast.astro`, change `web-forms-toast`) — también viñetas de la sección de terreno del `/servicios` |
+| `square-check` | `lucide:square-check` | Cajas de características de "Medición en Edificios" en el `/servicios` (change `redesign-servicios-page`) |
 | `warning` | `lucide:triangle-alert` | Advertencia |
 | `info` | `lucide:info` | Información |
 | `error` | `lucide:circle-alert` | Error — también icono de error del toast de formularios |
-| `arrow-right` | `lucide:arrow-right` | Flecha derecha / siguiente — también CTA "SOLICITAR ASESORÍA TÉCNICA" del `/nosotros` |
+| `arrow-right` | `lucide:arrow-right` | Flecha derecha / siguiente — también CTAs "SOLICITAR ASESORÍA TÉCNICA" del `/nosotros` y del `/servicios` |
 | `copy` | `lucide:copy` | Copiar al portapapeles |
 | `filters` | `lucide:list-filter` | Filtros |
 | `trash` | `lucide:trash` | Eliminar |
@@ -113,7 +114,10 @@ Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI func
 | `badge-check` | `lucide:badge-check` | Eyebrow del hero del `/nosotros` (change `nosotros-page`) |
 | `book-open-text` | `lucide:book-open-text` | CTA "CONOCER NUESTRA HISTORIA" del `/nosotros` |
 | `cog` | `lucide:cog` | Pilar "Durabilidad Extrema" del `/nosotros` |
-| `sliders-horizontal` | `lucide:sliders-horizontal` | Pilar "Precisión Certificada" del `/nosotros` |
+| `sliders-horizontal` | `lucide:sliders-horizontal` | Pilar "Precisión Certificada" del `/nosotros` — también título del panel de especificaciones del `/servicios` |
+| `droplets` | `lucide:droplets` | Solución "Tratamiento de Agua" del `/servicios` (change `redesign-servicios-page`) |
+| `flask-conical` | `lucide:flask-conical` | Solución "Productos Químicos" del `/servicios` (change `redesign-servicios-page`) |
+| `settings-2` | `lucide:settings-2` | Solución "Control y Accesorios" del `/servicios` (change `redesign-servicios-page`) |
 | `droplet` | `lucide:droplet` | Pilar "Eficiencia Hídrica" del `/nosotros` |
 | `wrench` | `lucide:wrench` | Pilar "Servicio In-Situ" y badge "+100 años" del `/nosotros` |
 | `mountain` | `lucide:mountain` | Sector "Gran Minería & Pulpa" del `/nosotros` |
@@ -127,7 +131,7 @@ Set único autorizado: **Lucide** (`lucide:*`). Aplica tanto a iconos de UI func
 | `badge` | `lucide:badge` | Pie de tarjeta "Gestión Corporativa" del `/nosotros` |
 | `drafting-compass` | `lucide:drafting-compass` | Pie de tarjeta "Cálculo & Comisionamiento" del `/nosotros` |
 | `globe` | `lucide:globe` | Pie de tarjeta "Alianzas Globales" del `/nosotros` |
-| `gauge` | `lucide:gauge` | Pie de tarjeta "Metrología & Faena" del `/nosotros` |
+| `gauge` | `lucide:gauge` | Pie de tarjeta "Metrología & Faena" del `/nosotros` — también solución "Medición de Fluidos" del `/servicios` |
 | `handshake` | `lucide:handshake` | Eyebrow de la sección de clientes del `/nosotros` |
 
 > **Nota:** Único set base: `lucide`. Los alias antiguos de Lucide (`alert-triangle`, `alert-circle`, `more-vertical`, `x-circle`) siguen resolviéndose en `@iconify-json/lucide`, pero se documentan los nombres canónicos actuales (`triangle-alert`, `circle-alert`, `ellipsis-vertical`, `x`).

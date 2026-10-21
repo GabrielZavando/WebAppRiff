@@ -47,6 +47,14 @@ const LUCIDE_REFS = [
   'lucide:linkedin',
 ] as const;
 
+// Icons introduced by the /servicios redesign that must be documented in the
+// canonical catalog (openspec/changes/redesign-servicios-page).
+const SERVICIOS_REDESIGN_REFS = [
+  'lucide:flask-conical',
+  'lucide:settings-2',
+  'lucide:square-check',
+] as const;
+
 // The sole documented exception to the unique-Lucide set rule: the X (Twitter)
 // brand logo is not available in Lucide, so `simple-icons:x` is authorized
 // (see docs/design/style-guide/README.md). See
@@ -73,6 +81,12 @@ describe('ui-refactor — catálogo de iconos: set único Lucide (task 6.2)', ()
 
     it('NO menciona material-symbols: ni logos: como sets autorizados', () => {
       expect(readme).not.toMatch(OBSOLETE_PREFIXES);
+    });
+
+    it('documenta los iconos nuevos del rediseño de /servicios', () => {
+      for (const ref of SERVICIOS_REDESIGN_REFS) {
+        expect(readme, `README debe documentar ${ref}`).toContain(ref);
+      }
     });
   });
 

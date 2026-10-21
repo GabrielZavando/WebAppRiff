@@ -4,8 +4,8 @@ import ServicesHero from '@/components/ServicesHero.astro';
 import type { ServicesHeroProps } from '@/lib/types/services-page';
 
 const baseProps: ServicesHeroProps = {
-  headline: 'Servicios Especializados en Precisión y Control',
-  highlightedWord: 'Precisión',
+  headline: 'Portafolio industrial de soluciones & Servicios Industriales',
+  highlightedWord: 'Servicios Industriales',
   subtitle:
     'Soluciones técnicas integrales para la instalación, mantenimiento y optimización de sistemas de medición y tratamiento de fluidos.',
 };
@@ -30,26 +30,34 @@ function stripTags(html: string): string {
 }
 
 describe('ServicesHero — headline & highlight', () => {
+  it('renders the <h1> fully uppercase', async () => {
+    const html = await render();
+    const clean = html.replace(/<!--[\s\S]*?-->/g, '');
+    const h1Match = clean.match(/<h1[^>]*>/);
+    if (!h1Match) throw new Error('h1 not found');
+    expect(h1Match[0]).toContain('uppercase');
+  });
+
   it('renders the full headline text', async () => {
     const html = await render();
     expect(stripTags(html)).toContain(
-      'Servicios Especializados en Precisión y Control',
+      'Portafolio industrial de soluciones &amp; Servicios Industriales',
     );
   });
 
-  it('wraps the highlighted word in a span.text-accent', async () => {
+  it('wraps the highlighted words in a span.text-primary', async () => {
     const html = await render();
     expect(html).toMatch(
-      /<span class="text-accent">Precisión<\/span>/,
+      /<span class="text-primary">Servicios Industriales<\/span>/,
     );
   });
 
   it('does not render a highlight span when highlightedWord is empty', async () => {
     const html = await render({ ...baseProps, highlightedWord: '' });
     // Strip the component's own HTML comment (which mentions tokens verbatim).
-    expect(stripComments(html)).not.toContain('text-accent');
+    expect(stripComments(html)).not.toContain('text-primary');
     expect(stripTags(html)).toContain(
-      'Servicios Especializados en Precisión y Control',
+      'Portafolio industrial de soluciones &amp; Servicios Industriales',
     );
   });
 
@@ -59,7 +67,7 @@ describe('ServicesHero — headline & highlight', () => {
       highlightedWord: 'Inexistente',
       subtitle: 'Sub',
     });
-    expect(stripComments(html)).not.toContain('text-accent');
+    expect(stripComments(html)).not.toContain('text-primary');
     expect(stripTags(html)).toContain('Servicios simples');
   });
 });

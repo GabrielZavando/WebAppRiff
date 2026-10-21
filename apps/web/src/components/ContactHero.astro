@@ -27,7 +27,7 @@ const shouldRenderHighlight = highlightedWord !== '' && before !== headline;
 -->
 <section class="relative">
   <div class="container mx-auto pt-4 md:pt-8 lg:pt-24 pb-0">
-    <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white max-w-4xl">
+    <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold uppercase text-white max-w-4xl">
       {before}{shouldRenderHighlight && <span class="text-primary">{highlightedWord}</span>}{after}
     </h1>
     <p class="mt-6 text-base md:text-lg text-white/80 max-w-2xl font-body">

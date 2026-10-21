@@ -39,8 +39,9 @@ import controlImg from '@/assets/img/control-accesorios.webp';
  * Images follow the `image-assets` convention (frontend-standards § "Imágenes
  * del sitio"): every optimizable site image lives in `assets/img/` and is
  * consumed via `astro:assets`. The `imageAlt` describes what the photo shows
- * (never repeats the card title). `href` is generic `/soluciones` by design
- * (design.md § Trade-offs); per-solution routes are future work.
+ * (never repeats the card title). `href` deep-links to the matching row of the
+ * `/servicios` "Portafolio Técnico" section; the anchor ids are owned by
+ * `SERVICIOS_PORTFOLIO_SECTION` (design.md D6/D14).
  */
 export const SOLUTIONS_DATA: readonly Solution[] = [
   {
@@ -51,7 +52,7 @@ export const SOLUTIONS_DATA: readonly Solution[] = [
     image: medicionImg,
     imageAlt: 'Equipos de medición de fluidos en planta industrial',
     icon: 'gauge',
-    href: '/soluciones',
+    href: '/servicios#solucion-medicion-fluidos',
   },
   {
     slug: 'tratamiento-de-agua',
@@ -61,7 +62,7 @@ export const SOLUTIONS_DATA: readonly Solution[] = [
     image: aguaImg,
     imageAlt: 'Sistema de tratamiento de agua industrial',
     icon: 'droplet',
-    href: '/soluciones',
+    href: '/servicios#solucion-tratamiento-agua',
   },
   {
     slug: 'productos-quimicos',
@@ -71,7 +72,7 @@ export const SOLUTIONS_DATA: readonly Solution[] = [
     image: quimicosImg,
     imageAlt: 'Estantería de productos químicos industriales',
     icon: 'flask-conical',
-    href: '/soluciones',
+    href: '/servicios#solucion-productos-quimicos',
   },
   {
     slug: 'control-y-accesorios',
@@ -81,7 +82,7 @@ export const SOLUTIONS_DATA: readonly Solution[] = [
     image: controlImg,
     imageAlt: 'Manifold de válvulas y manómetros de control industrial',
     icon: 'settings-2',
-    href: '/soluciones',
+    href: '/servicios#solucion-control-accesorios',
   },
 ];
 

@@ -189,7 +189,7 @@ describe('SolutionSection — card contents (tasks 2.11, 2.12, 2.13, 2.14, 2.15)
       const aMatch = article.match(/<a\s[^>]*>[\s\S]*?<\/a>/);
       if (!aMatch) throw new Error('card CTA <a> not found');
       const a = aMatch[0];
-      expect(a).toContain('href="/soluciones"');
+      expect(a).toMatch(/href="\/servicios#solucion-[a-z-]+"/);
       expect(a).toContain('SABER MÁS');
       // Design-system solid button pattern (same as HeroBanner/Header/PanelHome CTAs).
       expect(a).toContain('bg-primary');
@@ -266,7 +266,7 @@ describe('SolutionSection — accessibility (tasks 2.21, 2.22)', () => {
     const aOpenMatches = html.match(/<a\s[^>]*>/g) ?? [];
     expect(aOpenMatches.length).toBeGreaterThan(0);
     for (const aOpen of aOpenMatches) {
-      expect(aOpen).toContain('href="/soluciones"');
+      expect(aOpen).toMatch(/href="\/servicios#solucion-[a-z-]+"/);
       expect(aOpen).not.toContain('tabindex="-1"');
       expect(aOpen).not.toContain('aria-hidden="true"');
     }
