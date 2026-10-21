@@ -1,0 +1,32 @@
+---
+import type { ServiciosPortafolioSectionProps } from '@/lib/types/services-page';
+import ServiciosSectionHeading from '@/components/ServiciosSectionHeading.astro';
+import SolucionPortafolioCard from '@/components/SolucionPortafolioCard.astro';
+
+interface Props extends ServiciosPortafolioSectionProps {}
+
+const { eyebrow, headline, intro, solutions } = Astro.props;
+---
+
+<!--
+  Section 1 of /servicios (design.md D2/D4): white list of four technical
+  solutions separated by 1px dividers inside a bordered, square container.
+  Background: bg-bg. All content comes from props.
+-->
+<section data-section="portfolio" class="w-full bg-bg py-16">
+  <div class="container">
+    <ServiciosSectionHeading
+      eyebrow={eyebrow}
+      headline={headline}
+      intro={intro}
+      markerTone="primary"
+    />
+    <div class="border border-border bg-white divide-y divide-border">
+      {
+        solutions.map((solution) => (
+          <SolucionPortafolioCard {...solution} />
+        ))
+      }
+    </div>
+  </div>
+</section>

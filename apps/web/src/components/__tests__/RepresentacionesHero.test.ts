@@ -23,6 +23,14 @@ describe('RepresentacionesHero', () => {
     );
   });
 
+  it('renders the <h1> fully uppercase', async () => {
+    const html = await render();
+    const clean = html.replace(/<!--[\s\S]*?-->/g, '');
+    const h1Match = clean.match(/<h1[^>]*>/);
+    if (!h1Match) throw new Error('h1 not found');
+    expect(h1Match[0]).toContain('uppercase');
+  });
+
   it('renders the intro paragraph', async () => {
     const html = await render();
     expect(html).toContain(

@@ -37,10 +37,11 @@ export type SolutionIconName =
  * alt describes what the photo shows, see frontend-standards § "Imágenes del
  * sitio").
  *
- * `href` defaults to the generic `/soluciones` page in this change; the
- * per-solution detail routes `/soluciones/{slug}` are future work
- * (`solution-detail-pages`), but `slug` is already part of the contract so no
- * breaking change will be needed (design.md § Trade-offs).
+ * `href` deep-links to the matching row of the `/servicios` "Portafolio
+ * Técnico" section (e.g. `/servicios#solucion-medicion-fluidos`); the anchor
+ * ids are owned by `SERVICIOS_PORTFOLIO_SECTION` (design.md D6/D14). The
+ * per-solution detail routes `/soluciones/{slug}` remain future work, but
+ * `slug` is already part of the contract so no breaking change will be needed.
  */
 export interface Solution {
   /** Kebab-case slug, e.g. "medicion-de-fluidos". Reserved for detail routes. */
@@ -55,7 +56,7 @@ export interface Solution {
   readonly imageAlt: string;
   /** Lucide icon name for the badge, restricted to `SolutionIconName`. */
   readonly icon: SolutionIconName;
-  /** Destination of the "SABER MÁS" link, e.g. `/soluciones`. */
+  /** Destination of the "SABER MÁS" link, e.g. `/servicios#solucion-medicion-fluidos`. */
   readonly href: string;
 }
 

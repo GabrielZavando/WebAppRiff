@@ -21,7 +21,7 @@ import type {
  *      field names exist and accept the right kinds of values), including the
  *      Lucide icon union `SolutionIconName`.
  *
- * The deeper behavioural assertions (exactly 4 solutions, `/soluciones` href,
+ * The deeper behavioural assertions (exactly 4 solutions, `/servicios#solucion-*` hrefs,
  * icon order, etc.) live in `lib/config/__tests__/solution-section.test.ts`
  * against `SOLUTION_SECTION_CONTENT`, which is the runtime carrier of the
  * contract.
@@ -70,7 +70,7 @@ describe('solution-section.ts types', () => {
       } as unknown as Solution['image'],
       imageAlt: 'Equipos de medición de fluidos en planta industrial',
       icon: 'gauge',
-      href: '/soluciones',
+      href: '/servicios#solucion-medicion-fluidos',
     };
 
     expect(solution.slug).toBe('medicion-de-fluidos');
@@ -78,7 +78,7 @@ describe('solution-section.ts types', () => {
     expect(solution.description).toContain('caudal');
     expect(solution.imageAlt).toContain('medición');
     expect(solution.icon).toBe('gauge');
-    expect(solution.href).toBe('/soluciones');
+    expect(solution.href).toBe('/servicios#solucion-medicion-fluidos');
 
     // Type-level shape: every required field present, all readonly.
     expectTypeOf<Solution>().toEqualTypeOf<{
@@ -116,7 +116,7 @@ describe('solution-section.ts types', () => {
           image: { src: '/a.webp', width: 1, height: 1, format: 'webp' } as unknown as Solution['image'],
           imageAlt: 'alt 1',
           icon: 'gauge',
-          href: '/soluciones',
+          href: '/servicios#solucion-medicion-fluidos',
         },
       ],
     };
