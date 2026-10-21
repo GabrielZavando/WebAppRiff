@@ -66,3 +66,9 @@
 - [x] 9.2 Añadir tests que exijan `uppercase` en el `<h1>` de Inicio, Nosotros, Productos, Servicios, Representaciones y Contacto (fallando primero donde falte).
 - [x] 9.3 Añadir la utilidad `uppercase` a los `<h1>` de `HeroBanner`, `ProductsPageHeader`, `ServicesHero` y `ContactHero`; verificar que `NosotrosHero` y `RepresentacionesHero` ya la tienen.
 - [x] 9.4 Actualizar snapshots y ejecutar `npm run test`, `npm run lint`, `npm run typecheck`, `npm run build` y `npx openspec validate redesign-servicios-page --strict`.
+
+## 10. Gate de auditoría de dependencias
+
+- [x] 10.1 Actualizar `@angular/cli` a `^22.2.3` (arrastra `@modelcontextprotocol/server` ≥ 2.3.1) y `@fission-ai/openspec` a `1.14.3`.
+- [x] 10.2 Ejecutar `npm run audit` y confirmar que no quedan vulnerabilidades high/critical bloqueantes.
+- [x] 10.3 Ejecutar lint, typecheck, tests y build de los workspaces afectados.
