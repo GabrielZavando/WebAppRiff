@@ -41,7 +41,7 @@
 - [x] 6.1 Ejecutar `npm run lint` en `apps/web`.
 - [x] 6.2 Ejecutar `npm run typecheck` en `apps/web`.
 - [x] 6.3 Ejecutar `npm run test` en `apps/web`.
-- [ ] 6.4 Verificar manualmente `/servicios`, `/servicios#medicion-en-edificios` y `/servicios#solucion-medicion-fluidos` (render, responsive y scroll bajo el header sticky).
+- [x] 6.4 Verificar manualmente `/servicios`, `/servicios#medicion-en-edificios` y `/servicios#solucion-medicion-fluidos` (render, responsive y scroll bajo el header sticky).
 - [x] 6.5 Ejecutar `npx openspec validate redesign-servicios-page --strict`.
 
 ## 7. Deep links del home al portafolio

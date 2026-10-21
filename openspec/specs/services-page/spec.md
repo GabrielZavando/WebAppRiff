@@ -26,136 +26,188 @@ The services-hero SHALL render a headline from the `headline` prop with the `hig
 - **AND** the headline carries `text-white`
 - **AND** no `rounded*` or `shadow*` classes appear in the static markup
 
-### Requirement: ServiceCard renders number, sector, title and image
-The service-card SHALL render an index `number`, a `sector` label, a `title` and an `image` (via `astro:assets`), with the image position controlled by the `imagePosition` prop (`left` or `right`) and a responsive layout (image stacked on mobile, side-by-side from `md+`). The short `description` field was removed (post-apply): the only prose on a card is the optional `intro` lead-in paragraph (when present) followed by the optional `bullets` check-list.
+### Requirement: ServicesSectionHeading renders a consistent section header
+El componente de encabezado de sección SHALL renderizar un marcador cuadrado con el tono indicado (`primary` o `accent`), un eyebrow en mayúsculas, un `<h2>` con el headline y un párrafo de introducción, separados del contenido por un borde inferior. El componente SHALL ser reutilizable por ambas secciones y SHALL NOT usar `rounded-*` ni `shadow-*` en estado estático.
 
-#### Scenario: Number formatted as two digits
-- **WHEN** the ServiceCard renders with `number={1}`
-- **THEN** the rendered HTML contains the text "01"
-- **AND** the number carries a class containing `text-primary`
+#### Scenario: Encabezado con marcador primario
+- **WHEN** `ServiciosSectionHeading` renderiza con `markerTone="primary"`, `eyebrow="LÍNEA DE EQUIPAMIENTO & TECNOLOGÍA"` y `headline="Nuestras Soluciones — Portafolio Técnico"`
+- **THEN** el marcador cuadrado lleva `bg-primary`
+- **AND** el eyebrow se renderiza en mayúsculas con `text-primary`
+- **AND** el headline se renderiza como `<h2>`
+- **AND** la introducción se renderiza como `<p>`
 
-#### Scenario: Sector label rendered in primary uppercase
-- **WHEN** the ServiceCard renders with `sector="SECTOR INDUSTRIAL"`
-- **THEN** a `<span>` (or `<p>`) with text "SECTOR INDUSTRIAL" is rendered
-- **AND** it carries classes `text-primary` and `uppercase`
+#### Scenario: Encabezado con marcador de acento
+- **WHEN** `ServiciosSectionHeading` renderiza con `markerTone="accent"` y `headline="Servicios Especializados en Terreno"`
+- **THEN** el marcador cuadrado lleva `bg-accent`
+- **AND** el headline se renderiza como `<h2>`
 
-#### Scenario: Title rendered as h2
-- **WHEN** the ServiceCard renders with `title="Medición Industrial"`
-- **THEN** an `<h2>` element containing "Medición Industrial" is rendered
+#### Scenario: Sin radio ni sombra
+- **WHEN** `ServiciosSectionHeading` renderiza
+- **THEN** el HTML no contiene clases `rounded*` ni `shadow*`
 
-#### Scenario: Image renders with descriptive alt and lazy loading
-- **WHEN** the ServiceCard renders with `image` metadata and `imageAlt` text
-- **THEN** an `<img>` (emitted by `astro:assets`) with `alt` equal to `imageAlt` is rendered
-- **AND** the image element carries `loading="lazy"`
+### Requirement: SolucionPortafolioCard renders a technical solution row
+`SolucionPortafolioCard` SHALL renderizar una fila de solución con un icono Lucide provisto por configuración, una categoría en mayúsculas, un `<h3>` con el título, un párrafo de descripción, un CTA y el `id` del ancla de la solución. La columna de contenido y la columna de especificaciones SHALL apilarse en móvil y mostrarse lado a lado desde `lg`.
 
-#### Scenario: Image position left (default)
-- **WHEN** the ServiceCard renders with `imagePosition="left"`
-- **THEN** the image element appears before the text content in DOM order on `md+` layouts (no `flex-row-reverse` wrapper class)
+#### Scenario: Contenido principal de la solución
+- **WHEN** `SolucionPortafolioCard` renderiza con `icon="lucide:gauge"`, `category="Instrumentación de Precisión"`, `title="Medición de Fluidos"` y `description` no vacía
+- **THEN** se renderiza un icono SVG de `astro-icon` con `aria-hidden="true"`
+- **AND** la categoría se renderiza en mayúsculas con `text-primary`
+- **AND** el título se renderiza como `<h3>` con `text-secondary`
+- **AND** la descripción se renderiza como `<p>` con `text-text-2`
 
-#### Scenario: Image position right reverses order
-- **WHEN** the ServiceCard renders with `imagePosition="right"`
-- **THEN** the wrapper carries a class containing `md:flex-row-reverse` (image after text on `md+`)
+#### Scenario: Ancla de la solución
+- **WHEN** `SolucionPortafolioCard` renderiza con `id="solucion-medicion-fluidos"`
+- **THEN** el elemento raíz `<article>` lleva `id="solucion-medicion-fluidos"`
+- **AND** el elemento raíz lleva una utilidad `scroll-mt-*`
 
-### Requirement: ServiceCard renders optional bullets with check icons
-The service-card SHALL render an optional `bullets` list as a `<ul>` where each item shows a `lucide:check` icon (decorative, `aria-hidden="true"`) in the primary color and the bullet text.
+#### Scenario: Layout responsivo
+- **WHEN** `SolucionPortafolioCard` renderiza
+- **THEN** el contenedor interno usa una grilla de una columna en móvil y dos columnas desde `lg`
 
-#### Scenario: Bullets rendered when provided
-- **WHEN** the ServiceCard renders with `bullets={["Precisión: ±0.5%", "Integración: SCADA/PLC"]}`
-- **THEN** a `<ul>` is rendered containing exactly two `<li>` elements
-- **AND** each `<li>` contains the corresponding bullet text
-- **AND** a `lucide:check` icon (decorative, `aria-hidden="true"`) is rendered inside the list
+### Requirement: SolucionPortafolioCard renders a specifications panel
+`SolucionPortafolioCard` SHALL renderizar un panel de especificaciones con un `<h4>` de título y una lista de pares etiqueta/valor provistos por configuración. Cada par SHALL renderizarse en una caja propia con `bg-white` y `border-border`, dentro de un panel con `bg-primary-100`. El panel SHALL admitir entre dos y cuatro especificaciones y SHALL NOT renderizarse si la lista está vacía.
 
-#### Scenario: No bullets when absent
-- **WHEN** the ServiceCard renders without a `bullets` prop (or empty array)
-- **THEN** no `<ul>` of bullets is rendered
+#### Scenario: Panel con especificaciones
+- **WHEN** `SolucionPortafolioCard` renderiza con `specsTitle="Especificaciones Técnicas Clave"` y tres especificaciones
+- **THEN** el título se renderiza como `<h4>`
+- **AND** se renderizan exactamente tres cajas de especificación
+- **AND** cada caja muestra su etiqueta y su valor
 
-### Requirement: ServiceCard renders optional tags as pills
-The service-card SHALL render an optional `tags` list as a row of pills, each pill a `<span>` with `border border-border` and `text-text-2`.
+#### Scenario: Panel omitido sin especificaciones
+- **WHEN** `SolucionPortafolioCard` renderiza con `specs=[]`
+- **THEN** no se renderiza el panel de especificaciones
 
-#### Scenario: Tags rendered when provided
-- **WHEN** the ServiceCard renders with `tags={["Ingeniería Conceptual", "Diseño de Detalle"]}`
-- **THEN** exactly two pill `<span>` elements are rendered
-- **AND** each pill carries `border` and `border-border` classes
-- **AND** the pill text matches the tag labels
+### Requirement: SolucionPortafolioCard renders tag chips and CTA
+`SolucionPortafolioCard` SHALL renderizar una etiqueta de sección y una fila de chips con los valores de `tags`, y un CTA visible con la etiqueta configurada que apunte a `/contacto` usando `bg-accent` y `hover:bg-accent-dark`, acompañado de un icono `lucide:arrow-right` decorativo (`aria-hidden="true"`).
 
-#### Scenario: No tags when absent
-- **WHEN** the ServiceCard renders without a `tags` prop (or empty array)
-- **THEN** no pill elements are rendered
+#### Scenario: Chips de sectores o cumplimiento
+- **WHEN** `SolucionPortafolioCard` renderiza con `tagsLabel="Sectores e Industrias:"` y cuatro tags
+- **THEN** se renderiza la etiqueta `Sectores e Industrias:`
+- **AND** se renderizan cuatro chips
+- **AND** cada chip lleva `border` y `border-border`
 
-### Requirement: ServiceCard renders an optional intro paragraph
-The service-card SHALL render an optional `intro` paragraph (string) as the first prose block above the `bullets` list, when the prop is provided. The `intro` is the lead-in copy that precedes the check-list (e.g. "Nuestro servicio incluye:"). It is rendered as a `<p>` with the muted body styling (`text-text-2`). The short `description` field no longer exists, so `intro` is the only paragraph rendered before the bullets.
+#### Scenario: CTA al contacto
+- **WHEN** `SolucionPortafolioCard` renderiza con `ctaLabel="Solicitar Asesoría Técnica"`
+- **THEN** se renderiza un `<a href="/contacto">`
+- **AND** el texto visible contiene "Solicitar Asesoría Técnica"
+- **AND** el ancla lleva `bg-accent`
+- **AND** el icono de flecha es decorativo
 
-#### Scenario: Intro rendered when provided
-- **WHEN** the ServiceCard renders with `intro="Optimizamos el consumo de agua en comunidades y edificios con la instalación y renovación de medidores de agua caliente. Nuestro servicio incluye:"`
-- **THEN** a `<p>` element is rendered containing that exact intro text
-- **AND** that `<p>` appears before the `bullets` `<ul>` in document order
+#### Scenario: Sin chips cuando no hay tags
+- **WHEN** `SolucionPortafolioCard` renderiza con `tags=[]`
+- **THEN** no se renderizan chips
 
-#### Scenario: No intro when absent
-- **WHEN** the ServiceCard renders without an `intro` prop
-- **THEN** no `<p>` with the intro copy is rendered (no prose paragraph is rendered, since the short `description` field was removed)
+### Requirement: ServicioTerrenoCard renders image, index, sector, title and description
+`ServicioTerrenoCard` SHALL renderizar una fila de servicio en terreno con una imagen optimizada por `astro:assets` (`loading="lazy"`, `alt` descriptivo), un caption superpuesto sobre la imagen, un índice de dos dígitos, un sector en mayúsculas, un `<h3>` con el título y un párrafo de descripción. La imagen y el contenido SHALL apilarse en móvil y alternar su orden visual desde `md`: las tarjetas 1 y 3 muestran la imagen a la izquierda y las tarjetas 2 y 4 a la derecha.
 
-### Requirement: ServiceCard renders CTA button to contact page with accent color
-The service-card SHALL render a CTA `<a>` pointing to `/contacto` with the visible text "CONTACTAR A UN ESPECIALISTA", using the `bg-accent` token and a right-arrow icon.
+#### Scenario: Imagen y caption
+- **WHEN** `ServicioTerrenoCard` renderiza con `image` local, `imageAlt="Edificios residenciales con medidores de agua"`, `imageCaptionLabel="COMPATIBILIDAD TELEMÉTRICA"` y `imageCaption` no vacío
+- **THEN** se renderiza un `<img>` optimizado por `astro:assets`
+- **AND** el `alt` es el `imageAlt` descriptivo
+- **AND** la imagen lleva `loading="lazy"`
+- **AND** el caption superpuesto muestra la etiqueta y el texto, con `bg-secondary-dark/90`
 
-#### Scenario: CTA rendered with accent color and link
-- **WHEN** the ServiceCard renders with default props
-- **THEN** an `<a href="/contacto">` is rendered
-- **AND** its visible text contains "CONTACTAR A UN ESPECIALISTA"
-- **AND** the anchor carries a class containing `bg-accent`
-- **AND** an arrow icon (decorative, `aria-hidden="true"`) is rendered inside the anchor
+#### Scenario: Índice y sector
+- **WHEN** `ServicioTerrenoCard` renderiza con `index={1}` y `sector="RESIDENCIAL & COMERCIAL"`
+- **THEN** el HTML contiene el texto "01"
+- **AND** el sector se renderiza en mayúsculas con `text-accent`
 
-### Requirement: ServiceCard uses flat design tokens
-The service-card SHALL NOT use `rounded*` or `shadow*` classes in its static state, and SHALL use the project design tokens (`text-primary`, `bg-white`, `border-border`, `bg-accent`, `text-secondary`, etc.).
+#### Scenario: Título y descripción
+- **WHEN** `ServicioTerrenoCard` renderiza con `title="Medición en Edificios"` y `description` no vacía
+- **THEN** el título se renderiza como `<h3>` con `text-secondary`
+- **AND** la descripción se renderiza como `<p>` con `text-text-2`
 
-#### Scenario: No rounded or shadow classes
-- **WHEN** the ServiceCard renders
-- **THEN** the rendered HTML contains no class containing `rounded`
-- **AND** the rendered HTML contains no class containing `shadow`
+#### Scenario: Alternancia de imagen
+- **WHEN** la página renderiza las cuatro tarjetas en orden
+- **THEN** las tarjetas 1 y 3 muestran la imagen a la izquierda en `md+`
+- **AND** las tarjetas 2 y 4 muestran la imagen a la derecha en `md+`
 
-#### Scenario: Card surface uses white background with border
-- **WHEN** the ServiceCard renders
-- **THEN** the card root element carries `bg-white` and `border` and `border-border` classes
+### Requirement: ServicioTerrenoCard renders exactly one body variant
+`ServicioTerrenoCard` SHALL aceptar una unión discriminada `body` con exactamente una de tres variantes: `features` (cajas con título y descripción), `bullets` (lista con prefijo en negrita e icono `lucide:circle-check`) o `tags` (chips). El componente SHALL renderizar únicamente la variante indicada y SHALL NOT combinar bloques de variantes distintas.
 
-### Requirement: Services page composes hero and four alternating cards over the home banner
-The `/servicios` page SHALL render `ServicesHero` and exactly four `ServiceCard` components inside `Layout` with `hero` and the `heroImage` prop set to `tratamiento-agua.webp` (overriding the `Layout` default `banner_home.webp`), so `Layout` renders that image full-bleed with a `bg-secondary/80` color overlay behind the transparent header/search and `ServicesHero`, with the header/search changing to their solid color on scroll exactly like the home page. The cards use `bg-bg` as the surface behind them, with alternating `imagePosition` (`left` for cards 1 and 3, `right` for cards 2 and 4). Cards 01 (`Medición en Edificios`), 02 (`Medición Industrial`) and 03 (`Obras y Proyectos`) SHALL each render an `intro` paragraph followed by a `bullets` check-list (card 03 now uses bullets instead of tags); card 04 (`Tratamiento de Agua y Desalinización`) SHALL remain unchanged with only its `bullets` list (no `description`, no `intro`).
+#### Scenario: Variante de features
+- **WHEN** `ServicioTerrenoCard` renderiza con `body={ kind: 'features', features: [...] }` de dos elementos
+- **THEN** se renderizan exactamente dos cajas de feature
+- **AND** cada caja muestra un título en negrita y una descripción
 
-#### Scenario: Page renders hero and four cards
-- **WHEN** `apps/web/src/pages/servicios.astro` is built
-- **THEN** the rendered HTML contains the services hero headline
-- **AND** the rendered HTML contains exactly four `<h2>` service titles
-- **AND** the rendered HTML contains four `astro:assets` `<img>` elements
+#### Scenario: Variante de bullets
+- **WHEN** `ServicioTerrenoCard` renderiza con `body={ kind: 'bullets', bullets: [...] }` de tres elementos
+- **THEN** se renderiza un `<ul>` con exactamente tres `<li>`
+- **AND** cada `<li>` muestra el prefijo en negrita y el texto
+- **AND** cada `<li>` incluye un icono `lucide:circle-check` decorativo
 
-#### Scenario: Page renders the tratamiento-agua hero image with overlay
-- **WHEN** `servicios.astro` is rendered
-- **THEN** the page passes `hero` to `Layout` AND passes `heroImage` with `tratamiento-agua.webp`, so `tratamiento-agua.webp` IS rendered as the full-bleed background image with the `bg-secondary/80` overlay
-- **AND** `banner_home.webp` is NOT rendered on the servicios page
-- **AND** the transparent header/search become solid on scroll (same behavior as the home page)
+#### Scenario: Variante de tags
+- **WHEN** `ServicioTerrenoCard` renderiza con `body={ kind: 'tags', tags: [...] }` de cinco elementos
+- **THEN** se renderizan exactamente cinco chips
+- **AND** no se renderiza un `<ul>` de bullets
 
-#### Scenario: Alternating image positions
-- **WHEN** `servicios.astro` is rendered with the four services in order
-- **THEN** the first card (`Medición en Edificios`) and the third card (`Obras y Proyectos`) render without `md:flex-row-reverse` (image left)
-- **AND** the second card (`Medición Industrial`) and the fourth card (`Tratamiento de Agua y Desalinización`) render with `md:flex-row-reverse` (image right)
+#### Scenario: Una sola variante
+- **WHEN** `ServicioTerrenoCard` renderiza con cualquier variante
+- **THEN** el HTML no contiene bloques de las otras dos variantes
 
-#### Scenario: Cards 01-03 render intro paragraph and check-list, card 04 unchanged
-- **WHEN** `servicios.astro` is rendered
-- **THEN** card 01 (`Medición en Edificios`) contains an `intro` paragraph beginning with "Optimizamos el consumo de agua" and a `<ul>` of eight bullets
-- **AND** card 02 (`Medición Industrial`) contains an `intro` paragraph beginning with "Ofrecemos soluciones especializadas" and a `<ul>` of eight bullets
-- **AND** card 03 (`Obras y Proyectos`) contains an `intro` paragraph beginning with "Desarrollamos infraestructura" and a `<ul>` of four bullets (no tag pills)
-- **AND** card 04 (`Tratamiento de Agua y Desalinización`) contains only its existing bullet list (no `description`, no `intro` paragraph)
+### Requirement: ServicioTerrenoCard preserves anchor ids and renders CTA
+`ServicioTerrenoCard` SHALL renderizar su `<article>` raíz con `id` igual al `slug` y una utilidad `scroll-mt-*` que compense el header sticky. El CTA SHALL apuntar a `/contacto`, usar `bg-accent` y `hover:bg-accent-dark`, mostrar la etiqueta configurada y un icono `lucide:arrow-right` decorativo. Los cuatro slugs SHALL ser exactamente los del home: `medicion-en-edificios`, `medicion-industrial`, `obras-y-proyectos` y `tratamiento-de-agua`.
 
-#### Scenario: Card section uses neutral background
-- **WHEN** `servicios.astro` is rendered
-- **THEN** the section wrapping the four cards carries a class containing `bg-bg`
+#### Scenario: Ancla estable
+- **WHEN** `ServicioTerrenoCard` renderiza con `slug="medicion-industrial"`
+- **THEN** el `<article>` raíz lleva `id="medicion-industrial"`
+- **AND** el `<article>` raíz lleva una utilidad `scroll-mt-*`
 
-### Requirement: ServiceCard carries a stable anchor id with scroll-margin
-The service-card SHALL render its root `<article>` element with an `id` attribute equal to the service's `slug` prop (kebab-case, 1:1 with the home `SERVICES_DATA` slugs: `medicion-en-edificios`, `medicion-industrial`, `obras-y-proyectos`, `tratamiento-de-agua`), so the home "Ver detalles" CTAs can deep-link to `/servicios#{slug}` and the page can smooth-scroll to the corresponding card. The `ServicePageService` contract SHALL expose the `slug` field. The anchor target SHALL carry a `scroll-margin-top` utility accounting for the sticky header group (site header + optional search bar) so the card lands visible below the header. (ADDED in `web-home-contact-tweaks`.)
+#### Scenario: CTA al contacto
+- **WHEN** `ServicioTerrenoCard` renderiza con `ctaLabel="Contactar a un Especialista"`
+- **THEN** se renderiza un `<a href="/contacto">`
+- **AND** el texto visible contiene "Contactar a un Especialista"
+- **AND** el ancla lleva `bg-accent`
+- **AND** el icono de flecha es decorativo
 
-#### Scenario: Card root renders the anchor id from the slug prop
-- **WHEN** the ServiceCard renders with `slug="medicion-industrial"`
-- **THEN** the card root `<article>` element carries `id="medicion-industrial"`
-- **AND** the root element carries a scroll-margin utility (e.g. `scroll-mt-*`) compensating the sticky header
+#### Scenario: Contrato de slugs con el home
+- **WHEN** la página renderiza las cuatro tarjetas de la Sección 2
+- **THEN** el conjunto de `id` de las tarjetas es exactamente `medicion-en-edificios`, `medicion-industrial`, `obras-y-proyectos` y `tratamiento-de-agua`
 
-#### Scenario: Anchor ids map 1:1 with the home services slugs
-- **WHEN** the four ServiceCards render on the /servicios page
-- **THEN** the set of card anchor `id` values equals the set of `SERVICES_DATA` slugs from the home config (`medicion-en-edificios`, `medicion-industrial`, `obras-y-proyectos`, `tratamiento-de-agua`)
+### Requirement: Services page composes the hero and the two new sections over the home banner
+La página `/servicios` SHALL renderizar `ServicesHero`, `ServiciosPortafolioSection` y `ServiciosTerrenoSection` dentro de `Layout` con `hero` y `heroImage` igual a `tratamiento-agua.webp`, manteniendo el banner full-bleed y el overlay `bg-secondary/80`. La Sección 1 SHALL usar fondo `bg-bg`; la Sección 2 SHALL usar `bg-primary-100` y bordes superior e inferior. La página SHALL renderizar exactamente dos `<h2>` de sección y ocho filas de contenido (cuatro soluciones y cuatro servicios).
 
+#### Scenario: Composición de la página
+- **WHEN** `apps/web/src/pages/servicios.astro` se renderiza
+- **THEN** el HTML contiene el headline del `ServicesHero` actual
+- **AND** el HTML contiene el headline "Nuestras Soluciones — Portafolio Técnico"
+- **AND** el HTML contiene el headline "Servicios Especializados en Terreno"
+- **AND** el HTML contiene exactamente dos elementos `<h2>`
+- **AND** el HTML contiene ocho elementos `<article>` de fila
+
+#### Scenario: Hero con el nuevo copy
+- **WHEN** `servicios.astro` se renderiza
+- **THEN** el `<h1>` contiene el texto "Portafolio industrial de soluciones &amp; Servicios Industriales"
+- **AND** "Servicios Industriales" se renderiza dentro de un `<span class="text-primary">` (token `--color-primary` = `#41B3C4`)
+- **AND** el Header, el Footer y la estructura de `ServicesHero` se conservan
+
+#### Scenario: Overlay del banner idéntico al de Inicio
+- **WHEN** se renderizan la página Inicio y la página `/servicios`
+- **THEN** ambas páginas contienen exactamente un overlay decorativo con las clases `absolute inset-0 bg-secondary/80` y `aria-hidden="true"`
+- **AND** el overlay de ambas páginas se renderiza desde `Layout.astro` con el mismo color y la misma opacidad, sin capas adicionales propias de cada página
+
+#### Scenario: Fondos de las secciones
+- **WHEN** `servicios.astro` se renderiza
+- **THEN** la Sección 1 lleva `bg-bg`
+- **AND** la Sección 2 lleva `bg-primary-100`
+- **AND** la Sección 2 lleva bordes superior e inferior con `border-border`
+
+#### Scenario: Sin tokens obsoletos ni Material Symbols
+- **WHEN** se inspeccionan los componentes y la página nuevos
+- **THEN** no aparecen clases `brand-*`, `text-slate-*`, valores hex ni `rounded*`/`shadow*` estáticos
+- **AND** no se referencia `material-symbols:`
+
+### Requirement: Services page preserves the home deep-link contract
+La página `/servicios` SHALL conservar las cuatro anclas de servicio que usa el home (`medicion-en-edificios`, `medicion-industrial`, `obras-y-proyectos`, `tratamiento-de-agua`) y SHALL añadir las cuatro anclas del portafolio técnico (`solucion-medicion-fluidos`, `solucion-tratamiento-agua`, `solucion-productos-quimicos`, `solucion-control-accesorios`). Cada ancla SHALL apuntar a un `<article>` con `scroll-mt-*`.
+
+#### Scenario: Anclas de servicios conservadas
+- **WHEN** se renderiza la página
+- **THEN** existen cuatro `<article>` con los `id` de los slugs del home
+
+#### Scenario: Anclas nuevas del portafolio
+- **WHEN** se renderiza la página
+- **THEN** existen cuatro `<article>` con los `id` `solucion-medicion-fluidos`, `solucion-tratamiento-agua`, `solucion-productos-quimicos` y `solucion-control-accesorios`
+
+#### Scenario: Todas las anclas compensan el header sticky
+- **WHEN** se inspeccionan los ocho `<article>` con ancla
+- **THEN** cada uno lleva una utilidad `scroll-mt-*`
