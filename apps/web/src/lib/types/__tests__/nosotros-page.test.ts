@@ -9,7 +9,7 @@ import type {
   SectorCard,
   TeamAreaTone,
   TeamMember,
-  ClientCard,
+  ClientLogo,
   NosotrosHeroProps,
   NosotrosTimelineProps,
   NosotrosValuePropProps,
@@ -35,7 +35,7 @@ import type {
  *      field names exist and accept the right kinds of values).
  *
  * The deeper behavioural assertions (verbatim copy, 5 milestones, 4 pillars,
- * 4 sectors, 4 members, 8 clients, CTAs to /contacto, non-empty alts) live in
+ * 4 sectors, 4 members, 41 client logos, CTAs to /contacto, non-empty alts) live in
  * `lib/config/__tests__/nosotros-page.test.ts` against `NOSOTROS_PAGE_CONTENT`,
  * which is the runtime carrier of the contract.
  *
@@ -161,15 +161,15 @@ describe('nosotros-page.ts types', () => {
     expectTypeOf(member.areaTone).toEqualTypeOf<TeamAreaTone>();
   });
 
-  it('ClientCard exposes readonly name and subtitle', () => {
-    const client: ClientCard = {
-      name: 'ANGLO AMERICAN',
-      subtitle: 'Minería',
+  it('ClientLogo exposes the readonly image and alt contract', () => {
+    const logo: ClientLogo = {
+      image: {} as unknown as ClientLogo['image'],
+      alt: 'ACF Minera',
     };
-    expect(client.name).toBe('ANGLO AMERICAN');
-    expectTypeOf<ClientCard>().toEqualTypeOf<{
-      readonly name: string;
-      readonly subtitle: string;
+    expect(logo.alt).toBe('ACF Minera');
+    expectTypeOf<ClientLogo>().toEqualTypeOf<{
+      readonly image: ClientLogo['image'];
+      readonly alt: string;
     }>();
   });
 
@@ -285,13 +285,13 @@ describe('nosotros-page.ts types', () => {
     >();
   });
 
-  it('NosotrosClientsProps exposes the readonly clients + closing CTA contract', () => {
+  it('NosotrosClientsProps exposes the readonly logos + closing CTA contract', () => {
     const clients: NosotrosClientsProps = {
       eyebrow: 'CONFIANZA Y TRAYECTORIA',
       eyebrowIcon: 'handshake',
       title: 'Quienes Han Confiado en Nosotros',
       description: 'Empresas líderes.',
-      clients: [],
+      logos: [],
       cta: {
         eyebrow: 'Resolución Técnica Inmediata',
         title: '¿Listo para optimizar?',
@@ -342,8 +342,8 @@ describe('nosotros-page.ts types', () => {
     expectTypeOf<NosotrosPageContent['team']['members']>().toEqualTypeOf<
       readonly TeamMember[]
     >();
-    expectTypeOf<NosotrosPageContent['clients']['clients']>().toEqualTypeOf<
-      readonly ClientCard[]
+    expectTypeOf<NosotrosPageContent['clients']['logos']>().toEqualTypeOf<
+      readonly ClientLogo[]
     >();
   });
 });

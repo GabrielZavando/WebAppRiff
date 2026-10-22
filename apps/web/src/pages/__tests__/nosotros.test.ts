@@ -81,16 +81,22 @@ describe('Nosotros page — main renders the six sections (SC-109, SC-201 … SC
     expect(text).toContain('DICIEMBRE 2024');
   });
 
-  it('renders MISIÓN / VISIÓN, the four team members and the eight clients (SC-204 … SC-207)', async () => {
-    const text = stripTags(await render());
+  it('renders MISIÓN / VISIÓN, the four team members and the clients carousel (SC-204 … SC-207)', async () => {
+    const clean = stripComments(await render());
+    const text = stripTags(clean);
     expect(text).toContain('MISIÓN');
     expect(text).toContain('VISIÓN');
     expect(text).toContain('Steven Marks');
     expect(text).toContain('Lara Smith');
     expect(text).toContain('John Doe');
     expect(text).toContain('Felipe Román');
-    expect(text).toContain('ANGLO AMERICAN');
-    expect(text).toContain('SALFACORP');
+    // The eight-name grid was replaced by the 41-logo carousel (duplicated
+    // once for the seamless loop): assert the carousel contract instead.
+    expect(clean).toContain('aria-label="Logos de clientes"');
+    const main = clean.match(/<main[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? '';
+    expect(main.match(/<img[^>]*>/g) ?? []).toHaveLength(87);
+    expect(text).not.toContain('ANGLO AMERICAN');
+    expect(text).not.toContain('SALFACORP');
     expect(text).toContain(
       '¿Listo para optimizar la medición y el flujo de su operación?',
     );
@@ -170,11 +176,12 @@ describe('Nosotros page — design tokens and flat design (SC-210)', () => {
 describe('Nosotros page — accessibility invariants (SC-212)', () => {
   it('gives every image of the six sections a non-empty alt (SC-212)', async () => {
     const clean = stripComments(await render());
-    // Scoped to <main>: hero + 4 portraits. Chrome images (logos) have their
-    // own alt contract in the header/footer specs.
+    // Scoped to <main>: hero + 4 portraits + 41 logos duplicated once for the
+    // seamless loop. Chrome images (logos) have their own alt contract in the
+    // header/footer specs.
     const main = clean.match(/<main[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? '';
     const images = main.match(/<img[^>]*>/g) ?? [];
-    expect(images.length).toBe(5);
+    expect(images.length).toBe(87);
     for (const img of images) {
       expect(img).toMatch(/alt="[^"]+"/);
     }

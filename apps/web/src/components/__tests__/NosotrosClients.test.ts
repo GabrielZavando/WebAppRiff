@@ -3,6 +3,7 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import NosotrosClients from '@/components/NosotrosClients.astro';
 import type { NosotrosClientsProps } from '@/lib/types/nosotros-page';
 import { NOSOTROS_PAGE_CONTENT } from '@/lib/config/nosotros-page';
+import { CLIENT_LOGOS } from '@/lib/config/nosotros-clients';
 
 const baseProps: NosotrosClientsProps = NOSOTROS_PAGE_CONTENT.clients;
 
@@ -31,12 +32,12 @@ function stripTags(html: string): string {
 }
 
 /**
- * Behavioural contract for `NosotrosClients.astro` (change `nosotros-page`,
- * SC-207): the verbatim header, a grid with exactly eight client tiles
- * (name + sector subtitle), and the closing CTA banner whose advisory button
- * points to the real `/contacto` route and whose phone is the canonical
- * `tel:` link — flat design: no hex, no rounded and no shadows on buttons
- * (design.md D11).
+ * Behavioural contract for `NosotrosClients.astro` (change
+ * `nosotros-clients-carousel`, SC-207/SC-211): the verbatim header, the
+ * 41-logo carousel (replacing the old eight-tile text grid) and the closing
+ * CTA banner whose advisory button points to the real `/contacto` route and
+ * whose phone is the canonical `tel:` link — flat design: no hex, no rounded
+ * and no shadows on buttons.
  */
 describe('NosotrosClients — section header (SC-207)', () => {
   it('renders the verbatim eyebrow, h2 and intro paragraph', async () => {
@@ -54,35 +55,31 @@ describe('NosotrosClients — section header (SC-207)', () => {
   });
 });
 
-describe('NosotrosClients — eight client tiles (SC-207)', () => {
-  it('renders exactly 8 client tiles with verbatim names and subtitles in order', async () => {
+describe('NosotrosClients — 41-logo carousel (SC-207, SC-211)', () => {
+  it('renders the carousel with two copies of the 41 logos', async () => {
     const html = await render();
-    const text = stripTags(html);
-    const expected: ReadonlyArray<readonly [string, string]> = [
-      ['ANGLO AMERICAN', 'Minería'],
-      ['CODELCO', 'División Andina / El Teniente'],
-      ['AGUAS ANDINAS', 'Sanitaria'],
-      ['ESVAL', 'Región de Valparaíso'],
-      ['NESTLÉ', 'Plantas Productivas'],
-      ['CONCHA Y TORO', 'Agroindustria'],
-      ['COLBÚN', 'Energía'],
-      ['SALFACORP', 'Edificación & Obras'],
-    ];
-    let cursor = 0;
-    for (const [name, subtitle] of expected) {
-      const nameIndex = text.indexOf(name, cursor);
-      expect(nameIndex).toBeGreaterThan(-1);
-      const subtitleIndex = text.indexOf(subtitle, nameIndex);
-      expect(subtitleIndex).toBeGreaterThan(nameIndex);
-      cursor = subtitleIndex;
-    }
+    expect(html).toContain('aria-label="Logos de clientes"');
+    const images = html.match(/<img[^>]*>/g) ?? [];
+    expect(images).toHaveLength(CLIENT_LOGOS.length * 2);
+    expect(html).toMatch(/<ul[^>]*aria-hidden="true"/);
   });
 
-  it('declares the client grid collapsing 2 → 4 → 8 columns', async () => {
+  it('no longer renders the old eight-client text grid or sector subtitles', async () => {
     const html = await render();
-    expect(html).toMatch(
-      /class="[^"]*\bgrid-cols-2\b[^"]*\bsm:grid-cols-4\b[^"]*\blg:grid-cols-8\b[^"]*"/,
-    );
+    const text = stripTags(html);
+    expect(text).not.toContain('ANGLO AMERICAN');
+    expect(text).not.toContain('División Andina / El Teniente');
+    expect(text).not.toContain('SALFACORP');
+    expect(html).not.toContain('grid-cols-8');
+  });
+
+  it('renders astro:assets logos with non-empty alt text', async () => {
+    const html = await render();
+    const images = html.match(/<img[^>]*>/g) ?? [];
+    for (const img of images) {
+      expect(img).toMatch(/src="\/_(astro|image)\?/);
+      expect(img).toMatch(/alt="[^"]+"/);
+    }
   });
 });
 

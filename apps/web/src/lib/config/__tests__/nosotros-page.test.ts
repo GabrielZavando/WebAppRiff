@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { NOSOTROS_PAGE_CONTENT } from '@/lib/config/nosotros-page';
+import { CLIENT_LOGOS } from '@/lib/config/nosotros-clients';
 import { getContactInfo } from '@/lib/config/contact';
 
 /**
@@ -402,7 +403,7 @@ describe('team grid: four leadership cards (SC-206)', () => {
   });
 });
 
-describe('clients grid and closing CTA (SC-207)', () => {
+describe('clients carousel and closing CTA (SC-207)', () => {
   it('section header copy is verbatim', () => {
     expect(content.clients.eyebrow).toBe('CONFIANZA Y TRAYECTORIA');
     expect(content.clients.eyebrowIcon).toBe('handshake');
@@ -412,20 +413,13 @@ describe('clients grid and closing CTA (SC-207)', () => {
     );
   });
 
-  it('has exactly the 8 clients in order with verbatim sector subtitles', () => {
-    expect(content.clients.clients).toHaveLength(8);
-    expect(
-      content.clients.clients.map((c) => [c.name, c.subtitle]),
-    ).toEqual([
-      ['ANGLO AMERICAN', 'Minería'],
-      ['CODELCO', 'División Andina / El Teniente'],
-      ['AGUAS ANDINAS', 'Sanitaria'],
-      ['ESVAL', 'Región de Valparaíso'],
-      ['NESTLÉ', 'Plantas Productivas'],
-      ['CONCHA Y TORO', 'Agroindustria'],
-      ['COLBÚN', 'Energía'],
-      ['SALFACORP', 'Edificación & Obras'],
-    ]);
+  it('exposes the 41 client logos sourced from the shared config', () => {
+    expect(content.clients.logos).toBe(CLIENT_LOGOS);
+    expect(content.clients.logos).toHaveLength(41);
+    for (const logo of content.clients.logos) {
+      expect(logo.alt.length).toBeGreaterThan(0);
+      expect(logo.image.src).toContain('/src/assets/img/slider/');
+    }
   });
 
   it('closing banner copy is verbatim and its CTA points to /contacto', () => {
@@ -463,13 +457,13 @@ describe('cross-cutting invariants (SC-208, SC-209, SC-210)', () => {
 
   it('every image is a local placeholder (no external URL) with a non-empty alt', () => {
     const images = collectImages(content);
-    expect(images.length).toBe(5); // hero + 4 portraits (D6)
+    expect(images.length).toBe(46); // hero + 4 portraits + 41 client logos
     for (const image of images) {
       expect(image.src).not.toMatch(/^https?:\/\//);
       expect(image.src).toContain('/src/assets/img/');
     }
     const alts = collectAlts(content);
-    expect(alts.length).toBe(5);
+    expect(alts.length).toBe(46);
     for (const alt of alts) {
       expect(alt.length).toBeGreaterThan(0);
     }
