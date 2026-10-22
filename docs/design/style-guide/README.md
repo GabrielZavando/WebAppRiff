@@ -26,7 +26,7 @@ This file documents the canonical design tokens and icon catalog for the Riff Ca
 | `--color-whatsapp` | `#25D366` | `bg-whatsapp`, `text-whatsapp`, `border-whatsapp` | WhatsApp brand · botón flotante de contacto |
 | `--color-whatsapp-dark` | `#1EBE5D` | `-dark` | WhatsApp oscuro · hover del botón flotante |
 
-### Neutros (6 tokens)
+### Neutros (7 tokens)
 
 | Token CSS | HEX | Tailwind Utility | Semantic Role |
 |---|---|---|---|
@@ -35,6 +35,7 @@ This file documents the canonical design tokens and icon catalog for the Riff Ca
 | `--color-muted` | `#98A1AC` | `text-muted` | Texto terciario / placeholder |
 | `--color-border` | `#E3E8ED` | `border-border` | Borde base 1px |
 | `--color-bg` | `#F6F8FA` | `bg-bg` | Fondo de sección / página |
+| `--color-surface-muted` | `#E9EEF3` | `bg-surface-muted` | Fondo de superficie con contraste frente a tarjetas blancas |
 | `--color-white` | `#FFFFFF` | `bg-white`, `text-white` | Superficie sobre fondo |
 
 ### Estado (12 tokens: 4 estados × 3 tonos)

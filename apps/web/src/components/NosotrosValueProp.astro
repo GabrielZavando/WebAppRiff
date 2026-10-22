@@ -41,7 +41,7 @@ const PILLAR_TONES: Record<PillarIconTone, string> = {
       carry the content shadow token `shadow-1` (design.md D11).
     - Heading hierarchy: section `<h2>`, pillar `<h3>`, sector `<h4>`.
 -->
-<section class="w-full bg-white py-16 md:py-20">
+<section class="w-full bg-surface-muted py-16 md:py-20">
   <div class="container mx-auto">
     <div class="mb-16 grid grid-cols-1 gap-6 lg:grid-cols-12">
       <div class="lg:col-span-8">
@@ -70,7 +70,7 @@ const PILLAR_TONES: Record<PillarIconTone, string> = {
     <div class="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       {
         pillars.map((pillar) => (
-          <div class="flex flex-col justify-between bg-bg p-8 transition-colors hover:bg-primary-100">
+          <div class="flex flex-col justify-between bg-white p-8 transition-colors hover:bg-primary-100">
             <div>
               <div
                 class={`mb-4 flex h-12 w-12 items-center justify-center ${PILLAR_TONES[pillar.iconTone]}`}

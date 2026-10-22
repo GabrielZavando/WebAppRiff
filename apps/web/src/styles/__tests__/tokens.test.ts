@@ -59,6 +59,7 @@ const NEUTRAL_TOKENS: ReadonlyArray<readonly [string, string]> = [
   ['--color-muted', '#98A1AC'],
   ['--color-border', '#E3E8ED'],
   ['--color-bg', '#F6F8FA'],
+  ['--color-surface-muted', '#E9EEF3'],
   ['--color-white', '#FFFFFF'],
 ];
 
@@ -95,7 +96,7 @@ describe('apps/web/src/styles/globals.css — design tokens (tasks 2.x)', () => 
     }
   });
 
-  describe('Task 2.3 — Neutros (6 tokens)', () => {
+  describe('Task 2.3 — Neutros (7 tokens)', () => {
     for (const [name, value] of NEUTRAL_TOKENS) {
       it(`declares ${name}: ${value}`, () => {
         const theme = extractThemeBlock(readGlobalsCss());

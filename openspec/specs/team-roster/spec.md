@@ -1,7 +1,7 @@
 # team-roster Specification
 
 ## Purpose
-TBD — propósito por definir.
+Define el roster canónico del equipo de RIFF —los ocho integrantes con su nombre, cargo, descripción, retrato local y orden de presentación— que consume la sección de equipo de la página `/nosotros`.
 
 ## Requirements
 

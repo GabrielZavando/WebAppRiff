@@ -38,12 +38,13 @@
   --color-accent-darker: #B03E0E;
   --color-accent-light: #FDE8DC;
 
-  /* ── Neutros (6 tokens) ── */
+  /* ── Neutros (7 tokens) ── */
   --color-text: #1F2D40;
   --color-text-2: #5C6675;
   --color-muted: #98A1AC;
   --color-border: #E3E8ED;
   --color-bg: #F6F8FA;
+  --color-surface-muted: #E9EEF3;
   --color-white: #FFFFFF;
 
   /* ── Estado (12 tokens: 4 estados × 3 tonos) ── */

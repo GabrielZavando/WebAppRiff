@@ -129,7 +129,7 @@ describe('NosotrosHero — technical image (SC-202)', () => {
   });
 });
 
-describe('NosotrosHero — dark token background and decorative grid (D4, D14)', () => {
+describe('NosotrosHero — dark token background and shared technical grid (D2)', () => {
   it('the section uses the dark brand token bg-secondary (no hex)', async () => {
     const html = await render();
     const section = html.match(/<section[^>]*>/)?.[0] ?? '';
@@ -137,13 +137,20 @@ describe('NosotrosHero — dark token background and decorative grid (D4, D14)',
     expect(html).not.toMatch(/#[0-9a-fA-F]{3,8}/);
   });
 
-  it('renders the decorative SVG grid as aria-hidden and desktop-only', async () => {
+  it('renders the shared technical-grid utility as an aria-hidden decorative layer', async () => {
     const html = await render();
-    const svgMatch = html.match(/<svg[^>]*>[\s\S]*?<\/svg>/)?.[0] ?? '';
-    expect(svgMatch.length).toBeGreaterThan(0);
-    expect(svgMatch).toContain('aria-hidden="true"');
-    const svgContainer = html.match(/<div[^>]*hidden lg:block[^>]*>/)?.[0] ?? '';
-    expect(svgContainer).toContain('hidden lg:block');
+    const gridContainer = html.match(/<div[^>]*technical-grid[^>]*>/)?.[0] ?? '';
+    expect(gridContainer.length).toBeGreaterThan(0);
+    expect(gridContainer).toContain('aria-hidden="true"');
+    expect(gridContainer).toContain('opacity-10');
+  });
+
+  it('no longer renders the light gradient or the ad-hoc SVG grid', async () => {
+    const html = await render();
+    expect(html).not.toMatch(/bg-linear-to-r from-secondary/);
+    expect(html).not.toContain('via-bg');
+    expect(html).not.toContain('stroke-dasharray');
+    expect(html).not.toContain('viewBox="0 0 400 400"');
   });
 });
 
