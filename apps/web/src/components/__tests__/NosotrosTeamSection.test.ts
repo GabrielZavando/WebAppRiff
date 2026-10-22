@@ -12,11 +12,20 @@ import {
 } from './helpers/nosotros-team-section-test-utils';
 
 const baseProps: NosotrosTeamSectionProps = NOSOTROS_TEAM_SECTION_CONTENT;
+const EXPECTED_NAMES = [
+  'Ruby Barrientos',
+  'Felipe Román',
+  'Patricio Barrientos',
+] as const;
+const EXPECTED_ROLES = [
+  'Directora · Gerenta Comercial',
+  'Gerente de Operaciones',
+  'Ingeniero Químico · Asesor Técnico',
+] as const;
 
 /**
  * Escapes a string the same way Astro escapes text nodes in SSR HTML, so
- * `toContain` assertions match the real rendered output (e.g. "Liderazgo &
- * Experiencia" → "Liderazgo &amp; Experiencia").
+ * `toContain` assertions match the real rendered output.
  */
 function escaped(text: string): string {
   return text
@@ -51,7 +60,7 @@ describe('NosotrosTeamSection — structure & outermost section', () => {
     );
   });
 
-  it('renders exactly 3 member cards (one per mockup person)', async () => {
+  it('renders exactly 3 member cards (the featured roster)', async () => {
     const cards = getMemberCards(await render());
     expect(cards).toHaveLength(3);
   });
@@ -90,30 +99,53 @@ describe('NosotrosTeamSection — header (h2 + subtitle)', () => {
   });
 });
 
-describe('NosotrosTeamSection — member cards (photo, overlay, name, role)', () => {
+describe('NosotrosTeamSection — member cards (photo, overlay, name, role, description)', () => {
   it('renders only the header with NO member cards when the members array is empty', async () => {
     const html = await render({ ...baseProps, members: [] });
     expect(getMemberCards(html)).toHaveLength(0);
     expect(getGradientOverlays(html)).toHaveLength(0);
     expect(getMemberImages(html)).toHaveLength(0);
-    // The header must still render (section header is independent of cards).
     expect(html).toContain(escaped(baseProps.headline));
   });
-  it('each card renders the member name (text-white font-heading) and uppercase role label (text-primary)', async () => {
+
+  it('renders the three featured members with the exact visible roles', async () => {
     const html = await render();
-    for (const member of baseProps.members) {
-      expect(html).toContain(member.name);
-    }
-    // Display labels from the mockup (Gerente General, Jefe de Proyectos,
-    // Comercial) derived by getTeamMemberRoleLabel in config.
-    expect(html).toContain('Gerente General');
-    expect(html).toContain('Jefe de Proyectos');
-    expect(html).toContain('Comercial');
-    const roleMatches = html.match(/<span[^>]*text-primary[^>]*>/g) ?? [];
+    const cards = getMemberCards(html);
+    expect(cards).toHaveLength(3);
+
+    cards.forEach((card, index) => {
+      expect(card).toContain(escaped(EXPECTED_NAMES[index] ?? ''));
+      expect(card).toContain(escaped(EXPECTED_ROLES[index] ?? ''));
+    });
+
+    const roleMatches =
+      html.match(/<span[^>]*text-primary[^>]*>[\s\S]*?<\/span>/g) ?? [];
     expect(roleMatches).toHaveLength(3);
     for (const span of roleMatches) {
       expect(span).toContain('font-heading');
       expect(span).toContain('uppercase');
+    }
+  });
+
+  it('renders the full description inside the overlay with the required typography', async () => {
+    const html = await render();
+    for (const member of baseProps.members) {
+      const descriptionMatch = html.match(
+        new RegExp(
+          `<p[^>]*class="[^"]*"[^>]*>${escaped(member.description)}</p>`,
+        ),
+      );
+      if (!descriptionMatch) {
+        throw new Error(`description paragraph not found for ${member.name}`);
+      }
+      const paragraph = descriptionMatch[0];
+      expect(paragraph).toContain('font-body');
+      expect(paragraph).toContain('text-xs');
+      expect(paragraph).toContain('leading-relaxed');
+      expect(paragraph).toContain('text-white/90');
+      expect(paragraph).not.toContain('line-clamp');
+      expect(paragraph).not.toContain('truncate');
+      expect(paragraph).not.toContain('overflow-hidden');
     }
   });
 
@@ -124,13 +156,23 @@ describe('NosotrosTeamSection — member cards (photo, overlay, name, role)', ()
       expect(img).toMatch(/src="\/_(astro|image)\?/);
       expect(img).toContain('loading="lazy"');
       expect(img).toMatch(/alt="[^"]+"/);
-      // POST-APPLY FIX #1: photos are black & white at rest, revealed in
-      // color on hover (client feedback).
       expect(img).toContain('grayscale');
     }
+    const html = await render();
     for (const member of baseProps.members) {
-      const html = await render();
       expect(html).toContain(`alt="${member.imageAlt}"`);
+    }
+  });
+
+  it('uses the real roster portraits from the nosotros assets', async () => {
+    const html = await render();
+    expect(html).not.toContain('f-1.jpg');
+    expect(html).not.toContain('f-2.jpg');
+    expect(html).not.toContain('f-3.jpg');
+    for (const member of baseProps.members) {
+      expect(member.image.src).toContain('src/assets/img/nosotros/');
+      expect(member.image.width).toBe(900);
+      expect(member.image.height).toBe(1200);
     }
   });
 
@@ -158,12 +200,9 @@ describe('NosotrosTeamSection — gradient overlay and hover interaction (POST-A
       expect(overlay).toContain('inset-0');
       expect(overlay).toContain('bg-linear-to-b');
       expect(overlay).toContain('from-secondary/40');
-      // Positioned via stop at 67% of the card height concentrates the
-      // darkness in the bottom third (client feedback).
       expect(overlay).toContain('via-secondary/75');
       expect(overlay).toContain('via-[67%]');
       expect(overlay).toContain('to-secondary/95');
-      // The overlay never disappears: the gradient direction stays present.
       expect(overlay).not.toContain('bg-secondary/80');
     }
   });
@@ -171,8 +210,6 @@ describe('NosotrosTeamSection — gradient overlay and hover interaction (POST-A
   it('the overlay stays a single static gradient and only becomes more transparent as a whole via opacity fade (POST-APPLY FIX #2/#3/#4)', async () => {
     const overlays = getGradientOverlays(await render());
     for (const overlay of overlays) {
-      // The gradient declaration is static — the client edits these stop
-      // values BY HAND, so no per-stop hover overrides may exist.
       expect(overlay).toContain('bg-linear-to-b');
       expect(overlay).toContain('from-secondary/40');
       expect(overlay).toContain('via-secondary/75');
@@ -180,10 +217,8 @@ describe('NosotrosTeamSection — gradient overlay and hover interaction (POST-A
       expect(overlay).toContain('to-secondary/95');
       expect(overlay).not.toContain('group-hover:from-secondary/');
       expect(overlay).not.toContain('group-hover:to-secondary/');
-      // The whole overlay fades via opacity: rest 100 → hover 60.
       expect(overlay).toContain('opacity-100');
       expect(overlay).toContain('group-hover:opacity-60');
-      // Never disappears (fully transparent / hidden / invisible forbidden).
       expect(overlay).not.toMatch(/group-hover:(opacity-0|hidden|invisible)/);
     }
   });
@@ -217,15 +252,11 @@ describe('NosotrosTeamSection — gradient overlay and hover interaction (POST-A
   it('scoped CSS disables the zoom and transitions under prefers-reduced-motion (color reveal kept)', async () => {
     const source = await getSource();
     expect(source).toContain('@media (prefers-reduced-motion: reduce)');
-    // Slice from the actual CSS media query (not the first mention in a
-    // documentation comment) and assert the rule kills transform+transition.
     const reduceBlock = source.slice(
       source.indexOf('@media (prefers-reduced-motion: reduce)'),
     );
     expect(reduceBlock).toContain('transform: none');
     expect(reduceBlock).toContain('transition: none');
-    // POST-APPLY FIX #2: the overlay's opacity transition must also be
-    // disabled under reduced motion (photo + overlay selectors in the block).
     expect(reduceBlock).toContain('.team-card-overlay');
   });
 });

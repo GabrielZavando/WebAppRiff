@@ -7,8 +7,6 @@ import type {
   PillarIconTone,
   ValuePillar,
   SectorCard,
-  TeamAreaTone,
-  TeamMember,
   ClientLogo,
   NosotrosHeroProps,
   NosotrosTimelineProps,
@@ -19,6 +17,7 @@ import type {
   NosotrosClientsProps,
   NosotrosPageContent,
 } from '@/lib/types/nosotros-page';
+import type { TeamMember } from '@/lib/types/team';
 
 /**
  * Type-level tests for the nosotros-page type contract (change nosotros-page,
@@ -145,20 +144,20 @@ describe('nosotros-page.ts types', () => {
     }>();
   });
 
-  it('TeamMember exposes the readonly card contract', () => {
+  it('TeamMember is the shared roster contract used by the team grid', () => {
     const member: TeamMember = {
-      name: 'Steven Marks',
-      area: 'Dirección',
-      areaTone: 'primary',
-      role: 'Gerente General',
-      description: 'Liderazgo estratégico.',
-      footerLabel: 'Gestión Corporativa',
-      footerIcon: 'badge',
+      id: 'ruby-barrientos',
+      name: 'Ruby Barrientos',
+      role: 'Directora · Gerenta Comercial',
+      description: 'A cargo de la estrategia comercial.',
       image: {} as unknown as TeamMember['image'],
-      imageAlt: 'Retrato de Steven Marks',
+      imageAlt: 'Retrato de Ruby Barrientos.',
+      isFeatured: true,
     };
-    expect(member.areaTone).toBe('primary');
-    expectTypeOf(member.areaTone).toEqualTypeOf<TeamAreaTone>();
+    expect(member.isFeatured).toBe(true);
+    expectTypeOf<NosotrosTeamGridProps['members'][number]>().toEqualTypeOf<
+      TeamMember
+    >();
   });
 
   it('ClientLogo exposes the readonly image and alt contract', () => {

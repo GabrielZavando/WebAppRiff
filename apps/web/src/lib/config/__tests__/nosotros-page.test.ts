@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { NOSOTROS_PAGE_CONTENT } from '@/lib/config/nosotros-page';
 import { CLIENT_LOGOS } from '@/lib/config/nosotros-clients';
 import { getContactInfo } from '@/lib/config/contact';
+import { TEAM_MEMBERS } from '@/lib/config/team';
 
 /**
  * Behavioural contract for `NOSOTROS_PAGE_CONTENT` (change `nosotros-page`).
@@ -322,7 +323,7 @@ describe('mission & vision blocks (SC-205)', () => {
   });
 });
 
-describe('team grid: four leadership cards (SC-206)', () => {
+describe('team grid: eight real leadership cards (SC-206)', () => {
   it('section header and accreditation badge are verbatim', () => {
     expect(content.team.eyebrow).toBe('Estructura de Liderazgo');
     expect(content.team.title).toBe('Equipo RIFF — Liderazgo & Experiencia');
@@ -335,69 +336,67 @@ describe('team grid: four leadership cards (SC-206)', () => {
     expect(content.team.badgeIcon).toBe('wrench');
   });
 
-  it('has exactly the 4 members in order with verbatim names, roles and areas', () => {
-    expect(content.team.members).toHaveLength(4);
+  it('members is exactly the shared 8-member roster in canonical order', () => {
+    expect(content.team.members).toBe(TEAM_MEMBERS);
+    expect(content.team.members).toHaveLength(8);
     expect(content.team.members.map((m) => m.name)).toEqual([
-      'Steven Marks',
-      'Lara Smith',
-      'John Doe',
+      'Ruby Barrientos',
       'Felipe Román',
+      'Patricio Barrientos',
+      'Francisco Mehech',
+      'Eric Pérez',
+      'Loredana Quiroga',
+      'Francys Padra',
+      'Melany Bravo',
     ]);
+    expect(content.team.members.map((m) => m.id)).toEqual([
+      'ruby-barrientos',
+      'felipe-roman',
+      'patricio-barrientos',
+      'francisco-mehech',
+      'eric-perez',
+      'loredana-quiroga',
+      'francys-padra',
+      'melany-bravo',
+    ]);
+  });
+
+  it('renders the exact visible roles and descriptions from the roster', () => {
     expect(content.team.members.map((m) => m.role)).toEqual([
-      'Gerente General',
-      'Jefe de Proyectos de Ingeniería',
-      'Dirección Comercial y Representaciones',
-      'Gerencia de Operaciones y Medición',
+      'Directora · Gerenta Comercial',
+      'Gerente de Operaciones',
+      'Ingeniero Químico · Asesor Técnico',
+      'Coordinador de Servicios y Logística',
+      'Responsable de Ingeniería y Puesta en Marcha',
+      'Líder de Ventas Técnicas y Licitaciones',
+      'Responsable de Desarrollo Comercial',
+      'Coordinadora de Gestión Interna',
     ]);
-    expect(content.team.members.map((m) => m.area)).toEqual([
-      'Dirección',
-      'Ingeniería',
-      'Comercial',
-      'Operaciones',
-    ]);
-    expect(content.team.members.map((m) => m.areaTone)).toEqual([
-      'primary',
-      'primary',
-      'primary',
-      'accent',
-    ]);
-  });
-
-  it('member descriptions and footer strips are verbatim with their Lucide icons', () => {
-    const [steven, lara, john, felipe] = content.team.members;
-    expect(steven?.description).toBe(
-      'Liderazgo estratégico, gobernanza corporativa y expansión industrial. Enfocado en la solvencia operativa y alianzas de largo plazo con mandantes mineros.',
+    expect(content.team.members[0]?.description).toBe(
+      'A cargo de la estrategia comercial y el desarrollo de RIFF, orientando el crecimiento, las relaciones estratégicas y la generación de nuevas oportunidades de negocio.',
     );
-    expect(lara?.description).toBe(
-      'Dirección técnica de obras hidráulicas complejas, cálculo de golpe de ariete, diseño de plantas modulares de osmosis y tratamiento de riles industriales.',
+    expect(content.team.members[7]?.description).toBe(
+      'Coordina procesos administrativos y de soporte interno, facilitando la gestión documental y la articulación entre las distintas áreas de la organización.',
     );
-    expect(john?.description).toBe(
-      'Gestión de convenios exclusivos con fabricantes internacionales de instrumentación en Europa y Asia, y estructuración de soluciones para licitaciones B2B.',
-    );
-    expect(felipe?.description).toBe(
-      'Cofundador de la etapa técnica moderna. Responsable de la flota de laboratorios móviles, protocolos de calibración metrológica y aseguramiento de calidad en terreno.',
-    );
-    expect(content.team.members.map((m) => m.footerLabel)).toEqual([
-      'Gestión Corporativa',
-      'Cálculo & Comisionamiento',
-      'Alianzas Globales',
-      'Metrología & Faena',
-    ]);
-    expect(content.team.members.map((m) => m.footerIcon)).toEqual([
-      'badge',
-      'drafting-compass',
-      'globe',
-      'gauge',
-    ]);
-  });
-
-  it('portraits are the local D6 placeholders with non-empty descriptive alts', () => {
-    const images = content.team.members.map((m) => m.image.src);
-    expect(images[0]).toContain('f-1');
-    expect(images[1]).toContain('f-2');
-    expect(images[2]).toContain('f-3');
-    expect(images[3]).toContain('control-accesorios');
     for (const member of content.team.members) {
+      expect(member.description.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('no longer exposes the removed area and footer fields', () => {
+    for (const member of content.team.members) {
+      expect(member).not.toHaveProperty('area');
+      expect(member).not.toHaveProperty('areaTone');
+      expect(member).not.toHaveProperty('footerLabel');
+      expect(member).not.toHaveProperty('footerIcon');
+    }
+  });
+
+  it('portraits are the real 900x1200 local assets with descriptive alts', () => {
+    for (const member of content.team.members) {
+      expect(member.image.src).toContain('/src/assets/img/nosotros/');
+      expect(member.image.width).toBe(900);
+      expect(member.image.height).toBe(1200);
       expect(member.imageAlt.length).toBeGreaterThan(0);
     }
   });
@@ -457,13 +456,13 @@ describe('cross-cutting invariants (SC-208, SC-209, SC-210)', () => {
 
   it('every image is a local placeholder (no external URL) with a non-empty alt', () => {
     const images = collectImages(content);
-    expect(images.length).toBe(46); // hero + 4 portraits + 41 client logos
+    expect(images.length).toBe(50); // hero + 8 portraits + 41 client logos
     for (const image of images) {
       expect(image.src).not.toMatch(/^https?:\/\//);
       expect(image.src).toContain('/src/assets/img/');
     }
     const alts = collectAlts(content);
-    expect(alts.length).toBe(46);
+    expect(alts.length).toBe(50);
     for (const alt of alts) {
       expect(alt.length).toBeGreaterThan(0);
     }
