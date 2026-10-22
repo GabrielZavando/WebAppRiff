@@ -3,6 +3,7 @@ import type {
   NosotrosIconName,
 } from '@/lib/types/nosotros-page';
 import { getContactInfo } from '@/lib/config/contact';
+import { CLIENT_LOGOS } from '@/lib/config/nosotros-clients';
 import heroImg from '@/assets/img/medicion-fluidos.webp';
 import stevenImg from '@/assets/img/f-1.jpg';
 import laraImg from '@/assets/img/f-2.jpg';
@@ -317,16 +318,7 @@ export const NOSOTROS_PAGE_CONTENT: Readonly<NosotrosPageContent> = {
     title: 'Quienes Han Confiado en Nosotros',
     description:
       'Empresas líderes en minería, saneamiento, agroindustria y construcción que respaldan nuestra calidad metrológica.',
-    clients: [
-      { name: 'ANGLO AMERICAN', subtitle: 'Minería' },
-      { name: 'CODELCO', subtitle: 'División Andina / El Teniente' },
-      { name: 'AGUAS ANDINAS', subtitle: 'Sanitaria' },
-      { name: 'ESVAL', subtitle: 'Región de Valparaíso' },
-      { name: 'NESTLÉ', subtitle: 'Plantas Productivas' },
-      { name: 'CONCHA Y TORO', subtitle: 'Agroindustria' },
-      { name: 'COLBÚN', subtitle: 'Energía' },
-      { name: 'SALFACORP', subtitle: 'Edificación & Obras' },
-    ],
+    logos: CLIENT_LOGOS,
     cta: {
       eyebrow: 'Resolución Técnica Inmediata',
       title: '¿Listo para optimizar la medición y el flujo de su operación?',

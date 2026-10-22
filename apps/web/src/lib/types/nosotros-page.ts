@@ -167,12 +167,12 @@ export interface TeamMember {
   readonly imageAlt: string;
 }
 
-/** A client wordmark tile in the closing "Quienes Han Confiado" grid. */
-export interface ClientCard {
-  /** Client name, e.g. "ANGLO AMERICAN". */
-  readonly name: string;
-  /** Sector caption under the name, e.g. "Minería". */
-  readonly subtitle: string;
+/** A client logo in the closing "Quienes Han Confiado" carousel. */
+export interface ClientLogo {
+  /** Client logo imported from `@/assets/img/slider/`, optimized by astro:assets. */
+  readonly image: ImageMetadata;
+  /** Company name used as the image alt text (explicit config map). */
+  readonly alt: string;
 }
 
 /** Props for `NosotrosHero.astro` (section 1). */
@@ -275,7 +275,7 @@ export interface NosotrosTeamGridProps {
   readonly members: readonly TeamMember[];
 }
 
-/** Props for `NosotrosClients.astro` (section 6: clients grid + closing CTA). */
+/** Props for `NosotrosClients.astro` (section 6: clients carousel + closing CTA). */
 export interface NosotrosClientsProps {
   /** Uppercase eyebrow above the section title. */
   readonly eyebrow: string;
@@ -285,8 +285,8 @@ export interface NosotrosClientsProps {
   readonly title: string;
   /** Section intro paragraph (verbatim). */
   readonly description: string;
-  /** The eight client tiles in render order. */
-  readonly clients: readonly ClientCard[];
+  /** The 41 client logos in alphabetical order (array order is the source of truth). */
+  readonly logos: readonly ClientLogo[];
   /** Closing CTA banner content. */
   readonly cta: {
     /** Eyebrow of the banner, e.g. "Resolución Técnica Inmediata". */

@@ -1,0 +1,170 @@
+---
+import { Image } from 'astro:assets';
+import type { ClientLogo } from '@/lib/types/nosotros-page';
+
+interface Props {
+  /** The 41 client logos in scroll order (already alphabetical). */
+  logos: readonly ClientLogo[];
+  /** Seconds per full cycle, injected as the CSS custom property. */
+  durationSeconds?: number;
+}
+
+const { logos, durationSeconds = 120 } = Astro.props;
+
+/**
+ * Every logo gets the same rendered height; its width follows the asset's
+ * intrinsic aspect ratio. This avoids Astro's default `fit: cover` cropping
+ * when both width and height are forced to a fixed box. The rendered height
+ * is slightly above the desktop content height (88px) so the WebP stays crisp.
+ */
+const LOGO_HEIGHT = 96;
+
+function logoWidth(image: ClientLogo['image']): number {
+  return Math.round((image.width / image.height) * LOGO_HEIGHT);
+}
+---
+
+<!--
+  Dumb presentational carousel for the `/nosotros` clients section (change
+  `nosotros-clients-carousel`). Logos come via props spread from
+  `NOSOTROS_PAGE_CONTENT.clients`; the component never imports assets itself.
+
+  CSS-only infinite marquee (design.md D1-D4):
+    - Two identical copies of the list; the second one is `aria-hidden="true"`
+      so assistive tech reads the clients only once.
+    - The track animates from translate3d(0) to translate3d(-50%), which is
+      exactly one full copy. Items carry `margin-right` (including the last
+      one) instead of a flex `gap`, so both halves measure the same and the
+      loop has no visible seam.
+    - Hovering the viewport pauses the animation via
+      `animation-play-state: paused`; leaving resumes it natively.
+    - Logos keep a uniform height and a width proportional to their intrinsic
+      aspect ratio, so they are always shown complete (no `cover` crop) on a
+      white padded card (120px tall including padding on desktop).
+    - On hover the logo itself zooms with `transform: scale3d(...)`
+      (GPU-composited, never the standalone `scale` property) inside the white
+      card, which keeps its size; the viewport keeps vertical room so the
+      enlarged logo is not clipped. `will-change` is only promoted on
+      hover/focus.
+    - `prefers-reduced-motion: reduce` stops the scroll, leaving the logos
+      static and legible.
+-->
+<div
+  class="clients-carousel relative w-full overflow-hidden"
+  role="group"
+  aria-label="Logos de clientes"
+>
+  <div
+    class="clients-carousel__track"
+    style={`--clients-carousel-duration: ${durationSeconds}s`}
+  >
+    <ul class="clients-carousel__list" aria-label="Clientes">
+      {
+        logos.map((logo) => (
+          <li class="clients-carousel__item bg-white">
+            <Image
+              src={logo.image}
+              alt={logo.alt}
+              width={logoWidth(logo.image)}
+              height={LOGO_HEIGHT}
+              format="webp"
+              fit="contain"
+              loading="lazy"
+              class="clients-carousel__logo"
+            />
+          </li>
+        ))
+      }
+    </ul>
+    <ul class="clients-carousel__list" aria-hidden="true">
+      {
+        logos.map((logo) => (
+          <li class="clients-carousel__item bg-white">
+            <Image
+              src={logo.image}
+              alt={logo.alt}
+              width={logoWidth(logo.image)}
+              height={LOGO_HEIGHT}
+              format="webp"
+              fit="contain"
+              loading="lazy"
+              class="clients-carousel__logo"
+            />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>
+
+<style>
+  .clients-carousel {
+    padding-block: 0.5rem;
+  }
+
+  .clients-carousel__track {
+    display: flex;
+    width: max-content;
+    animation: clients-carousel-scroll var(--clients-carousel-duration, 120s)
+      linear infinite;
+    will-change: transform;
+  }
+
+  .clients-carousel:hover .clients-carousel__track {
+    animation-play-state: paused;
+  }
+
+  .clients-carousel__list {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .clients-carousel__item {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    height: 6.5rem;
+    margin-right: 2rem;
+    padding: 0.75rem;
+  }
+
+  @media (min-width: 768px) {
+    .clients-carousel__item {
+      height: 7.5rem;
+      padding: 1rem;
+    }
+  }
+
+  .clients-carousel__logo {
+    display: block;
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 200ms ease-out;
+  }
+
+  .clients-carousel__item:hover .clients-carousel__logo,
+  .clients-carousel__item:focus-visible .clients-carousel__logo {
+    transform: scale3d(1.05, 1.05, 1);
+    will-change: transform;
+  }
+
+  @keyframes clients-carousel-scroll {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .clients-carousel__track {
+      animation: none;
+    }
+  }
+</style>
