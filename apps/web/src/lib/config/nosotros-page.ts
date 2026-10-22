@@ -4,11 +4,8 @@ import type {
 } from '@/lib/types/nosotros-page';
 import { getContactInfo } from '@/lib/config/contact';
 import { CLIENT_LOGOS } from '@/lib/config/nosotros-clients';
+import { TEAM_MEMBERS } from '@/lib/config/team';
 import heroImg from '@/assets/img/medicion-fluidos.webp';
-import stevenImg from '@/assets/img/f-1.jpg';
-import laraImg from '@/assets/img/f-2.jpg';
-import johnImg from '@/assets/img/f-3.jpg';
-import felipeImg from '@/assets/img/control-accesorios.webp';
 
 /**
  * SSG configuration for the public about page (`/nosotros`) — single source
@@ -247,7 +244,7 @@ export const NOSOTROS_PAGE_CONTENT: Readonly<NosotrosPageContent> = {
     },
   },
 
-  /* Sección 5 — Equipo RIFF: 4 tarjetas (SC-206) */
+  /* Sección 5 — Equipo RIFF: 8 tarjetas (SC-206) */
   team: {
     eyebrow: 'Estructura de Liderazgo',
     title: 'Equipo RIFF — Liderazgo & Experiencia',
@@ -255,60 +252,7 @@ export const NOSOTROS_PAGE_CONTENT: Readonly<NosotrosPageContent> = {
       'Profesionales comprometidos con la precisión y el servicio técnico en terreno.',
     badgeText: '+100 años de experiencia combinada en terreno',
     badgeIcon: 'wrench' satisfies NosotrosIconName,
-    members: [
-      {
-        name: 'Steven Marks',
-        area: 'Dirección',
-        areaTone: 'primary',
-        role: 'Gerente General',
-        description:
-          'Liderazgo estratégico, gobernanza corporativa y expansión industrial. Enfocado en la solvencia operativa y alianzas de largo plazo con mandantes mineros.',
-        footerLabel: 'Gestión Corporativa',
-        footerIcon: 'badge' satisfies NosotrosIconName,
-        image: stevenImg,
-        imageAlt:
-          'Professional executive portrait of Steven Marks, male general manager in high-end modern corporate attire, black and white cinematic photography with cool cyan ambient tones and confident expression',
-      },
-      {
-        name: 'Lara Smith',
-        area: 'Ingeniería',
-        areaTone: 'primary',
-        role: 'Jefe de Proyectos de Ingeniería',
-        description:
-          'Dirección técnica de obras hidráulicas complejas, cálculo de golpe de ariete, diseño de plantas modulares de osmosis y tratamiento de riles industriales.',
-        footerLabel: 'Cálculo & Comisionamiento',
-        footerIcon: 'drafting-compass' satisfies NosotrosIconName,
-        image: laraImg,
-        imageAlt:
-          'Professional portrait of Lara Smith, female engineering project lead wearing industrial safety glasses and smart attire, high-contrast monochrome with industrial engineering background',
-      },
-      {
-        name: 'John Doe',
-        area: 'Comercial',
-        areaTone: 'primary',
-        role: 'Dirección Comercial y Representaciones',
-        description:
-          'Gestión de convenios exclusivos con fabricantes internacionales de instrumentación en Europa y Asia, y estructuración de soluciones para licitaciones B2B.',
-        footerLabel: 'Alianzas Globales',
-        footerIcon: 'globe' satisfies NosotrosIconName,
-        image: johnImg,
-        imageAlt:
-          'Professional portrait of John Doe, technical commercial director in smart blazer with clipboard and tablet, clean studio lighting in black and white with subtle industrial gradient',
-      },
-      {
-        name: 'Felipe Román',
-        area: 'Operaciones',
-        areaTone: 'accent',
-        role: 'Gerencia de Operaciones y Medición',
-        description:
-          'Cofundador de la etapa técnica moderna. Responsable de la flota de laboratorios móviles, protocolos de calibración metrológica y aseguramiento de calidad en terreno.',
-        footerLabel: 'Metrología & Faena',
-        footerIcon: 'gauge' satisfies NosotrosIconName,
-        image: felipeImg,
-        imageAlt:
-          'Professional portrait of Felipe Román, male operations and metrology manager in engineering field uniform holding precision instrumentation tools, serious and technically competent aesthetic',
-      },
-    ],
+    members: TEAM_MEMBERS,
   },
 
   /* Sección 6 — Clientes + banner de cierre (SC-207) */

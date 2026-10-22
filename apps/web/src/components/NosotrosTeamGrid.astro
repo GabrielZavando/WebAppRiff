@@ -1,8 +1,5 @@
 ---
-import type {
-  NosotrosTeamGridProps,
-  TeamAreaTone,
-} from '@/lib/types/nosotros-page';
+import type { NosotrosTeamGridProps } from '@/lib/types/nosotros-page';
 import { Icon } from 'astro-icon/components';
 import { Image } from 'astro:assets';
 
@@ -10,12 +7,6 @@ interface Props extends NosotrosTeamGridProps {}
 
 const { eyebrow, title, subtitle, badgeText, badgeIcon, members } =
   Astro.props;
-
-/** Area badge colors per tone (design.md D4): deep teal vs accent. */
-const AREA_TONES: Record<TeamAreaTone, string> = {
-  primary: 'bg-primary-deep text-white',
-  accent: 'bg-accent text-white',
-};
 ---
 
 <!--
@@ -27,10 +18,10 @@ const AREA_TONES: Record<TeamAreaTone, string> = {
 
   Layout (design.md § Decisions 4/6/10/11/12):
     - Header row: copy left, accreditation badge right (stacks on mobile).
-    - Cards grid collapses 1 → 2 → 4 columns (SC-211); each card: square
-      portrait (local placeholder, lazy) with area badge and tint overlay,
-      name `<h3>`, uppercase role, verbatim bio and footer strip with a
-      decorative Lucide icon.
+    - Cards grid collapses 1 → 2 → 4 columns (SC-211); each card renders
+      only the 3:4 portrait (local asset, lazy), name `<h3>`, exact role
+      and verbatim roster description. The area badge and the icon footer
+      were removed in the `team-members` change.
     - Photo zoom on hover is disabled under `prefers-reduced-motion`
       (precedent: `NosotrosTeamSection.astro` scoped styles).
     - Flat design: no `rounded*`, no hex literals; card shadow `shadow-1`
@@ -67,38 +58,22 @@ const AREA_TONES: Record<TeamAreaTone, string> = {
       {
         members.map((member) => (
           <article class="group flex flex-col overflow-hidden bg-bg shadow-1 transition-shadow hover:shadow-2">
-            <div class="relative aspect-square w-full overflow-hidden bg-secondary">
+            <div class="relative aspect-[3/4] w-full overflow-hidden bg-secondary">
               <Image
                 src={member.image}
                 alt={member.imageAlt}
-                class="team-grid-photo absolute inset-0 h-full w-full object-cover grayscale contrast-125"
+                class="team-grid-photo absolute inset-0 h-full w-full object-cover contrast-125"
                 loading="lazy"
               />
-              <div class="absolute inset-0 bg-primary/20 mix-blend-color" />
-              <div
-                class={`absolute bottom-0 left-0 px-2 py-1 font-heading text-xs font-semibold uppercase tracking-wider ${AREA_TONES[member.areaTone]}`}
-              >
-                {member.area}
-              </div>
             </div>
-            <div class="flex flex-1 flex-col justify-between p-8">
-              <div>
-                <h3 class="font-heading text-xl text-text">{member.name}</h3>
-                <span class="mb-2 block font-heading text-xs font-semibold uppercase tracking-wider text-accent">
-                  {member.role}
-                </span>
-                <p class="font-body text-xs leading-relaxed text-text-2">
-                  {member.description}
-                </p>
-              </div>
-              <div class="mt-4 flex items-center justify-between bg-primary-100/60 p-1 pt-2 font-body text-xs text-text">
-                <span>{member.footerLabel}</span>
-                <Icon
-                  name={`lucide:${member.footerIcon}`}
-                  class="h-4 w-4 text-primary"
-                  aria-hidden="true"
-                />
-              </div>
+            <div class="flex flex-1 flex-col p-8">
+              <h3 class="font-heading text-xl text-text">{member.name}</h3>
+              <span class="mb-2 block font-heading text-xs font-semibold uppercase tracking-wider text-accent">
+                {member.role}
+              </span>
+              <p class="font-body text-xs leading-relaxed text-text-2">
+                {member.description}
+              </p>
             </div>
           </article>
         ))

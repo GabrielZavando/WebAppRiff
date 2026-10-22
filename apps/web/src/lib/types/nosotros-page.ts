@@ -17,6 +17,7 @@
  */
 
 import type { ImageMetadata } from 'astro';
+import type { TeamMember } from '@/lib/types/team';
 
 /**
  * The closed set of Lucide icon names any section of `/nosotros` may use.
@@ -140,33 +141,6 @@ export interface SectorCard {
   readonly icon: NosotrosIconName;
 }
 
-/** Area badge tone on a team photo (deep teal vs orange for Operaciones). */
-export type TeamAreaTone = 'primary' | 'accent';
-
-/**
- * A leadership team member rendered by `NosotrosTeamGrid.astro`.
- */
-export interface TeamMember {
-  /** Member name, e.g. "Steven Marks". */
-  readonly name: string;
-  /** Area label over the photo, e.g. "Dirección". */
-  readonly area: string;
-  /** Area badge tone. */
-  readonly areaTone: TeamAreaTone;
-  /** Role under the name, e.g. "Gerente General". */
-  readonly role: string;
-  /** Member bio copy (verbatim). */
-  readonly description: string;
-  /** Footer strip label, e.g. "Gestión Corporativa". */
-  readonly footerLabel: string;
-  /** Decorative Lucide icon in the footer strip. */
-  readonly footerIcon: NosotrosIconName;
-  /** Portrait image (local placeholder imported from `@/assets/img/`). */
-  readonly image: ImageMetadata;
-  /** Descriptive alt text (verbatim from the reference's `data-alt`). */
-  readonly imageAlt: string;
-}
-
 /** A client logo in the closing "Quienes Han Confiado" carousel. */
 export interface ClientLogo {
   /** Client logo imported from `@/assets/img/slider/`, optimized by astro:assets. */
@@ -271,7 +245,7 @@ export interface NosotrosTeamGridProps {
   readonly badgeText: string;
   /** Decorative Lucide icon inside the badge. */
   readonly badgeIcon: NosotrosIconName;
-  /** The four leadership cards in render order. */
+  /** The eight roster members in render order. */
   readonly members: readonly TeamMember[];
 }
 

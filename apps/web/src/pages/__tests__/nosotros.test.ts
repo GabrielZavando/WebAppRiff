@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import NosotrosPage from '@/pages/nosotros.astro';
+import { TEAM_MEMBERS } from '@/lib/config/team';
 
 /**
  * Page-level contract for `/nosotros` (change `nosotros-page`).
@@ -81,20 +82,19 @@ describe('Nosotros page — main renders the six sections (SC-109, SC-201 … SC
     expect(text).toContain('DICIEMBRE 2024');
   });
 
-  it('renders MISIÓN / VISIÓN, the four team members and the clients carousel (SC-204 … SC-207)', async () => {
+  it('renders MISIÓN / VISIÓN, the eight team members and the clients carousel (SC-204 … SC-207)', async () => {
     const clean = stripComments(await render());
     const text = stripTags(clean);
     expect(text).toContain('MISIÓN');
     expect(text).toContain('VISIÓN');
-    expect(text).toContain('Steven Marks');
-    expect(text).toContain('Lara Smith');
-    expect(text).toContain('John Doe');
-    expect(text).toContain('Felipe Román');
-    // The eight-name grid was replaced by the 41-logo carousel (duplicated
-    // once for the seamless loop): assert the carousel contract instead.
+    for (const member of TEAM_MEMBERS) {
+      expect(text).toContain(member.name);
+    }
+    // The 41-logo carousel is duplicated once for the seamless loop; add the
+    // hero image and the 8 team portraits.
     expect(clean).toContain('aria-label="Logos de clientes"');
     const main = clean.match(/<main[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? '';
-    expect(main.match(/<img[^>]*>/g) ?? []).toHaveLength(87);
+    expect(main.match(/<img[^>]*>/g) ?? []).toHaveLength(91);
     expect(text).not.toContain('ANGLO AMERICAN');
     expect(text).not.toContain('SALFACORP');
     expect(text).toContain(
@@ -176,12 +176,12 @@ describe('Nosotros page — design tokens and flat design (SC-210)', () => {
 describe('Nosotros page — accessibility invariants (SC-212)', () => {
   it('gives every image of the six sections a non-empty alt (SC-212)', async () => {
     const clean = stripComments(await render());
-    // Scoped to <main>: hero + 4 portraits + 41 logos duplicated once for the
+    // Scoped to <main>: hero + 8 portraits + 41 logos duplicated once for the
     // seamless loop. Chrome images (logos) have their own alt contract in the
     // header/footer specs.
     const main = clean.match(/<main[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? '';
     const images = main.match(/<img[^>]*>/g) ?? [];
-    expect(images.length).toBe(87);
+    expect(images.length).toBe(91);
     for (const img of images) {
       expect(img).toMatch(/alt="[^"]+"/);
     }
