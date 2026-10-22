@@ -32,7 +32,7 @@ const metricToneClass: Record<
 -->
 <section class="relative w-full bg-secondary text-white overflow-hidden">
   <div
-    class="rep-grid pointer-events-none absolute inset-0 opacity-10"
+    class="technical-grid pointer-events-none absolute inset-0 opacity-10"
     aria-hidden="true"
   >
   </div>
@@ -86,21 +86,3 @@ const metricToneClass: Record<
     </div>
   </div>
 </section>
-
-<style>
-  /* Token-based technical grid (design.md § D8): two repeating linear
-   * gradients over the brand primary token. `color-mix` avoids raw hex. */
-  .rep-grid {
-    background-image:
-      repeating-linear-gradient(
-        to right,
-        color-mix(in srgb, var(--color-primary) 50%, transparent) 0 1px,
-        transparent 1px 40px
-      ),
-      repeating-linear-gradient(
-        to bottom,
-        color-mix(in srgb, var(--color-primary) 50%, transparent) 0 1px,
-        transparent 1px 40px
-      );
-  }
-</style>

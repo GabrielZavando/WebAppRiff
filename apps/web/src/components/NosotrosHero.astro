@@ -36,8 +36,9 @@ const shouldRenderHighlight = highlightedWord !== '' && before !== title;
   `NOSOTROS_PAGE_CONTENT.hero` by `apps/web/src/pages/nosotros.astro`.
 
   Layout (design.md § Decisions 3/4/9/10/11/14):
-    - Dark brand background `bg-secondary` with a technical grid SVG that is
-      decorative (`aria-hidden`, desktop-only `hidden lg:block`).
+    - Dark brand background `bg-secondary` with the shared `technical-grid`
+      utility (same pattern as `/representaciones`), decorative
+      (`aria-hidden`) and token-based.
     - Left column: eyebrow pill, single <h1> "SOMOS RIFF" (the page's only
       h1, highlight via the `text-primary` token), subtitle, paragraph and
       the two CTAs — first as the orange accent style (`/contacto`), second
@@ -51,30 +52,10 @@ const shouldRenderHighlight = highlightedWord !== '' && before !== title;
 -->
 <section class="relative w-full overflow-hidden bg-secondary text-white">
   <div
-    class="pointer-events-none absolute inset-0 bg-linear-to-r from-secondary via-bg to-secondary opacity-90"
+    class="technical-grid pointer-events-none absolute inset-0 opacity-10"
+    aria-hidden="true"
   >
   </div>
-  <div
-    class="pointer-events-none absolute right-0 top-0 hidden lg:block h-full w-1/2 opacity-10"
-  >
-    <svg
-      class="h-full w-full"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 400 400"
-      aria-hidden="true"
-    >
-      <path
-        d="M0 50 H400 M0 100 H400 M0 150 H400 M0 200 H400 M0 250 H400 M0 300 H400 M0 350 H400"
-        stroke-dasharray="4 8"
-        stroke-width="0.5"></path>
-      <path
-        d="M50 0 V400 M100 0 V400 M150 0 V400 M200 0 V400 M250 0 V400 M300 0 V400 M350 0 V400"
-        stroke-dasharray="4 8"
-        stroke-width="0.5"></path>
-    </svg>
-  </div>
-
   <div class="container relative mx-auto py-16 md:py-20">
     <div class="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
       <div class="flex flex-col items-start lg:col-span-7">

@@ -34,8 +34,9 @@ function stripTags(html: string): string {
  * Behavioural contract for `NosotrosTimeline.astro` (change `nosotros-page`,
  * SC-203): the section carries the `#historia` anchor the hero CTA points
  * to, renders the verbatim header and the five milestones (years, badges,
- * titles and side notes), keeps the central line and the numeric markers
- * desktop-only (`hidden lg:*`), and stays flat (no hex, no rounded).
+ * titles and side notes), keeps the numeric markers desktop-only
+ * (`hidden lg:*`), uses a single badge tone and omits the central rail, and
+ * stays flat (no hex, no rounded).
  */
 describe('NosotrosTimeline — section anchor and header (SC-203, SC-208)', () => {
   it('renders the #historia anchor on the outermost section', async () => {
@@ -110,20 +111,29 @@ describe('NosotrosTimeline — five milestones (SC-203)', () => {
   });
 });
 
-describe('NosotrosTimeline — desktop-only central line and markers (SC-211)', () => {
-  it('hides the central line outside desktop (hidden lg:block)', async () => {
+describe('NosotrosTimeline — desktop-only markers without central rail (SC-211, SC-214)', () => {
+  it('does not render the vertical central line', async () => {
     const html = await render();
-    expect(html).toMatch(
-      /<div[^>]*class="[^"]*hidden lg:block[^"]*"[^>]*>[^<]*<|<div[^>]*class="[^"]*hidden lg:block[^"]*"/,
-    );
-    const line = html.match(/<div[^>]*hidden lg:block[^>]*>/g) ?? [];
-    expect(line.length).toBeGreaterThan(0);
+    expect(html).not.toContain('bg-border/40');
+    expect(html).not.toMatch(/absolute[^"]*left-1\/2/);
   });
 
   it('hides the numeric markers outside desktop (hidden lg:flex)', async () => {
     const html = await render();
     const markers = html.match(/<div[^>]*hidden lg:flex[^>]*>/g) ?? [];
     expect(markers).toHaveLength(5);
+  });
+
+  it('renders every numeric marker with the same bg-primary-deep surface', async () => {
+    const html = await render();
+    const numericMarkers =
+      html.match(/<div class="[^"]*h-10 w-10[^"]*"[^>]*>[\s\S]*?<\/div>/g) ?? [];
+    expect(numericMarkers).toHaveLength(4);
+    for (const marker of numericMarkers) {
+      expect(marker).toContain('bg-primary-deep');
+      expect(marker).toContain('text-white');
+      expect(marker).not.toContain('bg-bg');
+    }
   });
 
   it('renders the numeric markers 01..04 and the star marker for the last milestone', async () => {
@@ -135,6 +145,16 @@ describe('NosotrosTimeline — desktop-only central line and markers (SC-211)', 
     expect(text).toContain('04');
     expect(html).toContain('lucide:star');
     expect(html).toContain('aria-hidden="true"');
+  });
+
+  it('keeps the star marker on its original bg-accent surface', async () => {
+    const html = await render();
+    const star =
+      html.match(/<div class="[^"]*h-12 w-12[^"]*"[^>]*>[\s\S]*?<\/div>/)?.[0] ??
+      '';
+    expect(star).toContain('bg-accent');
+    expect(star).toContain('text-white');
+    expect(star).toContain('lucide:star');
   });
 
   it('alternates the milestone layout via lg order classes (odd milestones flip)', async () => {

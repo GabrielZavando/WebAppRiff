@@ -78,14 +78,16 @@ for (const milestone of milestones) {
       desktop placement via `order-*` utilities (card `order-1 lg:order-3`,
       note `order-2 lg:order-1`), so mobile stacks card first, then note
       (SC-211).
-    - The central line and the numeric markers (01..04, ★ on the last
-      milestone) are desktop-only (`hidden lg:*`, SC-211).
+    - The numeric markers (01..04, ★ on the last milestone) are desktop-only
+      (`hidden lg:flex`, SC-211). There is no central vertical rail: the
+      markers are uniform and the star keeps its original accent surface
+      (SC-214).
     - Card tones via tokens; content shadows `shadow-1`/`shadow-3` only
       (design.md D11); flat design: no `rounded*`, no hex literals.
     - Section header is the page `<h2>`; milestone titles are `<h3>`
       (heading hierarchy, SC-212).
 -->
-<section class="w-full bg-bg py-16 md:py-20" id="historia">
+<section class="w-full bg-surface-muted py-16 md:py-20" id="historia">
   <div class="container mx-auto">
     <div class="mb-16 max-w-3xl">
       <div
@@ -101,10 +103,6 @@ for (const milestone of milestones) {
     </div>
 
     <div class="relative">
-      <div
-        class="absolute left-1/2 top-0 bottom-0 hidden lg:block w-0.5 -translate-x-1/2 bg-border/40"
-      >
-      </div>
       <div class="space-y-8">
         {
           milestones.map((milestone, index) => {
@@ -147,11 +145,7 @@ for (const milestone of milestones) {
                     </div>
                   ) : (
                     <div
-                      class={`flex h-10 w-10 items-center justify-center font-heading text-sm font-semibold shadow-2 ${
-                        index % 2 === 0
-                          ? 'bg-primary-deep text-white'
-                          : 'border border-border bg-bg text-text'
-                      }`}
+                      class="flex h-10 w-10 items-center justify-center bg-primary-deep font-heading text-sm font-semibold text-white shadow-2"
                     >
                       {String(index + 1).padStart(2, '0')}
                     </div>

@@ -173,6 +173,36 @@ describe('Nosotros page — design tokens and flat design (SC-210)', () => {
   });
 });
 
+describe('Nosotros page — light page background and white content cards (SC-213)', () => {
+  it('sets bg-surface-muted on the main landmark', async () => {
+    const clean = stripComments(await render());
+    const mainTag = clean.match(/<main[^>]*>/)?.[0] ?? '';
+    expect(mainTag).toContain('bg-surface-muted');
+  });
+
+  it('renders the four clear sections on bg-surface-muted and no section on bg-white', async () => {
+    const clean = stripComments(await render());
+    const main = clean.match(/<main[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? '';
+    const sectionTags = main.match(/<section[^>]*>/g) ?? [];
+    expect(sectionTags).toHaveLength(6);
+    const classTokens = (tag: string): string[] =>
+      (tag.match(/class="([^"]*)"/)?.[1] ?? '').split(/\s+/);
+    const mutedSections = sectionTags.filter((tag) =>
+      classTokens(tag).includes('bg-surface-muted'),
+    );
+    expect(mutedSections).toHaveLength(4);
+    for (const tag of sectionTags) {
+      expect(classTokens(tag)).not.toContain('bg-white');
+    }
+  });
+
+  it('keeps white content cards on the light surface', async () => {
+    const clean = stripComments(await render());
+    const main = clean.match(/<main[^>]*>([\s\S]*?)<\/main>/)?.[1] ?? '';
+    expect(main).toContain('bg-white');
+  });
+});
+
 describe('Nosotros page — accessibility invariants (SC-212)', () => {
   it('gives every image of the six sections a non-empty alt (SC-212)', async () => {
     const clean = stripComments(await render());
