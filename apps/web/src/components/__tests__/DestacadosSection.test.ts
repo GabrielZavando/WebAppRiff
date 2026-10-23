@@ -9,9 +9,12 @@ import {
   countOccurrences,
   escapeRegex,
   stripHtmlComments,
+  DEFAULT_PROPS,
+  SAMPLE_FEATURED,
+  featuredArticles,
 } from './helpers/destacados-section-test-utils';
 
-const baseProps: DestacadosSectionProps = DESTACADOS_SECTION_CONTENT;
+const baseProps: DestacadosSectionProps = DEFAULT_PROPS;
 
 describe('DestacadosSection — structure & outermost section', () => {
   it('renders a <section> as the outermost element', async () => {
@@ -126,7 +129,7 @@ describe('DestacadosSection — card grid (1/2/4 mobile-first)', () => {
     expect(gridMatch[0]).toMatch(/gap-\d+/);
   });
 
-  it('renders exactly 4 <article> cards', async () => {
+  it('renders exactly N <article> cards matching the products prop (4 by default)', async () => {
     const html = await render();
     expect(countOccurrences(html, '<article')).toBe(4);
   });
@@ -162,7 +165,7 @@ describe('DestacadosSection — card structure (white raised card with image mat
   });
 });
 
-describe('DestacadosSection — card image (lazy, alt, astro:assets)', () => {
+describe('DestacadosSection — card image (lazy, alt, remote URL)', () => {
   it('each card image carries loading="lazy" and a non-empty alt', async () => {
     const html = await render();
     forEachCard(html, (card) => {
@@ -185,16 +188,45 @@ describe('DestacadosSection — card image (lazy, alt, astro:assets)', () => {
     });
   });
 
-  it('each card image resolves to an astro:assets optimized path with width/height', async () => {
+  it('each card image resolves to the REMOTE gallery URL (not astro:assets)', async () => {
+    const html = await render();
+    forEachCard(html, (card, product) => {
+      const img = card.match(/<img[^>]*>/);
+      if (!img) throw new Error('card image not found');
+      expect(img[0]).toContain(`src="${product.imageUrl}"`);
+      expect(img[0]).toMatch(/src="https:\/\//);
+      // No astro:assets processing, no local asset path, no dimensions.
+      expect(img[0]).not.toMatch(/src="\/_(astro|image)\?/);
+      expect(img[0]).not.toMatch(/src="[^"]*(assets\/img|\/@fs\/)/);
+    });
+  });
+
+  it('each card image keeps the square aspect mat with object-contain', async () => {
     const html = await render();
     forEachCard(html, (card) => {
       const img = card.match(/<img[^>]*>/);
       if (!img) throw new Error('card image not found');
-      expect(img[0]).not.toMatch(/src="[^"]*(assets\/img|\/@fs\/)/);
-      expect(img[0]).toMatch(/src="\/_(astro|image)\?/);
-      expect(img[0]).toMatch(/width=/);
-      expect(img[0]).toMatch(/height=/);
+      expect(img[0]).toContain('aspect-square');
+      expect(img[0]).toContain('object-contain');
     });
+  });
+
+  it('[SC] an imageUrl="" card renders the mat WITHOUT <img> and WITHOUT <svg>', async () => {
+    const props: DestacadosSectionProps = {
+      ...baseProps,
+      products: [
+        { ...SAMPLE_FEATURED[0]!, imageUrl: '' },
+        { ...SAMPLE_FEATURED[1]! },
+      ],
+    };
+    const html = await render(props);
+    const cards = html.match(/<article[\s\S]*?<\/article>/g) ?? [];
+    expect(cards).toHaveLength(2);
+    const imagelessCard = cards[0]!;
+    const mat = imagelessCard.match(/<div class="p-4">([\s\S]*?)<\/div>/);
+    if (!mat) throw new Error('image mat not found');
+    expect(mat[1]).not.toMatch(/<img/);
+    expect(mat[1]).not.toMatch(/<svg/);
   });
 });
 
@@ -216,7 +248,7 @@ describe('DestacadosSection — card content', () => {
   it('long product titles carry the line-clamp-3 utility', async () => {
     const html = await render();
     const h4s = html.match(/<h4[^>]*>[\s\S]*?<\/h4>/g) ?? [];
-    expect(h4s.length).toBe(4);
+    expect(h4s.length).toBe(baseProps.products.length);
     for (const h4 of h4s) {
       expect(h4).toContain('line-clamp-3');
     }
@@ -267,14 +299,14 @@ describe('DestacadosSection — card CTA (outline primary "Ver detalles")', () =
   });
 });
 
-describe('DestacadosSection — heading outline', () => {
+describe('DestacadosSection — heading outline (0..8 dynamic)', () => {
   it('does NOT render <h1> or <h2>', async () => {
     const html = await render();
     expect(html).not.toMatch(/<h1/);
     expect(html).not.toMatch(/<h2/);
   });
 
-  it('renders exactly one <h3> and exactly 4 <h4>', async () => {
+  it('renders exactly one <h3> and exactly N <h4> (N = products length, 4 by default)', async () => {
     const html = await render();
     expect(countOccurrences(html, '<h3')).toBe(1);
     expect(countOccurrences(html, '<h4')).toBe(4);
@@ -299,8 +331,12 @@ describe('DestacadosSection — design tokens', () => {
 });
 
 describe('DestacadosSection — icons', () => {
-  it('renders NO svg icons (no lucide or other icon set)', async () => {
-    const html = await render();
+  it('renders NO svg icons (no lucide or other icon set) — including the image-less mat', async () => {
+    const props: DestacadosSectionProps = {
+      ...baseProps,
+      products: [{ ...SAMPLE_FEATURED[0]!, imageUrl: '' }],
+    };
+    const html = await render(props);
     expect(html).not.toMatch(/<svg/);
     expect(html).not.toMatch(/lucide:/);
   });
@@ -322,34 +358,27 @@ describe('DestacadosSection — dumb component', () => {
   });
 });
 
-describe('DestacadosSection — content config', () => {
-  it('DESTACADOS_SECTION_CONTENT has the documented shape with non-empty fields', async () => {
-    expect(baseProps.headline.length).toBeGreaterThan(0);
-    expect(baseProps.ctaText.length).toBeGreaterThan(0);
-    expect(baseProps.ctaHref.length).toBeGreaterThan(0);
-    expect(baseProps.ctaHref).toContain('/');
-    expect(baseProps.products).toHaveLength(4);
-  });
-
-  it('FEATURED_PRODUCTS titles in render order are exactly the client-specified titles', async () => {
-    const titles = baseProps.products.map((p) => p.titulo);
-    expect(titles).toEqual([
-      'Antiincrustante Bimaks 420 para Ósmosis Inversa (Agua Salobre)',
-      'Medidor Electromagnético Fullmag HA',
-      'Medidor Ultrasónico Doppler Portátil Fullsonic (No Invasivo)',
-      'Medidor de Flujo Riff Turbine Pro',
-    ]);
-  });
-
-  it('every product imports the correct client image file per card index', async () => {
-    // `src` covers ImageMetadata; the guard tolerates bare-string asset imports.
-    const sources = baseProps.products.map((p) =>
-      typeof p.imagen === 'string' ? p.imagen : p.imagen.src,
+describe('DestacadosSection — content source (panel-driven)', () => {
+  it('the header copy is carried by DESTACADOS_SECTION_CONTENT (headline + CTA only)', async () => {
+    // snapshot of the production config contract: copy only — cards come
+    // from the backend featured catalog (capped at 8 by the page).
+    expect(DESTACADOS_SECTION_CONTENT.headline).toBe('Soluciones Destacadas');
+    expect(DESTACADOS_SECTION_CONTENT.ctaText).toBe(
+      'EXPLORAR CATÁLOGO COMPLETO',
     );
-    expect(sources[0]).toContain('antiincrustante-Bimaks.png');
-    expect(sources[1]).toContain('flujometro-multiproposito.webp');
-    expect(sources[2]).toContain('FULLSONIC-DOPPLER-CONTABLE.webp');
-    expect(sources[3]).toContain('MWN-DN50.webp');
+    expect(DESTACADOS_SECTION_CONTENT.ctaHref).toBe('/productos');
+    expect(DESTACADOS_SECTION_CONTENT).not.toHaveProperty('products');
+  });
+
+  it('renders the fixture cards verbatim (8-card cap lives in the page, not here)', async () => {
+    const props: DestacadosSectionProps = {
+      ...baseProps,
+      products: featuredArticles(8),
+    };
+    const html = await render(props);
+    expect(html).toContain('Destacado 0');
+    expect(html).toContain('Destacado 7');
+    expect(countOccurrences(html, '<article')).toBe(8);
   });
 });
 

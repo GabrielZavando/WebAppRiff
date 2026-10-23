@@ -13,6 +13,21 @@ import { test, expect } from 'playwright/test';
 const SECTION_SELECTOR = 'section.bg-primary-deep';
 
 /**
+ * Number of featured cards the home renders in DestacadosSection: the
+ * backend destacados (panel `destacado` flag) capped at 8. Computed from
+ * the e2e stub API so the outline assertion stays correct as the fixture
+ * changes (change `home-featured-products-grid`).
+ */
+const STUB_FEATURED_URL =
+  'http://localhost:3001/api/v1/products?destacado=true&page=1&limit=100';
+let FEATURED_COUNT = 0;
+test.beforeAll(async () => {
+  const res = await fetch(STUB_FEATURED_URL);
+  const body = (await res.json()) as { data: Array<{ destacado?: boolean }> };
+  FEATURED_COUNT = Math.min(body.data.length, 8);
+});
+
+/**
  * Computes the WCAG contrast ratio between two CSS rgb() color strings.
  * Same helper as solution-section.spec.ts (kept local to avoid cross-file coupling).
  */
@@ -138,9 +153,11 @@ test.describe('ServicesSection (home specialized services)', () => {
 
     // Card CTA: design-system solid primary button (bg teal, white text),
     // visible text "Ver detalles" (POST-APPLY UPDATE, design.md § Decision 9).
+    // POST-APPLY UPDATE (services anchors): the card CTA links to the section
+    // anchor of its service (/servicios#<slug>) instead of the bare /servicios.
     const link = firstCard.getByRole('link', { name: /Ver detalles/ });
     await expect(link).toBeVisible();
-    await expect(link).toHaveAttribute('href', '/servicios');
+    await expect(link).toHaveAttribute('href', /^\/servicios#/);
     const linkBg = await link.evaluate(
       (el) => window.getComputedStyle(el).backgroundColor,
     );
@@ -171,7 +188,7 @@ test.describe('ServicesSection (home specialized services)', () => {
     expect(cls).toContain('py-4');
   });
 
-  test('document keeps exactly 1 h1, 4 h2, 4 h3 and 12 h4', async ({ page }) => {
+  test('document keeps exactly 1 h1 and a dynamic h4 outline (8 + N featured)', async ({ page }) => {
     // See servicios-section spec scenario "DOM order is preserved": the page
     // outline is now 1/2/2/8 (ServicesSection adds its own <h3> and 4 <h4>).
     // POST-VERIFY UPDATE (destacados-section): the home page renders
@@ -181,10 +198,15 @@ test.describe('ServicesSection (home specialized services)', () => {
     // POST-APPLY UPDATE (pilares-section): the home page renders PilaresSection
     // last (its own <h2> + <h3>), so the visible outline is 1/3/4/12. See
     // pilares-section spec scenario "DOM order is preserved: ... → pilares".
+    // POST-APPLY UPDATE (home-featured-products-grid): the featured cards are
+    // now panel-driven (backend `destacado` flag, capped at 8), so the h4
+    // outline is 8 + N_featured (N_featured = min(8, backend destacados);
+    // fixable base of 8 h4 comes from HeroBanner/PanelHome/SolutionSection/
+    // ServicesSection/PilaresSection/NosotrosTeamSection).
     await expect(page.locator('h1:visible')).toHaveCount(1);
     await expect(page.locator('h2:visible')).toHaveCount(4);
     await expect(page.locator('h3:visible')).toHaveCount(4);
-    await expect(page.locator('h4:visible')).toHaveCount(12);
+    await expect(page.locator('h4:visible')).toHaveCount(8 + FEATURED_COUNT);
   });
 
   test('all 4 service images load without 404', async ({ page }) => {
@@ -229,10 +251,11 @@ test.describe('ServicesSection (home specialized services)', () => {
 
     await firstLink.focus();
     await expect(firstLink).toBeFocused();
-    // The card links to /servicios; this route now exists (servicios-page
-    // change) and renders the placeholder shell, so the href contract holds.
+    // The card links to its anchored service route (/servicios#<slug>);
+    // this route now exists (servicios-page change) and renders the placeholder
+    // shell, so the href contract holds.
     const href = await firstLink.getAttribute('href');
-    expect(href).toBe('/servicios');
+    expect(href).toMatch(/^\/servicios#/);
   });
 
   test('card does NOT apply a shadow in its static state (flat design)', async ({

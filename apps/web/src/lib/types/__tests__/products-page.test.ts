@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, expectTypeOf } from 'vitest';
 import type {
   CategoriaApi,
   ProductoApi,
@@ -148,6 +148,19 @@ describe('ProductoCardApi type', () => {
     expect(lean.stock).toBeUndefined();
     expect(lean.actualizadoEn).toBeUndefined();
     expect(lean.idExterno).toBeUndefined();
+    expect(lean.destacado).toBeUndefined();
+  });
+
+  it('exposes the optional destacado card flag sent by the backend', () => {
+    // The backend card projection (`toProductoCard`) already serializes the
+    // panel-managed `destacado: boolean` flag; the web contract declares it as
+    // a card-only extra next to `stock`/`actualizadoEn`/`idExterno`.
+    expectTypeOf<ProductoCardApi['destacado']>().toEqualTypeOf<
+      boolean | undefined
+    >();
+    expect(SAMPLE_CARD_API.destacado).toBeUndefined();
+    const featured: ProductoCardApi = { ...SAMPLE_CARD_API, destacado: true };
+    expect(featured.destacado).toBe(true);
   });
 
   it('is structurally compatible: ProductoApi satisfies ProductoCardApi', () => {

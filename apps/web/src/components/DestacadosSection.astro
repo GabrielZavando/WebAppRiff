@@ -1,6 +1,5 @@
 ---
 import type { DestacadosSectionProps } from '@/lib/types/destacados-section';
-import { Image } from 'astro:assets';
 
 interface Props extends DestacadosSectionProps {}
 
@@ -9,44 +8,40 @@ const { headline, ctaText, ctaHref, products } = Astro.props;
 
 <!--
   Dumb presentational component. All content (headline, header CTA and the
-  4 featured product cards) comes via props spread from
-  `DESTACADOS_SECTION_CONTENT` in `lib/config/destacados-section.ts` by
-  `apps/web/src/pages/index.astro`.
+  featured product cards) comes via props: the headline/CTA copy from
+  `DESTACADOS_SECTION_CONTENT` and the cards from the backend featured
+  catalog (`getFeaturedProducts()` capped at 8 by the page, mapped with
+  `toFeaturedProduct` — panel-managed `destacado` flag).
 
-  Layout (see openspec/changes/destacados-section/design.md § Decisions):
-    - The <section> is a flat block (NO negative margin / overlap):
-      `py-16 md:py-24` vertical air and `bg-secondary-dark` background
-      (dark navy — POST-APPLY UPDATE in `site-favicon-and-bg-swap`: token
-      swapped from `bg-primary-deep` to `bg-secondary-dark` so the
-      destacados block becomes the navy anchor of the home, after the
-      teal `bg-primary-deep` of `ServicesSection` above) form a hard color
-      transition from the teal ServicesSection above to this navy block
-      (Decision 6).
+  Layout (see openspec/changes/home-featured-products-grid):
+    - The <section> is a flat block: `py-16 md:py-24` vertical air and
+      `bg-secondary-dark` background (dark navy), hard color transition from
+      the teal `bg-primary-deep` of `ServicesSection` above.
     - Inner `<div class="container mx-auto px-4 sm:px-6 lg:px-8">` constrains
-      content to the same max-width as the sibling sections (token `.container`
-      in globals.css).
-    - Header row `flex flex-col sm:flex-row justify-between items-start sm:items-center`
-      (Decision 6): left holds the <h3> headline, right holds the accent CTA;
-      on mobile the CTA stacks below the headline.
-    - Card grid `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` (Decision 6):
-      mobile 1 col, tablet >= 640px 2 cols, desktop >= 1024px 4 cols.
-    - Card layout (Decision 5): white `<article>` (`bg-white shadow-2
-      hover:shadow-4 transition-shadow`) with an image mat (`p-4`,
-      `aspect-square object-contain`) so product shots are not cropped, and a
-      content area with the <h4> + "Ver detalles" CTA (Decision 4,
-      MODIFIED in web-home-contact-tweaks).
+      content to the same max-width as the sibling sections (token
+      `.container` in globals.css).
+    - Header row `flex flex-col sm:flex-row justify-between items-start
+      sm:items-center`: left holds the <h3> headline, right holds the accent
+      CTA; on mobile the CTA stacks below the headline.
+    - Card grid `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` (gap-6 md:gap-8):
+      mobile 1 col, tablet >= 640px 2 cols, desktop >= 1024px 4 cols. With
+      5..8 cards CSS Grid auto-placement flows them into the second row.
+    - Card layout: white `<article>` (`bg-white shadow-2 hover:shadow-4
+      transition-shadow`) with an image mat (`p-4`, `aspect-square
+      object-contain`) so product shots are not cropped, and a content area
+      with the <h4> + "Ver detalles" CTA.
 
-  Semantics & accessibility (see design.md § Decisions 6/7):
+  Semantics & accessibility:
     - The section headline is a <h3>, NOT <h1>/<h2>: the home has exactly one
       <h1> (HeroBanner) and one <h2> (PanelHome); DestacadosSection is a
       sibling portfolio sub-block like SolutionSection/ServicesSection.
     - Each card title is a <h4> subordinate to the section <h3>.
-    - Images: descriptive `alt` (not the card title), `loading="lazy"`
-      (section is below the initial fold), processed by astro:assets/sharp.
-    - No icons in this section (mockup has none; keeps icon-catalog test
-      unaffected).
-    - NO prices rendered anywhere (design.md Decision 3: the client specified
-      the section shows no prices).
+    - Images: remote product URLs managed by the panel (Firebase Storage),
+      rendered as plain <img loading="lazy"> with a descriptive alt (gallery
+      alt falling back to the title) — NO astro:assets (the URL is not an
+      importable asset) and NO <svg> placeholder when the product has no
+      image (the mat stays blank; icons are deliberately not used here).
+    - NO prices rendered anywhere (the section shows no prices).
 -->
 
 <section class="py-16 md:py-24 bg-secondary-dark">
@@ -64,20 +59,21 @@ const { headline, ctaText, ctaHref, products } = Astro.props;
       </a>
     </div>
 
-    <!-- Responsive card grid -->
+    <!-- Responsive card grid: 1 / 2 / 4 columns, second row auto-flows -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
       {
         products.map((product) => (
           <article class="bg-white shadow-2 hover:shadow-4 transition-shadow">
             <div class="p-4">
-              <Image
-                src={product.imagen}
-                alt={product.imagenAlt}
-                widths={[300, 600]}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                loading="lazy"
-                class="w-full aspect-square object-contain"
-              />
+              {product.imageUrl !== '' && (
+                <img
+                  src={product.imageUrl}
+                  alt={product.imagenAlt}
+                  loading="lazy"
+                  decoding="async"
+                  class="w-full aspect-square object-contain"
+                />
+              )}
             </div>
             <div class="p-5">
               <h4 class="text-base font-heading font-semibold text-secondary line-clamp-3 min-h-[4.5rem]">

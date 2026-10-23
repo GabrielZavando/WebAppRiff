@@ -5,11 +5,35 @@ import { test, expect } from 'playwright/test';
  *
  * Selector strategy: the SolutionSection is the THIRD <section> on the page
  * (the first is the HeroBanner `section.relative`, the second is the PanelHome
- * `section.relative.z-10`). We target it by its unique class `bg-bg` combined
- * with the vertical padding: `section.bg-bg` is unique to the SolutionSection.
+ * `section.relative.z-10`). We target it by its unique class `bg-surface-muted`
+ * combined with the h3 heading: POST-APPLY UPDATE (commit 4e6ecd5, global
+ * background swap) the section background token changed from `bg-bg` to
+ * `bg-surface-muted`; a second section on the page shares the token, so
+ * `:has(h3)` keeps the selector unique.
  */
 
-const SECTION_SELECTOR = 'section.bg-bg:has(h3)';
+const SECTION_SELECTOR = 'section.bg-surface-muted:has(h3)';
+
+/**
+ * Number of featured cards the home renders in DestacadosSection: the
+ * backend destacados (panel `destacado` flag) capped at 8. Computed from
+ * the e2e stub API so the outline assertion stays correct as the fixture
+ * changes (change `home-featured-products-grid`).
+ */
+const STUB_FEATURED_URL =
+  'http://localhost:3001/api/v1/products?destacado=true&page=1&limit=100';
+/**
+ * Raw backend destacados count (before the 8-card slice) — used to prove the
+ * `slice(0, 8)` contract: the fixture serves 9 destacados, the page renders 8.
+ */
+let FEATURED_BACKEND_COUNT = 0;
+let FEATURED_COUNT = 0;
+test.beforeAll(async () => {
+  const res = await fetch(STUB_FEATURED_URL);
+  const body = (await res.json()) as { data: Array<{ destacado?: boolean }> };
+  FEATURED_BACKEND_COUNT = body.data.length;
+  FEATURED_COUNT = Math.min(body.data.length, 8);
+});
 
 /**
  * Computes the WCAG contrast ratio between two CSS rgb() color strings.
@@ -152,7 +176,10 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     // SABER MÁS CTA: design-system solid primary button (bg teal, white text).
     const link = firstCard.getByRole('link', { name: /SABER MÁS/ });
     await expect(link).toBeVisible();
-    await expect(link).toHaveAttribute('href', '/soluciones');
+    // POST-APPLY UPDATE (card deep-links): the card CTA links to the matching
+    // row of the servicios page (/servicios#<solution-slug>) instead of the
+    // bare /soluciones route, so the anchor contract matches the config.
+    await expect(link).toHaveAttribute('href', /^\/servicios#/);
     const linkBg = await link.evaluate(
       (el) => window.getComputedStyle(el).backgroundColor,
     );
@@ -169,7 +196,7 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     await expect(link).toHaveCSS('border-radius', '0px');
   });
 
-  test('document keeps exactly 1 h1, 4 h2, 4 h3 and 12 h4 (5.6)', async ({ page }) => {
+  test('document keeps exactly 1 h1 and a dynamic h4 outline (8 + N featured) (5.6)', async ({ page }) => {
     // NOTE: the Astro Dev Toolbar (injected into `astro preview`) appends its
     // own hidden <h1> elements to the DOM. Filter with :visible so we assert
     // on the page's actual visible content hierarchy only.
@@ -184,10 +211,15 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     // POST-APPLY UPDATE (pilares-section): the home page renders PilaresSection
     // last (its own <h2> + <h3>), so the visible outline is 1/3/4/12. See
     // pilares-section spec scenario "DOM order is preserved: ... → pilares".
+    // POST-APPLY UPDATE (home-featured-products-grid): the featured cards are
+    // now panel-driven (backend `destacado` flag, capped at 8), so the h4
+    // outline is 8 + N_featured (N_featured = min(8, backend destacados);
+    // fixable base of 8 h4 comes from HeroBanner/PanelHome/SolutionSection/
+    // ServicesSection/PilaresSection/NosotrosTeamSection).
     await expect(page.locator('h1:visible')).toHaveCount(1);
     await expect(page.locator('h2:visible')).toHaveCount(4);
     await expect(page.locator('h3:visible')).toHaveCount(4);
-    await expect(page.locator('h4:visible')).toHaveCount(12);
+    await expect(page.locator('h4:visible')).toHaveCount(8 + FEATURED_COUNT);
   });
 
   test('all 4 solution images load without 404 (5.7)', async ({ page }) => {
@@ -277,7 +309,7 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     console.log(`eyebrow contrast ratio: ${ratio.toFixed(2)}:1`);
   });
 
-  test('SABER MÁS links are keyboard-focusable and navigate to /soluciones (5.11)', async ({
+  test('SABER MÁS links are keyboard-focusable and navigate to the servicios anchor (5.11)', async ({
     page,
   }) => {
     const firstLink = page
@@ -288,10 +320,11 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     await firstLink.focus();
     await expect(firstLink).toBeFocused();
 
-    // Navigate to /soluciones (a 404 page today, but the href contract is what
-    // matters for this change; the route will exist in solution-detail-pages).
+    // Navigate to /servicios#<solution-slug> (card deep-link contract,
+    // see config `solution-section.ts` — the matching row of the servicios
+    // page is the actual destination).
     const href = await firstLink.getAttribute('href');
-    expect(href).toBe('/soluciones');
+    expect(href).toMatch(/^\/servicios#/);
   });
 
   test('card shadow changes from shadow-1 to shadow-3 on hover (5.12)', async ({
@@ -312,5 +345,77 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     expect(shadowBefore).not.toBe('none');
     expect(shadowAfter).not.toBe('none');
     expect(shadowBefore).not.toBe(shadowAfter);
+  });
+});
+
+test.describe('DestacadosSection (home featured products grid)', () => {
+  const FEATURED_SELECTOR = 'section.bg-secondary-dark';
+
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/');
+  });
+
+  test('renders the 8-card cap: 9 stub destacados -> 8 cards on a 4x2 grid (6.1)', async ({
+    page,
+  }) => {
+    // Guard: the stub must serve MORE destacados than the cap, otherwise the
+    // rendered count would not prove the `slice(0, 8)` contract.
+    expect(FEATURED_BACKEND_COUNT).toBeGreaterThan(8);
+
+    const section = page.locator(FEATURED_SELECTOR);
+    await expect(section).toBeVisible();
+
+    // Cap: exactly 8 cards rendered despite 9 panel destacados.
+    const cards = section.locator('article');
+    await expect(cards).toHaveCount(8);
+
+    // Grid wrapper keeps the responsive pattern (1 / 2 / 4 columns).
+    const grid = cards.first().locator('xpath=..');
+    const gridClass = await grid.getAttribute('class');
+    expect(gridClass).toContain('grid-cols-1');
+    expect(gridClass).toContain('sm:grid-cols-2');
+    expect(gridClass).toContain('lg:grid-cols-4');
+    expect(gridClass).toContain('gap-6');
+  });
+
+  test('desktop grid does not break: 4 columns x 2 rows aligned (6.1)', async ({
+    page,
+  }) => {
+    const cards = page.locator(`${FEATURED_SELECTOR} article`);
+    await expect(cards).toHaveCount(8);
+
+    const boxes = await cards.evaluateAll((els) =>
+      els.map((el) => {
+        const r = el.getBoundingClientRect();
+        return { x: r.x, y: r.y };
+      }),
+    );
+    // Row 1: cards 0-3 aligned on the same baseline Y.
+    for (let i = 1; i <= 3; i++) {
+      expect(Math.abs(boxes[i]!.y - boxes[0]!.y)).toBeLessThan(2);
+      expect(boxes[i]!.x).toBeGreaterThan(boxes[i - 1]!.x);
+    }
+    // Row 2 exists below row 1: cards 4-7 aligned, strictly lower than row 1.
+    for (let i = 5; i <= 7; i++) {
+      expect(Math.abs(boxes[i]!.y - boxes[4]!.y)).toBeLessThan(2);
+      expect(boxes[i]!.x).toBeGreaterThan(boxes[i - 1]!.x);
+    }
+    expect(boxes[4]!.y).toBeGreaterThan(boxes[0]!.y);
+  });
+
+  test('first card renders the lazy remote galeria image (6.1)', async ({
+    page,
+  }) => {
+    const img = page
+      .locator(`${FEATURED_SELECTOR} article`)
+      .first()
+      .locator('img');
+    await expect(img).toHaveAttribute('loading', 'lazy');
+    await expect(img).toHaveAttribute('decoding', 'async');
+    await expect(img).toHaveAttribute('src', /firebasestorage/);
+    const alt = await img.getAttribute('alt');
+    expect(alt).toBeTruthy();
+    expect(alt!.length).toBeGreaterThan(0);
   });
 });

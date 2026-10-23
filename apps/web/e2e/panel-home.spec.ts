@@ -205,11 +205,12 @@ test.describe('PanelHome (home about/trust panel)', () => {
     }
   });
 
-  test('hero overlap on mobile, panel sits below hero on desktop (4.7, hero-fullbleed-overlay)', async ({
+  test('hero overlap by 8px at every breakpoint (4.7, ui-chrome-polish)', async ({
     page,
   }) => {
-    // Design update (hero-fullbleed-overlay): the panel overlaps the hero on
-    // mobile (-mt-2) but sits below it on desktop (lg:mt-2).
+    // Design update (ui-chrome-polish, openspec/specs/panel-home): the panel
+    // overlaps the hero by 8px (-mt-2) at EVERY breakpoint — the desktop-only
+    // `lg:mt-2` positive offset was removed per client request.
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
 
@@ -222,16 +223,17 @@ test.describe('PanelHome (home about/trust panel)', () => {
     expect(panelBox).toBeTruthy();
     // Mobile: negative margin pulls the panel up into the hero.
     expect(panelBox!.y).toBeLessThan(heroBox!.y + heroBox!.height);
-    expect(heroBox!.y + heroBox!.height - panelBox!.y).toBeGreaterThan(0);
+    // Uniform overlap is exactly 8px (-mt-2).
+    expect(heroBox!.y + heroBox!.height - panelBox!.y).toBeCloseTo(8, 0);
 
-    // Desktop: panel sits below the hero (no overlap).
+    // Desktop: the uniform -8px overlap is preserved (no lg:mt-2 offset).
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.reload();
     heroBox = await hero.boundingBox();
     panelBox = await panel.boundingBox();
     expect(heroBox).toBeTruthy();
     expect(panelBox).toBeTruthy();
-    expect(panelBox!.y).toBeGreaterThanOrEqual(heroBox!.y + heroBox!.height);
+    expect(heroBox!.y + heroBox!.height - panelBox!.y).toBeCloseTo(8, 0);
   });
 
   test('the <h1> "Innovación que Fluye" stays visible above the panel on common viewports (4.8)', async ({

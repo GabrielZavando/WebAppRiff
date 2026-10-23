@@ -29,28 +29,25 @@ import type {
  * § Decision 1 (dumb component contract: all data arrives via props).
  */
 describe('destacados-section.ts types', () => {
-  it('FeaturedProduct exposes readonly id, titulo, slug, imagen (ImageMetadata) and imagenAlt', () => {
+  it('FeaturedProduct exposes readonly id, titulo, slug, imageUrl and imagenAlt', () => {
     // Minimal runtime construction proving the field names and value kinds
-    // are accepted by the contract. The `imagen` field uses a stub that
-    // satisfies the `ImageMetadata` shape (imported from `astro:assets`);
-    // the real import lives in `lib/config/destacados-section.ts` so the
-    // placeholder here only needs to be structurally compatible.
+    // are accepted by the contract. `imageUrl` is a REMOTE image URL taken
+    // from the backend card gallery (`galeria[0].url`, Firebase Storage) —
+    // the featured contract no longer references local `assets/img/`
+    // metadata (see change `home-featured-products-grid`, design.md
+    // § Decision 3/4).
     const product: FeaturedProduct = {
       id: 'flujometro-universal',
       titulo: 'Flujómetro Universal',
       slug: 'flujometro-universal',
-      imagen: {
-        src: '/assets/img/flujometro-multiproposito.webp',
-        width: 800,
-        height: 600,
-        format: 'webp',
-      } as unknown as FeaturedProduct['imagen'],
+      imageUrl: 'https://storage.googleapis.com/riff/flujometro.webp',
       imagenAlt: 'Flujómetro universal de alta precisión',
     };
 
     expect(product.id).toBe('flujometro-universal');
     expect(product.titulo).toBe('Flujómetro Universal');
     expect(product.slug).toBe('flujometro-universal');
+    expect(product.imageUrl).toContain('https://');
     expect(product.imagenAlt).toContain('Flujómetro');
 
     // Type-level shape: every required field present, all readonly.
@@ -58,7 +55,7 @@ describe('destacados-section.ts types', () => {
       readonly id: string;
       readonly titulo: string;
       readonly slug: string;
-      readonly imagen: FeaturedProduct['imagen'];
+      readonly imageUrl: string;
       readonly imagenAlt: string;
     }>();
   });
@@ -83,12 +80,7 @@ describe('destacados-section.ts types', () => {
           id: 'antiincrustante-bimaks-420',
           titulo: 'Antiincrustante Bimaks 420 para Ósmosis Inversa (Agua Salobre)',
           slug: 'antiincrustante-bimaks-420',
-          imagen: {
-            src: '/a.png',
-            width: 800,
-            height: 800,
-            format: 'png',
-          } as unknown as FeaturedProduct['imagen'],
+          imageUrl: 'https://storage.googleapis.com/riff/bimaks-420.webp',
           imagenAlt: 'Bidón azul de antiincrustante Bimaks 420',
         },
       ],
@@ -99,6 +91,7 @@ describe('destacados-section.ts types', () => {
     expect(props.ctaHref).toBe('/productos');
     expect(props.products).toHaveLength(1);
     expect(props.products[0]?.titulo).toContain('Bimaks');
+    expect(props.products[0]?.imageUrl).toContain('https://');
 
     // Type-level shape, including the readonly array guard.
     expectTypeOf<DestacadosSectionProps>().toEqualTypeOf<{

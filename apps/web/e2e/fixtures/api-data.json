@@ -1,13 +1,52 @@
 {
   "categories": [
-    { "id": "cat-fluidos", "nombre": "Medición de Fluidos", "slug": "medicion-de-fluidos", "orden": 1, "activa": true },
-    { "id": "cat-agua", "nombre": "Tratamiento de Agua", "slug": "tratamiento-de-agua", "orden": 2, "activa": true },
-    { "id": "cat-control", "nombre": "Control y Automatización", "slug": "control-y-automatizacion", "orden": 3, "activa": true }
+    {
+      "id": "cat-fluidos",
+      "nombre": "Medición de Fluidos",
+      "slug": "medicion-de-fluidos",
+      "orden": 1,
+      "activa": true
+    },
+    {
+      "id": "cat-agua",
+      "nombre": "Tratamiento de Agua",
+      "slug": "tratamiento-de-agua",
+      "orden": 2,
+      "activa": true
+    },
+    {
+      "id": "cat-control",
+      "nombre": "Control y Automatización",
+      "slug": "control-y-automatizacion",
+      "orden": 3,
+      "activa": true
+    }
   ],
   "subcategories": [
-    { "id": "cat-fluidos--mecanicos", "categoriaId": "cat-fluidos", "nombre": "Medidores Mecánicos", "slug": "medidores-mecanicos", "orden": 1, "activa": true },
-    { "id": "cat-agua--filtros", "categoriaId": "cat-agua", "nombre": "Filtros", "slug": "filtros", "orden": 1, "activa": true },
-    { "id": "cat-control--valvulas", "categoriaId": "cat-control", "nombre": "Válvulas", "slug": "valvulas", "orden": 1, "activa": true }
+    {
+      "id": "cat-fluidos--mecanicos",
+      "categoriaId": "cat-fluidos",
+      "nombre": "Medidores Mecánicos",
+      "slug": "medidores-mecanicos",
+      "orden": 1,
+      "activa": true
+    },
+    {
+      "id": "cat-agua--filtros",
+      "categoriaId": "cat-agua",
+      "nombre": "Filtros",
+      "slug": "filtros",
+      "orden": 1,
+      "activa": true
+    },
+    {
+      "id": "cat-control--valvulas",
+      "categoriaId": "cat-control",
+      "nombre": "Válvulas",
+      "slug": "valvulas",
+      "orden": 1,
+      "activa": true
+    }
   ],
   "products": [
     {
@@ -19,11 +58,24 @@
       "descripcionLarga": "<p>Medidor Woltman de eje horizontal, esfera seca.</p>",
       "categoriaId": "cat-fluidos",
       "subcategoriaId": "cat-fluidos--mecanicos",
-      "galeria": [],
-      "atributos": [{ "nombre": "Diámetro", "valor": "DN40 a DN250" }],
+      "galeria": [
+        {
+          "url": "https://firebasestorage.googleapis.com/v0/b/riff-catalogo-dev.firebasestorage.app/o/sonda-nivel.jpg",
+          "alt": "Sonda de nivel hidrostática instalada en estanque"
+        }
+      ],
+      "atributos": [
+        {
+          "nombre": "Diámetro",
+          "valor": "DN40 a DN250"
+        }
+      ],
       "fichaTecnica": null,
-      "precio": { "valor": 0, "visible": false },
-      "destacado": false,
+      "precio": {
+        "valor": 0,
+        "visible": false
+      },
+      "destacado": true,
       "publicado": true,
       "creadoEn": "2026-01-05T00:00:00.000Z"
     },
@@ -39,8 +91,11 @@
       "galeria": [],
       "atributos": [],
       "fichaTecnica": null,
-      "precio": { "valor": 0, "visible": false },
-      "destacado": false,
+      "precio": {
+        "valor": 0,
+        "visible": false
+      },
+      "destacado": true,
       "publicado": true,
       "creadoEn": "2026-01-10T00:00:00.000Z"
     },
@@ -56,8 +111,11 @@
       "galeria": [],
       "atributos": [],
       "fichaTecnica": null,
-      "precio": { "valor": 0, "visible": false },
-      "destacado": false,
+      "precio": {
+        "valor": 0,
+        "visible": false
+      },
+      "destacado": true,
       "publicado": true,
       "creadoEn": "2026-01-15T00:00:00.000Z"
     },
@@ -73,8 +131,11 @@
       "galeria": [],
       "atributos": [],
       "fichaTecnica": null,
-      "precio": { "valor": 0, "visible": false },
-      "destacado": false,
+      "precio": {
+        "valor": 0,
+        "visible": false
+      },
+      "destacado": true,
       "publicado": true,
       "creadoEn": "2026-01-20T00:00:00.000Z"
     },
@@ -90,7 +151,10 @@
       "galeria": [],
       "atributos": [],
       "fichaTecnica": null,
-      "precio": { "valor": 0, "visible": false },
+      "precio": {
+        "valor": 0,
+        "visible": false
+      },
       "destacado": true,
       "publicado": true,
       "creadoEn": "2026-01-25T00:00:00.000Z"
@@ -107,8 +171,11 @@
       "galeria": [],
       "atributos": [],
       "fichaTecnica": null,
-      "precio": { "valor": 0, "visible": false },
-      "destacado": false,
+      "precio": {
+        "valor": 0,
+        "visible": false
+      },
+      "destacado": true,
       "publicado": true,
       "creadoEn": "2026-01-28T00:00:00.000Z"
     },
@@ -124,8 +191,11 @@
       "galeria": [],
       "atributos": [],
       "fichaTecnica": null,
-      "precio": { "valor": 0, "visible": false },
-      "destacado": false,
+      "precio": {
+        "valor": 0,
+        "visible": false
+      },
+      "destacado": true,
       "publicado": true,
       "creadoEn": "2026-02-01T00:00:00.000Z"
     },
@@ -141,10 +211,33 @@
       "galeria": [],
       "atributos": [],
       "fichaTecnica": null,
-      "precio": { "valor": 0, "visible": false },
-      "destacado": false,
+      "precio": {
+        "valor": 0,
+        "visible": false
+      },
+      "destacado": true,
       "publicado": true,
       "creadoEn": "2026-02-05T00:00:00.000Z"
+    },
+    {
+      "id": "prod-009",
+      "sku": "SKU-CAQ-009",
+      "titulo": "Sonda Nivel Transmisor Hidrostático",
+      "slug": "sonda-nivel-transmisor-hidrostatico",
+      "descripcionBreve": "Sonda de nivel hidrostática para estanques industriales.",
+      "descripcionLarga": "<p>Transmisor de nivel por presión hidrostática con salida 4-20 mA.</p>",
+      "categoriaId": "cat-accesorios",
+      "subcategoriaId": "cat-accesorios--instrumentos",
+      "galeria": [],
+      "atributos": [],
+      "fichaTecnica": null,
+      "precio": {
+        "valor": 0,
+        "visible": false
+      },
+      "destacado": true,
+      "publicado": true,
+      "creadoEn": "2026-02-06T00:00:00.000Z"
     }
   ]
 }
