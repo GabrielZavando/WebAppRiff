@@ -46,10 +46,18 @@ describe('Representaciones page composition', () => {
     );
   });
 
-  it('renders the brand wordmarks and the Lucide icons mapped from the mockup', async () => {
+  it('renders the seven real brand logos and the Lucide icons mapped from the mockup', async () => {
     const html = await render();
-    for (const wordmark of ['APATOR', 'POWOGAZ', 'RIFF', 'NITTO SEIKO', 'GL', 'ILMAP', 'PIUSI', 'SENSUS']) {
-      expect(html).toContain(wordmark);
+    for (const alt of [
+      'Apator Powogaz',
+      'RIFF Flow Metering',
+      'Nitto Seiko',
+      'GL Sanitaria',
+      'ILMAP',
+      'PIUSI',
+      'SENSUS',
+    ]) {
+      expect(html).toMatch(new RegExp(`<img[^>]*alt="${alt}"`));
     }
     for (const icon of [
       'lucide:fuel',
@@ -61,6 +69,23 @@ describe('Representaciones page composition', () => {
     ]) {
       expect(html).toContain(`data-icon="${icon}"`);
     }
+  });
+
+  it('uses the canonical container so the content aligns with the Header', async () => {
+    const html = await render();
+    expect(html).not.toContain('max-w-[1280px]');
+    expect(html).toContain('container relative');
+    expect(html).toContain('container flex flex-col gap-12');
+    expect(html).toContain('container flex flex-col gap-10');
+    expect((html.match(/class="[^"]*\bcontainer\b/g) ?? []).length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('uses bg-surface-muted for page-level sections', async () => {
+    const html = await render();
+    const mutedSections =
+      html.match(/<section[^>]*class="[^"]*bg-surface-muted[^"]*"/g) ?? [];
+    expect(mutedSections).toHaveLength(2);
+    expect(html).not.toMatch(/<section[^>]*class="[^"]*bg-bg/);
   });
 
   it('uses only Riff design tokens (no brand-* classes, no hex in classes)', async () => {

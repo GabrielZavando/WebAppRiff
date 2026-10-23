@@ -15,13 +15,13 @@ async function render(brand = apator): Promise<string> {
 }
 
 describe('RepresentacionBrandCard', () => {
-  it('renders the wordmark inside a data-brand-logo container (replaceable placeholder)', async () => {
+  it('renders the real logo image inside a data-brand-logo container', async () => {
     const html = await render();
     expect(html).toContain('data-brand-logo');
-    expect(html).toContain('APATOR');
-    expect(html).toContain('POWOGAZ');
-    // No <img> logo is rendered (placeholder only).
-    expect(html).not.toMatch(/<img[^>]*alt="[^"]*logo/i);
+    expect(html).toMatch(/<img[^>]*alt="Apator Powogaz"/);
+    expect(html).toMatch(/<img[^>]*loading="lazy"/);
+    expect(html).toMatch(/<img[^>]*object-contain/);
+    expect(html).not.toContain('POWOGAZ');
   });
 
   it('renders the origin chip, sublabel, h3 title, category and description', async () => {
@@ -35,9 +35,13 @@ describe('RepresentacionBrandCard', () => {
     expect(html).toContain('Referente europeo en metrología hídrica');
   });
 
-  it('renders the optional wordmark note when present', async () => {
-    const html = await render(brands[1]!);
-    expect(html).toContain('Flow Metering Control');
+  it('renders the logo of every brand with its own alt text', async () => {
+    for (const brand of brands) {
+      const html = await render(brand);
+      expect(html).toMatch(
+        new RegExp(`<img[^>]*alt="${brand.title}"`),
+      );
+    }
   });
 
   it('stacks the wordmark panel on mobile and puts it in a row from md', async () => {

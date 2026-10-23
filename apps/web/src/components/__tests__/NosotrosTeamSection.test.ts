@@ -48,9 +48,10 @@ describe('NosotrosTeamSection — structure & outermost section', () => {
     expect(stripped.startsWith('<section')).toBe(true);
   });
 
-  it('the <section> carries the bg-bg token (light background per mockup)', async () => {
+  it('the <section> carries the bg-surface-muted page surface', async () => {
     const section = getSectionTag(await render());
-    expect(section).toContain('bg-bg');
+    expect(section).toContain('bg-surface-muted');
+    expect(section).not.toContain('bg-bg');
   });
 
   it('the <section> contains the responsive grid: grid-cols-1 md:grid-cols-2 lg:grid-cols-3', async () => {

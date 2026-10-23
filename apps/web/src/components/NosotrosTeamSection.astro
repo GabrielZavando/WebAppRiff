@@ -13,7 +13,7 @@ const { headline, subtitle, members } = Astro.props;
   `lib/config/nosotros-team-section.ts` by `apps/web/src/pages/index.astro`.
 
   Layout (see design.md § Decisions 1, 3, 5, 6, 7):
-    - Outermost <section> carries the `bg-bg` light background token and a
+    - Outermost <section> carries the `bg-surface-muted` page surface token and a
       centered header: <h2> (headline) + <p> (subtitle). Exactly ONE <h2> on
       the home below HeroBanner's <h1> — member names are <span>s, NOT
       headings (design.md § Decision 3).
@@ -61,7 +61,7 @@ const { headline, subtitle, members } = Astro.props;
       (color photo + lighter overlay) as instant, non-animated feedback.
 -->
 
-<section class="bg-bg py-16 md:py-24">
+<section class="bg-surface-muted py-16 md:py-24">
   <div class="container">
     <div class="mx-auto max-w-2xl text-center">
       <h2

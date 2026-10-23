@@ -94,7 +94,8 @@ describe('Servicios page — sections', () => {
     const portfolio = clean.match(/<section[^>]*data-section="portfolio"[^>]*>/);
     const field = clean.match(/<section[^>]*data-section="field-services"[^>]*>/);
     expect(portfolio).not.toBeNull();
-    expect(portfolio![0]).toContain('bg-bg');
+    expect(portfolio![0]).toContain('bg-surface-muted');
+    expect(portfolio![0]).not.toContain('bg-bg');
     expect(field).not.toBeNull();
     expect(field![0]).toContain('bg-primary-100');
     expect(field![0]).toContain('border-y');

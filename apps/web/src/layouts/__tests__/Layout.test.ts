@@ -103,6 +103,12 @@ describe('Layout — default mode (no hero shell)', () => {
     expect(html).not.toContain('bg-secondary/80');
     expect(html).not.toContain('banner_home');
   });
+
+  it('declares bg-surface-muted on the body as the site page surface', async () => {
+    const html = await renderDefaultLayout();
+    const body = html.match(/<body[^>]*>/)?.[0] ?? '';
+    expect(body).toContain('bg-surface-muted');
+  });
 });
 
 describe('Layout — global View Transitions (view-transitions spec)', () => {

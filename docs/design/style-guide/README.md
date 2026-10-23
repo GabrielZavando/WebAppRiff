@@ -34,8 +34,8 @@ This file documents the canonical design tokens and icon catalog for the Riff Ca
 | `--color-text-2` | `#5C6675` | `text-text-2` | Texto secundario |
 | `--color-muted` | `#98A1AC` | `text-muted` | Texto terciario / placeholder |
 | `--color-border` | `#E3E8ED` | `border-border` | Borde base 1px |
-| `--color-bg` | `#F6F8FA` | `bg-bg` | Fondo de sección / página |
-| `--color-surface-muted` | `#E9EEF3` | `bg-surface-muted` | Fondo de superficie con contraste frente a tarjetas blancas |
+| `--color-bg` | `#F6F8FA` | `bg-bg` | Mat/control anidado (imágenes, inputs, badges, chips); no usar como fondo base de página |
+| `--color-surface-muted` | `#E9EEF3` | `bg-surface-muted` | Fondo base de página; contraste con tarjetas y paneles blancos |
 | `--color-white` | `#FFFFFF` | `bg-white`, `text-white` | Superficie sobre fondo |
 
 ### Estado (12 tokens: 4 estados × 3 tonos)

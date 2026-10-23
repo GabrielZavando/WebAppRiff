@@ -45,7 +45,10 @@ describe('REPRESENTACIONES_PAGE_CONTENT', () => {
       'ILMAP',
     ]);
     for (const brand of content.brandsSection.brands) {
-      expect(brand.wordmark.length).toBeGreaterThan(0);
+      expect(brand.logo.src).toContain('src/assets/img/representaciones/');
+      expect(brand.logo.width).toBeGreaterThan(0);
+      expect(brand.logo.height).toBeGreaterThan(0);
+      expect('wordmark' in brand).toBe(false);
       expect(brand.chip.length).toBeGreaterThan(0);
       expect(brand.category.length).toBeGreaterThan(0);
       expect(brand.description.length).toBeGreaterThan(0);
@@ -62,10 +65,16 @@ describe('REPRESENTACIONES_PAGE_CONTENT', () => {
     expect(content.distributorsSection.intro.length).toBeGreaterThan(0);
     expect(
       content.distributorsSection.distributors.map(
-        (distributor) => distributor.wordmark,
+        (distributor) => distributor.name,
       ),
     ).toEqual(['PIUSI', 'SENSUS']);
     for (const distributor of content.distributorsSection.distributors) {
+      expect(distributor.logo.src).toContain(
+        'src/assets/img/representaciones/',
+      );
+      expect(distributor.logo.width).toBeGreaterThan(0);
+      expect(distributor.logo.height).toBeGreaterThan(0);
+      expect('wordmark' in distributor).toBe(false);
       expect(distributor.badge.length).toBeGreaterThan(0);
       expect(distributor.icon).toMatch(/^lucide:/);
       expect(distributor.bullets).toHaveLength(3);
