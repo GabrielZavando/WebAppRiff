@@ -94,6 +94,8 @@ export interface ProductoCardApi {
   readonly stock?: number;
   readonly actualizadoEn?: string;
   readonly idExterno?: string;
+  // Panel-managed "featured" flag (serialized by the card projection)
+  readonly destacado?: boolean;
 }
 
 /**

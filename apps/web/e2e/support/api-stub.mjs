@@ -48,9 +48,24 @@ export function createStubApiServer() {
     if (req.method === 'GET' && url.pathname === '/api/v1/products') {
       const page = Number(url.searchParams.get('page') ?? 1);
       const limit = Math.min(Number(url.searchParams.get('limit') ?? 24), 100);
-      const start = (page - 1) * limit;
       const all = fixture.products;
-      return sendJson(res, 200, envelope(all.slice(start, start + limit)));
+      // Mirror the real backend `destacado` filter (panel-managed featured
+      // flag) so the home featured section can be exercised end-to-end.
+      const destacadoParam = url.searchParams.get('destacado');
+      const filtered =
+        destacadoParam === null
+          ? all
+          : all.filter((p) => p.destacado === (destacadoParam === 'true'));
+      const start = (page - 1) * limit;
+      return sendJson(
+        res,
+        200,
+        envelope(filtered.slice(start, start + limit), {
+          page,
+          limit,
+          total: filtered.length,
+        }),
+      );
     }
 
     const slugMatch = url.pathname.match(/^\/api\/v1\/products\/slug\/(.+)$/);

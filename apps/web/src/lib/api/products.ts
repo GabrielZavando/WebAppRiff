@@ -1,4 +1,4 @@
-import type { ProductoApi } from '@/lib/types/products-page';
+import type { ProductoApi, ProductoCardApi } from '@/lib/types/products-page';
 import type { CategoriaApi } from '@/lib/types/products-page';
 import {
   assertCatalogSourceAvailable,
@@ -22,14 +22,16 @@ import {
  */
 
 let cached: readonly ProductoApi[] | null = null;
+/** Module-level cache for the featured cards (one HTTP call per build). */
+let featuredCached: readonly ProductoCardApi[] | null = null;
 
 /** Transport page size used to walk the catalog until `meta.total` is covered. */
 const PAGE_LIMIT = 100;
 /** Safety cap so a misbehaving API can never spin the build forever. */
 const MAX_PAGES = 100;
 
-interface ProductsListResponse {
-  readonly data: ProductoApi[];
+interface ProductsListResponse<T = ProductoApi> {
+  readonly data: T[];
   readonly meta?: {
     readonly page?: number;
     readonly limit?: number;
@@ -84,6 +86,42 @@ export async function getPublicProducts(): Promise<readonly ProductoApi[]> {
     cached = [];
   }
   return cached;
+}
+
+/**
+ * Returns the featured product cards for the home "Soluciones Destacadas"
+ * section. Fetches from the backend at build time with the server-side
+ * `destacado=true` filter (panel-managed flag; the read service forces
+ * `publicado: true` for anonymous requests, so only published products are
+ * returned). A single `limit=100` page is enough: the featured subset can
+ * never exceed the catalog's `MAX_LIMIT` page size, so no pagination walk
+ * is needed (unlike `getPublicProducts`).
+ *
+ * Caches the result at module scope and falls back to `[]` if the API is
+ * unreachable so `astro build` never fails (same SC-env policy as the
+ * catalog). The visual 8-card cap applied by the home page (`.slice(0, 8)`)
+ * is independent of this limit.
+ */
+export async function getFeaturedProducts(): Promise<readonly ProductoCardApi[]> {
+  if (featuredCached) {
+    return featuredCached;
+  }
+  try {
+    const response = await fetch(
+      `${resolveApiBaseUrl()}/products?destacado=true&page=1&limit=100`,
+      { headers: { accept: 'application/json' } },
+    );
+    if (!response.ok) {
+      throw new Error(`Featured products API responded with ${response.status}`);
+    }
+    const body = (await response.json()) as ProductsListResponse<ProductoCardApi>;
+    featuredCached = body.data ?? [];
+  } catch (error) {
+    assertCatalogSourceAvailable('featured products', error);
+    warnCatalogFallback('featured products', error);
+    featuredCached = [];
+  }
+  return featuredCached;
 }
 
 interface ProductDetailResponse {

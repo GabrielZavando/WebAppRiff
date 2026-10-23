@@ -1,95 +1,22 @@
 import type { DestacadosSectionProps } from '@/lib/types/destacados-section';
-import type { FeaturedProduct } from '@/lib/types/destacados-section';
-import antiincrustanteImg from '@/assets/img/antiincrustante-Bimaks.png';
-import flujometroImg from '@/assets/img/flujometro-multiproposito.webp';
-import fullsonicImg from '@/assets/img/FULLSONIC-DOPPLER-CONTABLE.webp';
-import mwnImg from '@/assets/img/MWN-DN50.webp';
 
 /**
- * Hardcoded content for the home page "featured products" section.
+ * Hardcoded header copy for the home page "featured products" section.
  *
- * Lives in `lib/config/` so the page (`apps/web/src/pages/index.astro`) can
- * spread it onto `<DestacadosSection {...DESTACADOS_SECTION_CONTENT} />`
- * without the component itself needing to know the marketing copy or the
- * image imports. Keeping it hardcoded is consistent with
- * `SOLUTION_SECTION_CONTENT` and `SERVICES_SECTION_CONTENT`: as the site is
- * SSG, any change requires a rebuild anyway. A future CMS/API migration
- * (`contentful-from-cms`) will replace this with content injected via props
- * without touching the component (design.md § Decision 1/2).
+ * Since `home-featured-products-grid` the product CARDS are not hardcoded
+ * anymore: the home page (`apps/web/src/pages/index.astro`) derives them at
+ * build time from the backend featured catalog (`GET /api/v1/products?
+ * destacado=true`, capped at 8) and passes them to `DestacadosSection` as
+ * props. This constant only carries the section header copy, so the panel
+ * (`destacado` flag) is the single source of truth for which products appear.
  *
- * The images are the product photos delivered by the client (2026-08-09):
- * `antiincrustante-Bimaks.png` (400x400 PNG) and the three WebP product shots
- * (299x299). The pipeline `astro:assets` regenerates the optimized variants
- * on each build and the component's `object-contain` image mat frames any
- * source ratio.
- *
- * Since the client decision of 2026-09-30 (see `web-home-contact-tweaks`
- * design.md Decision 7), two of the four cards are provisional: the Fullmag HA
- * card reuses `flujometro-multiproposito.webp` and the Riff Turbine Pro card
- * reuses `MWN-DN50.webp` (the freed assets of the replaced products) while the
- * client's real product photos are pending. Those cards carry an inline
- * `PROVISIONAL image` comment and a truthful `imagenAlt` describing what the
- * photo actually shows.
- *
- * See `openspec/changes/destacados-section/design.md` for the rationale:
- * Decision 1 (dumb component), Decision 2 (hardcoded constant), Decision 3
- * (`FeaturedProduct` carries NO price fields — the client specified the
- * section shows no prices; the price contract arrives with the future catalog
- * API/CMS migration).
+ * See `openspec/changes/home-featured-products-grid/design.md` § Decision 3
+ * and the delta spec of the same change for the full contract.
  */
-
-/**
- * The 4 featured products in render order (client-specified, verbatim titles).
- *
- * Each `slug` is the future `/productos/{slug}` CTA target; `href`-style
- * detail routes are future work but the slug is already part of the contract
- * (design.md § Risks / Trade-offs).
- */
-export const FEATURED_PRODUCTS: readonly FeaturedProduct[] = [
-  {
-    id: 'antiincrustante-bimaks-420-para-osmosis-inversa-agua-salobre',
-    titulo: 'Antiincrustante Bimaks 420 para Ósmosis Inversa (Agua Salobre)',
-    slug: 'antiincrustante-bimaks-420-para-osmosis-inversa-agua-salobre',
-    imagen: antiincrustanteImg,
-    imagenAlt: 'Bidón azul de antiincrustante Bimaks 420 para ósmosis inversa',
-  },
-  {
-    id: 'medidor-electromagnetico-fullmag-ha',
-    titulo: 'Medidor Electromagnético Fullmag HA',
-    slug: 'medidor-electromagnetico-fullmag-ha',
-    // PROVISIONAL image — client's real product photo pending (design.md Decision 7).
-    // Reuses the freed `flujometro-multiproposito.webp` asset; the alt describes
-    // what the photo actually shows (a multipurpose flow meter).
-    imagen: flujometroImg,
-    imagenAlt: 'Medidor de flujo multipropósito',
-  },
-  {
-    id: 'medidor-ultrasonico-doppler-portatil-fullsonic-no-invasivo',
-    titulo: 'Medidor Ultrasónico Doppler Portátil Fullsonic (No Invasivo)',
-    slug: 'medidor-ultrasonico-doppler-portatil-fullsonic-no-invasivo',
-    imagen: fullsonicImg,
-    imagenAlt: 'Medidor ultrasónico Doppler portátil Fullsonic no invasivo',
-  },
-  {
-    id: 'medidor-de-flujo-riff-turbine-pro',
-    titulo: 'Medidor de Flujo Riff Turbine Pro',
-    slug: 'medidor-de-flujo-riff-turbine-pro',
-    // PROVISIONAL image — client's real product photo pending (design.md Decision 7).
-    // Reuses the freed `MWN-DN50.webp` asset; the alt describes what the photo
-    // actually shows (a mechanical turbine-type flow meter).
-    imagen: mwnImg,
-    imagenAlt: 'Medidor de flujo mecánico tipo turbina',
-  },
-];
-
-/**
- * Full props bag for `DestacadosSection.astro`: header copy + the 4 cards.
- * Spread onto `<DestacadosSection {...DESTACADOS_SECTION_CONTENT} />` by the
- * page.
- */
-export const DESTACADOS_SECTION_CONTENT: Readonly<DestacadosSectionProps> = {
+export const DESTACADOS_SECTION_CONTENT: Readonly<
+  Omit<DestacadosSectionProps, 'products'>
+> = {
   headline: 'Soluciones Destacadas',
   ctaText: 'EXPLORAR CATÁLOGO COMPLETO',
   ctaHref: '/productos',
-  products: FEATURED_PRODUCTS,
 };

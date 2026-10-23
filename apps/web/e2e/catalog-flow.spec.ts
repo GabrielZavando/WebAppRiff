@@ -67,11 +67,16 @@ test.describe('Catalog critical flow (listado → ficha → cotización)', () =>
       .getByRole('link', { name: /SOLICITAR COTIZACIÓN/ })
       .click();
 
+    // The click dispatches the navigation asynchronously; wait for it to
+    // commit before reading the URL (a plain page.url() read races).
+    await page.waitForURL('**/cotizacion**');
+
     const url = new URL(page.url());
     expect(url.pathname).toBe('/cotizacion');
     expect(url.searchParams.get('producto')).toBe(FIXTURE_SLUG);
-    // The quote form is rendered (SC cotizacion fields present).
-    await expect(page.locator('form[action="/api/v1/quotes"]')).toBeVisible();
+    // The quote form is rendered (SC cotizacion fields present). The hardened
+    // form resolves its action into an absolute API URL, so identify it by id.
+    await expect(page.locator('#cotizacion-form')).toBeVisible();
     await expect(page.locator('#cotizacion-nombre')).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'ENVIAR SOLICITUD' }),

@@ -53,15 +53,17 @@ test.describe('Cotizacion flow (form submission)', () => {
       page.getByRole('button', { name: 'ENVIAR SOLICITUD' }).click(),
     ]);
 
-    // Native form POST encodes as application/x-www-form-urlencoded.
+    // Native form POST was replaced by fetch (POST-APPLY form hardening,
+    // commit ab1c030): the payload is sent as application/json to the
+    // absolutely-resolved API action.
     const postData = request.postData() ?? '';
-    const params = new URLSearchParams(postData);
-    expect(params.get('nombre')).toBe('Playwright Test');
-    expect(params.get('email')).toBe('playwright@example.com');
-    expect(params.get('telefono')).toBe('+56912345678');
-    expect(params.get('nombre_empresa')).toBe('Playwright Corp');
-    expect(params.get('rut')).toBe('11.111.111-1');
-    expect(params.get('mensaje')).toBe('Solicitud E2E de cotización');
+    const payload = JSON.parse(postData) as Record<string, string>;
+    expect(payload['nombre']).toBe('Playwright Test');
+    expect(payload['email']).toBe('playwright@example.com');
+    expect(payload['telefono']).toBe('+56912345678');
+    expect(payload['nombre_empresa']).toBe('Playwright Corp');
+    expect(payload['rut']).toBe('11.111.111-1');
+    expect(payload['mensaje']).toBe('Solicitud E2E de cotización');
   });
 
   test('HTML5 validation blocks submission when required fields are empty', async ({
@@ -74,9 +76,9 @@ test.describe('Cotizacion flow (form submission)', () => {
     await page.getByRole('button', { name: 'ENVIAR SOLICITUD' }).click();
 
     await expect(page).toHaveURL(/\/cotizacion/);
-    // Form stays visible (no navigation occurred).
-    await expect(
-      page.locator('form[action="/api/v1/quotes"]'),
-    ).toBeVisible();
+    // Form stays visible (no navigation occurred). The form is identified by
+    // its stable id (`#cotizacion-form`) — the hardened form resolves its
+    // action into an absolute API URL (not the raw `/api/v1/quotes` path).
+    await expect(page.locator('#cotizacion-form')).toBeVisible();
   });
 });

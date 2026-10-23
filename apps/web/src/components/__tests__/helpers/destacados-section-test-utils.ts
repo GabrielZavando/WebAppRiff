@@ -13,12 +13,70 @@ import { DESTACADOS_SECTION_CONTENT } from '@/lib/config/destacados-section';
  * Extracted from `DestacadosSection.test.ts` so the spec file stays under the
  * ESLint `max-lines` budget (400 lines, frontend-standards § Umbrales
  * Angular). The component is a dumb presentational component, so the renderer
- * only needs `DESTACADOS_SECTION_CONTENT`; no mocks are required.
+ * needs the header copy plus a LOCAL fixture of featured cards — since
+ * `home-featured-products-grid` the production cards come from the backend
+ * featured catalog (the page applies the 8-card cap), so tests render against
+ * a remote-URL fixture instead of `FEATURED_PRODUCTS`.
  */
 
-/** Renders the component; defaults to the production content config. */
+/**
+ * Local featured-card fixture (4 cards, backend-shaped after mapping).
+ *
+ * Each `imageUrl` is a remote Storage-like URL; `imagenAlt` describes the
+ * photo and differs from the title (alt contract). Extend with `featured()`
+ * when a test needs 5..8 cards.
+ */
+export const SAMPLE_FEATURED: readonly FeaturedProduct[] = [
+  {
+    id: 'antiincrustante-bimaks-420-para-osmosis-inversa-agua-salobre',
+    titulo: 'Antiincrustante Bimaks 420 para Ósmosis Inversa (Agua Salobre)',
+    slug: 'antiincrustante-bimaks-420-para-osmosis-inversa-agua-salobre',
+    imageUrl: 'https://storage.googleapis.com/riff/antiincrustante-bimaks-420.webp',
+    imagenAlt: 'Bidón azul de antiincrustante Bimaks 420 para ósmosis inversa',
+  },
+  {
+    id: 'medidor-electromagnetico-fullmag-ha',
+    titulo: 'Medidor Electromagnético Fullmag HA',
+    slug: 'medidor-electromagnetico-fullmag-ha',
+    imageUrl: 'https://storage.googleapis.com/riff/fullmag-ha.webp',
+    imagenAlt: 'Medidor electromagnético Fullmag HA sobre fondo blanco',
+  },
+  {
+    id: 'medidor-ultrasonico-doppler-portatil-fullsonic-no-invasivo',
+    titulo: 'Medidor Ultrasónico Doppler Portátil Fullsonic (No Invasivo)',
+    slug: 'medidor-ultrasonico-doppler-portatil-fullsonic-no-invasivo',
+    imageUrl: 'https://storage.googleapis.com/riff/fullsonic-doppler.webp',
+    imagenAlt: 'Medidor ultrasónico Doppler portátil Fullsonic no invasivo',
+  },
+  {
+    id: 'medidor-de-flujo-riff-turbine-pro',
+    titulo: 'Medidor de Flujo Riff Turbine Pro',
+    slug: 'medidor-de-flujo-riff-turbine-pro',
+    imageUrl: 'https://storage.googleapis.com/riff/riff-turbine-pro.webp',
+    imagenAlt: 'Medidor mecánico tipo turbina Riff Turbine Pro',
+  },
+];
+
+/** Builds a featured-card fixture list of arbitrary size (backend order). */
+export function featuredArticles(count: number): FeaturedProduct[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: `destacado-${i}`,
+    titulo: `Destacado ${i}`,
+    slug: `destacado-${i}`,
+    imageUrl: `https://storage.googleapis.com/riff/destacado-${i}.webp`,
+    imagenAlt: `Imagen del destacado ${i}`,
+  }));
+}
+
+/** Default props: header copy + the 4-card fixture. */
+export const DEFAULT_PROPS: DestacadosSectionProps = {
+  ...DESTACADOS_SECTION_CONTENT,
+  products: SAMPLE_FEATURED,
+};
+
+/** Renders the component; defaults to header copy + the 4-card fixture. */
 export async function renderDestacadosSection(
-  props: DestacadosSectionProps = DESTACADOS_SECTION_CONTENT,
+  props: DestacadosSectionProps = DEFAULT_PROPS,
 ): Promise<string> {
   const container = await AstroContainer.create();
   const html = await container.renderToString(DestacadosSection, {
@@ -51,16 +109,15 @@ export function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-/** Runs `fn` for each of the rendered card `<article>` elements with its config product. */
+/** Runs `fn` for each of the rendered card `<article>` elements with its model. */
 export function forEachCard(
   html: string,
   fn: (card: string, product: FeaturedProduct) => void,
+  products: readonly FeaturedProduct[] = SAMPLE_FEATURED,
 ): void {
   const cards = html.match(/<article[\s\S]*?<\/article>/g) ?? [];
-  expect(cards).toHaveLength(4);
-  cards.forEach((card, index) =>
-    fn(card, DESTACADOS_SECTION_CONTENT.products[index]!),
-  );
+  expect(cards).toHaveLength(products.length);
+  cards.forEach((card, index) => fn(card, products[index]!));
 }
 
 /** Extracts the opening `<a ...>` tag of a card CTA. */
