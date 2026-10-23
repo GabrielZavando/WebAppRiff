@@ -4,7 +4,7 @@
 Sección Servicios del home: sección plana oscura, header centrado con headline y descripción, grid 2x2 responsive de tarjetas horizontales con imagen lazy y títulos en h4 con el token teal primario.
 ## Requirements
 ### Requirement: ServicesSection renders as a flat dark section with vertical padding
-The `services-section` SHALL render a `<section>` as its outermost element carrying vertical padding utilities (`py-16 md:py-24`) and the deep teal background token `bg-primary-deep` (`--color-primary-deep: #006874`). The section SHALL NOT apply negative margin / overlap (unlike `PanelHome`) — it is a flat block with a hard color transition from the light `bg-bg` of `SolutionSection` above. The section SHALL contain a single inner container using the canonical container utilities (`mx-auto px-4 sm:px-6 lg:px-8` and the `max-w-7xl` constraint expressed by the `container` utility). (MODIFIED in `site-favicon-and-bg-swap`: the section background token changes from `bg-secondary-dark` (navy) to `bg-primary-deep` (deep teal) so the services block reads as a more prominent teal band and the subsequent `DestacadosSection` becomes the navy anchor of the home — see also the mirrored change in the `destacados-section` spec.)
+The `services-section` SHALL render a `<section>` as its outermost element carrying vertical padding utilities (`py-16 md:py-24`) and the deep teal background token `bg-primary-deep` (`--color-primary-deep: #006874`). The section SHALL NOT apply negative margin / overlap (unlike `PanelHome`) — it is a flat block with a hard color transition from the light `bg-surface-muted` of `SolutionSection` above. The section SHALL contain a single inner container using the canonical container utilities (`mx-auto px-4 sm:px-6 lg:px-8` and the `max-w-7xl` constraint expressed by the `container` utility). (MODIFIED in `site-favicon-and-bg-swap`: the section background token changes from `bg-secondary-dark` (navy) to `bg-primary-deep` (deep teal) so the services block reads as a more prominent teal band and the subsequent `DestacadosSection` becomes the navy anchor of the home — see also the mirrored change in the `destacados-section` spec. MODIFIED in `polish-representaciones-page`: the light section above changes from `bg-bg` to `bg-surface-muted`.)
 
 #### Scenario: Section is the outermost element
 - **WHEN** the ServicesSection renders
@@ -25,6 +25,11 @@ The `services-section` SHALL render a `<section>` as its outermost element carry
 #### Scenario: Section uses the canonical container for inner width
 - **WHEN** the ServicesSection renders
 - **THEN** the section contains an inner `<div>` carrying the `container` class (or the equivalent `mx-auto px-4 sm:px-6 lg:px-8` plus `max-w-7xl` constraint)
+
+#### Scenario: Transition from the muted section above
+- **WHEN** `SolutionSection` y `ServicesSection` se renderizan consecutivamente en el home
+- **THEN** `SolutionSection` lleva `bg-surface-muted` como fondo de sección
+- **AND** `ServicesSection` conserva `bg-primary-deep`, produciendo la transición clara → teal descrita
 
 ### Requirement: ServicesSection renders a centered header with headline and description only (no eyebrow, no underline)
 The `services-section` SHALL render a header block centered horizontally (`text-center`) containing exactly two elements: a `<h3>` headline styled with the white color token (`text-white`) and the heading font token (`font-heading`); and a `<p>` description styled with the muted text color token (`text-muted`) and horizontal width constrained for readability (e.g. `max-w-2xl mx-auto`). The header SHALL NOT render an eyebrow `<span>` (no eyebrow is provided in the props). The header SHALL NOT render a teal underline `<div>` beneath the headline.

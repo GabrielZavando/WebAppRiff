@@ -165,7 +165,7 @@ El componente de encabezado de sección SHALL renderizar un marcador cuadrado co
 - **THEN** el conjunto de `id` de las tarjetas es exactamente `medicion-en-edificios`, `medicion-industrial`, `obras-y-proyectos` y `tratamiento-de-agua`
 
 ### Requirement: Services page composes the hero and the two new sections over the home banner
-La página `/servicios` SHALL renderizar `ServicesHero`, `ServiciosPortafolioSection` y `ServiciosTerrenoSection` dentro de `Layout` con `hero` y `heroImage` igual a `tratamiento-agua.webp`, manteniendo el banner full-bleed y el overlay `bg-secondary/80`. La Sección 1 SHALL usar fondo `bg-bg`; la Sección 2 SHALL usar `bg-primary-100` y bordes superior e inferior. La página SHALL renderizar exactamente dos `<h2>` de sección y ocho filas de contenido (cuatro soluciones y cuatro servicios).
+La página `/servicios` SHALL renderizar `ServicesHero`, `ServiciosPortafolioSection` y `ServiciosTerrenoSection` dentro de `Layout` con `hero` y `heroImage` igual a `tratamiento-agua.webp`, manteniendo el banner full-bleed y el overlay `bg-secondary/80`. La Sección 1 SHALL usar fondo `bg-surface-muted`; la Sección 2 SHALL usar `bg-primary-100` y bordes superior e inferior. La página SHALL renderizar exactamente dos `<h2>` de sección y ocho filas de contenido (cuatro soluciones y cuatro servicios). (MODIFIED in `polish-representaciones-page`: la Sección 1 pasa de `bg-bg` a `bg-surface-muted` como parte del nuevo fondo base del sitio.)
 
 #### Scenario: Composición de la página
 - **WHEN** `apps/web/src/pages/servicios.astro` se renderiza
@@ -188,7 +188,7 @@ La página `/servicios` SHALL renderizar `ServicesHero`, `ServiciosPortafolioSec
 
 #### Scenario: Fondos de las secciones
 - **WHEN** `servicios.astro` se renderiza
-- **THEN** la Sección 1 lleva `bg-bg`
+- **THEN** la Sección 1 lleva `bg-surface-muted`
 - **AND** la Sección 2 lleva `bg-primary-100`
 - **AND** la Sección 2 lleva bordes superior e inferior con `border-border`
 
