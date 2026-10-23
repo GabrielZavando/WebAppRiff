@@ -1,3 +1,5 @@
+import type { ImageMetadata } from 'astro';
+
 /**
  * Types shared by the public `/representaciones` page components.
  *
@@ -6,30 +8,19 @@
  * page (`apps/web/src/pages/representaciones.astro`, which owns the content via
  * `REPRESENTACIONES_PAGE_CONTENT`) and the components (which only render).
  *
- * See `openspec/changes/representaciones-page/design.md`:
+ * See `openspec/changes/polish-representaciones-page/design.md`:
  * - § D3: dumb components + hardcoded typed config (site-wide pattern).
  * - § D4: reusable card components (`RepresentacionBrandCard`,
  *   `DistribuidorCard`, `ValuePropCard`) plus `RepresentacionesHero`.
  * - § D6: icons are Lucide names stored in config (e.g. `lucide:wrench`) and
  *   rendered through `astro-icon`.
- * - § D7: company logos are typographic wordmark placeholders (no image
- *   binary), modelled as segments so a future `<Image>` can replace them.
+ * - § D1/D2: company logos are real `ImageMetadata` assets imported from
+ *   `@/assets/img/representaciones/` and rendered with `<Image>` from
+ *   `astro:assets`.
  *
  * All fields are `readonly` by project convention: content constants are
  * immutable and components never mutate their props.
  */
-
-/**
- * One visual segment of a typographic brand wordmark (design.md § D7).
- *
- * `accent` marks the segment rendered in the brand secondary/primary color
- * (e.g. "POWOGAZ" after "APATOR"). Segments are joined by a single space when
- * rendered so multi-word wordmarks (e.g. "NITTO SEIKO") stay readable.
- */
-export interface WordmarkSegment {
-  readonly text: string;
-  readonly accent?: boolean;
-}
 
 /**
  * A metric card in the editorial hero (e.g. "05 / Representaciones
@@ -63,16 +54,14 @@ export interface RepresentacionesHeroContent {
 /**
  * A brand card in the "Marcas de Representación Exclusiva" section.
  *
- * The `wordmark` is a typographic placeholder (design.md § D7) held in a
- * `data-brand-logo` container so it can later be replaced by `<Image>`.
+ * The `logo` is a real asset (design.md § D1/D2) rendered with `<Image>` inside
+ * a `data-brand-logo` container; its `alt` is the brand `title`.
  */
 export interface RepresentacionBrand {
   /** Stable id used as the render key. */
   readonly id: string;
-  /** Typographic wordmark segments. */
-  readonly wordmark: readonly WordmarkSegment[];
-  /** Small line under the wordmark, e.g. "Flow Metering Control". */
-  readonly note?: string;
+  /** Real brand logo imported from `@/assets/img/representaciones/`. */
+  readonly logo: ImageMetadata;
   /** Origin chip, e.g. "Polonia / UE". */
   readonly chip: string;
   /** Small caption under the chip, e.g. "Partner Exclusivo desde 2004". */
@@ -96,14 +85,16 @@ export interface RepresentacionBrandsSection {
 /**
  * A distributor card (PIUSI, SENSUS).
  *
- * `wordmark` is a typographic placeholder (design.md § D7); `icon` is a Lucide
- * name (design.md § D6).
+ * `logo` is a real asset (design.md § D1/D2); `name` is the brand name used as
+ * the logo `alt`; `icon` is a Lucide name (design.md § D6).
  */
 export interface Distribuidor {
   readonly id: string;
-  /** Typographic wordmark placeholder, e.g. "PIUSI" or "SENSUS". */
-  readonly wordmark: string;
-  /** Badge next to the wordmark, e.g. "Italia" or "Xylem Brand". */
+  /** Brand name used as the logo `alt`, e.g. "PIUSI" or "SENSUS". */
+  readonly name: string;
+  /** Real distributor logo imported from `@/assets/img/representaciones/`. */
+  readonly logo: ImageMetadata;
+  /** Badge next to the logo, e.g. "Italia" or "Xylem Brand". */
   readonly badge: string;
   /** Lucide icon name, e.g. "lucide:fuel". */
   readonly icon: string;

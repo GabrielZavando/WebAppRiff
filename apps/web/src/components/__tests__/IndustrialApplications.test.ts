@@ -26,9 +26,10 @@ describe('IndustrialApplications', () => {
     expect(html).not.toContain('material-symbols');
   });
 
-  it('renders correct background and border tokens', async () => {
+  it('renders the muted page surface and border tokens', async () => {
     const html = await render();
-    expect(html).toContain('bg-bg');
+    expect(html).toContain('bg-surface-muted');
+    expect(html).not.toMatch(/<section[^>]*class="[^"]*bg-bg/);
     expect(html).toContain('border-border');
   });
 

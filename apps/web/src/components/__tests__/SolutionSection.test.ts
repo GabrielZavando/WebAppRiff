@@ -50,6 +50,14 @@ describe('SolutionSection — structure & outermost section (tasks 2.2, 2.3)', (
     expect(sectionMatch[0]).toMatch(/py-\d+/);
     expect(sectionMatch[0]).toMatch(/md:py-\d+/);
   });
+
+  it('the <section> carries the bg-surface-muted page surface', async () => {
+    const html = await render();
+    const sectionMatch = html.match(/<section[^>]*>/);
+    if (!sectionMatch) throw new Error('section not found');
+    expect(sectionMatch[0]).toContain('bg-surface-muted');
+    expect(sectionMatch[0]).not.toContain('bg-bg');
+  });
 });
 
 describe('SolutionSection — header (tasks 2.4, 2.5, 2.6, 2.7, 2.8)', () => {

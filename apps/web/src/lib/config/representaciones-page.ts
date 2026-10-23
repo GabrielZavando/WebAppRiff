@@ -1,3 +1,10 @@
+import apatorLogo from '@/assets/img/representaciones/apator-logo.png';
+import glFlowLogo from '@/assets/img/representaciones/GL-Flow.webp';
+import ilmapLogo from '@/assets/img/representaciones/Ilmap-logo.webp';
+import nittoSeikoLogo from '@/assets/img/representaciones/nittoseiko-logo.jpg';
+import piusiLogo from '@/assets/img/representaciones/piusi-logo.png';
+import riffMetersLogo from '@/assets/img/representaciones/Riff-meters.png';
+import sensusLogo from '@/assets/img/representaciones/sensus-logo.webp';
 import type { RepresentacionesPageContent } from '@/lib/types/representaciones-page';
 
 /**
@@ -10,9 +17,8 @@ import type { RepresentacionesPageContent } from '@/lib/types/representaciones-p
  *
  * Copy source: `docs/design/components/representaciones/reference.html` and
  * `reference.png` (client mockup). The Stitch/Material colors and typography
- * were remapped to Riff design tokens (design.md § D5). Company logos are
- * typographic wordmark placeholders (design.md § D7) because the real logos
- * were not delivered.
+ * were remapped to Riff design tokens (design.md § D5). Company logos are the
+ * real assets delivered in `src/assets/img/representaciones/` (design.md § D1).
  */
 export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent> =
   {
@@ -54,7 +60,7 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
       brands: [
         {
           id: 'apator-powogaz',
-          wordmark: [{ text: 'APATOR' }, { text: 'POWOGAZ', accent: true }],
+          logo: apatorLogo,
           chip: 'Polonia / UE',
           sublabel: 'Partner Exclusivo desde 2004',
           title: 'Apator Powogaz',
@@ -64,8 +70,7 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
         },
         {
           id: 'riff-flow-metering',
-          wordmark: [{ text: 'RIFF' }],
-          note: 'Flow Metering Control',
+          logo: riffMetersLogo,
           chip: 'Marca Propia / Chile',
           sublabel: 'Desarrollo y Banco Local',
           title: 'RIFF Flow Metering',
@@ -75,8 +80,7 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
         },
         {
           id: 'nitto-seiko',
-          wordmark: [{ text: 'NITTO SEIKO' }],
-          note: 'Precision Metrology',
+          logo: nittoSeikoLogo,
           chip: 'Japón',
           sublabel: 'Distribución Técnica Oficial',
           title: 'Nitto Seiko',
@@ -86,8 +90,7 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
         },
         {
           id: 'gl-sanitaria',
-          wordmark: [{ text: 'GL' }],
-          note: 'Medición Sanitaria',
+          logo: glFlowLogo,
           chip: 'Italia / UE',
           sublabel: 'Representación Directa',
           title: 'GL Sanitaria',
@@ -97,7 +100,7 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
         },
         {
           id: 'ilmap',
-          wordmark: [{ text: 'ILMAP' }],
+          logo: ilmapLogo,
           chip: 'Italia / Industrial',
           sublabel: 'Representante Oficial',
           title: 'ILMAP',
@@ -116,7 +119,8 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
       distributors: [
         {
           id: 'piusi',
-          wordmark: 'PIUSI',
+          name: 'PIUSI',
+          logo: piusiLogo,
           badge: 'Italia',
           icon: 'lucide:fuel',
           title: 'Contadores de Litros y Despacho de Combustibles',
@@ -131,7 +135,8 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
         },
         {
           id: 'sensus',
-          wordmark: 'SENSUS',
+          name: 'SENSUS',
+          logo: sensusLogo,
           badge: 'Xylem Brand',
           icon: 'lucide:radio-tower',
           title: 'Medición Inteligente de Agua y Redes Sanitarias',

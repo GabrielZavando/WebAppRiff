@@ -17,7 +17,7 @@ const { eyebrow, headline, description, solutions } = Astro.props;
   Layout (see design.md § Decisions):
     - The <section> is a flat block (NO negative margin / overlap over the
       PanelHome — design.md Decision 12): `py-16 md:py-24` vertical air and
-      `bg-bg` background separate the section from the panel above.
+      `bg-surface-muted` background separate the section from the panel above.
     - Inner `<div class="container mx-auto px-4 sm:px-6 lg:px-8">` constrains
       content to the same max-width as SearchForm/PanelHome (token `.container`
       in globals.css).
@@ -38,7 +38,7 @@ const { eyebrow, headline, description, solutions } = Astro.props;
       is below the initial fold), processed by astro:assets/sharp (Decision 6).
 -->
 
-<section class="py-16 md:py-24 bg-bg">
+<section class="py-16 md:py-24 bg-surface-muted">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header: eyebrow + headline + teal underline | description -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-12">

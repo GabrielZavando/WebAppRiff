@@ -1,18 +1,17 @@
 ---
+import { Image } from 'astro:assets';
 import type { RepresentacionBrand } from '@/lib/types/representaciones-page';
 
 interface Props extends RepresentacionBrand {}
 
-const { wordmark, note, chip, sublabel, title, category, description } =
-  Astro.props;
+const { logo, chip, sublabel, title, category, description } = Astro.props;
 ---
 
 <!--
   Brand card for the "Marcas de Representación Exclusiva" section
-  (design.md § D4/D7). Left panel (md:w-64) holds the typographic wordmark
-  placeholder inside a `data-brand-logo` container so a future <Image> can
-  replace it without re-laying out the card. Buttons/cards stay flat: bg-white,
-  border-border, no rounded-*, no shadow-*.
+  (design.md § D1/D2/D4). Left panel (md:w-64) holds the real brand logo
+  (astro:assets <Image>, WebP in build) inside a `data-brand-logo` container.
+  Buttons/cards stay flat: bg-white, border-border, no rounded-*, no shadow-*.
 -->
 <article
   data-brand-card
@@ -27,27 +26,14 @@ const { wordmark, note, chip, sublabel, title, category, description } =
     >
       {chip}
     </span>
-    <div class="flex items-center gap-2">
-      {
-        wordmark.map((segment) => (
-          <span
-            class:list={[
-              'font-heading text-2xl font-extrabold tracking-tight',
-              segment.accent ? 'text-primary' : 'text-text',
-            ]}
-          >
-            {segment.text}
-          </span>
-        ))
-      }
-    </div>
-    {
-      note && (
-        <span class="font-body text-xs text-text-2 uppercase mt-1">
-          {note}
-        </span>
-      )
-    }
+    <Image
+      src={logo}
+      alt={title}
+      widths={[128, 256]}
+      sizes="(max-width: 768px) 50vw, 256px"
+      loading="lazy"
+      class="h-auto w-full max-w-[192px] object-contain"
+    />
     <span class="font-body text-xs text-text-2 mt-2">{sublabel}</span>
   </div>
   <div class="flex-1 flex flex-col gap-2">

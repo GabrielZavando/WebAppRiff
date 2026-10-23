@@ -14,10 +14,12 @@ async function render(): Promise<string> {
 }
 
 describe('DistribuidorCard', () => {
-  it('renders wordmark, badge and h3 title', async () => {
+  it('renders the real logo, badge and h3 title', async () => {
     const html = await render();
     expect(html).toContain('data-brand-logo');
-    expect(html).toContain('PIUSI');
+    expect(html).toMatch(/<img[^>]*alt="PIUSI"/);
+    expect(html).toMatch(/<img[^>]*loading="lazy"/);
+    expect(html).toMatch(/<img[^>]*object-contain/);
     expect(html).toContain('Italia');
     expect(html).toMatch(
       /<h3[^>]*>Contadores de Litros y Despacho de Combustibles<\/h3>/,
