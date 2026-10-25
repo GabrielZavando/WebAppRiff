@@ -36,15 +36,20 @@ function stripTags(html: string): string {
  * and the four industry-sector cards with Lucide decorative icons, declared
  * responsive grids, and flat design (no hex, no rounded).
  */
-describe('NosotrosValueProp — section header (SC-204)', () => {
+describe('NosotrosValueProp — section header (SC-204, renamed + relocated intro in web-content-and-ui-polish)', () => {
   it('renders the verbatim eyebrow, h2 and intro paragraph', async () => {
     const html = await render();
     const text = stripTags(html);
     expect(text).toContain('Diferenciación Operativa');
-    expect(html).toMatch(/<h2[^>]*>[\s\S]*?Nuestra Propuesta de Valor/);
+    expect(html).toMatch(/<h2[^>]*>[\s\S]*?¿Qué nos define\?/);
     expect(text).toContain(
-      'Más de tres décadas acumuladas de know-how hidrométrico nos permiten abordar la ingeniería de fluidos no como una simple venta de suministros, sino como una alianza técnica de aseguramiento de continuidad operativa y certidumbre en datos de flujo.',
+      'En RIFF, contamos con un equipo de profesionales con más de 30 años de experiencia en la industria.',
     );
+    expect(text).toContain(
+      'así como de nuestro servicio de postventa, que forma parte integral de nuestra propuesta de valor.',
+    );
+    // The previous intro was replaced by the relocated timeline paragraph.
+    expect(text).not.toContain('Más de tres décadas');
   });
 
   it('renders the side note chip verbatim', async () => {

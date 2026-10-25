@@ -5,7 +5,7 @@ import type { Distribuidor } from '@/lib/types/representaciones-page';
 
 interface Props extends Distribuidor {}
 
-const { name, logo, badge, icon, title, description, bullets, guarantee } =
+const { name, logo, url, badge, icon, title, description, bullets, guarantee } =
   Astro.props;
 ---
 
@@ -13,7 +13,10 @@ const { name, logo, badge, icon, title, description, bullets, guarantee } =
   Authorized distributor card (PIUSI, SENSUS) for the
   "Distribuidores Autorizados" section (design.md § D1/D2/D4/D6). The real
   brand logo (astro:assets <Image>, WebP in build) lives inside a
-  `data-brand-logo` container; the thematic icon is a Lucide name from config
+  `data-brand-logo` container; when the distributor defines `url`
+  (change `web-content-and-ui-polish`), the logo image — and only the image —
+  is wrapped in an external link (`target="_blank"` +
+  `rel="noopener noreferrer"`). The thematic icon is a Lucide name from config
   rendered via astro-icon. The check-list uses a decorative `lucide:check` per
   bullet. Flat: bg-white, border-border, no rounded-*, no shadow-*.
 -->
@@ -24,14 +27,34 @@ const { name, logo, badge, icon, title, description, bullets, guarantee } =
   <div>
     <div class="flex items-center justify-between pb-6 gap-3">
       <div data-brand-logo>
-        <Image
-          src={logo}
-          alt={name}
-          widths={[128, 256]}
-          sizes="(max-width: 1024px) 50vw, 256px"
-          loading="lazy"
-          class="h-auto w-full max-w-[180px] object-contain"
-        />
+        {
+          url ? (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="block w-full max-w-[180px]"
+            >
+              <Image
+                src={logo}
+                alt={name}
+                widths={[128, 256]}
+                sizes="(max-width: 1024px) 50vw, 256px"
+                loading="lazy"
+                class="h-auto w-full max-w-[180px] object-contain"
+              />
+            </a>
+          ) : (
+            <Image
+              src={logo}
+              alt={name}
+              widths={[128, 256]}
+              sizes="(max-width: 1024px) 50vw, 256px"
+              loading="lazy"
+              class="h-auto w-full max-w-[180px] object-contain"
+            />
+          )
+        }
       </div>
       <span
         class="bg-bg text-text-2 font-heading text-xs font-semibold px-3 py-1 uppercase whitespace-nowrap"

@@ -23,10 +23,10 @@ import { SITE_FOOTER_CONTENT } from '@/lib/config/footer';
  *      field names exist and accept the right kinds of values).
  *
  * The deeper behavioural assertions (exact tagline copy, exactly 2 columns
- * SERVICIOS/EMPRESA with 4 links each carrying `href="#"`, 2 schedule
- * entries, copyright/location texts) live in
- * `lib/config/__tests__/footer.test.ts` against `SITE_FOOTER_CONTENT`, the
- * runtime carrier of the contract.
+ * SERVICIOS/EMPRESA with real internal routes — 4 + 3 links since change
+ * `web-content-and-ui-polish`, 2 schedule entries, copyright/location texts)
+ * live in `lib/config/__tests__/footer.test.ts` against `SITE_FOOTER_CONTENT`,
+ * the runtime carrier of the contract.
  *
  * See `design.md` § Decision 4 (social icons reuse the `SocialLink` contract
  * from `top-header`: the footer must NOT define a parallel social type — one
@@ -36,10 +36,10 @@ import { SITE_FOOTER_CONTENT } from '@/lib/config/footer';
  */
 describe('footer.ts types', () => {
   it('FooterLink exposes readonly label and href', () => {
-    const link: FooterLink = { label: 'Nuestra Historia', href: '#' };
+    const link: FooterLink = { label: 'Nuestra Historia', href: '/nosotros#historia' };
 
     expect(link.label).toBe('Nuestra Historia');
-    expect(link.href).toBe('#');
+    expect(link.href).toBe('/nosotros#historia');
 
     expectTypeOf<FooterLink>().toEqualTypeOf<{
       readonly label: string;

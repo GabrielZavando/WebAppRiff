@@ -4,14 +4,18 @@ import type { RepresentacionBrand } from '@/lib/types/representaciones-page';
 
 interface Props extends RepresentacionBrand {}
 
-const { logo, chip, sublabel, title, category, description } = Astro.props;
+const { logo, url, chip, sublabel, title, category, description } = Astro.props;
 ---
 
 <!--
   Brand card for the "Marcas de Representación Exclusiva" section
   (design.md § D1/D2/D4). Left panel (md:w-64) holds the real brand logo
   (astro:assets <Image>, WebP in build) inside a `data-brand-logo` container.
-  Buttons/cards stay flat: bg-white, border-border, no rounded-*, no shadow-*.
+  When the brand defines `url` (change `web-content-and-ui-polish`), the logo
+  image — and only the image — is wrapped in an external link
+  (`target="_blank"` + `rel="noopener noreferrer"`); brands without `url`
+  (GL Flow) render the logo without a link. Buttons/cards stay flat: bg-white,
+  border-border, no rounded-*, no shadow-*.
 -->
 <article
   data-brand-card
@@ -26,14 +30,34 @@ const { logo, chip, sublabel, title, category, description } = Astro.props;
     >
       {chip}
     </span>
-    <Image
-      src={logo}
-      alt={title}
-      widths={[128, 256]}
-      sizes="(max-width: 768px) 50vw, 256px"
-      loading="lazy"
-      class="h-auto w-full max-w-[192px] object-contain"
-    />
+    {
+      url ? (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="block w-full max-w-[192px]"
+        >
+          <Image
+            src={logo}
+            alt={title}
+            widths={[128, 256]}
+            sizes="(max-width: 768px) 50vw, 256px"
+            loading="lazy"
+            class="h-auto w-full max-w-[192px] object-contain"
+          />
+        </a>
+      ) : (
+        <Image
+          src={logo}
+          alt={title}
+          widths={[128, 256]}
+          sizes="(max-width: 768px) 50vw, 256px"
+          loading="lazy"
+          class="h-auto w-full max-w-[192px] object-contain"
+        />
+      )
+    }
     <span class="font-body text-xs text-text-2 mt-2">{sublabel}</span>
   </div>
   <div class="flex-1 flex flex-col gap-2">

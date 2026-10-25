@@ -105,4 +105,37 @@ describe('REPRESENTACIONES_PAGE_CONTENT', () => {
       expect(pillar.description.length).toBeGreaterThan(0);
     }
   });
+
+  describe('brand/distributor url field (change web-content-and-ui-polish)', () => {
+    it('defines url for 6 of the 7 brands/distributors and omits it only for GL Flow (gl-sanitaria)', () => {
+      const expectedUrlById: Record<string, string | undefined> = {
+        'apator-powogaz': 'https://www.apator.com/en',
+        'riff-flow-metering': 'https://riffmeters.com/',
+        'nitto-seiko': 'https://global.nittoseiko.com/',
+        'gl-sanitaria': undefined,
+        ilmap: 'https://ilmap.com/es/',
+        piusi: 'https://www.piusi.com/es/',
+        sensus: 'https://www.sensus-international.com/en',
+      };
+
+      const entries = [
+        ...content.brandsSection.brands,
+        ...content.distributorsSection.distributors,
+      ];
+      expect(entries).toHaveLength(7);
+
+      let withUrl = 0;
+      for (const entry of entries) {
+        expect(Object.hasOwn(expectedUrlById, entry.id)).toBe(true);
+        const expected: string | undefined = expectedUrlById[entry.id];
+        if (expected === undefined) {
+          expect(entry.url).toBeUndefined();
+        } else {
+          expect(entry.url).toBe(expected);
+          withUrl += 1;
+        }
+      }
+      expect(withUrl).toBe(6);
+    });
+  });
 });

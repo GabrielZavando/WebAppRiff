@@ -130,6 +130,15 @@ for (const milestone of milestones) {
                         milestone.description
                       )}
                     </p>
+                    {
+                      milestone.items && (
+                        <ul class="mt-2 list-disc space-y-1 pl-5">
+                          {milestone.items.map((item) => (
+                            <li class={tones.body}>{item}</li>
+                          ))}
+                        </ul>
+                      )
+                    }
                   </div>
                 </div>
                 <div

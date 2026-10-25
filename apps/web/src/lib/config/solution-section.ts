@@ -92,7 +92,9 @@ export const SOLUTIONS_DATA: readonly Solution[] = [
  */
 export const SOLUTION_SECTION_CONTENT: Readonly<SolutionSectionProps> = {
   eyebrow: 'PORTAFOLIO',
-  headline: 'Nuestras Soluciones',
+  // Renamed from "Nuestras Soluciones" per client request
+  // (openspec change `web-content-and-ui-polish`).
+  headline: 'Nuestros Productos',
   description:
     'Sistemas integrales para el control preciso de fluidos y procesos químicos industriales.',
   solutions: SOLUTIONS_DATA,

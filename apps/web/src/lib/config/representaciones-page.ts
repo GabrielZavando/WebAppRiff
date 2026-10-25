@@ -61,6 +61,7 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
         {
           id: 'apator-powogaz',
           logo: apatorLogo,
+          url: 'https://www.apator.com/en',
           chip: 'Polonia / UE',
           sublabel: 'Partner Exclusivo desde 2004',
           title: 'Apator Powogaz',
@@ -71,6 +72,7 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
         {
           id: 'riff-flow-metering',
           logo: riffMetersLogo,
+          url: 'https://riffmeters.com/',
           chip: 'Marca Propia / Chile',
           sublabel: 'Desarrollo y Banco Local',
           title: 'RIFF Flow Metering',
@@ -81,6 +83,7 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
         {
           id: 'nitto-seiko',
           logo: nittoSeikoLogo,
+          url: 'https://global.nittoseiko.com/',
           chip: 'Japón',
           sublabel: 'Distribución Técnica Oficial',
           title: 'Nitto Seiko',
@@ -101,6 +104,7 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
         {
           id: 'ilmap',
           logo: ilmapLogo,
+          url: 'https://ilmap.com/es/',
           chip: 'Italia / Industrial',
           sublabel: 'Representante Oficial',
           title: 'ILMAP',
@@ -121,6 +125,7 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
           id: 'piusi',
           name: 'PIUSI',
           logo: piusiLogo,
+          url: 'https://www.piusi.com/es/',
           badge: 'Italia',
           icon: 'lucide:fuel',
           title: 'Contadores de Litros y Despacho de Combustibles',
@@ -137,6 +142,7 @@ export const REPRESENTACIONES_PAGE_CONTENT: Readonly<RepresentacionesPageContent
           id: 'sensus',
           name: 'SENSUS',
           logo: sensusLogo,
+          url: 'https://www.sensus-international.com/en',
           badge: 'Xylem Brand',
           icon: 'lucide:radio-tower',
           title: 'Medición Inteligente de Agua y Redes Sanitarias',

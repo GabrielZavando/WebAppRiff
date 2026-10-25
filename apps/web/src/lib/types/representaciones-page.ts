@@ -72,6 +72,13 @@ export interface RepresentacionBrand {
   readonly category: string;
   /** Descriptive paragraph. */
   readonly description: string;
+  /**
+   * Optional manufacturer website (change `web-content-and-ui-polish`). When
+   * defined, the brand logo is wrapped in an external link (`target="_blank"`
+   * + `rel="noopener noreferrer"`); when absent (GL Flow), the logo renders
+   * without a link.
+   */
+  readonly url?: string;
 }
 
 /** Section content for the brand cards. */
@@ -106,6 +113,12 @@ export interface Distribuidor {
   readonly bullets: readonly string[];
   /** Guarantee legend at the card foot, e.g. "Garantía Oficial PIUSI Italia". */
   readonly guarantee: string;
+  /**
+   * Optional manufacturer website (change `web-content-and-ui-polish`). When
+   * defined, the distributor logo is wrapped in an external link
+   * (`target="_blank"` + `rel="noopener noreferrer"`).
+   */
+  readonly url?: string;
 }
 
 /** Section content for the authorized distributors. */

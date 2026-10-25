@@ -10,9 +10,9 @@ describe('SOLUTION_SECTION_CONTENT', () => {
     expect(SOLUTION_SECTION_CONTENT.solutions).toHaveLength(4);
   });
 
-  it('eyebrow === "PORTAFOLIO", headline === "Nuestras Soluciones", description is non-empty (task 1.4)', () => {
+  it('eyebrow === "PORTAFOLIO", headline === "Nuestros Productos" (renamed, change web-content-and-ui-polish), description is non-empty', () => {
     expect(SOLUTION_SECTION_CONTENT.eyebrow).toBe('PORTAFOLIO');
-    expect(SOLUTION_SECTION_CONTENT.headline).toBe('Nuestras Soluciones');
+    expect(SOLUTION_SECTION_CONTENT.headline).toBe('Nuestros Productos');
     expect(typeof SOLUTION_SECTION_CONTENT.description).toBe('string');
     expect(SOLUTION_SECTION_CONTENT.description.length).toBeGreaterThan(0);
   });

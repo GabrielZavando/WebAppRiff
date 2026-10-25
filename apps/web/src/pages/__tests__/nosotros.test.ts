@@ -71,15 +71,16 @@ describe('Nosotros page — main renders the six sections (SC-109, SC-201 … SC
     expect(text).toContain('RIFF');
   });
 
-  it('renders the #historia anchor target with the five milestone years (SC-203)', async () => {
+  it('renders the #historia anchor target with the four approved milestone years (SC-203, web-content-and-ui-polish)', async () => {
     const clean = stripComments(await render());
     expect(clean).toMatch(/<[^>]+id="historia"/);
     const text = stripTags(clean);
     expect(text).toContain('AÑO 1979');
-    expect(text).toContain('AÑO 2012');
     expect(text).toContain('AÑO 2013');
     expect(text).toContain('AÑO 2018');
     expect(text).toContain('DICIEMBRE 2024');
+    // The 2012 milestone was removed in change `web-content-and-ui-polish`.
+    expect(text).not.toContain('AÑO 2012');
   });
 
   it('renders MISIÓN / VISIÓN, the eight team members and the clients carousel (SC-204 … SC-207)', async () => {

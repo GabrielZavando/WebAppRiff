@@ -32,11 +32,12 @@ function stripTags(html: string): string {
 
 /**
  * Behavioural contract for `NosotrosTimeline.astro` (change `nosotros-page`,
- * SC-203): the section carries the `#historia` anchor the hero CTA points
- * to, renders the verbatim header and the five milestones (years, badges,
- * titles and side notes), keeps the numeric markers desktop-only
- * (`hidden lg:*`), uses a single badge tone and omits the central rail, and
- * stays flat (no hex, no rounded).
+ * SC-203; milestones updated in change `web-content-and-ui-polish`): the
+ * section carries the `#historia` anchor the hero CTA points to, renders the
+ * verbatim header and the four approved milestones (years, badges, titles and
+ * side notes), keeps the numeric markers desktop-only (`hidden lg:*`), uses a
+ * single badge tone and omits the central rail, and stays flat (no hex, no
+ * rounded).
  */
 describe('NosotrosTimeline — section anchor and header (SC-203, SC-208)', () => {
   it('renders the #historia anchor on the outermost section', async () => {
@@ -57,8 +58,8 @@ describe('NosotrosTimeline — section anchor and header (SC-203, SC-208)', () =
   });
 });
 
-describe('NosotrosTimeline — five milestones (SC-203)', () => {
-  it('renders the 5 badges and years in chronological order', async () => {
+describe('NosotrosTimeline — four approved milestones (SC-203, web-content-and-ui-polish)', () => {
+  it('renders the 4 badges and years in chronological order', async () => {
     const html = await render();
     for (const milestone of baseProps.milestones) {
       expect(stripTags(html)).toContain(milestone.badge);
@@ -69,34 +70,61 @@ describe('NosotrosTimeline — five milestones (SC-203)', () => {
     const lastIndex = html.indexOf(badges[badges.length - 1] ?? 'DICIEMBRE 2024');
     expect(firstIndex).toBeGreaterThan(-1);
     expect(lastIndex).toBeGreaterThan(firstIndex);
+    // The 2012 milestone is gone from the approved narrative.
+    const text = stripTags(html);
+    expect(text).not.toContain('Consolidación & Continuidad Familiar');
+    expect(text).not.toContain('AÑO 2012');
   });
 
   it('renders every milestone title and body verbatim', async () => {
     const html = await render();
     const text = stripTags(html);
-    expect(text).toContain('Fundación: Aguas Purificadas Ltda.');
-    expect(text).toContain('Consolidación & Continuidad Familiar');
+    expect(text).toContain('Nuestro Origen');
     expect(text).toContain('Nace Aguapur Medición');
-    expect(text).toContain('Surgimiento de la Línea RIFF');
-    expect(text).toContain('Evolución Integral: RIFF SpA');
+    expect(text).toContain('El Nacimiento de RIFF');
+    expect(text).toContain('La Evolución hacia RIFF');
     expect(text).toContain(
-      'Patricio Barrientos Morales funda la compañía pionera orientada al diseño y fabricación de los primeros sistemas industriales de purificación y filtración de aguas complejas en la zona central de Chile.',
+      'En 1979, comienza nuestra historia con la creación de Aguas Purificadas Ltda., fundada por el Sr. Patricio Barrientos Morales.',
     );
+    expect(text).toContain(
+      'En diciembre de 2024, damos un paso significativo en nuestra trayectoria con la transformación de Aguapur Medición en RIFF.',
+    );
+    // The relocated "En RIFF, contamos…" paragraph does not live in the
+    // timeline (change `web-content-and-ui-polish`, post-apply fix).
+    expect(text).not.toContain('En RIFF, contamos');
   });
 
-  it('wraps the highlighted "RIFF SpA" of the 2024 milestone in a <strong>', async () => {
+  it('renders the 2024 offer as a two-item bullet list inside the dark card', async () => {
     const html = await render();
-    expect(html).toMatch(/<strong[^>]*>RIFF SpA<\/strong>/);
+    // Exactly one list in the section, with exactly two items.
+    const list = html.match(/<ul[\s\S]*?<\/ul>/)?.[0] ?? '';
+    expect(list).not.toBe('');
+    const items = list.match(/<li[\s\S]*?<\/li>/g) ?? [];
+    expect(items).toHaveLength(2);
+    expect(stripTags(items[0] ?? '')).toBe(
+      'Equipos y Suministros para Tratamiento de Agua.',
+    );
+    expect(stripTags(items[1] ?? '')).toBe(
+      'Desarrollo de Productos Químicos.',
+    );
+    // The list inherits the dark-card body tone (text-primary-light).
+    expect(list).toContain('text-primary-light');
   });
 
-  it('renders the five side notes verbatim, starting with "Hito Clave"', async () => {
+  it('wraps the highlighted "RIFF" of the 2024 milestone in a <strong>', async () => {
+    const html = await render();
+    expect(html).toMatch(/<strong[^>]*>RIFF<\/strong>/);
+    expect(html).not.toMatch(/<strong[^>]*>RIFF SpA<\/strong>/);
+  });
+
+  it('renders the four side notes verbatim, starting with "Hito Clave"', async () => {
     const html = await render();
     const text = stripTags(html);
     expect(text).toContain('Hito Clave');
     expect(text).toContain(
       'Inicio de la fabricación artesanal e industrial de sistemas para remoción físico-química y clarificación de aguas de pozo.',
     );
-    expect(text).toContain('Evolución Estratégica');
+    expect(text).not.toContain('Evolución Estratégica');
     expect(text).toContain('Hito de Especialización');
     expect(text).toContain('Salto Tecnológico');
     expect(text).toContain('Capacidad Actual');
@@ -105,9 +133,9 @@ describe('NosotrosTimeline — five milestones (SC-203)', () => {
     );
   });
 
-  it('renders exactly 5 side notes and 5 milestone headings', async () => {
+  it('renders exactly 4 side notes and 4 milestone headings', async () => {
     const html = await render();
-    expect(html.match(/<h3[\s\S]*?<\/h3>/g) ?? []).toHaveLength(5);
+    expect(html.match(/<h3[\s\S]*?<\/h3>/g) ?? []).toHaveLength(4);
   });
 });
 
@@ -121,14 +149,14 @@ describe('NosotrosTimeline — desktop-only markers without central rail (SC-211
   it('hides the numeric markers outside desktop (hidden lg:flex)', async () => {
     const html = await render();
     const markers = html.match(/<div[^>]*hidden lg:flex[^>]*>/g) ?? [];
-    expect(markers).toHaveLength(5);
+    expect(markers).toHaveLength(4);
   });
 
   it('renders every numeric marker with the same bg-primary-deep surface', async () => {
     const html = await render();
     const numericMarkers =
       html.match(/<div class="[^"]*h-10 w-10[^"]*"[^>]*>[\s\S]*?<\/div>/g) ?? [];
-    expect(numericMarkers).toHaveLength(4);
+    expect(numericMarkers).toHaveLength(3);
     for (const marker of numericMarkers) {
       expect(marker).toContain('bg-primary-deep');
       expect(marker).toContain('text-white');
@@ -136,13 +164,13 @@ describe('NosotrosTimeline — desktop-only markers without central rail (SC-211
     }
   });
 
-  it('renders the numeric markers 01..04 and the star marker for the last milestone', async () => {
+  it('renders the numeric markers 01..03 and the star marker for the last milestone', async () => {
     const html = await render();
     const text = stripTags(html);
     expect(text).toContain('01');
     expect(text).toContain('02');
     expect(text).toContain('03');
-    expect(text).toContain('04');
+    expect(text).not.toContain('04');
     expect(html).toContain('lucide:star');
     expect(html).toContain('aria-hidden="true"');
   });

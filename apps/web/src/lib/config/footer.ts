@@ -13,8 +13,11 @@ import { getSocialLinks } from '@/lib/types/top-header';
  *
  * Copy source: `docs/design/components/Footer.png` (mockup delivered by the
  * client, 2026-08-10) — see design.md § Decisions 5/10:
- * - SERVICIOS/EMPRESA link columns use placeholder `href="#"` (client
- *   decision): real routes are a future navigation change;
+ * - SERVICIOS/EMPRESA link columns carried placeholder `href="#"` until change
+ *   `web-content-and-ui-polish` (2026-10-24) pointed them at the real internal
+ *   routes: SERVICIOS → the four `/servicios#<slug>` field-service anchors
+ *   (slugs 1:1 with `SERVICIOS_FIELD_SECTION`) and EMPRESA → real pages; the
+ *   "Proyectos de Éxito" link was removed (no destination page);
  * - SERVICIOS labels updated 2026-08-14 to the real service offering
  *   (see openspec change `footer-credits-scrollbar` § Decision 3);
  * - schedule rows are label/value pairs rendered as a `<dl>`, with the
@@ -57,19 +60,27 @@ export const SITE_FOOTER_CONTENT: Readonly<SiteFooterProps> = {
     {
       title: 'SERVICIOS',
       links: [
-        { label: 'Medición en Edificios', href: '#' },
-        { label: 'Medición Industrial', href: '#' },
-        { label: 'Obras y Proyectos', href: '#' },
-        { label: 'Tratamiento de Agua y Desalinización', href: '#' },
+        // Slugs 1:1 with `SERVICIOS_FIELD_SECTION` in `services-page.ts`, so
+        // each link deep-links to its card anchor on /servicios (change
+        // `web-content-and-ui-polish` replaced the former `href="#"`
+        // placeholders).
+        { label: 'Medición en Edificios', href: '/servicios#medicion-en-edificios' },
+        { label: 'Medición Industrial', href: '/servicios#medicion-industrial' },
+        { label: 'Obras y Proyectos', href: '/servicios#obras-y-proyectos' },
+        {
+          label: 'Tratamiento de Agua y Desalinización',
+          href: '/servicios#tratamiento-de-agua',
+        },
       ],
     },
     {
       title: 'EMPRESA',
       links: [
-        { label: 'Nuestra Historia', href: '#' },
-        { label: 'Representaciones', href: '#' },
-        { label: 'Proyectos de Éxito', href: '#' },
-        { label: 'Contacto Directo', href: '#' },
+        // "Proyectos de Éxito" was removed (no destination page exists;
+        // user decision 2026-10-24, change `web-content-and-ui-polish`).
+        { label: 'Nuestra Historia', href: '/nosotros#historia' },
+        { label: 'Representaciones', href: '/representaciones' },
+        { label: 'Contacto Directo', href: '/contacto' },
       ],
     },
   ],

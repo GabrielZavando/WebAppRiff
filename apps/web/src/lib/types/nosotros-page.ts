@@ -93,6 +93,11 @@ export interface TimelineMilestone {
   readonly title: string;
   /** Milestone body copy (verbatim). */
   readonly description: string;
+  /**
+   * Optional bullet list rendered after `description` (e.g. the December
+   * 2024 offer list added in change `web-content-and-ui-polish`).
+   */
+  readonly items?: readonly string[];
   /** Label of the adjacent note box, e.g. "Hito Clave". */
   readonly noteLabel: string;
   /** Body copy of the adjacent note box (verbatim). */
