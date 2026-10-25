@@ -3,12 +3,14 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import DistribuidorCard from '@/components/DistribuidorCard.astro';
 import { REPRESENTACIONES_PAGE_CONTENT } from '@/lib/config/representaciones-page';
 
-const piusi = REPRESENTACIONES_PAGE_CONTENT.distributorsSection.distributors[0]!;
+const distributors =
+  REPRESENTACIONES_PAGE_CONTENT.distributorsSection.distributors;
+const piusi = distributors[0]!;
 
-async function render(): Promise<string> {
+async function render(distributor = piusi): Promise<string> {
   const container = await AstroContainer.create();
   const html = await container.renderToString(DistribuidorCard, {
-    props: { ...piusi },
+    props: { ...distributor },
   });
   return html.replace(/<!--[\s\S]*?-->/g, '');
 }
@@ -49,5 +51,34 @@ describe('DistribuidorCard', () => {
     const html = await render();
     expect(html).not.toMatch(/class="[^"]*\brounded/);
     expect(html).not.toMatch(/class="[^"]*\bshadow/);
+  });
+
+  describe('clickable distributor logo (change web-content-and-ui-polish)', () => {
+    function logoSegment(html: string): string {
+      return html.match(/<div[^>]*data-brand-logo[^>]*>[\s\S]*?<\/div>/)?.[0] ?? '';
+    }
+
+    it('wraps the logos of distributors with url in an external link around only the image', async () => {
+      for (const distributor of distributors) {
+        const html = await render(distributor);
+        const segment = logoSegment(html);
+        expect(segment).toContain('data-brand-logo');
+        const escapedUrl = distributor.url!.replace(/[/.]/g, '\\$&');
+        expect(segment).toMatch(
+          new RegExp(
+            `<a\\s[^>]*href="${escapedUrl}"[^>]*target="_blank"[^>]*rel="noopener noreferrer"[^>]*>\\s*<img`,
+          ),
+        );
+        expect(segment.match(/<a[\s>]/g) ?? []).toHaveLength(1);
+      }
+    });
+
+    it('renders the logo of a distributor without url with no link', async () => {
+      const html = await render({ ...piusi, url: undefined });
+      const segment = logoSegment(html);
+      expect(segment).toContain('data-brand-logo');
+      expect(segment).not.toMatch(/<a[\s>]/);
+      expect(segment).toMatch(/<img[^>]*alt="PIUSI"/);
+    });
   });
 });

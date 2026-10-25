@@ -15,9 +15,11 @@ import type { SocialNetworkName } from '@/lib/types/top-header';
  * `docs/design/components/Footer.png`:
  * - exact tagline copy ("Innovación tecnológica en la gestión de fluidos
  *   desde 1979."),
- * - exactly 2 link columns titled SERVICIOS and EMPRESA, each with the 4
- *   mockup links, all carrying the placeholder `href="#"` (client decision,
- *   design.md § Decision 5),
+ * - exactly 2 link columns titled SERVICIOS and EMPRESA with real internal
+ *   routes (change `web-content-and-ui-polish`): SERVICIOS deep-links to the
+ *   four `/servicios#<slug>` field-service anchors (slugs 1:1 with
+ *   `SERVICIOS_FIELD_SECTION`) and EMPRESA carries 3 internal links
+ *   ("Proyectos de Éxito" was removed — no destination page exists),
  * - 2 schedule rows with the mockup day ranges/hours,
  * - the 24/7 support note,
  * - the copyright and location texts rendered in the bottom bar.
@@ -56,21 +58,41 @@ describe('SITE_FOOTER_CONTENT', () => {
     ]);
   });
 
-  it('EMPRESA renders the 4 mockup links', () => {
-    const labels = SITE_FOOTER_CONTENT.columns[1]?.links.map((l) => l.label);
-    expect(labels).toEqual([
+  it('EMPRESA renders the 3 real internal links (Proyectos de Éxito removed)', () => {
+    const links = SITE_FOOTER_CONTENT.columns[1]?.links ?? [];
+    expect(links.map((l) => l.label)).toEqual([
       'Nuestra Historia',
       'Representaciones',
-      'Proyectos de Éxito',
       'Contacto Directo',
+    ]);
+    expect(links.map((l) => l.href)).toEqual([
+      '/nosotros#historia',
+      '/representaciones',
+      '/contacto',
+    ]);
+    // "Proyectos de Éxito" has no destination page: it must not come back.
+    expect(
+      links.some((l) => l.label === 'Proyectos de Éxito'),
+    ).toBe(false);
+  });
+
+  it('SERVICIOS deep-links to the four /servicios field-service anchors (slugs 1:1 with SERVICIOS_FIELD_SECTION)', () => {
+    const links = SITE_FOOTER_CONTENT.columns[0]?.links ?? [];
+    expect(links.map((l) => l.href)).toEqual([
+      '/servicios#medicion-en-edificios',
+      '/servicios#medicion-industrial',
+      '/servicios#obras-y-proyectos',
+      '/servicios#tratamiento-de-agua',
     ]);
   });
 
-  it('every column link carries the placeholder href="#" (design.md Decision 5)', () => {
+  it('every column link carries a real internal route (no placeholder href="#")', () => {
     for (const column of SITE_FOOTER_CONTENT.columns) {
-      expect(column.links).toHaveLength(4);
+      const expectedLength = column.title === 'EMPRESA' ? 3 : 4;
+      expect(column.links).toHaveLength(expectedLength);
       for (const link of column.links) {
-        expect(link.href).toBe('#');
+        expect(link.href).not.toBe('#');
+        expect(link.href.startsWith('/')).toBe(true);
       }
     }
   });

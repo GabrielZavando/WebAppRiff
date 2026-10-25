@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import WhatsAppButton from '@/components/WhatsAppButton.astro';
 
@@ -108,5 +109,56 @@ describe('WhatsAppButton — icon-only (SC-007, SC-008)', () => {
     expect(svg).not.toBe('');
     expect(svg).toContain('data-icon="simple-icons:whatsapp"');
     expect(svg).toContain('aria-hidden="true"');
+  });
+
+  describe('WhatsAppButton — increased FAB size (SC-009, change web-content-and-ui-polish)', () => {
+    it('renders the 56x56 FAB (h-14 w-14) with a 28px icon (h-7 w-7)', async () => {
+      const { tag, html } = getAnchor(await render());
+      expect(tag).toContain('h-14');
+      expect(tag).toContain('w-14');
+      expect(tag).not.toMatch(/h-12|w-12/);
+      const svg = html.match(/<svg[\s\S]*?<\/svg>/)?.[0] ?? '';
+      expect(svg).toContain('h-7');
+      expect(svg).toContain('w-7');
+      expect(svg).not.toMatch(/h-6|w-6/);
+    });
+  });
+
+  describe('WhatsAppButton — attention pulse (pure CSS, change web-content-and-ui-polish)', () => {
+    const COMPONENT_PATH = new URL('../WhatsAppButton.astro', import.meta.url);
+
+    function readComponentSource(): string {
+      return readFileSync(COMPONENT_PATH, 'utf-8');
+    }
+
+    it('declares a subtle infinite scale pulse as pure CSS (no script)', () => {
+      const source = readComponentSource();
+      expect(source).toMatch(/@keyframes\s+whatsapp-fab-pulse/);
+      expect(source).toMatch(
+        /animation:[^;]*whatsapp-fab-pulse[^;]*infinite/,
+      );
+      // 100% CSS: the component ships no runtime animation script.
+      expect(source).not.toMatch(/<script/);
+    });
+
+    it('animates only transform and opacity (GPU-friendly)', () => {
+      const source = readComponentSource();
+      const keyframes =
+        source.match(
+          /@keyframes\s+whatsapp-fab-pulse\s*\{([\s\S]*?)\}\s*\}/,
+        )?.[1] ?? '';
+      expect(keyframes).not.toBe('');
+      expect(keyframes).toMatch(/transform:\s*scale/);
+      // No layout-affecting properties inside the keyframes.
+      expect(keyframes).not.toMatch(
+        /(width|height|top|left|right|bottom|margin|padding)\s*:/,
+      );
+    });
+
+    it('disables the pulse under prefers-reduced-motion: reduce', () => {
+      const source = readComponentSource();
+      expect(source).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+      expect(source).toMatch(/animation:\s*none/);
+    });
   });
 });

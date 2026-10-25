@@ -171,7 +171,7 @@ describe('Footer — SERVICIOS & EMPRESA link columns', () => {
     expect(pMatch[0]).toContain('font-heading');
   });
 
-  it('renders the 8 configured links with placeholder href="#"', async () => {
+  it('renders the configured column links with their real internal routes', async () => {
     const anchors = getAnchors(await render());
     const linkTexts = SITE_FOOTER_CONTENT.columns.flatMap((c) =>
       c.links.map((l) => l.label),
@@ -179,11 +179,24 @@ describe('Footer — SERVICIOS & EMPRESA link columns', () => {
     // Filter anchors that are social links (they have aria-label) — link
     // column anchors are the plain ones.
     const columnAnchors = anchors.filter((a) => !a.tag.includes('aria-label'));
-    expect(columnAnchors).toHaveLength(8);
+    // 4 SERVICIOS links + 3 EMPRESA links (change web-content-and-ui-polish).
+    expect(columnAnchors).toHaveLength(7);
     for (const anchor of columnAnchors) {
-      expect(anchor.tag).toContain('href="#"');
       expect(linkTexts).toContain(anchor.text);
+      expect(anchor.tag).not.toContain('href="#"');
     }
+    // Every rendered column anchor matches a configured real route.
+    const configuredHrefs = SITE_FOOTER_CONTENT.columns.flatMap(
+      (c) => c.links.map((l) => l.href),
+    );
+    for (const anchor of columnAnchors) {
+      const href = anchor.tag.match(/href="([^"]+)"/)?.[1] ?? '';
+      expect(configuredHrefs).toContain(href);
+    }
+    // "Proyectos de Éxito" (removed: no destination page) must not render.
+    expect(
+      columnAnchors.some((a) => a.text === 'Proyectos de Éxito'),
+    ).toBe(false);
   });
 });
 

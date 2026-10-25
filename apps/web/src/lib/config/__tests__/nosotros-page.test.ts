@@ -116,7 +116,7 @@ describe('hero copy and CTAs (SC-201, SC-202)', () => {
   });
 });
 
-describe('timeline: five milestones with verbatim copy (SC-203)', () => {
+describe('timeline: four approved milestones with verbatim copy (SC-203, change web-content-and-ui-polish)', () => {
   it('section header copy is verbatim', () => {
     expect(content.timeline.eyebrow).toBe('Cronología y Legado');
     expect(content.timeline.title).toBe(
@@ -127,43 +127,43 @@ describe('timeline: five milestones with verbatim copy (SC-203)', () => {
     );
   });
 
-  it('has exactly the 5 milestones in chronological order with their years and badges', () => {
-    expect(content.timeline.milestones).toHaveLength(5);
+  it('has exactly the 4 approved milestones in chronological order with their years, badges and tones', () => {
+    expect(content.timeline.milestones).toHaveLength(4);
     expect(content.timeline.milestones.map((m) => m.year)).toEqual([
       '1979',
-      '2012',
       '2013',
       '2018',
       'DICIEMBRE 2024',
     ]);
     expect(content.timeline.milestones.map((m) => m.badge)).toEqual([
       'AÑO 1979',
-      'AÑO 2012',
       'AÑO 2013',
       'AÑO 2018',
       'DICIEMBRE 2024',
     ]);
     expect(content.timeline.milestones.map((m) => m.tone)).toEqual([
       'primary',
-      'secondary',
       'primary',
       'accent',
       'dark',
     ]);
+    // The 2012 milestone is gone from the approved narrative.
+    const serialized = JSON.stringify(content.timeline.milestones);
+    expect(serialized).not.toContain('Consolidación & Continuidad Familiar');
+    expect(serialized).not.toContain('AÑO 2012');
   });
 
-  it('milestone titles are verbatim', () => {
+  it('milestone titles are the approved ones verbatim', () => {
     const titles = content.timeline.milestones.map((m) => m.title);
     expect(titles).toEqual([
-      'Fundación: Aguas Purificadas Ltda.',
-      'Consolidación & Continuidad Familiar',
+      'Nuestro Origen',
       'Nace Aguapur Medición',
-      'Surgimiento de la Línea RIFF',
-      'Evolución Integral: RIFF SpA',
+      'El Nacimiento de RIFF',
+      'La Evolución hacia RIFF',
     ]);
   });
 
-  it('milestone side notes are verbatim', () => {
+  it('milestone side notes are preserved for the surviving milestones', () => {
     const notes = content.timeline.milestones.map((m) => [
       m.noteLabel,
       m.noteText,
@@ -172,10 +172,6 @@ describe('timeline: five milestones with verbatim copy (SC-203)', () => {
       [
         'Hito Clave',
         'Inicio de la fabricación artesanal e industrial de sistemas para remoción físico-química y clarificación de aguas de pozo.',
-      ],
-      [
-        'Evolución Estratégica',
-        'Alineamiento técnico ante el aumento sostenido del estrés hídrico industrial y la demanda de control de pérdidas.',
       ],
       [
         'Hito de Especialización',
@@ -192,26 +188,53 @@ describe('timeline: five milestones with verbatim copy (SC-203)', () => {
     ]);
   });
 
-  it('first and last milestone bodies are verbatim; the 2024 one highlights "RIFF SpA"', () => {
+  it('the 1979 body is the approved copy verbatim', () => {
     expect(content.timeline.milestones[0]?.description).toBe(
-      'Patricio Barrientos Morales funda la compañía pionera orientada al diseño y fabricación de los primeros sistemas industriales de purificación y filtración de aguas complejas en la zona central de Chile.',
+      'En 1979, comienza nuestra historia con la creación de Aguas Purificadas Ltda., fundada por el Sr. Patricio Barrientos Morales. Esta empresa nació con el propósito de desarrollar equipos para el tratamiento de agua. Con el tiempo, se posicionó como un actor clave en el mercado, ampliando su alcance para incluir la medición de flujos y el manejo del vapor, ofreciendo tanto servicios como productos especializados. Tras más de tres décadas de crecimiento, el legado continuó en 2012 con la siguiente generación: sus hijos, quienes establecieron empresas independientes que mantienen el mismo compromiso con la excelencia y el profesionalismo que caracterizó a su fundador.',
     );
-    const last = content.timeline.milestones[4];
-    expect(last?.description).toBe(
-      'Consolidación definitiva de Aguapur Medición y su portafolio bajo una identidad corporativa unificada: RIFF SpA. Una sola entidad matriz con mayor solvencia técnica, stock permanente y soporte de clase mundial.',
-    );
-    expect(last?.highlight).toBe('RIFF SpA');
     expect(content.timeline.milestones[0]).not.toHaveProperty('highlight');
+  });
+
+  it('the 2013 and 2018 bodies are the approved copy verbatim', () => {
+    expect(content.timeline.milestones[1]?.description).toBe(
+      'En 2013, Ruby Barrientos Periale, la única hija del Sr. Patricio Barrientos, junto a su esposo Felipe Román Araya, fundó Aguapur Medición. Desde su inicio, esta compañía se especializó en ofrecer soluciones industriales para la medición de todo tipo de fluidos y proyectos de tratamiento de agua. Con una visión clara y un enfoque en la calidad, Aguapur Medición logró consolidarse como una empresa confiable en la industria.',
+    );
+    expect(content.timeline.milestones[2]?.description).toBe(
+      'En 2018, RIFF nace como una línea de negocio dentro de Aguapur Medición, enfocada en la fabricación y comercialización de flujómetros. Con el tiempo, esta marca fue ganando reconocimiento y ampliando su alcance, sentando las bases para convertirse en el eje central de nuestra oferta de soluciones.',
+    );
+    expect(content.timeline.milestones[1]).not.toHaveProperty('highlight');
+    expect(content.timeline.milestones[2]).not.toHaveProperty('highlight');
+  });
+
+  it('the 2024 body is the approved copy verbatim, ends before the list and highlights "RIFF"', () => {
+    const last = content.timeline.milestones[3];
+    expect(last?.description).toBe(
+      'En diciembre de 2024, damos un paso significativo en nuestra trayectoria con la transformación de Aguapur Medición en RIFF. Este cambio de nombre simboliza nuestra evolución, reflejando no solo nuestra amplia experiencia, sino también nuestro compromiso con la innovación y la mejora continua. Bajo la marca RIFF, continuaremos brindando soluciones de medición y control de fluidos de alta calidad, al tiempo que expandimos nuestra oferta para incluir:',
+    );
+    // The closing offer list renders as a two-item bullet list.
+    expect(last?.items).toEqual([
+      'Equipos y Suministros para Tratamiento de Agua.',
+      'Desarrollo de Productos Químicos.',
+    ]);
+    // The relocated "En RIFF, contamos…" paragraph must not live in the
+    // timeline (it moved to the value-proposition intro).
+    expect(last?.description).not.toContain('En RIFF, contamos');
+    expect(last?.description).not.toContain('más de 30 años');
+    // The dark card keeps its <strong> accent on "RIFF" (the approved text
+    // no longer contains the old "RIFF SpA" substring).
+    expect(last?.highlight).toBe('RIFF');
   });
 });
 
-describe('value proposition: 4 pillars + 4 sectors (SC-204)', () => {
+describe('value proposition: 4 pillars + 4 sectors (SC-204, renamed + relocated intro in web-content-and-ui-polish)', () => {
   it('section header copy and side note are verbatim', () => {
     expect(content.value.eyebrow).toBe('Diferenciación Operativa');
-    expect(content.value.title).toBe('Nuestra Propuesta de Valor');
+    expect(content.value.title).toBe('¿Qué nos define?');
     expect(content.value.description).toBe(
-      'Más de tres décadas acumuladas de know-how hidrométrico nos permiten abordar la ingeniería de fluidos no como una simple venta de suministros, sino como una alianza técnica de aseguramiento de continuidad operativa y certidumbre en datos de flujo.',
+      'En RIFF, contamos con un equipo de profesionales con más de 30 años de experiencia en la industria. Esto nos permite ofrecer a nuestros clientes las mejores soluciones técnicas, respaldadas por equipos y materiales de empresas líderes globales, representadas en exclusiva por nosotros en Chile. Nuestra calidad nos ha permitido captar y mantener como clientes a una parte importante de las principales compañías industriales del país, incluidas las de los sectores minero, alimenticio y rural. Estas industrias se benefician constantemente de la durabilidad, eficiencia y calidad de los productos que suministramos, así como de nuestro servicio de postventa, que forma parte integral de nuestra propuesta de valor.',
     );
+    // The previous intro was replaced by the relocated timeline paragraph.
+    expect(content.value.description).not.toContain('Más de tres décadas');
     expect(content.value.sideNote).toBe(
       'Arquitectura de Procesos & Metrología Certificada',
     );

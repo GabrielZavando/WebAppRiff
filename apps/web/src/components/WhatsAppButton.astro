@@ -28,14 +28,48 @@ const { phone } = Astro.props;
      - Colors use the design tokens `bg-whatsapp` / `hover:bg-whatsapp-dark`
        (declared in task 5.3) — no raw hex in the markup.
      - `simple-icons:whatsapp` is the second documented icon-set exception:
-       Lucide provides no WhatsApp brand icon; precedent: `simple-icons:x`
-       (see docs/design/style-guide/README.md). -->
+        Lucide provides no WhatsApp brand icon; precedent: `simple-icons:x`
+        (see docs/design/style-guide/README.md).
+     - Attention pulse (change `web-content-and-ui-polish`): a subtle infinite
+        CSS-only scale pulse (see `<style>` below) grabs attention without
+        JavaScript; it only animates GPU-friendly `transform`/`opacity` and is
+        fully disabled under `prefers-reduced-motion: reduce` (same pattern as
+        NosotrosClientsCarousel.astro). -->
 <a
   href={`https://wa.me/${phone.replace(/\D/g, '')}`}
   target="_blank"
   rel="noopener noreferrer"
   aria-label="Contactar por WhatsApp"
-  class="fixed bottom-6 right-6 z-20 flex h-12 w-12 items-center justify-center bg-whatsapp transition-colors hover:bg-whatsapp-dark"
+  class="whatsapp-fab fixed bottom-6 right-6 z-20 flex h-14 w-14 items-center justify-center bg-whatsapp transition-colors hover:bg-whatsapp-dark"
 >
-  <Icon name="simple-icons:whatsapp" class="h-6 w-6" aria-hidden="true" />
+  <Icon name="simple-icons:whatsapp" class="h-7 w-7" aria-hidden="true" />
 </a>
+
+<style>
+  /*
+   * Subtle infinite attention pulse (scale only — transform/opacity are
+   * GPU-composited and never affect layout, the fixed position or the
+   * z-index). Cycle is slow (~2s) so it reads as a gentle breathing effect.
+   */
+  .whatsapp-fab {
+    animation: whatsapp-fab-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes whatsapp-fab-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.08);
+      opacity: 0.85;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .whatsapp-fab {
+      animation: none;
+    }
+  }
+</style>

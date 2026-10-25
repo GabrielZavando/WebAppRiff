@@ -75,7 +75,11 @@ export const NOSOTROS_PAGE_CONTENT: Readonly<NosotrosPageContent> = {
     imageCaptionRight: 'Norma ISO 9001:2015',
   },
 
-  /* Sección 2 — Línea de tiempo, ancla #historia (SC-203) */
+  /* Sección 2 — Línea de tiempo, ancla #historia (SC-203).
+   * Milestones replaced in change `web-content-and-ui-polish` (2026-10-24)
+   * with the client-approved narrative: 4 milestones (1979, 2013, 2018,
+   * Diciembre 2024) with verbatim copy. Card tones, badges, side notes and
+   * the 2024 <strong> accent (now on "RIFF") are preserved. */
   timeline: {
     eyebrow: 'Cronología y Legado',
     title: 'Nuestra Historia — De una Tradición Familiar a la Excelencia Industrial',
@@ -85,31 +89,20 @@ export const NOSOTROS_PAGE_CONTENT: Readonly<NosotrosPageContent> = {
       {
         year: '1979',
         badge: 'AÑO 1979',
-        title: 'Fundación: Aguas Purificadas Ltda.',
+        title: 'Nuestro Origen',
         description:
-          'Patricio Barrientos Morales funda la compañía pionera orientada al diseño y fabricación de los primeros sistemas industriales de purificación y filtración de aguas complejas en la zona central de Chile.',
+          'En 1979, comienza nuestra historia con la creación de Aguas Purificadas Ltda., fundada por el Sr. Patricio Barrientos Morales. Esta empresa nació con el propósito de desarrollar equipos para el tratamiento de agua. Con el tiempo, se posicionó como un actor clave en el mercado, ampliando su alcance para incluir la medición de flujos y el manejo del vapor, ofreciendo tanto servicios como productos especializados. Tras más de tres décadas de crecimiento, el legado continuó en 2012 con la siguiente generación: sus hijos, quienes establecieron empresas independientes que mantienen el mismo compromiso con la excelencia y el profesionalismo que caracterizó a su fundador.',
         noteLabel: 'Hito Clave',
         noteText:
           'Inicio de la fabricación artesanal e industrial de sistemas para remoción físico-química y clarificación de aguas de pozo.',
         tone: 'primary',
       },
       {
-        year: '2012',
-        badge: 'AÑO 2012',
-        title: 'Consolidación & Continuidad Familiar',
-        description:
-          'Incorporación de nuevas metodologías de servicio en terreno, preservando los valores de confiabilidad técnica familiar e impulsando la integración de normas de gestión metrológica.',
-        noteLabel: 'Evolución Estratégica',
-        noteText:
-          'Alineamiento técnico ante el aumento sostenido del estrés hídrico industrial y la demanda de control de pérdidas.',
-        tone: 'secondary',
-      },
-      {
         year: '2013',
         badge: 'AÑO 2013',
         title: 'Nace Aguapur Medición',
         description:
-          'Ruby Barrientos Periale y Felipe Román Araya establecen formalmente la unidad de micromedición y macromedición de agua, profesionalizando la contrastación de instrumentos e ingeniería de fluidos.',
+          'En 2013, Ruby Barrientos Periale, la única hija del Sr. Patricio Barrientos, junto a su esposo Felipe Román Araya, fundó Aguapur Medición. Desde su inicio, esta compañía se especializó en ofrecer soluciones industriales para la medición de todo tipo de fluidos y proyectos de tratamiento de agua. Con una visión clara y un enfoque en la calidad, Aguapur Medición logró consolidarse como una empresa confiable en la industria.',
         noteLabel: 'Hito de Especialización',
         noteText:
           'Desarrollo del primer laboratorio móvil de contrastación volumétrica y pruebas hidrostáticas para proyectos comunitarios y sanitarios.',
@@ -118,9 +111,9 @@ export const NOSOTROS_PAGE_CONTENT: Readonly<NosotrosPageContent> = {
       {
         year: '2018',
         badge: 'AÑO 2018',
-        title: 'Surgimiento de la Línea RIFF',
+        title: 'El Nacimiento de RIFF',
         description:
-          'Creación de RIFF como marca técnica enfocada en flujometría de ultra-alta precisión, sistemas no invasivos para la gran minería e instrumentación para ambientes corrosivos.',
+          'En 2018, RIFF nace como una línea de negocio dentro de Aguapur Medición, enfocada en la fabricación y comercialización de flujómetros. Con el tiempo, esta marca fue ganando reconocimiento y ampliando su alcance, sentando las bases para convertirse en el eje central de nuestra oferta de soluciones.',
         noteLabel: 'Salto Tecnológico',
         noteText:
           'Adopción de telemetría IoT, flujómetros electromagnéticos y equipos Doppler ultrasónicos no invasivos para pulpa y relaves.',
@@ -129,24 +122,31 @@ export const NOSOTROS_PAGE_CONTENT: Readonly<NosotrosPageContent> = {
       {
         year: 'DICIEMBRE 2024',
         badge: 'DICIEMBRE 2024',
-        title: 'Evolución Integral: RIFF SpA',
+        title: 'La Evolución hacia RIFF',
         description:
-          'Consolidación definitiva de Aguapur Medición y su portafolio bajo una identidad corporativa unificada: RIFF SpA. Una sola entidad matriz con mayor solvencia técnica, stock permanente y soporte de clase mundial.',
+          'En diciembre de 2024, damos un paso significativo en nuestra trayectoria con la transformación de Aguapur Medición en RIFF. Este cambio de nombre simboliza nuestra evolución, reflejando no solo nuestra amplia experiencia, sino también nuestro compromiso con la innovación y la mejora continua. Bajo la marca RIFF, continuaremos brindando soluciones de medición y control de fluidos de alta calidad, al tiempo que expandimos nuestra oferta para incluir:',
+        items: [
+          'Equipos y Suministros para Tratamiento de Agua.',
+          'Desarrollo de Productos Químicos.',
+        ],
         noteLabel: 'Capacidad Actual',
         noteText:
           'Operaciones coordinadas desde Santiago para todo el territorio nacional, cubriendo minería de cobre, plantas de desalación, plantas celulosas e infraestructura hídrica crítica.',
         tone: 'dark',
-        highlight: 'RIFF SpA',
+        highlight: 'RIFF',
       },
     ],
   },
 
-  /* Sección 3 — Propuesta de valor: 4 pilares + bento de sectores (SC-204) */
+  /* Sección 3 — Propuesta de valor: 4 pilares + bento de sectores (SC-204).
+   * Renamed to "¿Qué nos define?" and its intro replaced by the paragraph
+   * relocated from the timeline (client feedback, change
+   * `web-content-and-ui-polish`, post-apply fix 2026-10-24). */
   value: {
     eyebrow: 'Diferenciación Operativa',
-    title: 'Nuestra Propuesta de Valor',
+    title: '¿Qué nos define?',
     description:
-      'Más de tres décadas acumuladas de know-how hidrométrico nos permiten abordar la ingeniería de fluidos no como una simple venta de suministros, sino como una alianza técnica de aseguramiento de continuidad operativa y certidumbre en datos de flujo.',
+      'En RIFF, contamos con un equipo de profesionales con más de 30 años de experiencia en la industria. Esto nos permite ofrecer a nuestros clientes las mejores soluciones técnicas, respaldadas por equipos y materiales de empresas líderes globales, representadas en exclusiva por nosotros en Chile. Nuestra calidad nos ha permitido captar y mantener como clientes a una parte importante de las principales compañías industriales del país, incluidas las de los sectores minero, alimenticio y rural. Estas industrias se benefician constantemente de la durabilidad, eficiencia y calidad de los productos que suministramos, así como de nuestro servicio de postventa, que forma parte integral de nuestra propuesta de valor.',
     sideNote: 'Arquitectura de Procesos & Metrología Certificada',
     pillars: [
       {

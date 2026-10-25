@@ -55,4 +55,32 @@ describe('RepresentacionBrandCard', () => {
     expect(html).not.toMatch(/class="[^"]*\brounded/);
     expect(html).not.toMatch(/class="[^"]*\bshadow/);
   });
+
+  describe('clickable brand logo (change web-content-and-ui-polish)', () => {
+    function brandLogoSegment(html: string): string {
+      return html.match(/<div[^>]*data-brand-logo[^>]*>[\s\S]*?<\/div>/)?.[0] ?? '';
+    }
+
+    it('wraps the logo of a brand with url in an external link around only the image', async () => {
+      const html = await render(apator);
+      const segment = brandLogoSegment(html);
+      expect(segment).toContain('data-brand-logo');
+      expect(segment).toMatch(
+        /<a\s[^>]*href="https:\/\/www\.apator\.com\/en"[^>]*target="_blank"[^>]*rel="noopener noreferrer"[^>]*>\s*<img/,
+      );
+      // The link wraps only the logo: chip and sublabel stay outside the <a>.
+      expect(segment).toMatch(/<span[^>]*>Polonia \/ UE<\/span>/);
+      expect(segment.match(/<a[\s>]/g) ?? []).toHaveLength(1);
+    });
+
+    it('renders the GL Flow logo (gl-sanitaria, without url) with no link', async () => {
+      const glFlow = brands.find((brand) => brand.id === 'gl-sanitaria')!;
+      const html = await render(glFlow);
+      const segment = brandLogoSegment(html);
+      expect(segment).toContain('data-brand-logo');
+      expect(segment).not.toMatch(/<a[\s>]/);
+      expect(segment).toMatch(/<img[^>]*alt="GL Sanitaria"/);
+      expect(segment).toMatch(/<img[^>]*loading="lazy"/);
+    });
+  });
 });
