@@ -157,14 +157,15 @@ The page SHALL render a `TechnicalDocs` component with a "Documentación Técnic
 - A heading "Documentación Técnica"
 - A description paragraph
 - Conditional content on the right side:
-  - If `fichaTecnica` is not null: a download link for the product's technical sheet PDF
+  - If `fichaTecnica` is not null: a download link labeled "Descargar ficha técnica" for the product's technical sheet PDF, with the `download` attribute
   - If `fichaTecnica` is null: a CTA "Solicitar ficha técnica" linking to `/contacto`
 
 The download link SHALL include the filename and a download icon. The CTA SHALL link to `/contacto` and MUST NOT be rendered when a download link is shown. The section SHALL have a primary-colored background with white text.
 
 #### Scenario: Product with technical sheet
 - **WHEN** the product has `fichaTecnica={url:"https://...", nombreArchivo:"catalogo.pdf"}`
-- **THEN** a download link is rendered with text "CATÁLOGO TÉCNICO" and filename "catalogo.pdf"
+- **THEN** a download link is rendered with text "Descargar ficha técnica" and filename "catalogo.pdf"
+- **AND** the link includes the `download` attribute and a download icon
 - **AND** no "Solicitar ficha técnica" CTA linking to `/contacto` is rendered
 
 #### Scenario: Product without technical sheet
@@ -236,4 +237,17 @@ The product detail page (`/productos/[slug].astro`) SHALL render `descripcionLar
 #### Scenario: Meta description stays plain text
 - **WHEN** `descripcionBreve='<b>corto</b>'` is used as the page meta description
 - **THEN** the meta content is `corto` with no tags
+
+### Requirement: Long description containment
+
+The rich-text long description rendered with `set:html` SHALL stay inside the content column at every viewport width and MUST NOT create horizontal page overflow. The container SHALL constrain its width to the grid (`max-w-full`, `min-w-0`) and wrap unbroken tokens (`break-words` / `overflow-wrap`). Default Quill block margins and paddings (`p`, `ul`, `ol`, `li`, `blockquote`, headings) MUST NOT introduce fixed widths.
+
+#### Scenario: Long unbroken token wraps within the column
+- **WHEN** the sanitized long description contains a long word, URL, or Quill-generated block with content wider than the column
+- **THEN** the text wraps inside the description container
+- **AND** the page does not gain horizontal scrolling at mobile, tablet, or desktop widths
+
+#### Scenario: Lists and headings remain bounded
+- **WHEN** the long description contains Quill lists, headings, or blockquotes
+- **THEN** their margins and paddings stay within the description container's width
 

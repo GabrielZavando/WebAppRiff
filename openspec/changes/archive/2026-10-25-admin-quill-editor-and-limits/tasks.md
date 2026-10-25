@@ -34,7 +34,7 @@
 
 - [x] 5.1 Ejecutar `npx openspec validate --all --strict` y corregir cualquier error de specs o del change
 - [x] 5.2 Ejecutar `make ci` (openspec-validate + lint + typecheck + build + test-ci + audit) y corregir los fallos
-- [ ] 5.3 Verificar manualmente en el panel que `/products/new` muestra Quill, el contador y el bloqueo por límite, y que `/productos/[slug]` muestra la ficha técnica como “Descargar ficha técnica” con `download`
+- [x] 5.3 Verificar manualmente en el panel que `/products/new` muestra Quill, el contador y el bloqueo por límite, y que `/productos/[slug]` muestra la ficha técnica como “Descargar ficha técnica” con `download`
 - [x] 5.4 Confirmar que no se agregó ningún script de migración de descripciones y que el test de regresión del seed de 2.6 pasa
 
 ## 6. Corrección post-apply: contención de la descripción larga
