@@ -1,7 +1,7 @@
 # site-footer Specification
 
 ## Purpose
-Global footer of the public site (`apps/web`, Astro SSG) rendered by `Layout.astro` on every page — dark navy full-bleed shell (`bg-secondary-dark`), brand column (logo image + tagline + social icons shared with `TopHeader`), two link columns (SERVICIOS, EMPRESA) with placeholder `href="#"`, technical schedule column with 24/7 support note, and a copyright bar with location and a scroll-to-top teal button; strictly flat design (no `rounded*`, no `shadow*`).
+Global footer of the public site (`apps/web`, Astro SSG) rendered by `Layout.astro` on every page — dark navy full-bleed shell (`bg-secondary-dark`), brand column (logo image + tagline + social icons shared with `TopHeader`), two link columns (SERVICIOS and EMPRESA) pointing to real internal routes, technical schedule column with 24/7 support note, and a copyright bar with location and a scroll-to-top teal button; strictly flat design (no `rounded*`, no `shadow*`).
 ## Requirements
 ### Requirement: Footer renders as a full-bleed dark section with canonical container
 
@@ -67,9 +67,9 @@ The `site-footer` SHALL render a brand column as the first grid cell containing:
 - **AND** no `lucide:twitter` reference appears for the X social link
 - **AND** the X icon name matches TopHeader exactly (`simple-icons:x`)
 
-### Requirement: Link columns render headings and placeholder links
+### Requirement: Link columns render column labels and real internal routes
 
-The `site-footer` SHALL render the SERVICIOS and EMPRESA columns, each composed of a column title label styled with the `font-heading` family, the primary teal color token and uppercase (a `<p>` element, NOT a heading — the footer must not alter the per-page heading outline) followed by exactly four `<a>` link items per column. Each link SHALL carry a placeholder `href="#"` (real routes are a future change), a `text-white/80` base color and a `hover:text-white` state. The SERVICIOS column SHALL list the real service offering: "Medición en Edificios", "Medición Industrial", "Obras y Proyectos" and "Tratamiento de Agua y Desalinización".
+The `site-footer` SHALL render the SERVICIOS and EMPRESA columns, each composed of a column title label styled with the `font-heading` family, the primary teal color token and uppercase (a `<p>` element, NOT a heading — the footer must not alter the per-page heading outline). Los enlaces SHALL apuntar a rutas internas reales del sitio: la columna SERVICIOS SHALL contener exactamente 4 enlaces — "Medición en Edificios" → `/servicios#medicion-en-edificios`, "Medición Industrial" → `/servicios#medicion-industrial`, "Obras y Proyectos" → `/servicios#obras-y-proyectos` y "Tratamiento de Agua y Desalinización" → `/servicios#tratamiento-de-agua` (slugs 1:1 con `SERVICIOS_FIELD_SECTION` de `/servicios`); la columna EMPRESA SHALL contener exactamente 3 enlaces — "Nuestra Historia" → `/nosotros#historia`, "Representaciones" → `/representaciones` y "Contacto Directo" → `/contacto`. El enlace "Proyectos de Éxito" SHALL eliminarse (sin página destino). Cada enlace conserva el estilo `text-white/80` base y `hover:text-white`. Los enlaces sociales externos (Facebook, Instagram, LinkedIn; X sin URL configurada no renderiza) provienen de `getContactInfo()` y no cambian.
 
 #### Scenario: SERVICIOS column renders title with teal uppercase label
 
@@ -80,19 +80,26 @@ The `site-footer` SHALL render the SERVICIOS and EMPRESA columns, each composed 
 - **AND** that `<p>` element carries an `uppercase` class
 - **AND** the footer output does NOT contain any `<h2>` or `<h3>` element
 
-#### Scenario: SERVICIOS column renders its four configured links
+#### Scenario: SERVICIOS column deep-links to the four field-service anchors
 
 - **WHEN** the footer renders with the default content
 - **THEN** the SERVICIOS column contains exactly 4 anchor elements with the texts "Medición en Edificios", "Medición Industrial", "Obras y Proyectos" and "Tratamiento de Agua y Desalinización"
-- **AND** every SERVICIOS anchor declares `href="#"`
-- **AND** the previous placeholder service labels ("Instalación de Medidores", "Control de Agua Caliente", "Puesta en Marcha Industrial", "Obras Civiles Hidráulicas") do NOT appear in the output
+- **AND** sus `href` son, en orden, `/servicios#medicion-en-edificios`, `/servicios#medicion-industrial`, `/servicios#obras-y-proyectos` y `/servicios#tratamiento-de-agua`
+- **AND** ningún anchor de la columna declara `href="#"`
 
-#### Scenario: EMPRESA column renders title and its four configured links
+#### Scenario: EMPRESA column renders its three real internal links
 
 - **WHEN** the footer renders with the default content
 - **THEN** the output contains a `<p>` element with the visible text "EMPRESA"
-- **AND** the EMPRESA column contains exactly 4 anchor elements with the texts "Nuestra Historia", "Representaciones", "Proyectos de Éxito" and "Contacto Directo"
-- **AND** every EMPRESA anchor declares `href="#"`
+- **AND** la columna EMPRESA contiene exactamente 3 anchor elements: "Nuestra Historia" con `href="/nosotros#historia"`, "Representaciones" con `href="/representaciones"` y "Contacto Directo" con `href="/contacto"`
+- **AND** el enlace "Proyectos de Éxito" ya no está presente en el footer
+- **AND** ningún anchor de la columna declara `href="#"`
+
+#### Scenario: Social external links remain valid and unchanged
+
+- **WHEN** the footer renders con las URLs sociales configuradas
+- **THEN** los anchors sociales conservan `target="_blank"`, `rel="noopener noreferrer"` y `aria-label` con el nombre de la red
+- **AND** las URLs provienen de `getContactInfo()` sin modificaciones en este change
 
 ### Requirement: Schedule column renders business hours and 24/7 note
 
@@ -164,7 +171,7 @@ The site SHALL bind the scroll-to-top click handling via document-level event de
 
 ### Requirement: Component is presentational with a typed props contract
 
-The component SHALL NOT fetch data, import services or contain business logic beyond destructuring props; it SHALL render exclusively from props. The props SHALL be typed by `SiteFooterProps` with all fields `readonly`: `logoAlt`, `tagline`, `socialLinks` (reusing `SocialLink` from `@/lib/types/top-header`), `columns` (array of `FooterColumn` — `title` + `links` of `FooterLink`), `scheduleTitle` (string — the visible schedule column title, rendered uppercase), `schedule` (array of `FooterScheduleEntry` — `days` + `hours` as `readonly string[]` so a single day range can list one or more hour blocks) and `scheduleNote`. The component SHALL NOT use `any`. No column or schedule title SHALL be hardcoded inside the component.
+The component SHALL NOT fetch data, import services or contain business logic beyond destructuring props; it SHALL render exclusively from props. The props SHALL be typed by `SiteFooterProps` with all fields `readonly`: `logoAlt`, `tagline`, `socialLinks` (reusing `SocialLink` from `@/lib/types/top-header`), `columns` (array of `FooterColumn` — `title` + `links` of `FooterLink`), `scheduleTitle` (string — the visible schedule column title, rendered uppercase), `schedule` (array of `FooterScheduleEntry` — `days` + `hours` as `readonly string[]` so a single day range can list one or more hour blocks) and `scheduleNote`. The component SHALL NOT use `any`. No column or schedule title SHALL be hardcoded inside the component. Los `href` de `FooterLink` SHALL ser rutas internas reales (o URLs sociales completas); el config SHALL NOT declarar placeholders `href="#"`.
 
 #### Scenario: Props contract matches the config constant
 
@@ -172,7 +179,7 @@ The component SHALL NOT fetch data, import services or contain business logic be
 - **THEN** the constant is assignable to `SiteFooterProps`
 - **AND** the `scheduleTitle` field equals "Horario de Atención"
 - **AND** every column title is `SERVICIOS` or `EMPRESA`
-- **AND** every link in the content carries the placeholder `href="#"`
+- **AND** la columna SERVICIOS tiene 4 links y la columna EMPRESA 3 links, todos con `href` internos reales (sin `href="#"`)
 - **AND** every `FooterScheduleEntry.hours` is a `readonly string[]` of length 2
 
 #### Scenario: Component has no data-fetching logic

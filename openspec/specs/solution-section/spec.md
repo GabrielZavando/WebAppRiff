@@ -4,7 +4,7 @@
 Sección Solución del home: header con eyebrow, headline, underline teal y descripción; grid responsive de tarjetas de solución; componente presentacional que consume solo tokens de diseño canónicos y los pipelines astro-icon/astro:assets.
 ## Requirements
 ### Requirement: SolutionSection renders the section header with eyebrow, headline, teal underline and description
-The `solution-section` SHALL render an `<section>` as its outermost element containing a header block composed of: an eyebrow `<span>` (uppercase, NOT a heading) with the eyebrow text; a headline `<h3>` with the headline text styled with the navy `--color-secondary` token; a teal underline bar `<div>` (carrying `bg-primary`) directly beneath the headline; and a description `<p>` with the description text. The header block SHALL be composed in a responsive grid: `grid-cols-1 lg:grid-cols-2` (left half holds eyebrow+headline+bar, right half holds the description paragraph).
+The `solution-section` SHALL render an `<section>` as its outermost element containing a header block composed of: an eyebrow `<span>` (uppercase, NOT a heading) with the eyebrow text; a headline `<h3>` with the headline text styled with the navy `--color-secondary` token; a teal underline bar `<div>` (carrying `bg-primary`) directly beneath the headline; and a description `<p>` with the description text. The header block SHALL be composed in a responsive grid: `grid-cols-1 lg:grid-cols-2` (left half holds eyebrow+headline+bar, right half holds the description paragraph). El titular por defecto de la sección en el home SHALL ser "Nuestros Productos" (renombrado desde "Nuestras Soluciones"); el resto del encabezado (eyebrow, subrayado teal, descripción) no cambia.
 
 #### Scenario: Section is the outermost element
 - **WHEN** the SolutionSection renders
@@ -18,8 +18,8 @@ The `solution-section` SHALL render an `<section>` as its outermost element cont
 - **AND** the element is NOT any of `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, `<h6>`
 
 #### Scenario: Headline renders as an h3 with navy color token
-- **WHEN** the SolutionSection renders with `headline="Nuestras Soluciones"`
-- **THEN** the header contains an `<h3>` element whose visible text equals "Nuestras Soluciones" verbatim
+- **WHEN** the SolutionSection renders with `headline="Nuestros Productos"`
+- **THEN** the header contains an `<h3>` element whose visible text equals "Nuestros Productos" verbatim
 - **AND** the `<h3>` carries a class expressing the navy secondary color token (e.g. `text-secondary`)
 - **AND** the `<h3>` uses the `font-heading` token family (e.g. `font-heading`)
 
@@ -37,6 +37,11 @@ The `solution-section` SHALL render an `<section>` as its outermost element cont
 - **WHEN** the SolutionSection renders
 - **THEN** the rendered header grid carries a class expressing a single column (e.g. `grid-cols-1`)
 - **AND** the rendered header grid carries a class expressing two columns at the `lg` breakpoint (e.g. `lg:grid-cols-2`)
+
+#### Scenario: Home headline reads "Nuestros Productos"
+- **WHEN** la página `/` renderiza `<SolutionSection {...SOLUTION_SECTION_CONTENT} />`
+- **THEN** el `<h3>` de la sección muestra exactamente "Nuestros Productos"
+- **AND** ningún elemento de la sección muestra el texto "Nuestras Soluciones"
 
 ### Requirement: SolutionSection renders a responsive grid of solution cards
 The `solution-section` SHALL render a grid of `solutions` cards sized responsively: 1 column on mobile (`< 640px`), 2 columns on tablet (`>= 640px` and `< 1024px`), and 4 columns on desktop (`>= 1024px`). The grid SHALL carry the Tailwind utility classes `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` and a consistent gap utility. Each card SHALL be a `<article>` (or equivalent semantic container) containing: a badge `<div>` with `bg-primary` holding a Lucide `<Icon>`; an `<Image>` from `astro:assets` with `loading="lazy"` and a descriptive `alt`; a `<h4>` title; a `<p>` description; and an `<a>` CTA with text "SABER MÁS" rendered as the design-system solid primary button (teal `bg-primary`, `text-white`, `hover:bg-primary-dark`, `px-6 py-3`) with a decorative arrow `<Icon name="lucide:arrow-right">` carrying `aria-hidden="true"` (POST-APPLY UPDATE: the CTA was originally a plain text link with `text-primary`; it was aligned with the solid-button pattern used by HeroBanner/Header/PanelHome CTAs).
@@ -160,13 +165,18 @@ The `apps/web/src/pages/index.astro` SHALL render `<HeroBanner {...HERO_BANNER_C
 - **AND** the PanelHome `<section>` carries the same set of classes and content it would carry when rendered alone
 
 ### Requirement: SolutionSection content is configured via a hardcoded constant and deep-links to /servicios
-The `solution-section` content SHALL come from `SOLUTION_SECTION_CONTENT` in `lib/config/solution-section.ts`, exported as `Readonly<SolutionSectionProps>`, with exactly four solutions and the section header copy. Each solution SHALL carry `slug`, `title`, `description`, `image`, `imageAlt`, `icon` and an `href` deep-linking to its `/servicios` portfolio anchor (`/servicios#solucion-*`). The anchor ids SHALL stay 1:1 with the `SolucionPortafolio.id` values in the `/servicios` config.
+The `solution-section` content SHALL come from `SOLUTION_SECTION_CONTENT` in `lib/config/solution-section.ts`, exported as `Readonly<SolutionSectionProps>`, with exactly four solutions and the section header copy. El `headline` de la sección SHALL ser "Nuestros Productos" (el titular "Nuestras Soluciones — Portafolio Técnico" de `/servicios` pertenece a otra página y SHALL NOT modificarse). Each solution SHALL carry `slug`, `title`, `description`, `image`, `imageAlt`, `icon` and an `href` deep-linking to its `/servicios` portfolio anchor (`/servicios#solucion-*`). The anchor ids SHALL stay 1:1 with the `SolucionPortafolio.id` values in the `/servicios` config.
 
 #### Scenario: SOLUTION_SECTION_CONTENT exposes the full set of props
 - **WHEN** `SOLUTION_SECTION_CONTENT` is imported from `lib/config/solution-section`
 - **THEN** it has the shape `{ readonly eyebrow: string; readonly headline: string; readonly description: string; readonly solutions: readonly Solution[] }`
 - **AND** `eyebrow`, `headline` and `description` are non-empty strings
 - **AND** `solutions` has length exactly 4
+
+#### Scenario: SOLUTION_SECTION_CONTENT pins the renamed headline
+- **WHEN** `SOLUTION_SECTION_CONTENT` is inspected
+- **THEN** `headline` equals "Nuestros Productos"
+- **AND** `eyebrow` sigue siendo "PORTAFOLIO" y `description` conserva su texto actual
 
 #### Scenario: Solutions carry the expected titles in render order
 - **WHEN** `SOLUTIONS_DATA` (or `SOLUTION_SECTION_CONTENT.solutions`) is inspected
