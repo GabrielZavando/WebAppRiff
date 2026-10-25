@@ -65,21 +65,40 @@
               id="p-desc-breve"
               data-form-desc-breve
               type="text"
-              class="h-11 w-full border border-border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+              class="h-11 w-full border bg-white px-3 text-sm focus:outline-none focus:border-primary"
+              [ngClass]="descripcionBreveError ? 'border-error' : 'border-border'"
               formControlName="descripcionBreve"
             />
+            <div class="mt-1 flex items-center justify-between gap-2 text-xs">
+              <span data-counter-desc-breve class="text-text-2">
+                {{ descripcionBreveLength() }} / {{ maxDescripcionBreve }}
+              </span>
+              @if (descripcionBreveError; as message) {
+                <span data-error-desc-breve class="text-error">{{ message }}</span>
+              }
+            </div>
           </div>
           <div class="sm:col-span-2">
             <label for="p-desc-larga" class="mb-1 block text-sm font-medium text-text"
               >Descripción larga</label
             >
-            <textarea
+            <quill-editor
               id="p-desc-larga"
               data-form-desc-larga
-              rows="4"
-              class="w-full border border-border bg-white px-3 py-2 text-sm focus:outline-none focus:border-primary"
+              class="block bg-white"
+              [ngClass]="descripcionLargaError ? 'border border-error' : ''"
+              format="html"
+              [maxLength]="maxDescripcionLarga"
               formControlName="descripcionLarga"
-            ></textarea>
+            ></quill-editor>
+            <div class="mt-1 flex items-center justify-between gap-2 text-xs">
+              <span data-counter-desc-larga class="text-text-2">
+                {{ descripcionLargaLength() }} / {{ maxDescripcionLarga }}
+              </span>
+              @if (descripcionLargaError; as message) {
+                <span data-error-desc-larga class="text-error">{{ message }}</span>
+              }
+            </div>
           </div>
         </div>
       </section>

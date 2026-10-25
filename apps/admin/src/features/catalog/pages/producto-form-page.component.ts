@@ -16,6 +16,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { QuillEditorComponent } from 'ngx-quill';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { ApiError } from '../../../shared/api/api-client.service';
@@ -24,6 +25,12 @@ import { ButtonComponent } from '../../../shared/components/ui/button/button.com
 import { PageBreadcrumbComponent } from '../../../shared/components/common/page-breadcrumb/page-breadcrumb.component';
 import { RoleService } from '../../auth/role.service';
 import { fieldConflictMessage, saveErrorMessage } from '../api-error-mapping';
+import {
+  MAX_DESCRIPCION_BREVE,
+  MAX_DESCRIPCION_LARGA,
+  maxVisibleTextLength,
+  visibleTextLength,
+} from '../description-limits';
 import { UploadFieldComponent } from '../components/upload-field/upload-field.component';
 import { UploadedAsset } from '../upload.service';
 import {
@@ -100,6 +107,7 @@ function fileNameFromStoragePath(storagePath: string): string {
     ButtonComponent,
     PageBreadcrumbComponent,
     UploadFieldComponent,
+    QuillEditorComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './producto-form-page.component.html',
@@ -113,6 +121,11 @@ export class ProductoFormPageComponent implements OnInit {
   private readonly roles = inject(RoleService);
 
   readonly canWrite = computed(() => this.roles.hasRole('admin', 'superadmin'));
+
+  readonly maxDescripcionBreve = MAX_DESCRIPCION_BREVE;
+  readonly maxDescripcionLarga = MAX_DESCRIPCION_LARGA;
+  readonly descripcionBreveLength = signal(0);
+  readonly descripcionLargaLength = signal(0);
 
   readonly isEdit = signal(false);
   readonly productoId = signal<string | null>(null);
@@ -132,8 +145,14 @@ export class ProductoFormPageComponent implements OnInit {
     sku: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     titulo: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     slug: new FormControl<string>('', { nonNullable: true }),
-    descripcionBreve: new FormControl<string>('', { nonNullable: true }),
-    descripcionLarga: new FormControl<string>('', { nonNullable: true }),
+    descripcionBreve: new FormControl<string>('', {
+      nonNullable: true,
+      validators: [Validators.maxLength(MAX_DESCRIPCION_BREVE)],
+    }),
+    descripcionLarga: new FormControl<string>('', {
+      nonNullable: true,
+      validators: [maxVisibleTextLength(MAX_DESCRIPCION_LARGA)],
+    }),
     categoriaId: new FormControl<string>('', { nonNullable: true }),
     subcategoriaId: new FormControl<string>('', { nonNullable: true }),
     atributos: new FormArray<FormGroup<AtributoForm>>([]),
@@ -169,6 +188,22 @@ export class ProductoFormPageComponent implements OnInit {
     return this.titulo.hasError('required') ? 'El título es obligatorio.' : 'Título inválido.';
   }
 
+  get descripcionBreveError(): string | null {
+    const control = this.form.controls.descripcionBreve;
+    if (!control.touched || !control.invalid) return null;
+    return control.hasError('maxlength')
+      ? `Máximo ${MAX_DESCRIPCION_BREVE} caracteres.`
+      : null;
+  }
+
+  get descripcionLargaError(): string | null {
+    const control = this.form.controls.descripcionLarga;
+    if (!control.touched || !control.invalid) return null;
+    return control.hasError('maxVisibleTextLength')
+      ? `Máximo ${MAX_DESCRIPCION_LARGA} caracteres de texto visible.`
+      : null;
+  }
+
   /** Resolves when the cascade for the currently selected category finished. */
   private subcategoriasLoad: Promise<void> = Promise.resolve();
 
@@ -179,6 +214,14 @@ export class ProductoFormPageComponent implements OnInit {
         this.form.controls.subcategoriaId.setValue('');
         this.subcategoriasLoad = this.loadSubcategorias(categoriaId);
       });
+
+    this.form.controls.descripcionBreve.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((value) => this.descripcionBreveLength.set(visibleTextLength(value)));
+
+    this.form.controls.descripcionLarga.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((value) => this.descripcionLargaLength.set(visibleTextLength(value)));
   }
 
   ngOnInit(): void {

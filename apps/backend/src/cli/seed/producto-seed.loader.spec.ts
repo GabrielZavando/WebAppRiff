@@ -1,5 +1,7 @@
+import { visibleTextLength } from '@riff/html-sanitize';
+import { MAX_DESCRIPCION_BREVE, MAX_DESCRIPCION_LARGA } from '@/productos/domain/producto-description-limits';
 import { loadProductoSeed } from './producto-seed.loader';
-import { existsSync, writeFileSync, mkdtempSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync, mkdtempSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
@@ -129,5 +131,40 @@ describe('loadProductoSeed', () => {
     expect(ids).toContain('prod-069');
     const p069 = seed.productos.find((p) => p.id === 'prod-069');
     expect(p069?.slug).toBe('medidor-cuenta-litros-flowtech-hil');
+  });
+
+  it('keeps all 71 raw seeded descriptions within the visible-text limits', () => {
+    const repoRootSeed = join(process.cwd(), '..', '..', 'data', 'seed-productos-71.json');
+    const raw = JSON.parse(readFileSync(repoRootSeed, 'utf-8')) as {
+      productos: Record<string, { descripcionBreve?: string; descripcionLarga?: string }>;
+    };
+    const productos = Object.values(raw.productos);
+
+    expect(productos).toHaveLength(71);
+    for (const producto of productos) {
+      expect(visibleTextLength(producto.descripcionBreve ?? '')).toBeLessThanOrEqual(
+        MAX_DESCRIPCION_BREVE,
+      );
+      expect(visibleTextLength(producto.descripcionLarga ?? '')).toBeLessThanOrEqual(
+        MAX_DESCRIPCION_LARGA,
+      );
+    }
+  });
+
+  it('keeps raw HTML over the limit valid because only visible text counts', () => {
+    const repoRootSeed = join(process.cwd(), '..', '..', 'data', 'seed-productos-71.json');
+    const raw = JSON.parse(readFileSync(repoRootSeed, 'utf-8')) as {
+      productos: Record<string, { descripcionLarga?: string }>;
+    };
+    const withRawOverLimit = Object.values(raw.productos).filter(
+      (producto) => (producto.descripcionLarga ?? '').length > MAX_DESCRIPCION_LARGA,
+    );
+
+    expect(withRawOverLimit.length).toBeGreaterThan(0);
+    for (const producto of withRawOverLimit) {
+      expect(visibleTextLength(producto.descripcionLarga ?? '')).toBeLessThanOrEqual(
+        MAX_DESCRIPCION_LARGA,
+      );
+    }
   });
 });

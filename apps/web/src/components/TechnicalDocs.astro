@@ -35,11 +35,12 @@ const hasDoc = Boolean(fichaTecnica && fichaTecnica.url);
           <a
             class="group flex items-center justify-between border border-white/20 bg-white/10 p-4 transition-colors hover:bg-white/20"
             href={fichaTecnica!.url}
+            download
           >
             <div class="flex items-center gap-4 text-white">
               <Icon name="lucide:file-text" class="text-[32px] opacity-80" />
               <div>
-                <h4 class="text-sm font-bold uppercase">Catálogo Técnico</h4>
+                <h4 class="text-sm font-bold uppercase">Descargar ficha técnica</h4>
                 <span class="text-xs opacity-75">{fichaTecnica!.nombreArchivo}</span>
               </div>
             </div>

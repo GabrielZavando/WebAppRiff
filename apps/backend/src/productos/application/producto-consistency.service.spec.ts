@@ -1,4 +1,4 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 
 import { ProductoConsistencyService } from './producto-consistency.service';
 
@@ -8,9 +8,14 @@ import { ProductoConsistencyService } from './producto-consistency.service';
 jest.mock('@riff/html-sanitize', () => ({
   sanitizeRichHtml: jest.fn((s: string) => `<SAFE>${s}</SAFE>`),
   stripHtmlToText: jest.fn((s: string) => s.replace(/<[^>]*>/g, '').trim()),
+  visibleTextLength: jest.fn((s: string) => s.replace(/<[^>]*>/g, '').trim().length),
 }));
 
-import { sanitizeRichHtml, stripHtmlToText } from '@riff/html-sanitize';
+import {
+  sanitizeRichHtml,
+  stripHtmlToText,
+  visibleTextLength,
+} from '@riff/html-sanitize';
 
 describe('ProductoConsistencyService.sanitizeDescriptions', () => {
   const categoriaRepository = { findById: jest.fn() } as never;
@@ -18,7 +23,7 @@ describe('ProductoConsistencyService.sanitizeDescriptions', () => {
   const service = new ProductoConsistencyService(
     categoriaRepository,
     subcategoriaIntegrity,
-    { sanitizeRichHtml, stripHtmlToText } as never,
+    { sanitizeRichHtml, stripHtmlToText, visibleTextLength } as never,
   );
 
   beforeEach(() => jest.clearAllMocks());
@@ -47,6 +52,39 @@ describe('ProductoConsistencyService.sanitizeDescriptions', () => {
     expect(sanitizeRichHtml).not.toHaveBeenCalled();
     expect(out.descripcionLarga).toBeUndefined();
   });
+
+  it('accepts a short description of exactly 800 visible characters after normalization', () => {
+    expect(() =>
+      service.sanitizeDescriptions({ descripcionBreve: 'a'.repeat(800) }),
+    ).not.toThrow();
+  });
+
+  it('rejects a short description over 800 characters after normalization', () => {
+    expect(() =>
+      service.sanitizeDescriptions({ descripcionBreve: 'a'.repeat(801) }),
+    ).toThrow(BadRequestException);
+  });
+
+  it('accepts a long description of exactly 3000 visible characters after sanitization', () => {
+    expect(() =>
+      service.sanitizeDescriptions({ descripcionLarga: 'a'.repeat(3000) }),
+    ).not.toThrow();
+  });
+
+  it('rejects a long description over 3000 visible characters after sanitization', () => {
+    expect(() =>
+      service.sanitizeDescriptions({ descripcionLarga: 'a'.repeat(3001) }),
+    ).toThrow(BadRequestException);
+  });
+
+  it('includes the offending field in the rejection message', () => {
+    expect(() =>
+      service.sanitizeDescriptions({ descripcionBreve: 'a'.repeat(801) }),
+    ).toThrow(/descripcionBreve/);
+    expect(() =>
+      service.sanitizeDescriptions({ descripcionLarga: 'a'.repeat(3001) }),
+    ).toThrow(/descripcionLarga/);
+  });
 });
 
 describe('ProductoConsistencyService.assertConsistency', () => {
@@ -55,7 +93,7 @@ describe('ProductoConsistencyService.assertConsistency', () => {
   const service = new ProductoConsistencyService(
     { findById } as never,
     { belongsToCategoria } as never,
-    { sanitizeRichHtml, stripHtmlToText } as never,
+    { sanitizeRichHtml, stripHtmlToText, visibleTextLength } as never,
   );
 
   beforeEach(() => jest.clearAllMocks());

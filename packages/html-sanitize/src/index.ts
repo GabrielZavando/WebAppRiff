@@ -96,3 +96,46 @@ export function stripHtmlToText(dirty: string): string {
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+const NON_TEXT_TAGS = [
+  'style',
+  'script',
+  'textarea',
+  'option',
+  'noscript',
+  'title',
+] as const;
+
+/**
+ * Returns the text a reader would actually see: entities and literal escapes
+ * decoded, script/style-like blocks removed, block boundaries turned into
+ * newlines, and every remaining tag stripped. Used to measure description
+ * length without charging for HTML markup.
+ */
+function toVisibleText(dirty: string): string {
+  const withBoundaries = decodeSource(dirty)
+    .replace(/<(script|style|textarea|option|noscript|title)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, ' ')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|div|h[1-6]|li|blockquote|ul|ol|tr)>/gi, '\n');
+
+  const stripped = sanitizeHtml(withBoundaries, {
+    allowedTags: [],
+    allowedAttributes: {},
+    nonTextTags: [...NON_TEXT_TAGS],
+  });
+
+  return he
+    .decode(stripped)
+    .replace(/\r\n?/g, '\n')
+    .replace(/[ \t]+/g, ' ')
+    .trim();
+}
+
+/**
+ * Number of visible characters in `dirty`. Markup, attributes and non-text
+ * content (script/style) do not count. Empty/null input returns 0.
+ */
+export function visibleTextLength(dirty: string): number {
+  if (!dirty) return 0;
+  return toVisibleText(dirty).length;
+}

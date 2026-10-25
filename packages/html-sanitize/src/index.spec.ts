@@ -3,6 +3,7 @@ import {
   ALLOWED_TAGS,
   sanitizeRichHtml,
   stripHtmlToText,
+  visibleTextLength,
 } from './index';
 
 describe('sanitizeRichHtml', () => {
@@ -84,6 +85,36 @@ describe('stripHtmlToText', () => {
 describe('literal newline normalization', () => {
   it('sanitizeRichHtml does not emit literal \\n text', () => {
     expect(sanitizeRichHtml('Linea1\\nLinea2')).not.toContain('\\n');
+  });
+});
+
+describe('visibleTextLength', () => {
+  it('counts plain text characters', () => {
+    expect(visibleTextLength('Hola mundo')).toBe(10);
+  });
+
+  it('does not count HTML markup', () => {
+    expect(visibleTextLength('<p><strong>Hola</strong></p>')).toBe(4);
+  });
+
+  it('counts block boundaries as visible separators', () => {
+    expect(visibleTextLength('<p>Hola</p><p>mundo</p>')).toBe(10);
+  });
+
+  it('decodes entities before counting', () => {
+    expect(visibleTextLength('&lt;p&gt;Hola&lt;/p&gt;')).toBe(4);
+    expect(visibleTextLength('Tom &amp; Jerry')).toBe(11);
+  });
+
+  it('ignores script and style content', () => {
+    expect(
+      visibleTextLength('<p>Texto</p><script>alert(1)</script><style>.x{color:red}</style>'),
+    ).toBe(5);
+  });
+
+  it('returns 0 for empty input', () => {
+    expect(visibleTextLength('')).toBe(0);
+    expect(visibleTextLength(null as unknown as string)).toBe(0);
   });
 });
 

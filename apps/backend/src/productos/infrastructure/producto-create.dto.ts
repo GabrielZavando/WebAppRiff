@@ -5,8 +5,11 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  MaxLength,
   ValidateNested,
 } from 'class-validator';
+import { MaxVisibleTextLength } from '../../common/validators/max-visible-text-length.decorator';
+import { MAX_DESCRIPCION_BREVE, MAX_DESCRIPCION_LARGA } from '../domain/producto-description-limits';
 import { AtributoDto, FichaTecnicaDto, GaleriaItemDto, PrecioDto, StockDto } from './producto-nested.dto';
 
 /**
@@ -35,10 +38,12 @@ export class ProductoCreateDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(MAX_DESCRIPCION_BREVE)
   descripcionBreve?: string;
 
   @IsOptional()
   @IsString()
+  @MaxVisibleTextLength(MAX_DESCRIPCION_LARGA)
   descripcionLarga?: string;
 
   @IsOptional()

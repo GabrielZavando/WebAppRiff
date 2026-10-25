@@ -24,17 +24,19 @@ describe('TechnicalDocs', () => {
     const html = await render(FICHA);
     expect(html).toContain('lucide:file-text');
     expect(html).toContain('lucide:download');
-    expect(html).toContain('Catálogo Técnico');
+    expect(html).toContain('Descargar ficha técnica');
     expect(html).toContain('catalogo-tecnico.pdf');
     expect(html).toContain('href="https://cdn.example.com/catalogo.pdf"');
+    expect(html).toMatch(/\sdownload(?:\s|>|=)/);
   });
 
   it('renders the "Solicitar ficha técnica" CTA to /contacto when fichaTecnica is null', async () => {
     const html = await render(null);
     expect(html).toContain('Solicitar ficha técnica');
     expect(html).toContain('href="/contacto"');
-    expect(html).not.toContain('Catálogo Técnico');
+    expect(html).not.toContain('Descargar ficha técnica');
     expect(html).not.toContain('lucide:download');
+    expect(html).not.toMatch(/\sdownload(?:\s|>|=)/);
     expect(html).not.toContain('catalogo-tecnico.pdf');
   });
 

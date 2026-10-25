@@ -51,4 +51,41 @@ describe('ProductoCreateDto', () => {
     const errors = await validateDto({ ...base, hacker: true });
     expect(errors).toContain('hacker');
   });
+
+  it('accepts a short description of exactly 800 visible characters', async () => {
+    const errors = await validateDto({ ...base, descripcionBreve: 'a'.repeat(800) });
+    expect(errors).toHaveLength(0);
+  });
+
+  it('rejects a short description of 801 visible characters', async () => {
+    const errors = await validateDto({ ...base, descripcionBreve: 'a'.repeat(801) });
+    expect(errors).toContain('descripcionBreve');
+  });
+
+  it('accepts a long description with 3000 visible characters even when markup makes it longer', async () => {
+    const errors = await validateDto({
+      ...base,
+      descripcionLarga: `<p><strong>${'a'.repeat(3000)}</strong></p>`,
+    });
+    expect(errors).toHaveLength(0);
+  });
+
+  it('rejects a long description with 3001 visible characters', async () => {
+    const errors = await validateDto({
+      ...base,
+      descripcionLarga: `<p>${'a'.repeat(3001)}</p>`,
+    });
+    expect(errors).toContain('descripcionLarga');
+  });
+
+  it('does not count script or style content toward the long description limit', async () => {
+    const errors = await validateDto({
+      ...base,
+      descripcionLarga:
+        `<p>${'a'.repeat(3000)}</p>` +
+        `<script>${'b'.repeat(4000)}</script>` +
+        `<style>${'c'.repeat(4000)}</style>`,
+    });
+    expect(errors).toHaveLength(0);
+  });
 });
