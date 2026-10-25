@@ -195,11 +195,13 @@ components:
           description: "URL amigable única"
         descripcionBreve:
           type: string
-          description: "Plain-text summary for listings. Server strips all HTML on write (stored as text)."
+          maxLength: 800
+          description: "Plain-text summary for listings, measured after the server strips all HTML. Maximum 800 visible characters."
         descripcionLarga:
           type: string
           format: html
-          description: "Sanitized rich-text HTML subset for the detail page. Server sanitizes on write (allowlist: p, br, strong, b, em, i, u, ul, ol, li, a, blockquote, h2-h4; forbids scripts, styles and on* handlers)."
+          maxLength: 3000
+          description: "Sanitized rich-text HTML subset for the detail page (allowlist: p, br, strong, b, em, i, u, ul, ol, li, a, blockquote, h2-h4; forbids scripts, styles and on* handlers). The 3000-character limit is measured on visible text after sanitization, so markup, attributes and script/style content do not count."
         categoriaId:
           type: string
         subcategoriaId:
@@ -281,8 +283,12 @@ components:
           type: string
         descripcionBreve:
           type: string
+          maxLength: 800
+          description: "Plain-text summary for listings. Maximum 800 visible characters after HTML stripping."
         descripcionLarga:
           type: string
+          maxLength: 3000
+          description: "Rich-text HTML. Sanitized on write; the 3000-character limit is measured on visible text, so markup and script/style content do not count."
         categoriaId:
           type: string
         subcategoriaId:
@@ -355,8 +361,12 @@ components:
           type: string
         descripcionBreve:
           type: string
+          maxLength: 800
+          description: "Plain-text summary for listings. Maximum 800 visible characters after HTML stripping."
         descripcionLarga:
           type: string
+          maxLength: 3000
+          description: "Rich-text HTML. Sanitized on write; the 3000-character limit is measured on visible text, so markup and script/style content do not count."
         categoriaId:
           type: string
         subcategoriaId:

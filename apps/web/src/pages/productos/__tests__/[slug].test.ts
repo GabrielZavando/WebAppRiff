@@ -98,6 +98,14 @@ describe('Product detail page', () => {
     expect(html).not.toContain('et_pb');
   });
 
+  it('constrains the long description container to the content column', async () => {
+    const html = await render();
+    const wrapper = html.match(/<div class="([^"]*\brich-text\b[^"]*)"/);
+    if (!wrapper || wrapper[1] === undefined) throw new Error('rich-text container not found');
+    const classes = wrapper[1].split(/\s+/);
+    expect(classes).toEqual(expect.arrayContaining(['max-w-full', 'min-w-0', 'break-words']));
+  });
+
   it('renders the specifications box with the attribute', async () => {
     const html = await render();
     expect(html).toContain('ESPECIFICACIONES CLAVE');

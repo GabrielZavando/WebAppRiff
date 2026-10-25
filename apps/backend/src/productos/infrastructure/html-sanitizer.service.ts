@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { IHtmlSanitizer } from '../domain/ihtml-sanitizer';
-import { sanitizeRichHtml, stripHtmlToText } from '@riff/html-sanitize';
+import {
+  sanitizeRichHtml,
+  stripHtmlToText,
+  visibleTextLength,
+} from '@riff/html-sanitize';
 
 /**
  * Adaptador de `IHtmlSanitizer` que delega en el paquete compartido
@@ -15,5 +19,9 @@ export class HtmlSanitizerService implements IHtmlSanitizer {
 
   stripHtmlToText(dirty: string): string {
     return stripHtmlToText(dirty);
+  }
+
+  visibleTextLength(dirty: string): number {
+    return visibleTextLength(dirty);
   }
 }

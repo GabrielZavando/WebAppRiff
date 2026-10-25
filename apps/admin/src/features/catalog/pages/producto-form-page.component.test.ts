@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { ProductoFormPageComponent } from './producto-form-page.component';
 import { RoleService } from '../../auth/role.service';
 import { Producto } from '../models';
+import { MAX_DESCRIPCION_BREVE, MAX_DESCRIPCION_LARGA } from '../description-limits';
 
 const API_BASE = 'http://localhost:3000/api/v1';
 
@@ -210,6 +211,92 @@ describe('ProductoFormPageComponent (tasks 6.6–6.9)', () => {
       await fixture.whenStable();
       fixture.detectChanges();
       expect(navigateSpy).toHaveBeenCalledWith(['/products'], { state: { flash: 'updated' } });
+    });
+  });
+
+  describe('[3.3–3.4] editor WYSIWYG y límites de texto visible', () => {
+    function setControl(name: 'descripcionBreve' | 'descripcionLarga', value: string): void {
+      fixture.componentInstance.form.controls[name].setValue(value);
+      fixture.detectChanges();
+    }
+
+    it('renders descripcionLarga with quill-editor and keeps descripcionBreve as a plain input', async () => {
+      await setup({});
+      await expectCategoriesFlushed();
+
+      const el = fixture.nativeElement as HTMLElement;
+      expect(el.querySelector('quill-editor[data-form-desc-larga]')).not.toBeNull();
+      expect(el.querySelector('textarea[data-form-desc-larga]')).toBeNull();
+      expect(el.querySelector('input[data-form-desc-breve]')).not.toBeNull();
+      expect(el.querySelector('quill-editor[data-form-desc-breve]')).toBeNull();
+    });
+
+    it('shows visible-text counters for both descriptions', async () => {
+      await setup({});
+      await expectCategoriesFlushed();
+
+      const el = fixture.nativeElement as HTMLElement;
+      setControl('descripcionBreve', 'Hola');
+      setControl('descripcionLarga', '<p><strong>Hola</strong></p>');
+
+      expect(el.querySelector('[data-counter-desc-breve]')?.textContent).toContain(
+        `4 / ${MAX_DESCRIPCION_BREVE}`,
+      );
+      expect(el.querySelector('[data-counter-desc-larga]')?.textContent).toContain(
+        `4 / ${MAX_DESCRIPCION_LARGA}`,
+      );
+    });
+
+    it('blocks saving and shows an error when descripcionBreve exceeds 800 characters', async () => {
+      await setup({});
+      await expectCategoriesFlushed();
+
+      setInput('[data-form-sku]', 'RIF-500');
+      setInput('[data-form-titulo]', 'Descripción breve larga');
+      setControl('descripcionBreve', 'a'.repeat(MAX_DESCRIPCION_BREVE + 1));
+      submit();
+      fixture.detectChanges();
+
+      const el = fixture.nativeElement as HTMLElement;
+      expect((el.querySelector('[data-form-save] button') as HTMLButtonElement).disabled).toBe(true);
+      expect(el.querySelector('[data-error-desc-breve]')?.textContent).toContain(
+        `Máximo ${MAX_DESCRIPCION_BREVE}`,
+      );
+    });
+
+    it('blocks saving when descripcionLarga exceeds 3000 visible characters', async () => {
+      await setup({});
+      await expectCategoriesFlushed();
+
+      setInput('[data-form-sku]', 'RIF-501');
+      setInput('[data-form-titulo]', 'Descripción larga excedida');
+      setControl('descripcionLarga', `<p><strong>${'a'.repeat(MAX_DESCRIPCION_LARGA + 1)}</strong></p>`);
+      submit();
+      fixture.detectChanges();
+
+      const el = fixture.nativeElement as HTMLElement;
+      expect((el.querySelector('[data-form-save] button') as HTMLButtonElement).disabled).toBe(true);
+      expect(el.querySelector('[data-error-desc-larga]')?.textContent).toContain(
+        `Máximo ${MAX_DESCRIPCION_LARGA}`,
+      );
+    });
+
+    it('allows saving a long description with 3000 visible characters even when markup makes it longer', async () => {
+      await setup({});
+      await expectCategoriesFlushed();
+
+      setInput('[data-form-sku]', 'RIF-502');
+      setInput('[data-form-titulo]', 'Descripción larga en el límite');
+      setControl('descripcionLarga', `<p><strong>${'a'.repeat(MAX_DESCRIPCION_LARGA)}</strong></p>`);
+      submit();
+
+      const req = http.expectOne(`${API_BASE}/products`);
+      expect(req.request.body).toMatchObject({
+        descripcionLarga: `<p><strong>${'a'.repeat(MAX_DESCRIPCION_LARGA)}</strong></p>`,
+      });
+      req.flush({ data: EXISTING, error: null, meta: null });
+      await fixture.whenStable();
+      fixture.detectChanges();
     });
   });
 

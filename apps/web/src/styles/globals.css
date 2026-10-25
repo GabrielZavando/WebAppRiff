@@ -162,6 +162,14 @@
 @layer components {
   .rich-text {
     @apply font-body text-text-2 leading-relaxed;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .rich-text > * {
+    max-width: 100%;
   }
 
   .rich-text p {

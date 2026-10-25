@@ -10,6 +10,7 @@
 export interface IHtmlSanitizer {
   sanitizeRichHtml(dirty: string): string;
   stripHtmlToText(dirty: string): string;
+  visibleTextLength(dirty: string): number;
 }
 
 export const I_HTML_SANITIZER = 'I_HTML_SANITIZER';

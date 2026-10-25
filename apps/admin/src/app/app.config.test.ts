@@ -12,6 +12,7 @@ vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(() => ({ app: { name: 'test-app' } })),
 }));
 
+import { QUILL_CONFIG_TOKEN } from 'ngx-quill/config';
 import { FIREBASE_APP, FIREBASE_AUTH } from '../features/auth/firebase.tokens';
 import { appConfig } from './app.config';
 
@@ -30,5 +31,23 @@ describe('appConfig bootstrap', () => {
   it('provides HttpClient for backend calls', () => {
     TestBed.configureTestingModule({ providers: appConfig.providers });
     expect(TestBed.inject(HttpClient)).toBeInstanceOf(HttpClient);
+  });
+
+  it('registers a Quill config limited to backend-supported formats', () => {
+    TestBed.configureTestingModule({ providers: appConfig.providers });
+    const config = TestBed.inject(QUILL_CONFIG_TOKEN);
+    expect(config.theme).toBe('snow');
+    expect(config.formats).toEqual([
+      'bold',
+      'italic',
+      'underline',
+      'header',
+      'list',
+      'blockquote',
+      'link',
+    ]);
+    expect(config.formats).not.toContain('image');
+    expect(config.formats).not.toContain('color');
+    expect(config.formats).not.toContain('font');
   });
 });

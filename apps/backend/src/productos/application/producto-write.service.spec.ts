@@ -1,4 +1,9 @@
-import { ConflictException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ProductoWriteService } from './producto-write.service';
 import { ProductoCreateDto } from '../infrastructure/producto-create.dto';
 import { ProductoUpdateDto } from '../infrastructure/producto-update.dto';
@@ -50,7 +55,12 @@ describe('ProductoWriteService', () => {
     actualizadoEn: new Date(),
   };
 
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    consistency.sanitizeDescriptions.mockImplementation(
+      (d: { descripcionLarga?: string; descripcionBreve?: string }) => ({ ...d }),
+    );
+  });
 
   describe('create', () => {
     const dto: ProductoCreateDto = { sku: 'SKU-1', titulo: 'Válvula' } as ProductoCreateDto;
@@ -151,6 +161,20 @@ describe('ProductoWriteService', () => {
       expect(repository.create).toHaveBeenCalledWith(
         expect.objectContaining({ descripcionLarga: '<p>OK</p>', descripcionBreve: 'corto' }),
       );
+    });
+
+    it('rejects with 400 when sanitized descriptions exceed the visible-text limits', async () => {
+      integrity.existsBySku.mockResolvedValue(false);
+      integrity.existsBySlug.mockResolvedValue(false);
+      consistency.assertConsistency.mockResolvedValue('cat-1');
+      consistency.sanitizeDescriptions.mockImplementation(() => {
+        throw new BadRequestException('descripcionLarga must have at most 3000 visible characters');
+      });
+
+      await expect(
+        service.create({ sku: 'S', titulo: 'T', descripcionLarga: 'x' } as ProductoCreateDto),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(repository.create).not.toHaveBeenCalled();
     });
   });
 
