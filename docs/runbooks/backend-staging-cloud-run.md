@@ -112,8 +112,9 @@ Notas:
 - `PORT` **no** se fija: Cloud Run inyecta `PORT=8080` y `resolvePort` lo lee.
 - Sin `RESEND_API_KEY` el notifier es no-op con warning: los leads se persisten
   en Firestore pero no se notifican. Ver paso 5.2. El webhook de rebuild del
-  catálogo se activa en el paso 5.1 (Coolify + Secret Manager); si no se
-  configura, el backend registra un `warn` explícito y no dispara rebuilds
+  catálogo se activa en el paso 5.1 (Coolify + Secret Manager + flush
+  programado con Cloud Scheduler, paso f); si no se configura, el backend
+  registra un `warn` explícito y no buferiza cambios ni dispara rebuilds
   (no-op observable, sin fallo silencioso).
 - Escalado a cero (`--min-instances=0`); techo `--max-instances=2`.
 - Sin dominio propio: usar la URL `*.run.app` que imprime el comando y
@@ -125,13 +126,23 @@ export API_URL=$(gcloud run services describe ${SERVICE} \
 echo "URL staging: ${API_URL}"
 ```
 
-## 5.1 Activar el rebuild del catálogo (webhook de Coolify + secretos)
+## 5.1 Activar el rebuild del catálogo (webhook de Coolify + secretos + flush programado)
 
-> Change `public-catalog-fixes`. El backend dispara un rebuild del sitio Astro
-> (SSG) cuando cambia cualquier entidad pública del catálogo, haciendo `POST` al
-> `CATALOG_REBUILD_WEBHOOK_URL` con `Authorization: Bearer
-> CATALOG_REBUILD_WEBHOOK_TOKEN`. Sin estas variables el backend solo registra un
-> `warn` (no-op observable).
+> Changes `public-catalog-fixes` + `catalog-rebuild-flush-scheduler`. Cuando
+> cambia cualquier entidad pública del catálogo, el backend **buferiza el cambio
+> en Firestore** (documento `catalog_rebuild_state/global`) en vez de disparar
+> el webhook de inmediato. Un job de **Cloud Scheduler** invoca cada minuto el
+> endpoint interno `POST /internal/catalog-rebuild/flush`, que dispara el
+> webhook de Coolify (`CATALOG_REBUILD_WEBHOOK_URL` con `Authorization: Bearer
+> CATALOG_REBUILD_WEBHOOK_TOKEN`) cuando se cumple la ventana de silencio (60 s)
+> o el max-wait (300 s). Sin las variables del webhook el backend solo registra
+> un `warn` (no-op observable). Ver `docs/deploy-standards.md` →
+> "Rebuild programado del catálogo".
+
+> ⚠️ **Orden de activación**: el deploy del backend (paso 5) detiene el disparo
+> inmediato; crear el job del Scheduler (paso **f** de esta sección)
+> inmediatamente después de los secretos minimiza la ventana sin rebuilds. El
+> primer flush publica el lote acumulado.
 
 **a. Crear el deploy webhook del frontend en Coolify** (panel, manual):
 
@@ -185,11 +196,85 @@ gcloud run services describe ${SERVICE} \
   --project=${PROJECT_ID} --region=${REGION} \
   --format='value(spec.template.spec.containers[0].env)' | tr ',' '\n' | grep CATALOG_REBUILD
 # Esperado: ambas variables presentes (referenciando el secreto, sin valor plano).
-
-# Ciclo end-to-end: editar el título de un producto en el admin de staging,
-# confirmar el deploy disparado en Coolify y ver el título nuevo en
-# https://staging.somosriff.cl (tras terminar el build de Astro).
 ```
+
+**f. Activar el flush programado del rebuild (Cloud Scheduler + SA OIDC)**:
+
+> Change `catalog-rebuild-flush-scheduler`. El gate real del endpoint de flush
+> es la **verificación OIDC app-side** (`SchedulerOidcGuard`): firma Google,
+> `aud` = `CATALOG_REBUILD_FLUSH_EXPECTED_AUDIENCE`, `email` =
+> `CATALOG_REBUILD_FLUSH_EXPECTED_SA` y `email_verified`, fail-closed. El rol
+> `roles/run.invoker` es **solo defensa en profundidad**: el servicio corre con
+> `--allow-unauthenticated`, así que IAM no filtra nada por sí solo.
+
+1. Service account dedicada del Scheduler:
+
+   ```bash
+   gcloud iam service-accounts create catalog-rebuild-flusher \
+     --project=${PROJECT_ID} \
+     --display-name="Catalog rebuild flush scheduler"
+   ```
+
+2. `roles/run.invoker` sobre el servicio (defensa en profundidad):
+
+   ```bash
+   gcloud run services add-iam-policy-binding ${SERVICE} \
+     --project=${PROJECT_ID} --region=${REGION} \
+     --member="serviceAccount:catalog-rebuild-flusher@${PROJECT_ID}.iam.gserviceaccount.com" \
+     --role="roles/run.invoker"
+   ```
+
+3. Variables del endpoint (añadir al `gcloud run deploy` del paso 5; repetir el
+   deploy con los mismos flags más estas líneas):
+
+   ```bash
+   --update-env-vars "CATALOG_REBUILD_SILENCE_SECONDS=60,CATALOG_REBUILD_MAX_WAIT_SECONDS=300,CATALOG_REBUILD_CLAIM_TTL_SECONDS=60,CATALOG_REBUILD_FLUSH_EXPECTED_AUDIENCE=https://${SERVICE_URL#https://},CATALOG_REBUILD_FLUSH_EXPECTED_SA=catalog-rebuild-flusher@${PROJECT_ID}.iam.gserviceaccount.com"
+   ```
+
+   > `SERVICE_URL` es la URL `*.run.app` del paso 5 (`status.url`). La audience
+   > debe fijarse **explícitamente**: el servicio tiene varias URLs (run.app y,
+   > si aplica, dominio propio) y el token debe llevar la que el backend espera.
+
+4. Job del Scheduler: frecuencia cada minuto, `POST` a la URL del entorno,
+   OIDC con audience explícita y **sin reintentos propios** (los reintentos son
+   propiedad del backoff del backend; un retry del Scheduler duplicaría
+   despachos):
+
+   ```bash
+   gcloud scheduler jobs create http catalog-rebuild-flush \
+     --project=${PROJECT_ID} --location=${REGION} \
+     --schedule="*/1 * * * *" \
+     --uri="${SERVICE_URL}/internal/catalog-rebuild/flush" \
+     --http-method=POST \
+     --oidc-service-account-email="catalog-rebuild-flusher@${PROJECT_ID}.iam.gserviceaccount.com" \
+     --oidc-token-audience="${SERVICE_URL}" \
+     --no-retry-config
+   ```
+
+5. **Verificación end-to-end**:
+
+   ```bash
+   # APIs necesarias (paso 1 del runbook ya cubre cloudscheduler; si no):
+   gcloud services enable cloudscheduler.googleapis.com --project=${PROJECT_ID}
+
+   # Ciclo end-to-end: editar el título de un producto en el admin de staging,
+   # esperar 1-2 minutos y verificar:
+   gcloud logging read \
+     'resource.type=cloud_run_revision AND textPayload:"catalog-rebuild-flush"' \
+     --project=${PROJECT_ID} --limit=10
+   # Esperado: UNA línea de dispatch exitoso por lote (sin fallos 401 ni 429),
+   # un único deploy en Coolify y el doc catalog_rebuild_state/global limpio
+   # (consola de Firestore, proyecto riff-catalogo-staging).
+   ```
+
+6. **Rollback**: al revertir la revisión de Cloud Run (sección Rollback), pausar
+   el job para evitar ruido de 401/404 en los logs del Scheduler y reactivarlo
+   al restaurar:
+
+   ```bash
+   gcloud scheduler jobs pause catalog-rebuild-flush --location=${REGION}
+   gcloud scheduler jobs resume catalog-rebuild-flush --location=${REGION}
+   ```
 
 ## 5.2 Activar el email transaccional (Resend + subdominio `send.somosriff.cl`)
 

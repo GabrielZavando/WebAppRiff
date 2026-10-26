@@ -10,7 +10,7 @@
 
 ## Environments
 
-- `staging`: Cloud Run `riff-api-staging` **en el proyecto `riff-catalogo-staging`** (región `southamerica-west1`; URL `https://riff-api-staging-345601325361.southamerica-west1.run.app`; escalado `min-instances=0` / `max-instances=2`; runtime SA `riff-api-runtime@riff-catalogo-staging.iam.gserviceaccount.com` con `roles/datastore.user` + `roles/storage.objectAdmin`; webhook de catálogo no-op — se activará con el pipeline de rebuild del sitio, change posterior) + apps Coolify `web-staging` → `https://staging.somosriff.cl` y `admin-staging` → `https://admin-staging.somosriff.cl`. Proyecto Firebase: `riff-catalogo-staging` (identidad Auth, datos y API alineados en un solo proyecto; change `backend-staging-deploy`). Runbook: [`docs/runbooks/backend-staging-cloud-run.md`](runbooks/backend-staging-cloud-run.md).
+- `staging`: Cloud Run `riff-api-staging` **en el proyecto `riff-catalogo-staging`** (región `southamerica-west1`; URL `https://riff-api-staging-345601325361.southamerica-west1.run.app`; escalado `min-instances=0` / `max-instances=2`; runtime SA `riff-api-runtime@riff-catalogo-staging.iam.gserviceaccount.com` con `roles/datastore.user` + `roles/storage.objectAdmin`; webhook de catálogo no-op — se activa con el pipeline de rebuild del sitio (buferizado en Firestore + flush programado vía Cloud Scheduler, change `catalog-rebuild-flush-scheduler`; ver sección "Rebuild programado del catálogo")) + apps Coolify `web-staging` → `https://staging.somosriff.cl` y `admin-staging` → `https://admin-staging.somosriff.cl`. Proyecto Firebase: `riff-catalogo-staging` (identidad Auth, datos y API alineados en un solo proyecto; change `backend-staging-deploy`). Runbook: [`docs/runbooks/backend-staging-cloud-run.md`](runbooks/backend-staging-cloud-run.md).
   > API staging en uso: `https://riff-api-staging-345601325361.southamerica-west1.run.app/api/v1` (base para el `API_BASE_URL` del admin staging).
   > Existe además un servicio homónimo `riff-api-staging` en el proyecto infra `webappriff` (era del workflow `deploy.yml` eliminado): **congelado** — no recibe deploys ni tráfico; su decomisión es deuda futura (change `backend-staging-deploy`).
 - `production`: Cloud Run `riff-api-prod` → `https://api.somosriff.cl` + apps Coolify de producción → `https://somosriff.cl` (Astro) y `https://admin.somosriff.cl` (Angular). Proyecto Firebase de producción: `riff-catalogo`.
@@ -215,6 +215,91 @@ npm run seed:productos
 
 > Sin esto, `/products` devuelve `data: []` y el smoke de staging falla.
 
+## Rebuild programado del catálogo (flush vía Cloud Scheduler)
+
+> Change `catalog-rebuild-flush-scheduler`. Cada edición de catálogo (producto,
+> categoría, subcategoría) se **buferiza en Firestore** (documento
+> `catalog_rebuild_state/global`, vía Admin SDK) en lugar de disparar el deploy
+> webhook de Coolify de inmediato. Un job de **Cloud Scheduler** invoca cada
+> minuto el endpoint interno `POST /internal/catalog-rebuild/flush`, que decide
+> en una transacción de Firestore si corresponde disparar el webhook:
+>
+> - **ventana de silencio** vencida (`CATALOG_REBUILD_SILENCE_SECONDS`, default
+>   60 s) **o** **max-wait** alcanzado (`CATALOG_REBUILD_MAX_WAIT_SECONDS`,
+>   default 300 s) → un único deploy por ráfaga de ediciones;
+> - patrón de **claim** transaccional (`CATALOG_REBUILD_CLAIM_TTL_SECONDS`,
+>   default 60 s): con varias instancias de Cloud Run exactamente una despacha;
+>   si una instancia muere tras reclamar, el claim vence y el siguiente flush
+>   reintenta;
+> - fallo del webhook → el estado NO se limpia y se programa reintento con
+>   **backoff exponencial acotado** (60 s × 2^n, tope 15 min). Sin dead-letter:
+>   el reintento es indefinido, con logs escalados a error a partir de
+>   `failureCount ≥ 10` o lotes con antigüedad > 24 h. Los reintentos son
+>   propiedad del servicio, **no** del Scheduler (job sin `retryConfig`).
+>
+> Peor caso de staleness ≈ max-wait (300 s) + build de Coolify (3-4 min) ≈
+> 9 minutos.
+
+### Autenticación del endpoint de flush
+
+El gate real es la **verificación OIDC app-side** (`SchedulerOidcGuard` con
+`google-auth-library`): firma Google + `aud` = `CATALOG_REBUILD_FLUSH_EXPECTED_AUDIENCE`
++ `email` = `CATALOG_REBUILD_FLUSH_EXPECTED_SA` + `email_verified`, fail-closed
+(401 ante token ausente/inválido o config sin definir). El servicio corre con
+`--allow-unauthenticated`, por lo que el rol `roles/run.invoker` de la SA del
+Scheduler es **solo defensa en profundidad y documentación** — no filtra nada a
+nivel IAM. La ruta vive fuera del prefijo `/api/v1` (excluida igual que
+`/health`) y está exenta del throttler global.
+
+### Infraestructura por entorno (staging y producción)
+
+```bash
+# 1. Service account dedicada del Scheduler (proyecto del entorno)
+gcloud iam service-accounts create catalog-rebuild-flusher \
+  --project=${PROJECT_ID} \
+  --display-name="Catalog rebuild flush scheduler"
+
+# 2. Defensa en profundidad: invoker sobre el servicio (el gate real es la
+#    verificación app-side del OIDC; el servicio es --allow-unauthenticated)
+gcloud run services add-iam-policy-binding ${CLOUD_RUN_SERVICE} \
+  --project=${PROJECT_ID} --region=${GCP_REGION} \
+  --member="serviceAccount:catalog-rebuild-flusher@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role="roles/run.invoker"
+
+# 3. Job del Scheduler: cada minuto, POST a la URL del entorno, OIDC con
+#    audience explícita (el servicio tiene varias URLs), SIN reintentos propios
+#    (los reintentos los posee el backoff del backend)
+gcloud scheduler jobs create http catalog-rebuild-flush \
+  --project=${PROJECT_ID} --location=${GCP_REGION} \
+  --schedule="*/1 * * * *" \
+  --uri="https://${CLOUD_RUN_SERVICE_URL}/internal/catalog-rebuild/flush" \
+  --http-method=POST \
+  --oidc-service-account-email="catalog-rebuild-flusher@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --oidc-token-audience="https://${CLOUD_RUN_SERVICE_URL}" \
+  --no-retry-config
+```
+
+Variables del backend para el entorno (`gcloud run deploy --set-env-vars`,
+junto a las existentes):
+
+```bash
+CATALOG_REBUILD_SILENCE_SECONDS=60
+CATALOG_REBUILD_MAX_WAIT_SECONDS=300
+CATALOG_REBUILD_CLAIM_TTL_SECONDS=60
+CATALOG_REBUILD_FLUSH_EXPECTED_AUDIENCE=https://${CLOUD_RUN_SERVICE_URL}
+CATALOG_REBUILD_FLUSH_EXPECTED_SA=catalog-rebuild-flusher@${PROJECT_ID}.iam.gserviceaccount.com
+```
+
+**Verificación end-to-end**: editar un producto de prueba en el admin → esperar
+≤ 1-2 min → confirmar en los logs del backend una única línea
+`[catalog-rebuild-flush]` con dispatch exitoso, un único deploy en Coolify y el
+documento `catalog_rebuild_state/global` limpio en Firestore.
+
+**Rollback**: revertir la revisión de Cloud Run restaura el disparo directo
+(legacy); pausar el job mientras dure el rollback para evitar ruido de 401/404:
+`gcloud scheduler jobs pause catalog-rebuild-flush --location=${GCP_REGION}` /
+`gcloud scheduler jobs resume catalog-rebuild-flush --location=${GCP_REGION}`.
+
 ## Notifications
 
 - Notify success/failure to team channel (Slack/Discord webhook — **pendiente: configurar webhook**)
@@ -251,8 +336,13 @@ npm run seed:productos
 | `SMOKE_ADMIN_STAGING_URL` | GitHub Actions (vars) | URL temporal del panel Angular staging (también `ANGULAR_ADMIN_URL` para CORS) | `http://<sub>.sslip.io` |
 | `COOLIFY_API_TOKEN` | Coolify (uso manual opcional de la API) | Token para Coolify CLI/API — **no usado por el flujo de deploy del repo** (deploy nativo vía GitHub App de Coolify) | `coolify_xxx` |
 | `SLACK_WEBHOOK` | GitHub Actions | Notification webhook | `https://hooks.slack.com/...` |
-| `CATALOG_REBUILD_WEBHOOK_URL` | Cloud Run (backend — **secreto NestJS en Secret Manager**, ops-managed) | URL del webhook que el backend dispara cuando cambia cualquier entidad pública del catálogo (categoría, subcategoría, producto) para que Coolify regenere el sitio Astro. `POST` fire-and-forget con `Authorization: Bearer <token>` y timeout de 5s. No-op si no está configurado | `https://coolify.example.com/deploy` |
+| `CATALOG_REBUILD_WEBHOOK_URL` | Cloud Run (backend — **secreto NestJS en Secret Manager**, ops-managed) | URL del webhook de Coolify que regenera el sitio Astro cuando cambia cualquier entidad pública del catálogo (categoría, subcategoría, producto). Desde `catalog-rebuild-flush-scheduler` el disparo NO es inmediato: los cambios se buferizan en Firestore y este webhook lo invoca el endpoint interno de flush (Cloud Scheduler, cada minuto). `POST` con `Authorization: Bearer <token>` y timeout de 5s. No-op si no está configurado | `https://coolify.example.com/deploy` |
 | `CATALOG_REBUILD_WEBHOOK_TOKEN` | Cloud Run (backend — **secreto NestJS en Secret Manager**, ops-managed) | Token Bearer con el que se autentica el rebuild webhook del catálogo. **Nunca se loguea ni se envía en el body**. Reemplaza a la antigua variable de webhook de categorías (sin auth) | `secret-token` |
+| `CATALOG_REBUILD_SILENCE_SECONDS` | Cloud Run (backend — env, no secreto) | Ventana de silencio tras el último cambio del catálogo antes de que el flush dispare el webhook (segundos). Default `60` | `60` |
+| `CATALOG_REBUILD_MAX_WAIT_SECONDS` | Cloud Run (backend — env, no secreto) | Tope de espera de un lote desde su primer cambio antes de disparar aunque no haya silencio (segundos). Debe superar la duración del build de Coolify (~3-4 min) para que no se solapen deploys. Default `300` | `300` |
+| `CATALOG_REBUILD_CLAIM_TTL_SECONDS` | Cloud Run (backend — env, no secreto) | Vigencia del claim de un flush antes de que otro flush pueda retomarlo (segundos); debe superar el timeout del webhook (5s). Default `60` | `60` |
+| `CATALOG_REBUILD_FLUSH_EXPECTED_AUDIENCE` | Cloud Run (backend — env, no secreto) | `aud` OIDC esperado del ID token del Cloud Scheduler (la URL de Cloud Run del entorno). **Es el gate real de autenticación del endpoint de flush** (verificación app-side con `google-auth-library`, fail-closed si falta); el rol `run.invoker` de la SA del Scheduler es solo defensa en profundidad (el servicio corre con `--allow-unauthenticated`) | `https://riff-api-staging-345601325361.southamerica-west1.run.app` |
+| `CATALOG_REBUILD_FLUSH_EXPECTED_SA` | Cloud Run (backend — env, no secreto) | `email` OIDC esperado de la service account del Cloud Scheduler del flush. Verificada junto con `aud` y `email_verified` en cada invocación | `catalog-rebuild-flusher@riff-catalogo-staging.iam.gserviceaccount.com` |
 | `SMOKE_API_URL` | GitHub Actions (post-deploy smoke) | URL base de la API para el smoke test post-deploy (`/health`, products, categories, subcategories). No-op si no está | `https://<run>.run.app` |
 | `SMOKE_WEB_URL` | GitHub Actions (post-deploy smoke) | URL del sitio Astro para `smoke:web`. No-op si no está | `https://staging.somosriff.cl` |
 | `SMOKE_ADMIN_URL` | GitHub Actions (post-deploy smoke) | URL del panel Angular para `smoke:admin`. No-op si no está | `https://admin.somosriff.cl` |
