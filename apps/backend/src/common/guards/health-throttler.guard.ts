@@ -9,10 +9,20 @@ export function isHealthCheckUrl(url: string | undefined): boolean {
   return url === '/health';
 }
 
+/**
+ * Rutas exentas del throttler global: `/health` (probes) y el endpoint interno
+ * de flush del rebuild del catálogo, invocado por Cloud Scheduler cada minuto
+ * (change `catalog-rebuild-flush-scheduler`). La cadencia del job no debe
+ * competir con el límite de peticiones público.
+ */
+export function isThrottleExemptUrl(url: string | undefined): boolean {
+  return url === '/health' || url === '/internal/catalog-rebuild/flush';
+}
+
 @Injectable()
 export class HealthAwareThrottlerGuard extends ThrottlerGuard {
   protected async shouldSkip(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<{ url?: string }>();
-    return isHealthCheckUrl(request?.url);
+    return isThrottleExemptUrl(request?.url);
   }
 }
