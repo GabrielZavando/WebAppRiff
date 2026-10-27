@@ -68,8 +68,8 @@ describe('Layout — hero shell (home full-viewport background)', () => {
   it('keeps exactly one <header> landmark in the document (single-header rule)', async () => {
     // Spec: home-hero-shell § "The three header components are inside the
     // z-10 stack" → "exactly one <header> element exists in the document".
-    // TopHeader renders a role="region", SearchForm a role="search"; only the
-    // site Header may render a <header> element.
+    // The retired contact bar is gone; SearchForm renders a role="search"; only
+    // the site Header may render a <header> element.
     const html = await renderHeroLayout();
     const headerCount = (html.match(/<header[\s>]/g) ?? []).length;
     expect(headerCount).toBe(1);
@@ -142,12 +142,24 @@ async function renderLayout(props: LayoutSearchProps = {}): Promise<string> {
     .replace(/<script[\s\S]*?<\/script>/g, '');
 }
 
-describe('Layout — global floating WhatsApp CTA (SC-007)', () => {
+describe('Layout — global floating contact actions (SC-007, SC-201)', () => {
   it('renders the WhatsApp button on every page', async () => {
     const html = await renderDefaultLayout();
     // WhatsAppButton is a global fixed-position CTA wired into the single
     // layout composition point, so it must be present on every rendered page.
     expect(html).toContain('href="https://wa.me/56937526162"');
+  });
+
+  it('renders the phone FAB on every page, stacked above WhatsApp', async () => {
+    const html = await renderDefaultLayout();
+    expect(html).toContain('href="tel:+56229079067"');
+    expect(html).toContain('aria-label="Llamar a Riff"');
+  });
+
+  it('does not render the retired top contact bar', async () => {
+    const html = await renderDefaultLayout();
+    expect(html).not.toContain('aria-label="Barra de contacto"');
+    expect(html).not.toContain('Barra de contacto');
   });
 });
 

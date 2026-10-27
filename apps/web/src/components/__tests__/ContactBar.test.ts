@@ -3,7 +3,7 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import ContactBar from '@/components/ContactBar.astro';
 import { CONTACT_PAGE_CONTENT } from '@/lib/config/contact-page';
 import type { ContactBarProps } from '@/lib/types/contact-form';
-import type { SocialLink as TopHeaderSocialLink } from '@/lib/types/top-header';
+import type { SocialLink } from '@/lib/types/contact';
 
 const baseProps: ContactBarProps = CONTACT_PAGE_CONTENT.bar;
 
@@ -18,7 +18,7 @@ function stripComments(html: string): string {
   return html.replace(/<!--[\s\S]*?-->/g, '');
 }
 
-const SAMPLE_SOCIAL: TopHeaderSocialLink[] = [
+const SAMPLE_SOCIAL: SocialLink[] = [
   { name: 'Facebook', href: 'https://facebook.com/riff' },
   { name: 'X', href: 'https://x.com/riff' },
 ];
@@ -39,7 +39,7 @@ describe('ContactBar — phone and email', () => {
 
 describe('ContactBar — social links', () => {
   it('renders official Riff social links (Facebook, Instagram, LinkedIn) and omits X (SC-003)', async () => {
-    const officialSocial: TopHeaderSocialLink[] = [
+    const officialSocial: SocialLink[] = [
       { name: 'Facebook', href: 'https://www.facebook.com/somosriff' },
       { name: 'Instagram', href: 'https://www.instagram.com/somosriff.cl/' },
       { name: 'LinkedIn', href: 'https://www.linkedin.com/company/somosriff/' },

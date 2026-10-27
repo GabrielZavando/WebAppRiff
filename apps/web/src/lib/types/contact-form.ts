@@ -11,7 +11,7 @@
  * immutable by design, and the components never mutate their props.
  */
 
-import type { SocialLink } from '@/lib/types/top-header';
+import type { SocialLink } from '@/lib/types/contact';
 
 /** A single selectable area of interest in the contact form. */
 export interface ContactAreaInteres {
@@ -79,7 +79,7 @@ export interface ContactBarProps {
   readonly emailHref: string;
   /**
    * Social network links, reusing the `SocialLink` contract from
-   * `top-header` so the site keeps a single source of truth for the social
+   * `lib/types/contact` so the site keeps a single source of truth for the social
    * presence. Only configured URLs render.
    */
   readonly socialLinks: readonly SocialLink[];

@@ -2,7 +2,9 @@
 
 ## Purpose
 Flujos e2e críticos del sitio con Playwright: stub de API para datos de catálogo, configuración multi-server de webServer, fixtures curadas, flujo catálogo (listing → detail → CTA) y flujo de cotización, manteniendo verdes las 8 specs de landing existentes.
+
 ## Requirements
+
 ### Requirement: Stub API server serves catalog data for Playwright build
 
 The system SHALL provide a lightweight Node.js HTTP server (`apps/web/e2e/support/api-stub.mjs`) that serves product, category, subcategory, and quote data from a curated fixture (`apps/web/e2e/fixtures/api-data.json`) in the standard envelope format `{ data, error, meta }`.
@@ -103,15 +105,6 @@ The Playwright spec `apps/web/e2e/cotizacion-flow.spec.ts` SHALL verify the quot
 - **WHEN** a user fills all form fields and clicks "ENVIAR SOLICITUD", and `page.route('**/api/v1/quotes')` intercepts the POST returning 201
 - **THEN** the intercepted request body contains fields `nombre`, `email`, `telefono`, `nombre_empresa`, `rut`, `mensaje` with the values entered by the user
 
-### Requirement: Existing 8 landing specs remain green
-
-The 8 existing Playwright specs in `apps/web/e2e/` (hero-banner, site-header, site-header-scroll, top-header, search-form, panel-home, services-section, solution-section) SHALL continue to pass with the stub API present in the webServer.
-
-#### Scenario: Landing specs pass with stub
-
-- **WHEN** `npx playwright test --project=chromium` is executed with the stub API running
-- **THEN** all 8 existing landing specs pass (no failures)
-
 ### Requirement: npm run test:smoke runs full Playwright suite
 
 The `test:smoke` script in `apps/web/package.json` SHALL execute `playwright test --project=chromium` (same as now), which runs both existing landing specs and new flow specs.
@@ -140,3 +133,11 @@ El spec E2E `apps/web/e2e/search-form.spec.ts` SHALL verificar que el wrapper `r
 - **AND** la clase NO contiene `bg-linear-to-r`
 - **AND** la clase NO contiene `from-secondary`
 
+### Requirement: Landing E2E suite remains green after removing top-header
+The 7 remaining Playwright landing specs in `apps/web/e2e/` (hero-banner, site-header, site-header-scroll, search-form, panel-home, services-section, solution-section) plus the new `phone-fab.spec.ts` SHALL continue to pass with the stub API present in the webServer.
+
+#### Scenario: Landing specs pass with stub
+- **WHEN** `npx playwright test --project=chromium` is executed with the stub API running
+- **THEN** all 7 existing landing specs pass (no failures)
+- **AND** `phone-fab.spec.ts` passes and asserts the phone FAB link, position and accessible name
+- **AND** `top-header.spec.ts` does not exist in the suite

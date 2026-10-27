@@ -57,9 +57,12 @@ describe('Footer — structure & outermost element', () => {
 describe('Footer — brand column (logo + tagline + social)', () => {
   it('renders the brand logo image via astro:assets with lazy loading and alt', async () => {
     const img = getBrandImage(await render());
-    expect(img).toContain('logo-web');
+    expect(img).toMatch(/logo-web[^"]*\.png/);
+    expect(img).not.toContain('logo-web.webp');
     expect(img).toMatch(/loading="lazy"/);
     expect(img).toMatch(/alt="Riff"/);
+    expect(img).toMatch(/width="165"/);
+    expect(img).toMatch(/height="83"/);
   });
 
   it('renders the tagline paragraph verbatim with muted text', async () => {
@@ -348,7 +351,7 @@ describe('Footer — snapshot', () => {
     // snapshot is stable across builds.
     const normalized = html.replace(
       /(src=")[^"]*logo-web[^"]*(")/,
-      '$1/assets/img/logo-web.webp$2',
+      '$1/assets/img/logo-web.png$2',
     );
     expect(normalized).toMatchSnapshot();
   });

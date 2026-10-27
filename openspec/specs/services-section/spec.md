@@ -2,7 +2,9 @@
 
 ## Purpose
 Sección Servicios del home: sección plana oscura, header centrado con headline y descripción, grid 2x2 responsive de tarjetas horizontales con imagen lazy y títulos en h4 con el token teal primario.
+
 ## Requirements
+
 ### Requirement: ServicesSection renders as a flat dark section with vertical padding
 The `services-section` SHALL render a `<section>` as its outermost element carrying vertical padding utilities (`py-16 md:py-24`) and the deep teal background token `bg-primary-deep` (`--color-primary-deep: #006874`). The section SHALL NOT apply negative margin / overlap (unlike `PanelHome`) — it is a flat block with a hard color transition from the light `bg-surface-muted` of `SolutionSection` above. The section SHALL contain a single inner container using the canonical container utilities (`mx-auto px-4 sm:px-6 lg:px-8` and the `max-w-7xl` constraint expressed by the `container` utility). (MODIFIED in `site-favicon-and-bg-swap`: the section background token changes from `bg-secondary-dark` (navy) to `bg-primary-deep` (deep teal) so the services block reads as a more prominent teal band and the subsequent `DestacadosSection` becomes the navy anchor of the home — see also the mirrored change in the `destacados-section` spec. MODIFIED in `polish-representaciones-page`: the light section above changes from `bg-bg` to `bg-surface-muted`.)
 
@@ -303,7 +305,8 @@ The `apps/web/src/pages/index.astro` SHALL render, in order inside the `<Layout>
 
 #### Scenario: DOM order is preserved: hero → panel → solutions → services
 - **WHEN** the home page renders
-- **THEN** the rendered HTML keeps the existing order: `<TopHeader />`, then `<header>` (site-header), then the SearchForm `<div role="search">`, then the HeroBanner `<section>`, then the PanelHome `<section>`, then the SolutionSection `<section>`, then the ServicesSection `<section>`
+- **THEN** the rendered HTML keeps the order: `<header>` (site-header), then the SearchForm `<div role="search">`, then the HeroBanner `<section>`, then the PanelHome `<section>`, then the SolutionSection `<section>`, then the ServicesSection `<section>`
+- **AND** no retired top contact bar precedes the header
 - **AND** the count of `<header>` elements in the document is still exactly one (no new landmark is introduced)
 - **AND** (POST-APPLY UPDATE) the visible heading outline of the loaded page keeps exactly 1 `<h1>`, 2 `<h2>`, 2 `<h3>` and 8 `<h4>`; the count is performed over visible elements because the Astro Dev Toolbar (present in `astro preview`) appends hidden `<h1>` elements to the DOM that are NOT part of the page content (this supersedes the previous 1/2/1/4 outline declared by the archived `solution-section` change: ServicesSection adds one `<h3>` and 4 `<h4>` as a sibling portfolio section)
 
@@ -312,4 +315,3 @@ The `apps/web/src/pages/index.astro` SHALL render, in order inside the `<Layout>
 - **THEN** the HeroBanner `<section>` carries the same set of classes and content it would carry when rendered alone
 - **AND** the PanelHome `<section>` carries the same set of classes and content it would carry when rendered alone
 - **AND** the SolutionSection `<section>` carries the same set of classes and content it would carry when rendered alone
-

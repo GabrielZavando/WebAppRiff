@@ -10,7 +10,7 @@
  * immutable by design, and the component never mutates its props.
  */
 
-import type { SocialLink } from '@/lib/types/top-header';
+import type { SocialLink } from '@/lib/types/contact';
 
 /** A single link item rendered inside a footer link column. */
 export interface FooterLink {
@@ -52,8 +52,8 @@ export interface SiteFooterProps {
   readonly tagline: string;
   /**
    * Social network links, reusing the `SocialLink` contract from
-   * `top-header` so the site has a single source of truth for the social
-   * presence (design.md § Decision 4). Only configured URLs render.
+   * `lib/types/contact` so the site has a single source of truth for the
+   * social presence (design.md § Decision 4). Only configured URLs render.
    */
   readonly socialLinks: readonly SocialLink[];
   /** Link columns (SERVICIOS, EMPRESA), in render order. */

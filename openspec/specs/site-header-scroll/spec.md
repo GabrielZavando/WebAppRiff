@@ -2,26 +2,28 @@
 
 ## Purpose
 Comportamiento del header y la agrupación de búsqueda al hacer scroll: sticky, encogido del logo, transición de fondo a secondary, sombra en estado compacto, revert completo al top y animación suave respetando reduced motion.
+
 ## Requirements
+
 ### Requirement: Header and Search group stick on scroll
-The site SHALL keep the Header and SearchForm fixed at the top of the viewport (`position: sticky; top: 0`) when the page is scrolled down (`scrollY > 0`), grouped inside a single sticky wrapper rendered by `Layout.astro`.
+The site SHALL keep the Header and SearchForm fixed at the top of the viewport (`position: sticky; top: 0`) when the page is scrolled down (`scrollY > 0`), grouped inside a single sticky wrapper rendered by `Layout.astro`. There is no contact bar above the group anymore.
 
 #### Scenario: Sticky grouping activates on scroll
 - **WHEN** the user scrolls the page so that `window.scrollY > 0`
 - **THEN** the Header and SearchForm remain visible at the top of the viewport (their wrapper computes `position: sticky` with `top: 0`)
-- **AND** the TopHeader contact bar is not part of the sticky wrapper and scrolls out of view normally
+- **AND** no retired top contact bar exists in the document to scroll out of view
 
 #### Scenario: Sticky grouping does not apply at the top
 - **WHEN** the page is at `scrollTop === 0`
 - **THEN** the Header and SearchForm render in their normal document flow position (no compact/sticky visual offset beyond their natural layout)
 
 ### Requirement: Logo shrinks on scroll
-The site SHALL reduce the Header logo when the compact scroll state is active, from its current maximum width (300px at ≥640px, 200px below 640px), acotado en desktop (≥640px) a un alto renderizado mínimo de 100px con ancho automático que preserve el aspect ratio del asset (330×134), y a 150px de ancho en mobile (<640px), sin cambios respecto al comportamiento previo.
+The site SHALL reduce the Header logo when the compact scroll state is active, from its rest maximum width (240px at ≥640px, 160px below 640px), acotado en desktop (≥640px) a un alto renderizado mínimo de 100px con ancho automático que preserve el aspect ratio del asset PNG (1080×542, ratio ≈1.99:1), y a 150px de ancho en mobile (<640px).
 
 #### Scenario: Logo shrinks on desktop with a 100px minimum height
 - **WHEN** the compact scroll state is active and the viewport is at least 640px wide
 - **THEN** the logo image renders with a computed height of at least 100px
-- **AND** its width adapts automatically preserving the aspect ratio of the asset (330×134)
+- **AND** its width adapts automatically preserving the ≈1.99:1 aspect ratio of `logo-web.png` (≈199px wide at 100px tall)
 
 #### Scenario: Logo shrinks on mobile (unchanged)
 - **WHEN** the compact scroll state is active and the viewport is narrower than 640px
@@ -29,7 +31,7 @@ The site SHALL reduce the Header logo when the compact scroll state is active, f
 
 #### Scenario: Logo restored at the top
 - **WHEN** the page returns to `scrollTop === 0`
-- **THEN** the logo image computes its original `max-width` (200px below 640px, 300px at 640px and above)
+- **THEN** the logo image computes its original `max-width` (160px below 640px, 240px at 640px and above)
 
 ### Requirement: Header and Search background transitions to secondary on scroll
 The site SHALL render the Header and SearchForm with a solid `--color-secondary` (#1F2D40) background when the compact scroll state is active, replacing their default background (transparent on the home hero, navy gradient on other pages for the Header; white on other pages for the SearchForm).
@@ -100,4 +102,3 @@ The compact scroll state SHALL apply its `data-scrolled` attribute to the **curr
 - **WHEN** the user scrolls down and then returns to `scrollY === 0`
 - **THEN** the logo shrinks while scrolled (150px width mobile / 100px height desktop)
 - **AND** the logo grows back to its original size with the 300ms ease-in-out transition at the top
-

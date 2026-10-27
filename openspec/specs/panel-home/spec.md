@@ -2,7 +2,9 @@
 
 ## Purpose
 The `panel-home` is the teal + white about/trust panel that sits below the home `HeroBanner` on the home page. Its left half carries a teal background with an eyebrow, headline, description and a navy CTA pointing to `/contacto`. Its right half carries a 2×2 grid of four statistics (`40+`, `30.000+`, `5+`, `9+`) over a white background, adorned with a decorative `+` divider formed by the primary colour through CSS Grid `gap-px`. The stats count up from 0 to their target values on first visibility (respecting `prefers-reduced-motion`). The whole card sits with an elevation shadow (`--shadow-scroll-shell`) — the documented flat-design exception.
+
 ## Requirements
+
 ### Requirement: PanelHome renders the left half with eyebrow, headline, description and a navy CTA over a teal background
 The `panel-home` SHALL render its left half as a `<div>` (or equivalent) carrying the `bg-primary` class (resolving to `--color-primary` `#41B3C4`), containing un eyebrow `<span>` (uppercase, not a heading) que aplica la heading font via `font-heading` (Montserrat) con peso `font-semibold` y size `text-xs tracking-wider`, a headline `<h2>` que aplica `font-heading font-bold`, a description `<p>` (Open Sans body implícito), and a single CTA `<a href="/contacto">` styled with `bg-secondary text-white font-heading font-semibold` (Montserrat 600, `text-xs uppercase tracking-wide`). The CTA SHALL NOT apply `rounded` (flat design con radio 0). The eyebrow SHALL NOT be rendered as a heading element (`<h1>`–`<h6>`). The obsolete utilities `bg-brand-teal` and `bg-brand-navy`, and references to `--color-brand-teal` / `--color-brand-navy`, SHALL NOT appear anywhere in the panel.
 
@@ -130,7 +132,8 @@ The `apps/web/src/pages/index.astro` SHALL render `<HeroBanner {...HERO_BANNER_C
 
 #### Scenario: PanelHome renders after the HeroBanner in the DOM
 - **WHEN** the home page renders
-- **THEN** the rendered HTML keeps the existing order: `<TopHeader />`, then `<header>` (site-header), then the SearchForm `<div role="search">`, then the HeroBanner `<section>`, then the PanelHome `<section>`
+- **THEN** the rendered HTML keeps the order: `<header>` (site-header), then the SearchForm `<div role="search">`, then the HeroBanner `<section>`, then the PanelHome `<section>`
+- **AND** no retired top contact bar precedes the header
 - **AND** the count of `<header>` elements in the document is still exactly one (no new landmark is introduced)
 
 ### Requirement: PanelHome reduces its inner padding on desktop
@@ -226,4 +229,3 @@ The PanelHome `<section>` SHALL carry a uniform `-mt-2` (−8px at every breakpo
 - **AND** the section does NOT carry a positive `lg:mt-2` offset nor a redundant `md:-mt-2`
 - **AND** on desktop (≥1024px) the card sits 8px above the hero bottom edge — 16px closer to the top than before
 - **AND** on mobile/tablet the offset stays −8px (unchanged)
-

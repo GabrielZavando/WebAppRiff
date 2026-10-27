@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { getContactInfo } from '@/lib/config/contact';
-import { getSocialLinks } from '@/lib/types/top-header';
+import { getSocialLinks } from '@/lib/types/contact';
 
 const ENV_KEYS = [
   'PRIMARY_PHONE',

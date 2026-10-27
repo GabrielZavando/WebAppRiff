@@ -71,6 +71,12 @@ beforeEach(() => {
 });
 
 describe('Home featured section — build-time data source', () => {
+  it('renders without the retired top contact bar', async () => {
+    const clean = await renderHome();
+    expect(clean).not.toContain('aria-label="Barra de contacto"');
+    expect(clean).toContain('href="tel:+56229079067"');
+  });
+
   it('fetches the featured list once per page render', async () => {
     await renderHome();
     expect(getFeaturedProducts).toHaveBeenCalledTimes(1);

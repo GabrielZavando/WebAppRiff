@@ -2,7 +2,9 @@
 
 ## Purpose
 Formulario de búsqueda del sitio: select de categorías con opción por defecto, input etiquetado, botón submit, modo transparente, landmark search y submit por GET a una URL canónica.
+
 ## Requirements
+
 ### Requirement: SearchForm renders a category select with a default option
 The search-form SHALL render a `<select>` populated from the `categories` prop, where the first option is `{ id: "", label: "Todas las categorías" }` and is pre-selected when `initialCategoriaId` is empty. The select border SHALL use the `--color-border` (`#E3E8ED`) token via la utility `border-border`; el texto del control SHALL usar el token `text-text-2` (#5C6675) en lugar de la paleta por defecto Tailwind `text-gray-*`. The select SHALL NOT apply `rounded` (flat design con radio 0). The selected/focused state SHALL use a primary-color ring via `focus:border-primary` (resolving to `#41B3C4`). Hex literals SHALL NOT appear in `class` attributes.
 
@@ -207,7 +209,7 @@ The category list rendered by `SearchForm` SHALL be derived at build time from t
 - **THEN** it returns `{ action: "/catalogo", submitLabel: "IR", inputPlaceholder: "¿Qué productos estás buscando?", inputName: "q", selectName: "categoriaId" }`
 
 ### Requirement: SearchForm integrates into the global layout
-The SearchForm SHALL render below `<Header />` and above the page slot inside `Layout.astro`, wrapped in a `role="search"` landmark. Its visibility SHALL be controlled by the Layout prop `showSearch` (default `true`); pages that must not show the search pass `showSearch={false}` (e.g. Contacto, Marcas, Nosotros, Cotización). The search background SHALL be controlled solely by the `transparent` prop (hero pages): transparent on the hero, solid `bg-secondary` elsewhere — the Layout prop `searchSecondary` SHALL NOT exist (removed in `ui-chrome-polish`). The category `<select>` visibility SHALL be controlled by the Layout prop `searchShowCategorySelect` (default `true`); the Productos page passes `false` to hide it. The existing DOM order and single-`<header>` landmark invariants SHALL be preserved. (MODIFIED in `ui-chrome-polish`.)
+The SearchForm SHALL render below `<Header />` and above the page slot inside `Layout.astro`, wrapped in a `role="search"` landmark. Its visibility SHALL be controlled by the Layout prop `showSearch` (default `true`); pages that must not show the search pass `showSearch={false}` (e.g. Contacto, Marcas, Nosotros, Cotización). The search background SHALL be controlled solely by the `transparent` prop (hero pages): transparent on the hero, solid `bg-secondary` elsewhere — the Layout prop `searchSecondary` SHALL NOT exist (removed in `ui-chrome-polish`). The category `<select>` visibility SHALL be controlled by the Layout prop `searchShowCategorySelect` (default `true`); the Productos page passes `false` to hide it. The single-`<header>` landmark invariant SHALL be preserved. (MODIFIED in `ui-chrome-remove-top-header-phone-fab` — the retired top bar is no longer part of the layout order.)
 
 #### Scenario: Solid secondary applies on non-hero pages
 - **WHEN** a page without hero uses the global `Layout.astro` with `showSearch` enabled
@@ -216,7 +218,8 @@ The SearchForm SHALL render below `<Header />` and above the page slot inside `L
 
 #### Scenario: SearchForm renders after the header in the page
 - **WHEN** a page uses the global `Layout.astro` with `showSearch` enabled
-- **THEN** the rendered HTML contains `<TopHeader />`, then `<header>` (from site-header), then `<div role="search">` (from SearchForm), in that DOM order
+- **THEN** the rendered HTML contains `<header>` (from site-header), then `<div role="search">` (from SearchForm), in that DOM order
+- **AND** no top contact bar or `role="region"` with `aria-label="Barra de contacto"` precedes the header
 - **AND** the page slot content renders after the SearchForm
 
 #### Scenario: Search is omitted when showSearch is false
@@ -315,16 +318,15 @@ The global SearchForm SHALL be rendered on Inicio (`/`), Productos (`/productos`
 - **THEN** no `role="search"` landmark is present
 
 ### Requirement: Servicios and Marcas pages exist with the Layout shell
-The routes `/servicios` and `/marcas` SHALL each return HTTP 200 (no 404) and render inside the global `Layout.astro` (which provides TopHeader, Header, Footer and SiteCredits), containing a `<main>` placeholder for future content. `/servicios` SHALL opt into the global search with the navy (`bg-secondary`) background; `/marcas` SHALL opt out of the global search (`showSearch={false}`).
+The routes `/servicios` and `/marcas` SHALL each return HTTP 200 (no 404) and render inside the global `Layout.astro` (which provides Header, Footer, SiteCredits and the global floating contact actions), containing a `<main>` placeholder for future content. `/servicios` SHALL opt into the global search with the navy (`bg-secondary`) background; `/marcas` SHALL opt out of the global search (`showSearch={false}`).
 
 #### Scenario: Servicios page renders with navy search
 - **WHEN** a visitor loads `/servicios`
 - **THEN** the response status is 200
 - **AND** a `role="search"` landmark is present
-- **AND** the search wrapper carries `bg-linear-to-r from-secondary to-secondary-light`
+- **AND** the search wrapper carries `bg-secondary`
 
 #### Scenario: Marcas page renders without search
 - **WHEN** a visitor loads `/marcas`
 - **THEN** the response status is 200
 - **AND** no `role="search"` landmark is present
-

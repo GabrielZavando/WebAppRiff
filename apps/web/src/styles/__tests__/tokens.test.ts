@@ -187,7 +187,7 @@ describe('apps/web/src/styles/globals.css — design tokens (tasks 2.x)', () => 
  * aplican utilidad rounded").
  */
 const BASE_COMPONENTS = [
-  'TopHeader.astro',
+  'PhoneFab.astro',
   'Header.astro',
   'SearchForm.astro',
   'HeroBanner.astro',

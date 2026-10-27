@@ -72,6 +72,16 @@ describe('Home page — PanelHome DOM order & HeroBanner isolation (panel-home s
     expect(panelOccurrences).toBe(1);
   });
 
+  it('renders the global chrome without the retired contact bar and in Header → SearchForm order', async () => {
+    const html = await renderHome();
+    expect(html).not.toContain('aria-label="Barra de contacto"');
+
+    const headerAt = html.indexOf('<header');
+    const searchAt = html.indexOf('role="search"');
+    expect(headerAt).toBeGreaterThanOrEqual(0);
+    expect(searchAt).toBeGreaterThan(headerAt);
+  });
+
   it('S10: HeroBanner HTML is identical rendered alone vs within the home page (not modified by PanelHome)', async () => {
     const standalone = normalizeWhitespace(heroSectionOf(await renderHeroBannerStandalone()));
     const inPage = normalizeWhitespace(heroSectionOf(await renderHome()));

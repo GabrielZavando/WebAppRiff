@@ -308,28 +308,24 @@ test.describe('PanelHome (home about/trust panel)', () => {
     expect(panelH2Count).toBe(1);
   });
 
-  test('preserves DOM order TopHeader -> header -> search -> hero -> panel (4.11)', async ({
+  test('preserves DOM order header -> search -> hero -> panel (4.11)', async ({
     page,
   }) => {
-    const phone = page.locator('a[href^="tel:"]').first();
     const header = page.locator('header').first();
     const search = page.getByRole('search', { name: 'Buscar productos' });
     const hero = page.locator('section.relative:not(.z-10)').first();
     const panel = page.locator(PANEL_SECTION_SELECTOR).first();
 
-    const phoneBox = await phone.boundingBox();
     const headerBox = await header.boundingBox();
     const searchBox = await search.boundingBox();
     const heroBox = await hero.boundingBox();
     const panelBox = await panel.boundingBox();
 
-    expect(phoneBox).toBeTruthy();
     expect(headerBox).toBeTruthy();
     expect(searchBox).toBeTruthy();
     expect(heroBox).toBeTruthy();
     expect(panelBox).toBeTruthy();
 
-    expect(phoneBox!.y).toBeLessThan(headerBox!.y);
     expect(headerBox!.y).toBeLessThan(searchBox!.y);
     expect(searchBox!.y).toBeLessThan(heroBox!.y);
     expect(heroBox!.y).toBeLessThan(panelBox!.y);

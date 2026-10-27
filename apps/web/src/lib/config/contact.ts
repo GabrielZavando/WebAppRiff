@@ -1,4 +1,4 @@
-import type { ContactInfo } from '@/lib/types/top-header';
+import type { ContactInfo } from '@/lib/types/contact';
 
 /**
  * SSG configuration constants for the contact bar — single source of truth.

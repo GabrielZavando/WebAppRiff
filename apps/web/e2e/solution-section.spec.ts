@@ -239,10 +239,9 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     }
   });
 
-  test('preserves DOM order TopHeader -> header -> search -> hero -> panel -> solutions -> services (5.8)', async ({
+  test('preserves DOM order header -> search -> hero -> panel -> solutions -> services (5.8)', async ({
     page,
   }) => {
-    const phone = page.locator('a[href^="tel:"]').first();
     const header = page.locator('header').first();
     const search = page.getByRole('search', { name: 'Buscar productos' });
     const hero = page.locator('section.relative:not(.z-10)').first();
@@ -250,7 +249,6 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     const solutions = page.locator(SECTION_SELECTOR).first();
     const services = page.locator('section.bg-secondary-dark').first();
 
-    const phoneBox = await phone.boundingBox();
     const headerBox = await header.boundingBox();
     const searchBox = await search.boundingBox();
     const heroBox = await hero.boundingBox();
@@ -258,7 +256,6 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     const solutionsBox = await solutions.boundingBox();
     const servicesBox = await services.boundingBox();
 
-    expect(phoneBox).toBeTruthy();
     expect(headerBox).toBeTruthy();
     expect(searchBox).toBeTruthy();
     expect(heroBox).toBeTruthy();
@@ -266,7 +263,6 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     expect(solutionsBox).toBeTruthy();
     expect(servicesBox).toBeTruthy();
 
-    expect(phoneBox!.y).toBeLessThan(headerBox!.y);
     expect(headerBox!.y).toBeLessThan(searchBox!.y);
     expect(searchBox!.y).toBeLessThan(heroBox!.y);
     expect(heroBox!.y).toBeLessThan(panelBox!.y);

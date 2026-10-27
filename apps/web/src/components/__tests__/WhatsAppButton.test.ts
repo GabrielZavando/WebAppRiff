@@ -109,6 +109,7 @@ describe('WhatsAppButton — icon-only (SC-007, SC-008)', () => {
     expect(svg).not.toBe('');
     expect(svg).toContain('data-icon="simple-icons:whatsapp"');
     expect(svg).toContain('aria-hidden="true"');
+    expect(svg).toContain('text-white');
   });
 
   describe('WhatsAppButton — increased FAB size (SC-009, change web-content-and-ui-polish)', () => {

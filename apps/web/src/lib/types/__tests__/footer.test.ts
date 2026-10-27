@@ -5,7 +5,7 @@ import type {
   FooterScheduleEntry,
   SiteFooterProps,
 } from '@/lib/types/footer';
-import type { SocialLink } from '@/lib/types/top-header';
+import type { SocialLink } from '@/lib/types/contact';
 import { SITE_FOOTER_CONTENT } from '@/lib/config/footer';
 
 /**
@@ -28,9 +28,9 @@ import { SITE_FOOTER_CONTENT } from '@/lib/config/footer';
  * live in `lib/config/__tests__/footer.test.ts` against `SITE_FOOTER_CONTENT`,
  * the runtime carrier of the contract.
  *
- * See `design.md` § Decision 4 (social icons reuse the `SocialLink` contract
- * from `top-header`: the footer must NOT define a parallel social type — one
- * single source of truth for the social presence) and § Decision 2 (column
+ * See `design.md` § Decision 4 (social icons reuse the neutral `SocialLink`
+ * contract from `lib/types/contact`: the footer must NOT define a parallel
+ * social type — one single source of truth for the social presence) and § Decision 2 (column
  * titles are `<p>` labels, NOT headings — the footer must not alter the
  * per-page heading outline; hence `FooterColumn.title` is a plain string).
  */
@@ -142,9 +142,9 @@ describe('footer.ts types', () => {
     expectTypeOf<typeof SITE_FOOTER_CONTENT>().toExtend<SiteFooterProps>();
   });
 
-  it('socialLinks reuses the SocialLink contract from top-header (design.md Decision 4)', () => {
+  it('socialLinks reuses the SocialLink contract from contact types (design.md Decision 4)', () => {
     // The footer MUST NOT introduce a parallel social type: `socialLinks`
-    // reuses the exact `SocialLink` interface consumed by `TopHeader.astro`.
+    // reuses the exact `SocialLink` interface from `lib/types/contact`.
     expectTypeOf<SiteFooterProps['socialLinks']>().toEqualTypeOf<
       readonly SocialLink[]
     >();

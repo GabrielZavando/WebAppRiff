@@ -2,7 +2,9 @@
 
 ## Purpose
 Header principal global del sitio público: logo (2× tamaño), navegación de 5 items con estado activo por ruta, CTA de cotización integrada en el menú, y menú móvil a pantalla completa con animación de deslizamiento.
+
 ## Requirements
+
 ### Requirement: Header renders navigation items in order
 The site-header SHALL render the navigation items from the hardcoded `NAVIGATION_ITEMS` constant in the declared order, followed by the CTA as the last item inside the `<nav>` element. The CTA SHALL keep its `bg-accent` styling but SHALL be rendered inside the `<nav>` rather than as a standalone element outside it. The nav SHALL be right-aligned on desktop.
 
@@ -115,20 +117,27 @@ The site-header SHALL obtain its menu and close icons via `astro-icon` (`<Icon>`
 - **AND** all `<Icon name="...">` references start with the prefix `lucide:`
 
 ### Requirement: Header renders logo at 2× size with overflow
-(section on tokens) The header container SHALL use the `--color-secondary` (navy `#1F2D40`) token via the Tailwind utility `bg-secondary` for its background; the gradient utilities `bg-linear-to-r from-secondary to-secondary-light` and the obsolete utilities `bg-brand-navy`, `from-brand-navy`, `to-brand-navy-light` SHALL NOT appear. (MODIFIED in `ui-chrome-uniform` — the logo rendering contract is unchanged; only the background token sentence changed from gradient to solid.)
+The header SHALL render the Riff logo from `apps/web/src/assets/img/logo-web.png` via `astro:assets` `<Image>`, with explicit intrinsic dimensions `width={330}` and `height={166}` to preserve the 1080×542 (≈1.99:1) aspect ratio at 2× density in the desktop header. The logo SHALL keep `loading="eager"`, the descriptive `logoAlt` fallback, the `h-20 lg:h-24` wrapper with `overflow-visible`, and responsive maximum widths of `max-w-[160px]` below the `sm` breakpoint and `sm:max-w-[240px]` from 640px up. Those caps preserve the previous rendered heights (~80px mobile, ~120px desktop) and therefore the accepted slight overflow of the desktop header box. No import or reference to `logo-web.webp` SHALL remain in `Header.astro`. The header container SHALL use the `--color-secondary` (navy `#1F2D40`) token via the Tailwind utility `bg-secondary` for its background; the gradient utilities `bg-linear-to-r from-secondary to-secondary-light` and the obsolete utilities `bg-brand-navy`, `from-brand-navy`, `to-brand-navy-light` SHALL NOT appear.
+
+#### Scenario: Logo asset and intrinsic dimensions
+- **WHEN** `Header.astro` is inspected
+- **THEN** it imports `logo-web.png`
+- **AND** it renders `<Image>` with `width={330}` and `height={166}`
+- **AND** the logo image carries `max-w-[160px]` and `sm:max-w-[240px]`
+- **AND** `logo-web.webp` is not referenced
 
 #### Scenario: Logo container uses the solid secondary background
-- **WHEN** the site header renders in its default (non-transparent) state
+- **WHEN** el site header renders in its default (non-transparent) state
 - **THEN** the `<header>` container applies `bg-secondary` (resolving to `#1F2D40`)
 - **AND** the container does NOT apply `from-secondary to-secondary-light`
 
 ### Requirement: Header accessibility
-The site-header SHALL meet accessibility requirements and ensure a single `<header>` landmark per page. The hamburger/X toggle button SHALL remain visible over the fullscreen overlay with a color that contrasts both the navy header and the white overlay.
+The site-header SHALL meet accessibility requirements and ensure a single `<header>` landmark per page. The hamburger/X toggle button SHALL remain visible over the fullscreen overlay with a color that contrasts both the navy header and the white overlay. The retired top bar SHALL NOT introduce a second landmark or a contact region.
 
 #### Scenario: Semantic landmarks
-- **WHEN** the page renders the Header and TopHeader together
+- **WHEN** any page renders the Header
 - **THEN** exactly one `<header>` element exists in the document
-- **AND** the TopHeader wrapper is a non-landmark element (`<div role="region" aria-label="Barra de contacto">`)
+- **AND** no element with `role="region"` and `aria-label="Barra de contacto"` exists
 - **AND** the navigation is wrapped in `<nav aria-label="Navegación principal">`
 
 #### Scenario: Interactive element labels
@@ -158,11 +167,10 @@ The site SHALL serve the CTA destination page at `/cotizacion`.
 - **AND** the page contains the heading "Solicitar cotización"
 
 ### Requirement: Header box contains the full logo height
-The `.site-header` container SHALL include a responsive `padding-bottom` of `pb-10 lg:pb-4` (client decision in `ui-chrome-polish`, previously `pb-10 lg:pb-12`): mobile keeps 80px (h-20) + 40px (pb-10) ≥ ~81px logo (full containment); desktop relaxes to 96px (lg:h-24) + 16px (lg:pb-4) = 112px vs ~122px logo at the 300px cap — a slight visual overflow of the 2× logo on desktop that the client explicitly accepted ("así se ve mejor"), preserving the logo wrapper's `overflow-visible` behavior. (MODIFIED in `ui-chrome-polish`.)
+The `.site-header` container SHALL include a responsive `padding-bottom` of `pb-10 lg:pb-4`: mobile keeps 80px (`h-20`) + 40px (`pb-10`) = 120px against a ~80.4px rendered logo at the 160px cap (full containment); desktop keeps 96px (`lg:h-24`) + 16px (`lg:pb-4`) = 112px against a ~120.5px rendered logo at the 240px cap — the same slight visual overflow accepted by the client in `ui-chrome-polish`, preserved by keeping the logo wrapper's `overflow-visible` behavior and the previous rendered heights. (MODIFIED in `ui-chrome-remove-top-header-phone-fab` — dimensions updated for the 1080×542 PNG while preserving the old visual footprint.)
 
 #### Scenario: SC-001 — site-header carries pb-10 lg:pb-4
 - **WHEN** the site-header renders
 - **THEN** the `<header class="site-header">` element carries `pb-10` and `lg:pb-4`
 - **AND** the previous `lg:pb-12` value does NOT appear in the header classes
-- **AND** on mobile the header box still contains the full logo height; on desktop the slight 2× logo overflow is accepted by the client
-
+- **AND** on mobile the header box contains the full logo height; on desktop the same slight 2× logo overflow accepted by the client remains

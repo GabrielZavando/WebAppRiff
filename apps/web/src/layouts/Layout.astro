@@ -1,6 +1,6 @@
 ---
 import '@/styles/globals.css';
-import TopHeader from '@/components/TopHeader.astro';
+import PhoneFab from '@/components/PhoneFab.astro';
 import Header from '@/components/Header.astro';
 import SearchForm from '@/components/SearchForm.astro';
 import Footer from '@/components/Footer.astro';
@@ -120,11 +120,9 @@ const searchFormProps: SearchFormProps = {
       )
     }
     <div class:list={['w-full', hero && 'relative z-10 flex flex-col min-h-screen']}>
-      <TopHeader contact={contact} transparent={hero} />
       {/* Sticky group: Header + SearchForm stay fixed at the top on scroll.
-          TopHeader scrolls away (not part of the sticky group). z-30 keeps the
-          group above page content while staying below the mobile menu
-          overlay (z-40) and toggle (z-50) defined inside Header. */}
+          z-30 keeps the group above page content while staying below the
+          mobile menu overlay (z-40) and toggle (z-50) defined inside Header. */}
       <div class="sticky top-0 z-30 header-scroll-shell">
         <Header {...headerProps} transparent={hero} />
         {showSearch && <SearchForm {...searchFormProps} transparent={hero} />}
@@ -132,6 +130,7 @@ const searchFormProps: SearchFormProps = {
       <slot />
       <Footer {...SITE_FOOTER_CONTENT} />
       <SiteCredits {...SITE_CREDITS_CONTENT} />
+      <PhoneFab phone={contact.phone} />
       <WhatsAppButton phone={contact.whatsapp} />
     </div>
 
