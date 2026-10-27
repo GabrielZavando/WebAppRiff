@@ -1,16 +1,16 @@
 ---
 import { Icon } from 'astro-icon/components';
 import { Image } from 'astro:assets';
-import logoImage from '@/assets/img/logo-web.webp';
+import logoImage from '@/assets/img/logo-web.png';
 import type { SiteFooterProps } from '@/lib/types/footer';
 import { FOOTER_COPYRIGHT, FOOTER_LOCATION } from '@/lib/config/footer';
-import type { SocialNetworkName } from '@/lib/types/top-header';
+import type { SocialNetworkName } from '@/lib/types/contact';
 
 interface Props extends SiteFooterProps {}
 
 const { logoAlt, tagline, socialLinks, columns, scheduleTitle, schedule, scheduleNote } = Astro.props;
 
-// Same icon map and accessibility pattern as TopHeader.astro — the site has a
+// Same icon map and accessibility pattern as ContactBar.astro — the site has a
 // single social presence across chrome (design.md § Decision 4). The X logo
 // uses `simple-icons:x` as the documented, sole exception to the unique
 // Lucide set (Lucide lacks the current X brand mark; see style-guide README).
@@ -33,7 +33,7 @@ const logoAltText = logoAlt || 'Riff';
       `bg-secondary-dark`; content lives in the canonical `.container`.
     - Main zone: responsive grid `grid-cols-1 md:grid-cols-2 lg:grid-cols-4`
       (brand | SERVICIOS | EMPRESA | schedule column).
-    - Brand column: logo image (same `logo-web.webp` as Header.astro, lazy —
+    - Brand column: logo image (same `logo-web.png` as Header.astro, lazy —
       below the fold), tagline (muted), social icons filtered to configured
       URLs (design.md § Decision 4).
     - Link columns: titles are <p> labels (NOT headings — the footer must
@@ -53,7 +53,7 @@ const logoAltText = logoAlt || 'Riff';
   Accessibility:
     - `<footer>` is a landmark; column titles are labels, not headings.
     - Social anchors carry `aria-label`, `target="_blank"` and
-      `rel="noopener noreferrer"` (same as TopHeader).
+      `rel="noopener noreferrer"` (same as ContactBar).
     - Decorative icons are `aria-hidden="true"`.
     - The scroll-to-top button is a real <button> with an accessible label
       describing the action it performs.
@@ -69,7 +69,7 @@ const logoAltText = logoAlt || 'Riff';
             src={logoImage}
             alt={logoAltText}
             width={165}
-            height={67}
+            height={83}
             loading="lazy"
             class="h-auto w-[165px]"
           />

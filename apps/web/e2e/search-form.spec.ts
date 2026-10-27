@@ -305,11 +305,10 @@ test.describe('SearchForm (global search bar)', () => {
     await expect(page.getByRole('search')).toHaveCount(1);
   });
 
-  test('renders TopHeader → header → div[role=search] → page content in DOM order', async ({ page }) => {
+  test('renders header → div[role=search] → page content in DOM order', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
 
-    const topHeader = page.getByRole('region', { name: 'Barra de contacto' });
     // Use the banner role instead of `locator('header')` (strict mode): the
     // Astro Dev Toolbar injects extra <header> elements in `astro preview`.
     const header = page.getByRole('banner');
@@ -321,12 +320,11 @@ test.describe('SearchForm (global search bar)', () => {
     // to keep the spec assertion stable across page-template changes.
     const heroSection = page.locator('section').first();
 
-    const topY = (await topHeader.boundingBox())!.y;
     const headerY = (await header.boundingBox())!.y;
     const searchY = (await search.boundingBox())!.y;
     const slotY = (await heroSection.boundingBox())!.y;
 
-    expect(topY).toBeLessThan(headerY);
+    await expect(page.getByRole('region', { name: 'Barra de contacto' })).toHaveCount(0);
     expect(headerY).toBeLessThan(searchY);
     expect(searchY).toBeLessThan(slotY);
   });

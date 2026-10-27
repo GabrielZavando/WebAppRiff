@@ -20,7 +20,7 @@ const REPO_ROOT = fileURLToPath(new URL('../../../../..', import.meta.url));
 const WEB_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
 
 const BASE_COMPONENTS = [
-  'TopHeader.astro',
+  'PhoneFab.astro',
   'Header.astro',
   'SearchForm.astro',
   'HeroBanner.astro',
@@ -115,8 +115,8 @@ describe('ui-refactor — catálogo de iconos: set único Lucide (task 6.2)', ()
     }
 
     // The sole documented exception: the X social icon must use simple-icons:x
-    // in both TopHeader and Footer (cross-component consistency, design.md § D4).
-    const EXCEPTION_COMPONENTS = ['TopHeader.astro', 'Footer.astro'];
+    // in the Footer (cross-component consistency, design.md § D4).
+    const EXCEPTION_COMPONENTS = ['Footer.astro'];
     for (const name of EXCEPTION_COMPONENTS) {
       it(`${name} mapea X a simple-icons:x (logo oficial X)`, () => {
         const src = readComponentSource(name);

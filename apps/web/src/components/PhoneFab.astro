@@ -1,0 +1,60 @@
+---
+// Global floating phone CTA — dumb presentational component: it receives the
+// phone number via the `phone` prop and derives the `tel:` href. No business
+// rules in the frontmatter.
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  /** Contact phone number. A `tel:` href is derived from it. */
+  phone?: string;
+}
+
+const { phone } = Astro.props;
+
+const trimmedPhone = phone?.trim() ?? '';
+const digits = trimmedPhone.replace(/\D/g, '');
+const telHref = digits
+  ? `tel:${trimmedPhone.startsWith('+') ? '+' : ''}${digits}`
+  : undefined;
+---
+
+<!-- PhoneFab — global floating phone CTA (phone-fab spec):
+     - Fixed bottom-right column, 16px above WhatsAppButton
+       (`fixed bottom-24 right-6 z-20`).
+     - Icon-only link; the accessible name lives in `aria-label`, the icon is
+       decorative. No visible number and no hardcoded phone literal.
+     - Flat 56×56 accent square using design tokens (no radius/shadow).
+     - Attention pulse is pure scoped CSS and honours reduced motion. -->
+{telHref && (
+  <a
+    href={telHref}
+    aria-label="Llamar a Riff"
+    class="phone-fab fixed bottom-24 right-6 z-20 flex h-14 w-14 items-center justify-center bg-accent text-white transition-colors hover:bg-accent-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+  >
+    <Icon name="lucide:phone" class="h-7 w-7 text-white" aria-hidden="true" />
+  </a>
+)}
+
+<style>
+  .phone-fab {
+    animation: phone-fab-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes phone-fab-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.08);
+      opacity: 0.85;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phone-fab {
+      animation: none;
+    }
+  }
+</style>

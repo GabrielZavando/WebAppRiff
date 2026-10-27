@@ -43,13 +43,14 @@ describe('Contact page composition', () => {
     expect(clean).not.toContain('simple-icons:x');
   });
 
-  it('does not introduce a second header landmark', async () => {
+  it('does not introduce a second header landmark or the retired contact bar', async () => {
     const html = await render();
     const clean = stripComments(html);
     // Layout renders exactly one <header> (site-header); the contact page must
     // not add another.
     const headerCount = (clean.match(/<header/g) ?? []).length;
     expect(headerCount).toBe(1);
+    expect(clean).not.toContain('aria-label="Barra de contacto"');
   });
 
   it('renders a solid deep-teal (#006874, bg-primary-deep) background and no hero image', async () => {
@@ -65,8 +66,8 @@ describe('Contact page composition', () => {
     const html = await render();
     const clean = stripComments(html);
     const formEnd = clean.indexOf('</form>');
-    // The phone link now renders twice (TopHeader + ContactBar), so anchor the
-    // bar locator on the email, which is unique to the ContactBar (SC-005).
+    // The phone link also exists in ContactBar, so anchor the bar locator on
+    // the email, which is unique to the ContactBar (SC-005).
     const barStart = clean.indexOf('mailto:contacto@somosriff.cl');
     // Bar must appear AFTER the form in DOM order
     expect(barStart).toBeGreaterThan(formEnd);

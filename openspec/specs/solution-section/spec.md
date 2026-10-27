@@ -2,7 +2,9 @@
 
 ## Purpose
 Sección Solución del home: header con eyebrow, headline, underline teal y descripción; grid responsive de tarjetas de solución; componente presentacional que consume solo tokens de diseño canónicos y los pipelines astro-icon/astro:assets.
+
 ## Requirements
+
 ### Requirement: SolutionSection renders the section header with eyebrow, headline, teal underline and description
 The `solution-section` SHALL render an `<section>` as its outermost element containing a header block composed of: an eyebrow `<span>` (uppercase, NOT a heading) with the eyebrow text; a headline `<h3>` with the headline text styled with the navy `--color-secondary` token; a teal underline bar `<div>` (carrying `bg-primary`) directly beneath the headline; and a description `<p>` with the description text. The header block SHALL be composed in a responsive grid: `grid-cols-1 lg:grid-cols-2` (left half holds eyebrow+headline+bar, right half holds the description paragraph). El titular por defecto de la sección en el home SHALL ser "Nuestros Productos" (renombrado desde "Nuestras Soluciones"); el resto del encabezado (eyebrow, subrayado teal, descripción) no cambia.
 
@@ -156,7 +158,8 @@ The `apps/web/src/pages/index.astro` SHALL render `<HeroBanner {...HERO_BANNER_C
 
 #### Scenario: DOM order is preserved: hero → panel → solutions
 - **WHEN** the home page renders
-- **THEN** the rendered HTML keeps the existing order: `<TopHeader />`, then `<header>` (site-header), then the SearchForm `<div role="search">`, then the HeroBanner `<section>`, then the PanelHome `<section>`, then the SolutionSection `<section>`
+- **THEN** the rendered HTML keeps the order: `<header>` (site-header), then the SearchForm `<div role="search">`, then the HeroBanner `<section>`, then the PanelHome `<section>`, then the SolutionSection `<section>`
+- **AND** no retired top contact bar precedes the header
 - **AND** the count of `<header>` elements in the document is still exactly one (no new landmark is introduced)
 
 #### Scenario: SolutionSection does not modify HeroBanner or PanelHome rendered HTML

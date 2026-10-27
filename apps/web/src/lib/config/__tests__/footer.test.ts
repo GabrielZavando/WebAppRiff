@@ -4,7 +4,7 @@ import {
   FOOTER_COPYRIGHT,
   FOOTER_LOCATION,
 } from '@/lib/config/footer';
-import type { SocialNetworkName } from '@/lib/types/top-header';
+import type { SocialNetworkName } from '@/lib/types/contact';
 
 /**
  * Runtime tests for the site-footer content config.
@@ -25,7 +25,7 @@ import type { SocialNetworkName } from '@/lib/types/top-header';
  * - the copyright and location texts rendered in the bottom bar.
  *
  * Social links come from the env-driven `getContactInfo()` (the same source
- * `TopHeader.astro` consumes); their exact URLs are environment-dependent so
+ * shared with the contact page); their exact URLs are environment-dependent so
  * this suite only asserts they are a well-formed `SocialLink[]` with names
  * from the closed `SocialNetworkName` union.
  */

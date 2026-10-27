@@ -149,7 +149,7 @@ test.describe('HeroBanner (home hero section)', () => {
 
     // Move keyboard focus to the first CTA by repeated Tab from <body>.
     await page.keyboard.press('Tab'); // focus enters <body> · tabbable 1
-    // The first focusable on the home is in the TopHeader / Header / SearchForm,
+    // The first focusables on the home are in the Header / SearchForm,
     // so we Tab until the first CTA is focused.
     for (let i = 0; i < 30 && !(await firstCta.evaluate((el) => el === document.activeElement)); i++) {
       await page.keyboard.press('Tab');
@@ -202,28 +202,26 @@ test.describe('HeroBanner (home hero section)', () => {
     await expect(img).toHaveAttribute('alt', /Instalación industrial Riff/);
   });
 
-  test('preserves the DOM order TopHeader -> header -> SearchForm -> hero section (5.15)', async ({
+  test('preserves the DOM order Header -> SearchForm -> hero section (5.15)', async ({
     page,
   }) => {
     // Reuse the same DOM order assertion strategy as the search-form E2E: read
     // the positions of distinct markers and assert strict ordering.
-    const phone = await page.locator('a[href^="tel:"]').first();
-    const header = page.locator('header').first();
+    const header = page.getByRole('banner');
     const search = page.getByRole('search', { name: 'Buscar productos' });
     const hero = page.locator(HERO_SECTION_SELECTOR).first();
 
-    const phoneBox = await phone.boundingBox();
     const headerBox = await header.boundingBox();
     const searchBox = await search.boundingBox();
     const heroBox = await hero.boundingBox();
 
-    expect(phoneBox).toBeTruthy();
     expect(headerBox).toBeTruthy();
     expect(searchBox).toBeTruthy();
     expect(heroBox).toBeTruthy();
 
-    // Each successive landmark starts strictly below the previous one.
-    expect(phoneBox!.y).toBeLessThan(headerBox!.y);
+    // The retired utility bar is no longer part of the flow; the sticky group
+    // (Header + SearchForm) sits above the page slot.
+    await expect(page.getByRole('region', { name: 'Barra de contacto' })).toHaveCount(0);
     expect(headerBox!.y).toBeLessThan(searchBox!.y);
     expect(searchBox!.y).toBeLessThan(heroBox!.y);
   });

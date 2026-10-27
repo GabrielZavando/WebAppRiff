@@ -3,7 +3,9 @@
 ## Purpose
 
 Define canónicamente el sistema de design tokens del Catálogo Digital Riff: colores (marca + neutros + estado), tipografías (Montserrat / Open Sans), radio y sombras. Los tokens se declaran como entradas `@theme` de Tailwind v4 en `apps/web/src/styles/globals.css` y `apps/admin/src/styles/globals.css` (sincronizados manualmente), y se consumen vía utilities Tailwind (`bg-primary`, `text-secondary`, `border-border`, `shadow-1`, etc.). Fuente visual canónica: `docs/design/style-guide/index.html`.
+
 ## Requirements
+
 ### Requirement: Marca — paleta de 12 colores
 El `globals.css` SHALL declarar en el bloque `@theme {}` los **14 tokens de color de marca** (12 extraídos de la guía visual + 2 de marca WhatsApp), con nombres y valores exactos:
 
@@ -127,7 +129,7 @@ El `globals.css` SHALL declarar:
 | `--shadow-4` | `0 8px 20px rgba(22,32,46,.12)` |
 | `--shadow-5` | `0 12px 28px rgba(22,32,46,.14)` |
 
-El sistema sigue el principio **flat design estricto con ángulos rectos**: el token `--radius` es `0` (radio global cero); los componentes base (Header, TopHeader, HeroBanner, PanelHome, SearchForm) NO aplican ninguna utilidad `rounded`, `rounded-sm`, `rounded-md`, `rounded-lg` ni variantes responsivas. Las superficies se separan por defecto con borders 1px y color sólido. Las sombras (`shadow-1..5`) se reservan exclusivamente para capas flotantes (dropdowns, menús, modales, overlays); los componentes base NO aplican `shadow-*` en su estado estático.
+El sistema sigue el principio **flat design estricto con ángulos rectos**: el token `--radius` es `0` (radio global cero); los componentes base (Header, HeroBanner, PanelHome, SearchForm) NO aplican ninguna utilidad `rounded`, `rounded-sm`, `rounded-md`, `rounded-lg` ni variantes responsivas. Las superficies se separan por defecto con borders 1px y color sólido. Las sombras (`shadow-1..5`) se reservan exclusivamente para capas flotantes (dropdowns, menús, modales, overlays); los componentes base NO aplican `shadow-*` en su estado estático.
 
 #### Scenario: Radius declarado como 0
 - **WHEN** se parsea `apps/web/src/styles/globals.css`
@@ -135,7 +137,7 @@ El sistema sigue el principio **flat design estricto con ángulos rectos**: el t
 - **AND** el mismo valor `0` se declara en `apps/admin/src/styles/globals.css`
 
 #### Scenario: Componentes base no aplican utilidad rounded
-- **WHEN** se renderiza cualquier componente base (`TopHeader.astro`, `Header.astro`, `SearchForm.astro`, `HeroBanner.astro`, `PanelHome.astro`)
+- **WHEN** se renderiza cualquier componente base (`Header.astro`, `SearchForm.astro`, `HeroBanner.astro`, `PanelHome.astro`)
 - **THEN** ninguno aplica una utilidad `rounded*` (`rounded`, `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`, `rounded-2xl`, `rounded-full`, ni variantes `md:rounded*`/`lg:rounded*`) en ningún elemento visible del componente
 
 #### Scenario: 5 niveles de shadow declarados
@@ -143,7 +145,7 @@ El sistema sigue el principio **flat design estricto con ángulos rectos**: el t
 - **THEN** contiene las 5 declaraciones `--shadow-1` hasta `--shadow-5` con los valores exactos de la tabla
 
 #### Scenario: Componentes base no usan sombra
-- **WHEN** se renderiza cualquier componente base (`TopHeader.astro`, `Header.astro`, `SearchForm.astro`, `HeroBanner.astro`, `PanelHome.astro`) en su estado estático
+- **WHEN** se renderiza cualquier componente base (`Header.astro`, `SearchForm.astro`, `HeroBanner.astro`, `PanelHome.astro`) en su estado estático
 - **THEN** ninguno aplica una utilidad `shadow-*` en su JSX
 
 ### Requirement: Prohibición de literales hex y tokens obsoletos

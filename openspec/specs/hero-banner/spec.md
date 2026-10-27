@@ -2,7 +2,9 @@
 
 ## Purpose
 Sección hero del home del sitio público Astro. Componente presentacional (dumb) que renderiza headline + palabra destacada, subtítulo, descripción y dos CTAs (primario teal + secundario outline blanco). No incluye imagen de fondo ni overlay: el fondo y la cobertura full-viewport los aporta el shell hero del Layout (capability `home-hero-shell`), que envuelve imagen `bg-secondary/80` detrás de los headers transparentes. Layout responsivo (mobile stacked, desktop horizontal). Headline único `<h1>` de la home, subtítulo `<h2>` subordinado.
+
 ## Requirements
+
 ### Requirement: HeroBanner renders the headline with the highlighted word in a distinct color
 The `hero-banner` SHALL render an `<h1>` whose visible text equals `headline` followed by `highlightedWord`, where `highlightedWord` is wrapped in a `<span>` carrying the `text-primary` class (resolving to `--color-primary` `#41B3C4`) so it visually stands out from the rest of the headline. The `<h1>` SHALL apply the heading font via `font-heading` (Montserrat) con peso `font-bold` (700) según la escala tipográfica canónica. The obsolete utility `text-brand-teal` and references to `--color-brand-teal` SHALL NOT appear. The component SHALL NOT render any background `<picture>`/image or overlay; the application shell provides all backgrounds.
 
@@ -130,7 +132,7 @@ The home page SHALL render `<HeroBanner {...HERO_BANNER_CONTENT} />` inside its 
 #### Scenario: Home page renders the HeroBanner with headers above
 - **WHEN** a visitor loads `/` (the home page)
 - **THEN** the rendered HTML contains a `<section>` (the hero) wrapping the configured headline, subtitle and CTAs
-- **AND** the DOM order is: hero shell (with `bg-secondary/80` overlay), `TopHeader`, `<header>` (from site-header), SearchForm `<div role="search">`, then the hero `<h1>` block
+- **AND** the DOM order is: hero shell (with `bg-secondary/80` overlay), `<header>` (from site-header), SearchForm `<div role="search">`, then the hero `<h1>` block
+- **AND** no retired top contact bar precedes the header
 - **AND** exactly one `<header>` element exists in the document
 - **AND** the legacy placeholder text "Proyecto en desarrollo — Fase A: Bootstrap completado" is NOT present
-

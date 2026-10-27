@@ -1,6 +1,6 @@
 import type { SiteFooterProps } from '@/lib/types/footer';
 import { getContactInfo } from '@/lib/config/contact';
-import { getSocialLinks } from '@/lib/types/top-header';
+import { getSocialLinks } from '@/lib/types/contact';
 
 /**
  * Hardcoded content for the public site footer.
@@ -24,7 +24,7 @@ import { getSocialLinks } from '@/lib/types/top-header';
  *   `scheduleTitle` prop sourced from config ("Horario de Atención") and
  *   `hours` as an array of split-shift blocks (design.md § Decisions 2/3).
  *
- * The brand logo image (`logo-web.webp`) is deliberately NOT part of this
+ * The brand logo image (`logo-web.png`) is deliberately NOT part of this
  * config: the `SiteFooterProps` contract has no image field (spec
  * "Component is presentational with a typed props contract"), so
  * `Footer.astro` imports the asset directly from `@/assets/img/` exactly
@@ -48,9 +48,9 @@ export const FOOTER_LOCATION = 'SANTIAGO, CHILE';
  * Full props bag for `Footer.astro`, spread onto
  * `<Footer {...SITE_FOOTER_CONTENT} />` by `Layout.astro`.
  *
- * Social links reuse the env-driven `getContactInfo()` already consumed by
- * `TopHeader.astro` (design.md § Decision 4): the footer renders the same
- * social presence as the top bar — a single source of truth.
+ * Social links reuse the env-driven `getContactInfo()` shared by the contact
+ * page (design.md § Decision 4): the footer renders the same social presence —
+ * a single source of truth.
  */
 export const SITE_FOOTER_CONTENT: Readonly<SiteFooterProps> = {
   logoAlt: 'Riff',

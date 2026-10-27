@@ -3,7 +3,7 @@ import type { HeaderProps } from '@/lib/types/header';
 import { isActive } from '@/lib/config/navigation';
 import { Icon } from 'astro-icon/components';
 import { Image } from 'astro:assets';
-import logoImage from '@/assets/img/logo-web.webp';
+import logoImage from '@/assets/img/logo-web.png';
 
 interface Props extends HeaderProps {
   /** Transparent background on the home hero so the full-bleed image shows
@@ -23,10 +23,10 @@ const logoAltText = logoAlt ?? 'Riff';
 <!-- Main site header: logo (2x with overflow), right-aligned desktop nav with
      CTA as the last item, and a fullscreen mobile overlay with slide animation.
      `pb-10 lg:pb-4` is the client decision ("así se ve mejor"): mobile keeps
-     80px (h-20) + 40px (pb-10) ≥ ~81px logo at the 200px cap (full containment);
-     desktop relaxes to 96px (lg:h-24) + 16px (lg:pb-4) = 112px vs ~122px logo at
-     the 300px cap — a slight visual overflow of the 2× logo on desktop explicitly
-     accepted by the client (SC-001). -->
+     80px (h-20) + 40px (pb-10) = 120px vs ~80px logo at the 160px cap (full
+     containment); desktop relaxes to 96px (lg:h-24) + 16px (lg:pb-4) = 112px vs
+     ~121px logo at the 240px cap — a slight visual overflow of the 2× logo on
+     desktop explicitly accepted by the client (SC-001). -->
 <header
   data-menu-open="false"
   class:list={[
@@ -40,14 +40,14 @@ const logoAltText = logoAlt ?? 'Riff';
   ]}
 >
   <div class="site-header__inner container mx-auto px-4 h-20 lg:h-24 flex items-center justify-between gap-4">
-    <!-- Logo: rendered at 2x (330x134), overflow-visible so the header
+    <!-- Logo: rendered at 2x (330x166), overflow-visible so the header
          container (h-24) does not grow -- the logo may visually extend
          beyond the header height without displacing sibling elements. -->
      <a href="/" aria-label="Ir al inicio" class="shrink-0 h-20 lg:h-24 overflow-visible">
-      <!-- Logo: responsive max-width so it scales proportionally — 200px cap
-           on mobile, 300px cap from the sm breakpoint upward. `w-full` lets it
+      <!-- Logo: responsive max-width so it scales proportionally — 160px cap
+           on mobile, 240px cap from the sm breakpoint upward. `w-full` lets it
            fill available width up to the cap while the `width`/`height` attrs
-           (330×134) preserve the aspect ratio for CLS. The wrapper is
+           (330×166) preserve the aspect ratio for CLS. The wrapper is
            `h-20 lg:h-24 overflow-visible`. `max-h-full` caps the logo to the
            header height on small screens so it can never grow the header;
            dropped at `sm:max-h-none` (≥640px) so the desktop compact state can
@@ -57,8 +57,8 @@ const logoAltText = logoAlt ?? 'Riff';
         src={logoImage}
         alt={logoAltText}
         width={330}
-        height={134}
-        class="site-logo block h-auto w-full max-w-[200px] sm:max-w-[300px] sm:max-h-none"
+        height={166}
+        class="site-logo block h-auto w-full max-w-[160px] sm:max-w-[240px] sm:max-h-none"
       />
     </a>
 

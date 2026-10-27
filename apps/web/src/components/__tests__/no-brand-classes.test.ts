@@ -46,7 +46,7 @@ function pageFiles(): FileEntry[] {
 }
 
 describe('apps/web — no obsolete brand-* classes in .astro (task 4.21)', () => {
-  for (const name of ['TopHeader.astro', 'Header.astro', 'SearchForm.astro', 'HeroBanner.astro', 'PanelHome.astro']) {
+  for (const name of ['PhoneFab.astro', 'Header.astro', 'SearchForm.astro', 'HeroBanner.astro', 'PanelHome.astro']) {
     it(`${name} has no brand-* classes`, () => {
       const f = componentFiles().find((x) => x.relPath.endsWith(name));
       expect(f, `${name} not found`).toBeDefined();

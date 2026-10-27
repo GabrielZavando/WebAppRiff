@@ -23,5 +23,5 @@ export function getSocialLinks(contact: ContactInfo): SocialLink[] {
     { name: 'Instagram', href: contact.social.instagram },
     { name: 'LinkedIn', href: contact.social.linkedin },
   ];
-  return links.filter(link => link.href && link.href.length > 0);
+  return links.filter((link) => link.href && link.href.length > 0);
 }

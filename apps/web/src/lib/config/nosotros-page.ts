@@ -30,7 +30,7 @@ import heroImg from '@/assets/img/medicion-fluidos.webp';
 
 /**
  * The canonical site phone (single source: `getContactInfo()`, same as
- * TopHeader/ContactBar/Footer) as a `tel:` href — `"+56 2 29079067"` →
+ * ContactBar/Footer) as a `tel:` href — `"+56 2 29079067"` →
  * `tel:+56229079067`. Trivial derivation resolved here so the component
  * stays dumb (design.md § Decision 2/7).
  */

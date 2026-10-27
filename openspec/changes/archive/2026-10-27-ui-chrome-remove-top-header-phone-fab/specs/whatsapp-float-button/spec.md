@@ -1,0 +1,36 @@
+# whatsapp-float-button Specification
+
+## MODIFIED Requirements
+
+### Requirement: Global floating WhatsApp contact button
+Every page of the site SHALL render a floating WhatsApp contact button (`WhatsAppButton.astro`, integrated once in `Layout.astro`): a fixed `<a>` at the bottom-right corner (`fixed bottom-6 right-6 z-20`), icon-only (`simple-icons:whatsapp` via astro-icon, no text label with the number), `target="_blank"` and `rel="noopener noreferrer"`. El botón SHALL renderizarse con una talla aumentada de 56×56 px (`h-14 w-14`) y un icono de 28 px (`h-7 w-7`), manteniendo su posición fija y su nivel de z-index. The icon SHALL use `text-white` so the WhatsApp glyph contrasts against the green `--color-whatsapp` background instead of inheriting the navy body color. The number SHALL be provided via the `phone` prop from `Layout.astro`, sourced from the configuration constant `contact.whatsapp` (`+56 9 3752 6162`) in `lib/config/contact.ts` — the component SHALL NOT hardcode the number. The `href` SHALL be derived as `https://wa.me/{digits}` (phone digits only with country code). The button colors SHALL use the design tokens `--color-whatsapp` (#25D366) and `--color-whatsapp-dark` (hover); no raw hex in the component. (MODIFIED in `ui-chrome-remove-top-header-phone-fab` — the icon is explicitly white.)
+
+#### Scenario: SC-004 — button links to the configured WhatsApp number
+- **GIVEN** `Layout.astro` renders `<WhatsAppButton phone={contact.whatsapp} />` with `contact.whatsapp = '+56 9 3752 6162'`
+- **WHEN** the button renders
+- **THEN** the `<a>` carries `href="https://wa.me/56937526162"` (digits of the constant)
+- **AND** the component source does NOT contain the phone number as a hardcoded literal
+
+#### Scenario: SC-007 — floating WhatsApp button on every page
+- **GIVEN** any page of the site (including the 404 fallback and pages without the search bar)
+- **WHEN** the Layout renders
+- **THEN** a fixed bottom-right floating button links to the configured WhatsApp number (target `_blank`, `rel="noopener noreferrer"`), icon-only
+- **AND** it is visible above the page content (≥ `z-10`) and below the sticky header group `z-30` and its mobile menu overlay (`z-20` < `z-30`)
+
+#### Scenario: SC-008 — WhatsApp button accessibility
+- **GIVEN** the floating WhatsApp button rendered with the brand token color
+- **WHEN** a screen reader or keyboard user reaches it
+- **THEN** it is an `<a>` with `aria-label="Contactar por WhatsApp"` and a visible focus state
+- **AND** the icon carries `aria-hidden="true"` and there is no text label with the number
+
+#### Scenario: SC-009 — increased FAB size
+- **GIVEN** el botón flotante renderizado en cualquier página
+- **WHEN** se inspecciona el marcado del `<a>`
+- **THEN** el `<a>` lleva las clases de talla `h-14 w-14` (56×56 px)
+- **AND** el icono `simple-icons:whatsapp` lleva las clases `h-7 w-7` (28 px)
+- **AND** las clases `h-12 w-12` / `h-6 w-6` ya no están presentes en el componente
+
+#### Scenario: SC-010 — white WhatsApp glyph
+- **WHEN** el marcado del icono `simple-icons:whatsapp` se inspecciona
+- **THEN** el elemento `<Icon>` lleva la clase `text-white`
+- **AND** el icono no hereda el color azul marino del `body`

@@ -2,7 +2,9 @@
 
 ## Purpose
 Global footer of the public site (`apps/web`, Astro SSG) rendered by `Layout.astro` on every page — dark navy full-bleed shell (`bg-secondary-dark`), brand column (logo image + tagline + social icons shared with `TopHeader`), two link columns (SERVICIOS and EMPRESA) pointing to real internal routes, technical schedule column with 24/7 support note, and a copyright bar with location and a scroll-to-top teal button; strictly flat design (no `rounded*`, no `shadow*`).
+
 ## Requirements
+
 ### Requirement: Footer renders as a full-bleed dark section with canonical container
 
 The `site-footer` SHALL render a `<footer>` element as its outermost element, spanning the full viewport width with the dark navy background token `bg-secondary-dark`. The footer SHALL contain a single inner container using the canonical container utilities (`mx-auto px-4 sm:px-6 lg:px-8` and the `max-w-7xl` constraint expressed by the `container` utility). The main content zone SHALL carry vertical padding utilities (`py-16 md:py-24`).
@@ -53,7 +55,7 @@ The `site-footer` SHALL render a grid of four columns inside the canonical conta
 
 ### Requirement: Brand column shows logo image, tagline and social icons
 
-The `site-footer` SHALL render a brand column as the first grid cell containing: the existing header logo image (`logo-web.webp`) via `astro:assets` `<Image>` with a descriptive `alt` attribute (falling back to "Riff" when not provided) and `loading="lazy"`; the brand tagline paragraph styled with the muted text token; and the configured social links rendered via `astro-icon`. Facebook, Instagram and LinkedIn SHALL use `lucide:facebook`, `lucide:instagram`, `lucide:linkedin`. **Exception**: X SHALL use `simple-icons:x` (the official current X brand logo) — the sole documented exception to the "set único Lucide" rule (Lucide does not provide the current X brand mark; `lucide:x` is a close icon). This exception applies to `site-footer` identically as in `top-header` for cross-component consistency (design.md § Decision 4). Only social networks with a configured URL SHALL render.
+The `site-footer` SHALL render a brand column as the first grid cell containing: the Riff logo image from `apps/web/src/assets/img/logo-web.png` via `astro:assets` `<Image>` with explicit `width={165}` and `height={83}` (preserving the 1080×542 aspect ratio) plus a descriptive `alt` attribute (falling back to "Riff" when not provided) and `loading="lazy"`; the brand tagline paragraph styled with the muted text token; and the configured social links rendered via `astro-icon`. Facebook, Instagram and LinkedIn SHALL use `lucide:facebook`, `lucide:instagram`, `lucide:linkedin`. **Exception**: X SHALL use `simple-icons:x` (the official current X brand logo) — the sole documented exception to the "set único Lucide" rule (Lucide does not provide the current X brand mark; `lucide:x` is a close icon). Only social networks with a configured URL SHALL render.
 
 #### Scenario: Only configured social links render
 - **WHEN** the footer renders with two of the four social URLs configured
@@ -65,7 +67,12 @@ The `site-footer` SHALL render a brand column as the first grid cell containing:
 - **WHEN** the footer renders with the X social URL configured
 - **THEN** the X anchor contains `<Icon name="simple-icons:x">`
 - **AND** no `lucide:twitter` reference appears for the X social link
-- **AND** the X icon name matches TopHeader exactly (`simple-icons:x`)
+
+#### Scenario: Footer logo uses the PNG asset at the correct ratio
+- **WHEN** `Footer.astro` is inspected
+- **THEN** it imports `logo-web.png`
+- **AND** it renders `<Image>` with `width={165}` and `height={83}`
+- **AND** `logo-web.webp` is not referenced
 
 ### Requirement: Link columns render column labels and real internal routes
 
@@ -171,7 +178,7 @@ The site SHALL bind the scroll-to-top click handling via document-level event de
 
 ### Requirement: Component is presentational with a typed props contract
 
-The component SHALL NOT fetch data, import services or contain business logic beyond destructuring props; it SHALL render exclusively from props. The props SHALL be typed by `SiteFooterProps` with all fields `readonly`: `logoAlt`, `tagline`, `socialLinks` (reusing `SocialLink` from `@/lib/types/top-header`), `columns` (array of `FooterColumn` — `title` + `links` of `FooterLink`), `scheduleTitle` (string — the visible schedule column title, rendered uppercase), `schedule` (array of `FooterScheduleEntry` — `days` + `hours` as `readonly string[]` so a single day range can list one or more hour blocks) and `scheduleNote`. The component SHALL NOT use `any`. No column or schedule title SHALL be hardcoded inside the component. Los `href` de `FooterLink` SHALL ser rutas internas reales (o URLs sociales completas); el config SHALL NOT declarar placeholders `href="#"`.
+The component SHALL NOT fetch data, import services or contain business logic beyond destructuring props; it SHALL render exclusively from props. The props SHALL be typed by `SiteFooterProps` with all fields `readonly`: `logoAlt`, `tagline`, `socialLinks` (reusing `SocialLink` from `@/lib/types/contact`), `columns` (array of `FooterColumn` — `title` + `links` of `FooterLink`), `scheduleTitle` (string — the visible schedule column title, rendered uppercase), `schedule` (array of `FooterScheduleEntry` — `days` + `hours` as `readonly string[]` so a single day range can list one or more hour blocks) and `scheduleNote`. The component SHALL NOT use `any`. No column or schedule title SHALL be hardcoded inside the component. Los `href` de `FooterLink` SHALL ser rutas internas reales (o URLs sociales completas); el config SHALL NOT declarar placeholders `href="#"`.
 
 #### Scenario: Props contract matches the config constant
 
@@ -203,11 +210,10 @@ The component SHALL use only the project's design tokens: `bg-secondary-dark` fo
 - **WHEN** the component source is inspected
 - **THEN** it does not reference any obsolete `bg-brand-*`, `text-brand-*` or `border-brand-*` class
 
-### Requirement: Footer social icon map stays in sync with TopHeader
-The Footer SHALL use the same `socialIconMap` mapping as TopHeader (single social presence across chrome, design.md § Decision 4), with the documented `simple-icons:x` exception for X.
+### Requirement: Footer social icon map uses the official X brand logo
+The Footer SHALL map X to `simple-icons:x` (the official current X brand logo) and SHALL NOT map it to `lucide:twitter` or `lucide:x`.
 
-#### Scenario: X icon consistency between Header and Footer chrome
-- **WHEN** both TopHeader and Footer have the X social URL configured
-- **THEN** both render `<Icon name="simple-icons:x">` for X
-- **AND** neither renders `lucide:twitter` for X
-
+#### Scenario: Footer X icon uses the official brand mark
+- **WHEN** the Footer renders with the X social URL configured
+- **THEN** the X anchor contains `<Icon name="simple-icons:x">`
+- **AND** no `lucide:twitter` or `lucide:x` reference appears for the X social link

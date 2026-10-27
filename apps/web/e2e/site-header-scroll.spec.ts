@@ -50,7 +50,7 @@ test.describe('Site header compact scroll state', () => {
     await page.goto('/');
 
     const logo = getLogo(page);
-    await expect(logo).toHaveCSS('max-width', '300px');
+    await expect(logo).toHaveCSS('max-width', '240px');
     await expect(page.locator('body')).not.toHaveAttribute('data-scrolled', 'true');
   });
 
@@ -72,7 +72,7 @@ test.describe('Site header compact scroll state', () => {
     expect(box?.y).toBeLessThan(2);
 
     // Desktop compact logo: capped by height (100px) with automatic width,
-    // preserving the 330×134 aspect ratio (~246px wide) — contract LOGO-SIZE.
+    // preserving the 1080×542 aspect ratio (~199px wide) — contract LOGO-SIZE.
     await expect(getLogo(page)).toHaveCSS('height', '100px');
 
     // Search wrapper background transitions to solid secondary (#1F2D40)
@@ -90,10 +90,6 @@ test.describe('Site header compact scroll state', () => {
     // Logo now transitions two properties (max-width + height) — one 0.3s each.
     await expect(getLogo(page)).toHaveCSS('transition-duration', '0.3s, 0.3s');
 
-    // TopHeader is outside the sticky shell and scrolls out of view
-    const topHeader = page.getByRole('region', { name: 'Barra de contacto' });
-    const thBox = await topHeader.boundingBox();
-    expect(thBox?.y ?? 0).toBeLessThan(0);
   });
 
   test('[SC-001] desktop band 640–1023px keeps the logo at 100px (not capped by max-h-full)', async ({
@@ -120,7 +116,7 @@ test.describe('Site header compact scroll state', () => {
 
     const shell = getStickyShell(page);
     await expect(page.locator('body')).toHaveAttribute('data-scrolled', 'false');
-    await expect(getLogo(page)).toHaveCSS('max-width', '300px');
+    await expect(getLogo(page)).toHaveCSS('max-width', '240px');
     // On the hero, the search wrapper reverts to transparent (not navy).
     await expect(getSearchWrapper(page)).not.toHaveCSS('background-color', SECONDARY_RGB);
     // Drop-shadow removed at the top
@@ -137,7 +133,7 @@ test.describe('Site header compact scroll state', () => {
 
     await scrollTo(page, 400);
 
-    // Logo shrinks from 200px to 150px on mobile
+    // Logo shrinks from 160px to 150px on mobile
     await expect(getLogo(page)).toHaveCSS('max-width', '150px');
 
     // Mobile menu still functional and above the compact header

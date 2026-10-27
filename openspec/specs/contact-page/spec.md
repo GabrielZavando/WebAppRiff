@@ -2,7 +2,9 @@
 
 ## Purpose
 Página de contacto del sitio público: ContactHero con headline y palabra destacada, formulario con inputs etiquetados, checkboxes de áreas de interés, textarea y submit POST, y ContactBar con teléfono, email e iconos sociales.
+
 ## Requirements
+
 ### Requirement: ContactHero renders headline with highlighted word and subtitle
 The contact-hero SHALL render a headline from the `headline` prop with the `highlightedWord` substring wrapped in a `<span class="text-primary">`, plus a `subtitle` rendered as a subordinate heading, following the same split logic as HeroBanner.
 
@@ -136,7 +138,7 @@ El contact-form SHALL render un `<form method="post">` cuyo atributo `action` se
 - **THEN** el payload JSON incluye el campo oculto `website` (habitualmente vacío)
 
 ### Requirement: ContactBar renders phone, email and social icons
-The contact-bar SHALL render a clickable phone (`tel:`), a clickable email (`mailto:`) and social network icons, consuming the same contact source as TopHeader/Footer. The email displayed and linked SHALL be `contacto@somosriff.cl` (MODIFIED in `web-home-contact-tweaks`: was `contacto@riff.cl`).
+The contact-bar SHALL render a clickable phone (`tel:`), a clickable email (`mailto:`) and social network icons, consuming the same contact source as the Footer and the global floating actions (`getContactInfo()`). The email displayed and linked SHALL be `contacto@somosriff.cl` (MODIFIED in `web-home-contact-tweaks`: was `contacto@riff.cl`).
 
 #### Scenario: Phone and email clickable
 - **WHEN** the ContactBar renders with `phone="+56 2 29079067"` and `email="contacto@somosriff.cl"`
@@ -328,4 +330,3 @@ El envío vía `fetch` del runtime de formularios SHALL cancelarse automáticame
 - **AND** se muestra el mensaje de error en la notificación toast
 - **AND** el botón de submit vuelve a habilitarse
 - **AND** el formulario NO se resetea (los campos permanecen intactos)
-

@@ -21,7 +21,7 @@ test.describe('Site header (main navigation)', () => {
     await expect(desktopNav.getByRole('link', { name: 'SOLICITAR COTIZACIÓN', exact: true })).toBeVisible();
   });
 
-  test('renders the real logo image at 2x size (330x134) with accessible alt and overflow', async ({
+  test('renders the real PNG logo at 2x size (330x166) with accessible alt and overflow', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
@@ -33,9 +33,10 @@ test.describe('Site header (main navigation)', () => {
     const logo = logoLink.locator('img');
     await expect(logo).toBeVisible();
     await expect(logo).toHaveAttribute('alt', 'Riff');
-    // Logo at 2x size (double of 165x67)
+    // Logo is the new 1080x542 asset rendered at 2x (330x166).
+    await expect(logo).toHaveAttribute('src', /logo-web.*\.png/);
     await expect(logo).toHaveAttribute('width', '330');
-    await expect(logo).toHaveAttribute('height', '134');
+    await expect(logo).toHaveAttribute('height', '166');
     // The logo container uses overflow-visible with a constrained height
     // so the 2x logo may visually overflow without growing the header.
     await expect(logoLink).toHaveCSS('overflow', 'visible');

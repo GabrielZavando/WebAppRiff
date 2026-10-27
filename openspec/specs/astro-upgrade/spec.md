@@ -2,7 +2,9 @@
 
 ## Purpose
 Define las restricciones técnicas permanentes derivadas del upgrade de Astro 4 → 7.1.6 y Tailwind v3 → v4 en `apps/web`: pin exacto de versión, integración Tailwind v4 vía `@tailwindcss/vite`, design tokens de marca preservados en `@theme`, Node runtime ≥ 22.12, output SSG estático, sin APIs removidas ni integración `@astrojs/tailwind` deprecada y verificación end-to-end (build/lint/typecheck/tests/smoke) en verde. Sirve como contrato de no-regresión para futuros cambios que toquen el stack de `apps/web`.
+
 ## Requirements
+
 ### Requirement: Astro version is pinned to 7.1.6
 The `apps/web` workspace SHALL declare Astro as an exact pinned version `7.1.6` in its `package.json`, without caret (`^`) or tilde (`~`) range modifiers, to guarantee reproducibility of the major-version upgrade.
 
@@ -49,7 +51,7 @@ The brand color tokens (`brand-navy`, `brand-navy-light`, `brand-orange`) SHALL 
 
 #### Scenario: Tailwind brand utility classes still resolve
 - **WHEN** the production build of `apps/web` is generated
-- **THEN** any class `bg-brand-navy`, `bg-brand-navy-light`, `bg-brand-orange`, `text-brand-orange`, or `after:bg-brand-orange` used in `Header.astro` or `TopHeader.astro` compiles to a CSS rule using the corresponding hex color
+- **THEN** any class `bg-brand-navy`, `bg-brand-navy-light`, `bg-brand-orange`, `text-brand-orange`, or `after:bg-brand-orange` used in `Header.astro` compiles to a CSS rule using the corresponding hex color
 - **AND** the rendered site visually matches the pre-upgrade appearance of brand colors
 
 ### Requirement: All apps/web dev dependencies are compatible with Astro 7
@@ -80,30 +82,6 @@ The `apps/web/package.json` SHALL NOT list `@astrojs/tailwind` in either `depend
 - **WHEN** `apps/web/package.json` is inspected
 - **THEN** neither `dependencies` nor `devDependencies` includes an `@astrojs/tailwind` key
 - **AND** the lockfile does not install `@astrojs/tailwind` for the `apps/web` workspace
-
-### Requirement: Functional regression-free for site-header and top-header
-The pre-existing capabilities `site-header` and `top-header` SHALL continue to satisfy all their currently archived requirements and scenarios after the Astro 7.1.6 + Tailwind v4 upgrade, with no behavioral changes to navigation, active-path matching, CTA rendering, mobile hamburger toggling, accessibility landmarks, or hardcoded `NAVIGATION_ITEMS`.
-
-#### Scenario: site-header unit tests still pass
-- **WHEN** `npm run test --workspace=apps/web` is executed including `apps/web/src/components/__tests__/Header.test.ts`
-- **THEN** all assertions pass (after snapshot regeneration, which is expected because of the `compressHTML: 'jsx'` whitespace change in Astro 7)
-- **AND** the snapshot contains the same five navigation items in the same order with the same hrefs and labels as before
-
-#### Scenario: top-header unit tests still pass
-- **WHEN** `npm run test --workspace=apps/web` is executed including `apps/web/src/components/__tests__/TopHeader.test.ts`
-- **THEN** all assertions pass (after snapshot regeneration if needed)
-- **AND** the rendered TopHeader still uses a single `<div role="region" aria-label="Barra de contacto">` wrapper (no `<header>` element)
-
-#### Scenario: navigation config unit tests unchanged
-- **WHEN** `apps/web/src/lib/config/__tests__/navigation.test.ts` and `apps/web/src/lib/config/__tests__/contact.test.ts` are executed
-- **THEN** all assertions pass WITHOUT any modification to the test files
-- **AND** no test in these files needs snapshot regeneration (they are pure unit tests of library code with no Astro rendering)
-
-#### Scenario: Playwright E2E for site-header still passes
-- **WHEN** `npm run test:smoke --workspace=apps/web` executes `apps/web/e2e/site-header.spec.ts`
-- **THEN** desktop viewport (>= 1024px) shows logo + five items + CTA
-- **AND** mobile viewport (< 1024px) shows hamburger toggle and hides desktop nav
-- **AND** clicking the hamburger expands the mobile panel with the five items
 
 ### Requirement: Whitespace handling follows Astro 7 default (compressHTML: 'jsx')
 The `apps/web/astro.config.mjs` SHALL NOT explicitly set `compressHTML: true` or `compressHTML: false` (which would override the Astro 7 default), so that the project adopts the new default `compressHTML: 'jsx'` whitespace behavior. Any inline-element visual regression caused by the JSX whitespace collapse SHALL be fixed in the component (`flex gap-*` or explicit `{' '}` expression), NOT by reverting to the legacy default.
@@ -152,13 +130,13 @@ All standard development scripts for `apps/web` SHALL exit successfully after th
 #### Scenario: unit tests succeed
 - **WHEN** `npm run test --workspace=apps/web` is executed
 - **THEN** the command exits with code 0
-- **AND** all four unit test suites pass (`Header.test.ts`, `TopHeader.test.ts`, `navigation.test.ts`, `contact.test.ts`)
+- **AND** the Header, PhoneFab, WhatsAppButton, navigation and contact suites pass
 - **AND** snapshot files are regenerated and committed
 
 #### Scenario: smoke tests succeed
 - **WHEN** `npm run test:smoke --workspace=apps/web` is executed
 - **THEN** the command exits with code 0
-- **AND** both `site-header.spec.ts` and `top-header.spec.ts` Playwright suites pass
+- **AND** the `site-header.spec.ts` and `phone-fab.spec.ts` Playwright suites pass
 
 ### Requirement: Static output mode preserved
 The `apps/web` workspace SHALL continue to be configured as a static site generator (SSG) by setting `output: 'static'` in `astro.config.mjs`, and SHALL NOT adopt SSR mode, an adapter, or any server-runtime behavior introduced by Astro 7 (advanced routing via `src/fetch.ts`, CDN cache providers, Hono integration).
@@ -174,3 +152,21 @@ The `apps/web` workspace SHALL continue to be configured as a static site genera
 - **WHEN** the `apps/web/src/` directory is inspected
 - **THEN** there is no `src/fetch.ts` file (advanced routing is out of scope for this upgrade change)
 
+### Requirement: Functional regression-free for site-header
+The pre-existing capability `site-header` SHALL continue to satisfy all its archived requirements and scenarios after the Astro 7.1.6 + Tailwind v4 upgrade, with no behavioral changes to navigation, active-path matching, CTA rendering, mobile hamburger toggling, accessibility landmarks, or hardcoded `NAVIGATION_ITEMS`.
+
+#### Scenario: site-header unit tests still pass
+- **WHEN** `npm run test --workspace=apps/web` is executed including `apps/web/src/components/__tests__/Header.test.ts`
+- **THEN** all assertions pass (after snapshot regeneration, which is expected because of the `compressHTML: 'jsx'` whitespace change in Astro 7)
+- **AND** the snapshot contains the same five navigation items in the same order with the same hrefs and labels as before
+
+#### Scenario: navigation config unit tests unchanged
+- **WHEN** `apps/web/src/lib/config/__tests__/navigation.test.ts` and `apps/web/src/lib/config/__tests__/contact.test.ts` are executed
+- **THEN** all assertions pass WITHOUT any modification to the test files
+- **AND** no test in these files needs snapshot regeneration (they are pure unit tests of library code with no Astro rendering)
+
+#### Scenario: Playwright E2E for site-header still passes
+- **WHEN** `npm run test:smoke --workspace=apps/web` executes `apps/web/e2e/site-header.spec.ts`
+- **THEN** desktop viewport (>= 1024px) shows logo + five items + CTA
+- **AND** mobile viewport (< 1024px) shows hamburger toggle and hides desktop nav
+- **AND** clicking the hamburger expands the mobile panel with the five items

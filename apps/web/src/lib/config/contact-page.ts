@@ -6,7 +6,7 @@ import type {
   ContactHeroProps,
 } from '@/lib/types/contact-form';
 import { getContactInfo } from '@/lib/config/contact';
-import { getSocialLinks } from '@/lib/types/top-header';
+import { getSocialLinks } from '@/lib/types/contact';
 
 /**
  * Hardcoded content for the public contact page (`/contacto`).

@@ -43,14 +43,16 @@ describe('Header', () => {
     expect(html).toContain('aria-label="Ir al inicio"');
     expect(html).toMatch(/<a href="\/" aria-label="Ir al inicio"[^>]*>[\s\S]*?<img/);
     expect(html).toContain('alt="Riff"');
-    // Logo rendered at 2x size (330×134, double of 165×67)
+    // Logo rendered from the new PNG at 330×166 (1080×542 ratio ≈1.99:1).
+    expect(html).toMatch(/logo-web[^"]*\.png/);
+    expect(html).not.toContain('logo-web.webp');
     expect(html).toContain('width="330"');
-    expect(html).toContain('height="134"');
-    // Logo uses a responsive max-width: scales proportionally up to 200px on
-    // mobile and 300px from the sm breakpoint upward (replaces fixed w-[330px]).
+    expect(html).toContain('height="166"');
+    // Responsive caps preserve the previous rendered heights: 160px on
+    // mobile, 240px from the sm breakpoint upward.
     expect(html).toContain('w-full');
-    expect(html).toContain('max-w-[200px]');
-    expect(html).toContain('sm:max-w-[300px]');
+    expect(html).toContain('max-w-[160px]');
+    expect(html).toContain('sm:max-w-[240px]');
     // Wrapper height is responsive (shorter h-20 on mobile/tablet, h-24 on
     // desktop) and the logo is height-capped so it cannot grow the header.
     expect(html).toContain('h-20');

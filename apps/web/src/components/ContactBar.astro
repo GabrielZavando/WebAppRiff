@@ -1,13 +1,13 @@
 ---
 import type { ContactBarProps } from '@/lib/types/contact-form';
 import { Icon } from 'astro-icon/components';
-import type { SocialNetworkName } from '@/lib/types/top-header';
+import type { SocialNetworkName } from '@/lib/types/contact';
 
 interface Props extends ContactBarProps {}
 
 const { phone, email, phoneHref, emailHref, socialLinks } = Astro.props;
 
-// Same icon map and accessibility pattern as Footer.astro / TopHeader.astro —
+// Same icon map and accessibility pattern as Footer.astro —
 // the site has a single social presence across chrome (design.md § Decision 4).
 // The X logo uses `simple-icons:x` as the documented, sole exception to the
 // unique Lucide set (Lucide lacks the current X brand mark; see style-guide

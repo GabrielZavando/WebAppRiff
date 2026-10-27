@@ -18,7 +18,9 @@ describe('Representaciones page composition', () => {
     const html = await render();
     const headerCount = (html.match(/<header[\s>]/g) ?? []).length;
     expect(headerCount).toBe(1);
+    expect(html).not.toContain('aria-label="Barra de contacto"');
     expect(html).toContain('<footer');
+    expect(html).toContain('href="tel:+56229079067"');
     expect(html).toContain('href="https://wa.me/56937526162"');
   });
 
