@@ -205,6 +205,58 @@ test.describe('PanelHome (home about/trust panel)', () => {
     }
   });
 
+  test('the longest stat value stays inside its cell on narrow viewports (responsive-web-design-fixes)', async ({
+    page,
+  }) => {
+    for (const viewport of [
+      { width: 320, height: 568 },
+      { width: 375, height: 667 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto('/');
+
+      // The second stat carries the longest value ("30.000+").
+      const statValue = page.locator('[data-stat-value]').nth(1);
+      await expect(statValue).toBeVisible();
+
+      // The rendered text never overflows the value box.
+      const sizes = await statValue.evaluate((el) => ({
+        scrollWidth: el.scrollWidth,
+        clientWidth: el.clientWidth,
+      }));
+      expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth + 1);
+
+      // The value box stays inside its cell.
+      const valueBox = await statValue.boundingBox();
+      const cellBox = await statValue.locator('xpath=..').boundingBox();
+      expect(valueBox).toBeTruthy();
+      expect(cellBox).toBeTruthy();
+      expect(valueBox!.x).toBeGreaterThanOrEqual(cellBox!.x - 1);
+      expect(valueBox!.x + valueBox!.width).toBeLessThanOrEqual(
+        cellBox!.x + cellBox!.width + 1,
+      );
+    }
+  });
+
+  test('the stat value font-size scales up with the viewport (responsive-web-design-fixes)', async ({
+    page,
+  }) => {
+    const readFontSize = async (): Promise<number> => {
+      const stat = page.locator('[data-stat-value]').nth(1);
+      return stat.evaluate((el) => parseFloat(window.getComputedStyle(el).fontSize));
+    };
+
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto('/');
+    const mobile = await readFontSize();
+
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.reload();
+    const desktop = await readFontSize();
+
+    expect(desktop).toBeGreaterThan(mobile);
+  });
+
   test('hero overlap by 8px at every breakpoint (4.7, ui-chrome-polish)', async ({
     page,
   }) => {

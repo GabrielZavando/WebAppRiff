@@ -57,6 +57,35 @@ test.describe('Catalog critical flow (listado → ficha → cotización)', () =>
     );
   });
 
+  test('the detail page title stays inside the viewport on narrow viewports (responsive-web-design-fixes)', async ({
+    page,
+  }) => {
+    for (const viewport of [
+      { width: 320, height: 568 },
+      { width: 375, height: 667 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto(`/productos/${FIXTURE_SLUG}`);
+
+      const h1 = page.locator('main h1');
+      await expect(h1).toBeVisible();
+      await expect(h1).toContainText(FIXTURE_TITLE);
+
+      // The title text never overflows its own box.
+      const sizes = await h1.evaluate((el) => ({
+        scrollWidth: el.scrollWidth,
+        clientWidth: el.clientWidth,
+      }));
+      expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth + 1);
+
+      // The title box stays inside the viewport.
+      const box = await h1.boundingBox();
+      expect(box).toBeTruthy();
+      expect(box!.x).toBeGreaterThanOrEqual(-1);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width + 1);
+    }
+  });
+
   test('clicking the CTA lands on the cotización page with the form', async ({
     page,
   }) => {

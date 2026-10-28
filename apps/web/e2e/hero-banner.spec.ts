@@ -124,23 +124,59 @@ test.describe('HeroBanner (home hero section)', () => {
   test('h1 font-size scales responsively between mobile and desktop (5.9)', async ({
     page,
   }) => {
-    // Mobile: text-5xl -> 3rem = 48px
-    await page.setViewportSize({ width: 375, height: 667 });
+    const readFontSize = async (): Promise<number> => {
+      const h1 = page.locator(`${HERO_SECTION_SELECTOR} h1`);
+      return h1.evaluate((el) => parseFloat(window.getComputedStyle(el).fontSize));
+    };
+
+    // Mobile base: text-4xl -> 2.25rem = 36px (smaller than the previous fixed
+    // text-5xl / 48px, which overflowed at 320px).
+    await page.setViewportSize({ width: 320, height: 568 });
     await page.goto('/');
-    const h1 = page.locator(`${HERO_SECTION_SELECTOR} h1`);
-    let fontSize = await h1.evaluate((el) => parseFloat(window.getComputedStyle(el).fontSize));
-    expect(fontSize).toBeGreaterThanOrEqual(46);
-    expect(fontSize).toBeLessThanOrEqual(50);
+    const mobile = await readFontSize();
+    expect(mobile).toBeGreaterThanOrEqual(34);
+    expect(mobile).toBeLessThanOrEqual(38);
+
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.reload();
+    const mobileLarge = await readFontSize();
+    // The size never shrinks as the viewport grows.
+    expect(mobileLarge).toBeGreaterThanOrEqual(mobile);
+    expect(mobileLarge).toBeLessThanOrEqual(38);
 
     // Desktop: md:text-7xl -> 4.5rem = 72px
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.reload();
-    const h1Desktop = page.locator(`${HERO_SECTION_SELECTOR} h1`);
-    fontSize = await h1Desktop.evaluate((el) =>
-      parseFloat(window.getComputedStyle(el).fontSize),
-    );
-    expect(fontSize).toBeGreaterThanOrEqual(70);
-    expect(fontSize).toBeLessThanOrEqual(74);
+    const desktop = await readFontSize();
+    expect(desktop).toBeGreaterThanOrEqual(70);
+    expect(desktop).toBeLessThanOrEqual(74);
+    expect(desktop).toBeGreaterThan(mobile);
+  });
+
+  test('the h1 never overflows horizontally on narrow viewports (responsive-web-design-fixes)', async ({
+    page,
+  }) => {
+    for (const viewport of [
+      { width: 320, height: 568 },
+      { width: 375, height: 667 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto('/');
+
+      const h1 = page.locator(`${HERO_SECTION_SELECTOR} h1`);
+      await expect(h1).toBeVisible();
+
+      const sizes = await h1.evaluate((el) => ({
+        scrollWidth: el.scrollWidth,
+        clientWidth: el.clientWidth,
+      }));
+      expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth + 1);
+
+      const box = await h1.boundingBox();
+      const viewportWidth = page.viewportSize()!.width;
+      expect(box).toBeTruthy();
+      expect(box!.x + box!.width).toBeLessThanOrEqual(viewportWidth + 1);
+    }
   });
 
   test('keyboard Tab cycles through CTAs in DOM order (5.10)', async ({ page }) => {

@@ -22,28 +22,28 @@ const logoAltText = logoAlt ?? 'Riff';
 
 <!-- Main site header: logo (2x with overflow), right-aligned desktop nav with
      CTA as the last item, and a fullscreen mobile overlay with slide animation.
-     `pb-10 lg:pb-4` is the client decision ("así se ve mejor"): mobile keeps
-     80px (h-20) + 40px (pb-10) = 120px vs ~80px logo at the 160px cap (full
-     containment); desktop relaxes to 96px (lg:h-24) + 16px (lg:pb-4) = 112px vs
-     ~121px logo at the 240px cap — a slight visual overflow of the 2× logo on
-     desktop explicitly accepted by the client (SC-001). -->
+     `pb-4 lg:pb-2` is more compact than the previous `pb-10 lg:pb-4`: mobile
+     keeps 80px (h-16) + 16px (pb-4) = 96px vs ~80px logo at the 160px cap (full
+     containment); desktop relaxes to 96px (lg:h-20) + 8px (lg:pb-2) = 104px vs
+     ~121px logo at the 240px cap — a smaller visual overflow of the 2× logo on
+     desktop, explicitly accepted by the client (SC-001). -->
 <header
   data-menu-open="false"
   class:list={[
     'site-header',
     'text-white',
-    'pb-10 lg:pb-4',
-    // SC-001: non-hero pages get the solid secondary token (same as the search
-    // bar); the old navy gradient `bg-linear-to-r from-secondary
-    // to-secondary-light` was removed in ui-chrome-uniform.
+    'pb-4 lg:pb-2',
+    // Short viewports (e.g. 568x320 landscape) collapse the vertical rhythm so
+    // the sticky group (header + search) fits the viewport-height budget.
+    '[@media(max-height:400px)]:pb-0',
     transparent ? 'bg-transparent' : 'bg-secondary',
   ]}
 >
-  <div class="site-header__inner container mx-auto px-4 h-20 lg:h-24 flex items-center justify-between gap-4">
+  <div class="site-header__inner container mx-auto px-4 h-16 lg:h-20 flex items-center justify-between gap-4 [@media(max-height:400px):h-12]">
     <!-- Logo: rendered at 2x (330x166), overflow-visible so the header
          container (h-24) does not grow -- the logo may visually extend
          beyond the header height without displacing sibling elements. -->
-     <a href="/" aria-label="Ir al inicio" class="shrink-0 h-20 lg:h-24 overflow-visible">
+     <a href="/" aria-label="Ir al inicio" class="shrink-0 h-16 lg:h-20 overflow-visible [@media(max-height:400px):h-12] [@media(max-height:400px)]:max-w-[100px]">
       <!-- Logo: responsive max-width so it scales proportionally — 160px cap
            on mobile, 240px cap from the sm breakpoint upward. `w-full` lets it
            fill available width up to the cap while the `width`/`height` attrs
@@ -66,7 +66,7 @@ const logoAltText = logoAlt ?? 'Riff';
          The CTA keeps its bg-accent styling; only the old standalone visibility
          utility (hidden sm:inline-flex) is removed since the nav's own
          responsive classes now control visibility. -->
-    <nav aria-label="Navegación principal" class="hidden lg:flex items-center gap-1 ml-auto">
+    <nav aria-label="Navegación principal" class="hidden xl:flex items-center gap-1 lg:gap-0.5 xl:gap-1 ml-auto">
       {
         items.map((item) => {
           const active = isActive(item.href, activePath);
@@ -105,7 +105,7 @@ const logoAltText = logoAlt ?? 'Riff';
       aria-controls="mobile-nav"
       aria-expanded="false"
       aria-label="Abrir menú"
-      class="fixed top-6 right-6 z-50 lg:hidden p-2 transition-colors duration-200"
+      class="fixed top-6 right-6 z-50 xl:hidden p-2 transition-colors duration-200"
     >
       <Icon name="lucide:menu" class="h-6 w-6" />
       <Icon name="lucide:x" class="h-6 w-6 hidden" />
@@ -117,7 +117,7 @@ const logoAltText = logoAlt ?? 'Riff';
        the <header>. Shows only the menu items + CTA. -->
   <div
     id="mobile-nav"
-    class="fixed inset-0 bg-white z-40 lg:hidden flex flex-col items-center justify-center gap-8 transition-transform duration-300 ease-in-out"
+    class="fixed inset-0 bg-white z-40 xl:hidden flex flex-col items-center justify-center gap-8 transition-transform duration-300 ease-in-out"
   >
     <nav aria-label="Navegación móvil" class="flex flex-col items-center justify-center gap-6">
       {

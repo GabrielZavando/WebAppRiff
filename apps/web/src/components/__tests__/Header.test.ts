@@ -203,20 +203,52 @@ describe('Header', () => {
     }
   });
 
-  it('hides the desktop nav on mobile and exposes a fixed hamburger toggle with high z-index', async () => {
+  it('hides the desktop nav below the xl breakpoint and exposes a fixed hamburger toggle with high z-index', async () => {
     const html = await render();
 
-    expect(getDesktopNav(html)).toContain('hidden lg:flex');
+    expect(getDesktopNav(html)).toContain('hidden xl:flex');
     // The mobile toggle is fixed (always visible above overlay) with z-50
     const toggleMatch = html.match(/<button[^>]*data-menu-toggle[^>]*>/);
     expect(toggleMatch, 'mobile toggle button not found').toBeTruthy();
     const toggleAttrs = toggleMatch?.[0] ?? '';
-    expect(toggleAttrs).toContain('lg:hidden');
+    expect(toggleAttrs).toContain('xl:hidden');
     expect(toggleAttrs).toContain('fixed');
     expect(toggleAttrs).toContain('z-50');
     expect(html).toContain('aria-expanded="false"');
     expect(html).toContain('aria-controls="mobile-nav"');
     expect(html).toContain('aria-label="Abrir menú"');
+  });
+
+  it('collapses the desktop navigation into the mobile overlay below 1280px', async () => {
+    const html = await render();
+
+    // The overlay carries the same xl visibility contract as the toggle.
+    expect(getMobileNav(html)).toContain('xl:hidden');
+    expect(getMobileNav(html)).not.toContain('lg:hidden');
+  });
+
+  it('compacts the desktop navigation density below xl and restores it at xl', async () => {
+    const html = await render();
+    const nav = getDesktopNav(html);
+
+    // The nav declares a compact density for the lg range and the approved
+    // desktop density from xl upward (responsive-web-design-fixes).
+    expect(nav).toContain('lg:gap-0.5');
+    expect(nav).toContain('xl:gap-1');
+    // The logo keeps the same maximum width at every range (no lg/xl split).
+    expect(html).not.toContain('lg:max-w-');
+    expect(html).not.toContain('xl:max-w-');
+  });
+
+  it('compacts the header vertical rhythm on short viewports (height <= 400px)', async () => {
+    const html = await render();
+    const headerTag = html.match(/<header[^>]*>/)?.[0] ?? '';
+    const innerTag = html.match(/<div[^>]*site-header__inner[^>]*>/)?.[0] ?? '';
+
+    // Short viewports (e.g. 568x320 landscape) reduce the vertical padding and
+    // the inner bar height so the sticky group fits the viewport-height budget.
+    expect(headerTag).toContain('[@media(max-height:400px)]:pb-0');
+    expect(innerTag).toContain('[@media(max-height:400px):h-12]');
   });
 
   it('renders the header with data-menu-open state attribute for CSS-driven overlay', async () => {
@@ -366,8 +398,8 @@ describe('Header', () => {
       // Desktop relaxes to lg:pb-4 (client decision in ui-chrome-polish): the
       // slight 2× logo overflow on desktop is accepted (SC-001).
       expect(headerTag).toContain('site-header');
-      expect(headerTag).toContain('pb-10');
-      expect(headerTag).toContain('lg:pb-4');
+      expect(headerTag).toContain('pb-4');
+      expect(headerTag).toContain('lg:pb-2');
       expect(headerTag).not.toContain('lg:pb-12');
     });
   });
@@ -386,7 +418,7 @@ describe('Header', () => {
       const html = await renderTransparent();
 
       expect(html).toContain('aria-label="Ir al inicio"');
-      expect(getDesktopNav(html)).toContain('hidden lg:flex');
+      expect(getDesktopNav(html)).toContain('hidden xl:flex');
       expect(html).toContain('SOLICITAR COTIZACIÓN');
     });
 

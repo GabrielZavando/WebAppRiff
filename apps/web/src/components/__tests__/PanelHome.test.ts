@@ -310,10 +310,12 @@ describe('PanelHome — elevation, counter hooks & divider (tasks 3-4)', () => {
       /<div[^>]*class="[^"]*relative[^"]*stats-grid-wrap[^"]*flex-1[^"]*"[^>]*>/,
     );
     expect(wrapOpen).not.toBeNull();
-    // Each cell carries the padding that used to live on the wrapper.
+    // Each cell carries the padding that used to live on the wrapper. The
+    // padding is responsive so the stat values stay inside their cell on
+    // narrow viewports (responsive-web-design-fixes).
     const cellMatches =
       html.match(
-        /<div[^>]*class="[^"]*bg-white p-8 md:p-12[^"]*"[^>]*>/g,
+        /<div[^>]*class="[^"]*bg-white p-4 md:p-8 lg:p-12[^"]*"[^>]*>/g,
       ) ?? [];
     expect(cellMatches.length).toBe(4);
   });
