@@ -361,3 +361,20 @@ Al cambiar de página en el listado de productos (click en un número, en anteri
 - **THEN** se aplica la página correspondiente
 - **AND** el scroll de la ventana vuelve al top (0)
 
+
+#### Scenario: Contención en viewport intermedio
+- **WHEN** el catálogo se renderiza con `view=list` en el viewport `768×1024`
+- **THEN** `document.documentElement.scrollWidth` no supera `document.documentElement.clientWidth + 1`
+
+#### Scenario: Los botones no ocupan un ancho desmedido
+- **WHEN** el catálogo se renderiza con `view=list` en un viewport de escritorio (`1280×800`)
+- **THEN** el ancho de cada CTA de la tarjeta es menor o igual a la mitad del ancho disponible de la tarjeta
+- **AND** el ancho de cada CTA no supera un máximo razonable (por ejemplo 200px) en la vista lista
+
+#### Scenario: Contención en viewport móvil
+- **WHEN** el catálogo se renderiza con `view=list` en el viewport `320×568`
+- **THEN** `document.documentElement.scrollWidth` no supera `document.documentElement.clientWidth + 1`
+
+#### Scenario: Contención en viewport móvil ancho
+- **WHEN** el catálogo se renderiza con `view=list` en el viewport `375×667`
+- **THEN** `document.documentElement.scrollWidth` no supera `document.documentElement.clientWidth + 1`

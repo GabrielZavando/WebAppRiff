@@ -38,7 +38,7 @@ La página `/representaciones` SHALL renderizarse como `apps/web/src/pages/repre
 
 ### Requirement: Hero section renders the editorial headline with highlighted phrase
 
-La sección hero SHALL renderizar, sobre un fondo `bg-secondary` (navy de marca), un eyebrow "ALIANZAS GLOBALES DE ALTA PRECISIÓN", un `<h1>` "Alianzas Estratégicas y Representación Exclusiva" con la subfrase "Representación Exclusiva" envuelta en un `<span>` con `text-primary`, y un párrafo de introducción. La sección SHALL ser responsive (columna en mobile, layout de 12 columnas desde `lg`).
+La sección hero SHALL renderizar, sobre un fondo `bg-secondary` (navy de marca), un eyebrow "ALIANZAS GLOBALES DE ALTA PRECISIÓN", un `<h1>` "Alianzas Estratégicas y Representación Exclusiva" con la subfrase "Representación Exclusiva" envuelta en un `<span>` con `text-primary`, y un párrafo de introducción. La sección SHALL ser responsive (columna en mobile, layout de 12 columnas desde `lg`). El `<h1>` SHALL escalar su tamaño por breakpoint (base reducida en móvil, escalando hasta el tamaño de desktop) y SHALL aplicar una estrategia de quiebre de palabra (`break-words` o equivalente) de modo que la frase "Representación Exclusiva" nunca desborde el ancho de su columna.
 
 #### Scenario: Eyebrow and headline rendered
 
@@ -56,6 +56,13 @@ La sección hero SHALL renderizar, sobre un fondo `bg-secondary` (navy de marca)
 
 - **WHEN** el hero se renderiza
 - **THEN** se renderiza el párrafo "Conectando a la minería, industria química y empresas sanitarias de Chile con la manufactura metrológica más avanzada de Europa, Japón y América. Transferencia tecnológica directa sin intermediarios."
+
+#### Scenario: El titular del hero no desborda
+
+- **WHEN** la página `/representaciones` se renderiza en los viewports `320×568` y `375×667`
+- **THEN** el `boundingBox` del `<h1>` del hero queda dentro del ancho del viewport
+- **AND** `document.documentElement.scrollWidth` no supera `document.documentElement.clientWidth + 1`
+- **AND** el texto "Representación Exclusiva" es visible completo
 
 ### Requirement: Hero renders three metric cards
 
@@ -178,7 +185,7 @@ Los logos reales de las marcas SHALL renderizarse con `<Image>` de `astro:assets
 
 - **WHEN** los componentes `RepresentacionBrandCard.astro` y `DistribuidorCard.astro` se inspeccionan
 - **THEN** el logo está envuelto en un contenedor identificable con `data-brand-logo`
-- **AND** la sustitución del texto por `<Image>` no altera el layout externo (columna del panel de marca en mobile, fila desde `md`, panel izquierdo de ancho fijo en la tarjeta de marca)
+- **AND** la sustitución del texto por `<Image>` no altera el layout externo (panel de marca en mobile, fila desde `md`, panel izquierdo de ancho fijo en la tarjeta de marca)
 
 #### Scenario: No new binary assets are introduced
 
@@ -243,7 +250,7 @@ Cuando el dato de una marca o distribuidor define `url`, su logo SHALL envolvers
 
 #### Scenario: Distributor logos with url render as external links
 
-- **WHEN** la sección de distribuidores se renderiza
+- **WHEN** la sección de distribuidores autorizados se renderiza
 - **THEN** los logos de PIUSI y SENSUS están envueltos en un `<a>` con `target="_blank"` y `rel="noopener noreferrer"`
 - **AND** sus `href` son exactamente `https://www.piusi.com/es/` y `https://www.sensus-international.com/en`
 
@@ -258,7 +265,7 @@ Cuando el dato de una marca o distribuidor define `url`, su logo SHALL envolvers
 - **WHEN** se inspeccionan `RepresentacionBrandCard.astro` y `DistribuidorCard.astro`
 - **THEN** el `<a>` (cuando existe) vive dentro del contenedor `data-brand-logo` y envuelve únicamente el `<Image>`
 - **AND** el chip, el `<h3>`, la categoría y la descripción no quedan dentro del enlace
-- **AND** la estructura externa de la tarjeta (panel de marca en mobile, fila desde `md`) no cambia
+- **AND** la estructura externa de la tarjeta (panel de marca en mobile, fila desde `md`, panel izquierdo de ancho fijo en la tarjeta de marca) no cambia
 
 ### Requirement: Page is responsive (mobile-first)
 
@@ -275,3 +282,47 @@ La página SHALL ser mobile-first: las tarjetas de marca SHALL apilar panel de w
 - **WHEN** las secciones de distribuidores y de pillars se renderizan
 - **THEN** la grilla de distribuidores es de una columna en mobile y `lg:grid-cols-2`
 - **AND** la grilla de pillars es de una columna en mobile y `lg:grid-cols-4`
+
+### Requirement: Brand and distributor logos link to the manufacturer site when a url is configured
+
+Cuando el dato de una marca o distribuidor define `url`, su logo SHALL envolverse en un `<a href={url} target="_blank" rel="noopener noreferrer">` (el `<Image>`/`<img>` queda dentro del enlace, dentro del contenedor `data-brand-logo`, sin alterar el layout de la tarjeta). Cuando el dato no define `url`, el logo SHALL renderizarse sin enlace (SHALL NOT envolverse en un `<a>`). El mapeo SHALL ser: Apator Powogaz → `https://www.apator.com/en`; RIFF Flow Metering → `https://riffmeters.com/`; Nitto Seiko → `https://global.nittoseiko.com/`; GL Sanitaria → sin `url` (sin `<a>`); ILMAP → `https://ilmap.com/es/`; PIUSI → `https://www.piusi.com/es/`; SENSUS → `https://www.sensus-international.com/en`. El enlace envuelve exclusivamente el logo; el chip, el `<h3>`, la categoría y la descripción de la tarjeta SHALL NOT enlazarse.
+
+#### Scenario: Brand logos with url render as external links
+
+- **WHEN** la sección de marcas se renderiza
+- **THEN** los logos de Apator Powogaz, RIFF Flow Metering, Nitto Seiko e ILMAP están envueltos en un `<a>` con `target="_blank"` y `rel="noopener noreferrer"`
+- **AND** sus `href` son exactamente `https://www.apator.com/en`, `https://riffmeters.com/`, `https://global.nittoseiko.com/` e `https://ilmap.com/es/` respectivamente
+
+#### Scenario: Distributor logos with url render as external links
+
+- **WHEN** la sección de distribuidores autorizados se renderiza
+- **THEN** los logos de PIUSI y SENSUS están envueltos en un `<a>` con `target="_blank"` y `rel="noopener noreferrer"`
+- **AND** sus `href` son exactamente `https://www.piusi.com/es/` y `https://www.sensus-international.com/en`
+
+#### Scenario: GL Flow logo renders without a link
+
+- **WHEN** la tarjeta de GL Sanitaria se renderiza
+- **THEN** el logo (`data-brand-logo`) no está envuelto en ningún `<a>`
+- **AND** el `<img>` del logo se renderiza igual que en las tarjetas enlazadas (mismo `alt`, `loading="lazy"` y pipeline de `astro:assets`)
+
+#### Scenario: The link wraps only the logo and preserves the card layout
+
+- **WHEN** se inspeccionan `RepresentacionBrandCard.astro` y `DistribuidorCard.astro`
+- **THEN** el `<a>` (cuando existe) vive dentro del contenedor `data-brand-logo` y envuelve únicamente el `<Image>`
+- **AND** el chip, el `<h3>`, la categoría y la descripción no quedan dentro del enlace
+- **AND** la estructura externa de la tarjeta (panel de marca en mobile, fila desde `md`, panel izquierdo de ancho fijo en la tarjeta de marca) no cambia
+
+### Requirement: Long description containment (prevention of horizontal overflow)
+
+La descripción larga renderizada con `set:html` SHALL permanecer contenida dentro del contenido columna en cada ancho de viewport y MUST NOT crear desborde horizontal en la página. El contenedor SHALL limitar su ancho a la grid (`max-w-full`, `min-w-0`) y envolver tokens inrotos (`break-words` / `overflow-wrap`). Los márgenes y paddings por defecto de Quill (`p`, `ul`, `ol`, `li`, `blockquote`, headings) MUST NOT introducir anchuras fijas.
+
+#### Scenario: Long unbroken token wraps within the column
+
+- **WHEN** la descripción larga sanitizada contiene una palabra larga, URL o bloque de Quill con contenido más ancho que la columna
+- **THEN** el texto se envuelve dentro del contenedor de descripción
+- **AND** la página no gana scrolling horizontal en widths móviles, tablet o desktop
+
+#### Scenario: Lists and headings remain bounded
+
+- **WHEN** la descripción larga contiene Quill lists, headings, o blockquotes
+- **THEN** sus márgenes y paddings permanecen dentro del ancho del contenedor de descripción

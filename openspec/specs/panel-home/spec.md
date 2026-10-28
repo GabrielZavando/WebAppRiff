@@ -6,226 +6,251 @@ The `panel-home` is the teal + white about/trust panel that sits below the home 
 ## Requirements
 
 ### Requirement: PanelHome renders the left half with eyebrow, headline, description and a navy CTA over a teal background
-The `panel-home` SHALL render its left half as a `<div>` (or equivalent) carrying the `bg-primary` class (resolving to `--color-primary` `#41B3C4`), containing un eyebrow `<span>` (uppercase, not a heading) que aplica la heading font via `font-heading` (Montserrat) con peso `font-semibold` y size `text-xs tracking-wider`, a headline `<h2>` que aplica `font-heading font-bold`, a description `<p>` (Open Sans body implícito), and a single CTA `<a href="/contacto">` styled with `bg-secondary text-white font-heading font-semibold` (Montserrat 600, `text-xs uppercase tracking-wide`). The CTA SHALL NOT apply `rounded` (flat design con radio 0). The eyebrow SHALL NOT be rendered as a heading element (`<h1>`–`<h6>`). The obsolete utilities `bg-brand-teal` and `bg-brand-navy`, and references to `--color-brand-teal` / `--color-brand-navy`, SHALL NOT appear anywhere in the panel.
+The `panel-home` SHALL render its left half as a `<div>` (or equivalent) carrying the `bg-primary` class (resolving to `--color-primary` `#41B3C4`), containing un eyebrow `<span>` (uppercase, not a heading) que aplica la heading font via `font-heading` (Montserrat) con peso `font-semibold` y size `text-xs tracking-wider`, a headline `<h2>` que aplica `font-heading font-bold`, a description `<p>` (Open Sans body implícita), and a single CTA `<a href="/contacto">` styled con `bg-secondary text-white font-heading font-semibold` (Montserrat 600, `text-xs uppercase tracking-wide`). The CTA SHALL NOT apply `rounded` (flat design con radio 0). La eyebrow SHALL NOT ser renderizada como un elemento heading (`<h1>`–`<h6>`). Los obsolete utilities `bg-brand-teal` y `bg-brand-navy`, y referencias a `--color-brand-teal` / `--color-brand-navy`, SHALL NOT aparecer en ningún lugar del panel.
 
 #### Scenario: Left half uses primary (not brand-teal)
-- **WHEN** the PanelHome renders
-- **THEN** the left half `<div>` carries `bg-primary` (computing to `rgb(65, 179, 196)`)
-- **AND** its class string does NOT contain `bg-brand-teal`
+- **WHEN** el PanelHome se renderiza
+- **THEN** la mitad izquierda `<div>` lleva `bg-primary` (computando a `rgb(65, 179, 196)`)
+- **AND** su string de clase no contiene `bg-brand-teal`
 
 #### Scenario: CTA uses secondary, flat square corners
-- **WHEN** the PanelHome renders the `/contacto` CTA
-- **THEN** the CTA `<a>` carries `bg-secondary text-white` (computing to `rgb(31, 45, 64)`)
-- **AND** the CTA `<a>` carries `font-heading` and `font-semibold` classes (Montserrat 600)
-- **AND** the CTA `<a>` does NOT contain `rounded` (nor any `rounded-*` variant) in its class
-- **AND** its class string does NOT contain `bg-brand-navy`
+- **WHEN** el PanelHome renderiza el CTA de `/contacto`
+- **THEN** el CTA `<a>` lleva `bg-secondary text-white` (computando a `rgb(31, 45, 64)`)
+- **AND** el CTA `<a>` lleva `font-heading` y `font-semibold` clases (Montserrat 600)
+- **AND** el CTA `<a>` no contiene `rounded` (ni ningún `rounded-*` variante) en su string de clase
+- **AND** su string de clase no contiene `bg-brand-navy`
 
 #### Scenario: Eyebrow and headline use heading font
-- **WHEN** the PanelHome renders the left half
-- **THEN** the eyebrow `<span>` carries `font-heading` and `font-semibold` classes
-- **AND** the headline `<h2>` carries `font-heading` and `font-bold` classes
+- **WHEN** el PanelHome renderiza la mitad izquierda
+- **THEN** el eyebrow `<span>` lleva `font-heading` y `font-semibold` clases
+- **AND** el headline `<h2>` lleva `font-heading` y `font-bold` clases
 
 ### Requirement: PanelHome renders the right half with a 2×2 grid of four statistics over a white background
-The `panel-home` SHALL render its right half as a `<div>` (or equivalent) carrying the `bg-white` class, containing exactly four stat cells laid out in a `grid-cols-2` grid (2 rows × 2 columns). Each stat cell SHALL render the `value` as a large bold paragraph con la heading font via `font-heading font-bold` (Montserrat 700) y class `text-secondary` (instead of the obsolete `text-brand-navy`), and the `label` as a small uppercase paragraph below it que aplica la body font implícita (`font-body`, Open Sans) y el token `text-text-2` (#5C6675) en lugar de la paleta por defecto Tailwind `text-gray-*`. The grid SHALL keep `grid-cols-2` across all viewports (mobile and desktop).
+El `panel-home` SHALL render su mitad derecha como un `<div>` (o equivalente) que lleva la clase `bg-white`, que contiene exactamente cuatro celdas de estadística dispuestas en un `grid-cols-2` grid (2 filas × 2 columnas). Cada celda de estadística SHALL renderizar el `value` como un párrafo grande y en negrita con la heading font via `font-heading font-bold` (Montserrat 700) y class `text-secondary` (en lugar del obsoleto `text-brand-navy`), y el `label` como un párrafo pequeño en mayúsculas debajo de él que aplica la body font implícita (`font-body`, Open Sans) y el token `text-text-2` (#5C6675) en lugar de la paleta por defecto Tailwind `text-gray-*`. El grid SHALL mantener `grid-cols-2` en todos los viewports (móvil y escritorio).
 
 #### Scenario: Stat value uses secondary and heading font
-- **WHEN** the PanelHome renders a stat cell
-- **THEN** the value `<p>` carries `text-secondary` (resolving to `#1F2D40`)
-- **AND** the value `<p>` carries `font-heading` and `font-bold` classes (Montserrat 700)
-- **AND** its class string does NOT contain `text-brand-navy`
+- **WHEN** el PanelHome renderiza una celda de estadística
+- **THEN** el párrafo de valor lleva `text-secondary` (resolviendo a `#1F2D40`)
+- **AND** el párrafo de valor lleva `font-heading` y `font-bold` clases (Montserrat 700)
+- **AND** su string de clase no contiene `text-brand-navy`
 
 #### Scenario: Stat label uses text-text-2 (no gray-*)
-- **WHEN** the PanelHome renders a stat cell
-- **THEN** the label `<p>` carries the `text-text-2` class (resolving to `#5C6675`)
-- **AND** the label `<p>` does NOT contain `text-gray-600`, `text-gray-700` nor any `text-gray-*` literal en su class string
+- **WHEN** el PanelHome renderiza una celda de estadística
+- **THEN** el párrafo de label lleva la clase `text-text-2` (resolviendo a `#5C6675`)
+- **AND** el párrafo de label no contiene `text-gray-600`, `text-gray-700` ni ningún `text-gray-*` literal en su string de clase
+
+### Requirement: El valor más largo queda dentro de su celda
+El `panel-home` SHALL garantizar que el valor de estadística configurado más largo (`30.000+`) quede totalmente contenido dentro de su celda en los viewports `320×568` y `375×667`, sin desbordarse ni recortarse. Se aplican `min-w-0` en el wrapper de la celda y `break-words` en el texto del valor para lograrlo.
+
+#### Scenario: Valor más largo queda dentro de la celda en viewport estrecho
+- **WHEN** el PanelHome se renderiza en el viewport `320×568` o `375×667`
+- **THEN** el `boundingBox` del párrafo de valor `30.000+` queda dentro del `boundingBox` de su celda
+- **AND** el texto `30.000+` es visible completo (no recortado ni desbordado)
+
+#### Scenario: Padding y tamaño de fuente adaptados al viewport
+- **WHEN** se inspecciona el source de `PanelHome.astro`
+- **THEN** la celda de estadística declara un padding horizontal menor en la base (móvil) que en `md:` (por ejemplo `p-4 md:p-8 md:lg:p-12`)
+- **AND** el padding de la mitad derecha NO mantiene `p-8 md:p-12` como único valor en móvil
+
+### Requirement: PanelHome reduces its inner padding on desktop
+El `panel-home` izquierda (`<div>` que lleva `bg-primary`) SHALL usar un relleno interior reducido en desktop: `lg:p-12` (48px) en lugar del `lg:p-16` (64px) usado anteriormente, para que el panel lea más apretado en pantallas grandes. El padding móvil/tablet (`p-8 md:p-12`) se mantiene sin cambios para la mitad izquierda. La mitad derecha SHALL usar un padding responsivo que mantenga los valores de estadística contenidos en viewports estrechos (ej. `p-4 md:p-8 lg:p-12`) en lugar del `p-8 md:p-12` fijo anterior.
+
+#### Scenario: Left half uses reduced desktop padding lg:p-12
+- **WHEN** el PanelHome renderiza la izquierda (`bg-primary`)
+- **THEN** la mitad izquierda `<div>` lleva `lg:p-12`
+- **AND** la mitad izquierda `<div>` no lleva `lg:p-16`
+
+#### Scenario: Right half uses responsive padding
+- **WHEN** el PanelHome renderiza la mitad derecha (`bg-white`)
+- **THEN** sus celdas de estadística declaran un padding base menor que el aplicado en `md:`/`lg:`
+- **AND** el padding en `lg:` se mantiene en `p-12` para conservar la densidad desktop
+
+### Requirement: PanelHome stat values scale down on narrow viewports
+El tamaño de fuente computado del valor de cada estadística SHALL adaptarse al ancho disponible: el valor SHALL usar un tamaño base reducido en móvil y escalar hacia arriba en `md:`. La celda SHALL impedir además el desborde horizontal mediante `min-w-0` y/o quiebre de palabra sobre el texto del valor.
+
+#### Scenario: Escala tipográfica del valor
+- **WHEN** se mide el `font-size` computado del valor `30.000+` en los viewports `320×568`, `375×667` y `1280×800`
+- **THEN** el valor en `320×568` es menor que el valor en `1280×800`
+- **AND** el valor en `375×667` es menor o igual que el valor en `1280×800`
+
+#### Scenario: La celda no impone un ancho mínimo
+- **WHEN** se renderiza el PanelHome en el viewport `320×568`
+- **THEN** la celda de estadística no declara un `min-width` superior al ancho disponible de su columna
+- **AND** la celda sigue siendo visible y con el texto completo
 
 ### Requirement: PanelHome meets WCAG AA contrast between white text and the teal background
-The `panel-home` SHALL meet WCAG AA contrast requirements between white text (`#FFFFFF`) and the teal background of the left half (now `--color-primary` `#41B3C4`):
+El `panel-home` SHALL cumplir los requisitos de contraste WCAG AA entre el texto blanco (`#FFFFFF`) y el fondo teal de la mitad izquierda (ahora `--color-primary` `#41B3C4`):
 
-- The headline `<h2>` (bold, fontsize ≥ 18pt) SHALL meet WCAG AA Large (contrast ratio ≥ 3:1) against the teal background.
-- The description `<p>` SHALL meet WCAG AA Normal (contrast ratio ≥ 4.5:1) against the teal background. The opacity MAY be adjusted (e.g. `text-white/90` or solid `text-white`) to meet the threshold, OR — if the primary token `#41B3C4` cannot meet AA Normal even with solid white text — the background of the left half SHALL fall back to `--color-primary-darker` (`#227E8E`, ratio ≈ 3.95:1 to white) only when the AA Large fallback is required for text body.
+- El headline `<h2>` (negrita, fontsize ≥ 18pt) SHALL cumplir WCAG AA Large (razón de contraste ≥ 3:1) contra el fondo teal.
+- El description `<p>` SHALL cumplir WCAG AA Normal (razón de contraste ≥ 4.5:1) contra el fondo teal. La opacity PUEDE ajustarse (ej. `text-white/90` o solid `text-white`) para cumplir el umbral, O — si el token primario `#41B3C4` no puede cumplir AA Normal ni con texto blanco sólido — el fondo de la mitad izquierda SHALL retroceder a `--color-primary-darker` (`#227E8E`, razón ≈ 3.95:1 a blanco) solo cuando el AA Large sea requerido para texto body.
 
-The `test.skip()` calls in `apps/web/e2e/panel-home.spec.ts` for tasks 4.13 and 4.14 of the archived `panel-home` change SHALL be removed; the corresponding tests SHALL pass with the new tokens.
+El `test.skip()` llamado en `apps/web/e2e/panel-home.spec.ts` para tasks 4.13 y 4.14 del change archivado SHALL borrarse; las pruebas correspondientes SHALL pasar con los nuevos tokens.
 
 #### Scenario: h2 white text meets WCAG AA Large on teal background
-- **WHEN** the Playwright E2E test 4.13 runs against the rendered PanelHome
-- **THEN** the computed `color` (expected `rgb(255, 255, 255)`) and `background-color` (expected to resolve from `--color-primary` `#41B3C4`) of the `<h2>` are read via `getComputedStyle`
-- **AND** the WCAG contrast ratio between them is ≥ 3.0
-- **AND** the test runs (not `test.skip()`ed)
+- **WHEN** la prueba E2E 4.13 se ejecuta contra el PanelHome renderizado
+- **THEN** el `color` computado (esperado `rgb(255, 255, 255)`) y `background-color` (esperado que se resuelva de `--color-primary` `#41B3C4`) del `<h2>` se lean mediante `getComputedStyle`
+- **AND** la razón de contraste WCAG entre ellos es ≥ 3.0
+- **AND** la prueba se ejecuta (no `test.skip()`ed)
 
 #### Scenario: description <p> meets WCAG AA Normal on teal background
-- **WHEN** the Playwright E2E test 4.14 runs against the rendered PanelHome
-- **THEN** the computed `color` and `background-color` of the description `<p>` are read via `getComputedStyle`
-- **AND** the WCAG contrast ratio is ≥ 4.5
-- **OR** if the primary token `#41B3C4` with solid white text does not reach 4.5:1, the left half background is overridden locally to `--color-primary-darker` `#227E8E` and the test passes
-- **AND** the test runs (not `test.skip()`ed)
+- **WHEN** la prueba E2E 4.14 se ejecuta contra el PanelHome renderizado
+- **THEN** el `color` computado y `background-color` del párrafo `<p>` se lean mediante `getComputedStyle`
+- **AND** la razón de contraste WCAG es ≥ 4.5
+- **O** si el token primario `#41B3C4` con texto blanco sólido no alcanza 4.5:1, el fondo de la mitad izquierda se sobreecribe localmente a `--color-primary-darker` `#227E8E` y la prueba pasa
+- **AND** la prueba se ejecuta (no `test.skip()`ed)
 
-#### Scenario: panel-home spec file contains no test.skip for 4.13/4.14
-- **WHEN** the source of `apps/web/e2e/panel-home.spec.ts` is inspected
-- **THEN** no `test.skip()` call exists for the tests named "WCAG AA Large contrast: h2 white text on teal background (4.13)" nor "WCAG AA Normal contrast: description <p> on teal; verify and adjust if failing (4.14)"
-- **AND** the tests are defined with a regular `test(...)` call and execute in CI
+#### Scenario: panel-home spec file contiene test.skip para 4.13/4.14
+- **WHEN** el source de `apps/web/e2e/panel-home.spec.ts` se inspecciona
+- **THEN** no existe llamada `test.skip()` para las pruebas nombradas "WCAG AA Large contraste: h2 texto blanco sobre fondo teal (4.13)" ni "WCAG AA Normal contraste: descripción <p> en fondo teal; verificar y ajustar si fallando (4.14)"
+- **AND** las pruebas están definidas con una llamada `test(...)` regular y se ejecutan en CI
 
 ### Requirement: PanelHome layout is responsive: stacked on mobile, two columns on desktop
-The `panel-home` SHALL compose its two halves in a responsive grid: on mobile (`< 1024px`) the two halves stack vertically (left teal on top, right white on bottom, each full-width); on desktop (`>= 1024px`) the two halves sit side by side, each occupying 50% of the panel width. The breakpoint SHALL be `lg` (1024px).
+El `panel-home` SHALL componer sus dos mitades en un grid responsivo: en móvil (`< 1024px`) las dos mitades se apilan verticalmente (izquierda teal arriba, derecha blanca abajo, cada una full-width); en escritorio (`>= 1024px`) las dos mitades quedan lado a lado, cada una ocupando 50% del ancho del panel. El breakpoint SHALL ser `lg` (1024px).
 
 #### Scenario: Mobile stacks the two halves vertically
-- **WHEN** the PanelHome renders on a viewport `< 1024px`
-- **THEN** the outermost panel grid carries a class expressing a single column (e.g. `grid-cols-1`)
-- **AND** the left half element sits above the right half element in the DOM
+- **WHEN** el PanelHome se renderiza en un viewport `< 1024px`
+- **THEN** el grid exterior lleva una clase que expresa una sola columna (ej. `grid-cols-1`)
+- **AND** la mitad izquierda elemento aparece arriba de la mitad derecha en el DOM
 
 #### Scenario: Desktop lays the two halves side by side
-- **WHEN** the PanelHome renders on a viewport `>= 1024px`
-- **THEN** the outermost panel grid carries a class expressing two columns (e.g. `lg:grid-cols-2`)
-- **AND** the left half and the right half each occupy ~50% of the panel width
+- **WHEN** el PanelHome se renderiza en un viewport `>= 1024px`
+- **THEN** el grid exterior lleva una clase que expresa dos columnas (ej. `lg:grid-cols-2`)
+- **AND** la mitad izquierda y la mitad derecha cada una ocupa ~50% del ancho del panel
 
 ### Requirement: PanelHome is keyboard and screen-reader accessible
-The `panel-home` SHALL use semantic HTML so it is operable with the keyboard and consumable by screen readers without extra ARIA attributes: the panel headline is `<h2>` (subordinate to the hero `<h1>`), the CTA is a focusable `<a>`, and no decorative element emits aria noise.
+El `panel-home` SHALL usar HTML semántico para ser operable con el teclado y consumible por lectores de pantalla sin atributos ARIA extra: el headline del panel es `<h2>` (subordinado al hero `<h1>`), el CTA es un `<a>` focusable, y ningún elemento decorativo emite ruido ARIA.
 
 #### Scenario: The panel headline is an h2, not a new h1
-- **WHEN** the home page renders with both HeroBanner and PanelHome
-- **THEN** the document contains exactly one `<h1>` (the hero headline)
-- **AND** the PanelHome headline is rendered as `<h2>`
+- **WHEN** la página home se renderiza con ambos HeroBanner y PanelHome
+- **THEN** el documento contiene exactamente un `<h1>` (el headline del hero)
+- **AND** el headline del PanelHome se renderiza como `<h2>`
 
 #### Scenario: The CTA is keyboard-focusable
-- **WHEN** the PanelHome renders
-- **THEN** the CTA is an `<a href="/contacto">` element (focusable by default)
-- **AND** the CTA does NOT carry `tabindex="-1"` or `aria-hidden="true"`
-- **AND** Tab navigation can move focus to the CTA
+- **WHEN** el PanelHome se renderiza
+- **THEN** el CTA es un elemento `<a href="/contacto">` (focusable por defecto)
+- **AND** el CTA no lleva `tabindex="-1"` ni `aria-hidden="true"`
+- **AND** la navegación Tab puede mover el foco al CTA
 
 #### Scenario: Stat cells do not carry aria-label
-- **WHEN** the PanelHome renders
-- **THEN** no stat cell `<div>` or `<p>` carries `role="img"`, `aria-label` or `alt` attributes (the stats are plain text, no decorative noise)
+- **WHEN** el PanelHome se renderiza
+- **THEN** no celda de estadística `<div>` o `<p>` lleva `role="img"`, `aria-label` ni atributos `alt` (las estadísticas son texto plano, sin ruido decorativo)
 
 ### Requirement: PanelHome content is configured via a hardcoded constant
-The `panel-home` content SHALL come from the `PANEL_HOME_CONTENT` constant in `lib/config/panel-home.ts`, exported as `Readonly<PanelHomeProps>`, with exactly four stats and exactly one CTA. The first stat's value SHALL be `"40+"` and the last stat's value SHALL be `"9+"`.
+El contenido del `panel-home` SHALL venir del constante `PANEL_HOME_CONTENT` en `lib/config/panel-home.ts`, exportado como `Readonly<PanelHomeProps>`, con exactamente cuatro stats y exactamente un CTA. El valor de la primera stat SHALL ser `"40+"` y el valor de la última stat SHALL ser `"9+"`.
 
-#### Scenario: PANEL_HOME_CONTENT exposes the full set of props
-- **WHEN** `PANEL_HOME_CONTENT` is imported
-- **THEN** it has the shape `{ eyebrow: string; headline: string; description: string; cta: PanelCta; stats: readonly PanelStat[] }`
-- **AND** `eyebrow`, `headline` and `description` are non-empty strings
-- **AND** `cta.label`, `cta.href` and `cta.variant` are non-empty strings with `variant === 'primary'`
+#### Scenario: PANEL_HOME_CONTENT exposa el conjunto completo de props
+- **WHEN** `PANEL_HOME_CONTENT` se importa
+- **THEN** tiene la forma `{ eyebrow: string; headline: string; description: string; cta: PanelCta; stats: readonly PanelStat[] }`
+- **AND** `eyebrow`, `headline` y `description` son cadenas no vacías
+- **AND** `cta.label`, `cta.href` y `cta.variant` son cadenas no vacías con `variant === 'primary'`
 
-#### Scenario: PANEL_HOME_CONTENT.stats has exactly four stats
-- **WHEN** `PANEL_HOME_CONTENT.stats` is inspected
-- **THEN** it has length `4`
-- **AND** each element has non-empty `value` and `label` strings
-- **AND** the first element's `value` equals `"40+"`
-- **AND** the last element's `value` equals `"9+"`
+#### Scenario: PANEL_HOME_CONTENT.stats tiene exactamente cuatro stats
+- **WHEN** `PANEL_HOME_CONTENT.stats` se inspecciona
+- **THEN** tiene longitud `4`
+- **AND** cada elemento tiene cadenas no vacías `value` y `label`
+- **AND** el valor de la primera elemento equals `"40+"`
+- **AND** el valor de la última elemento equals `"9+"`
 
 #### Scenario: PANEL_HOME_CONTENT.cta points to /contacto
-- **WHEN** `PANEL_HOME_CONTENT.cta` is inspected
+- **WHEN** `PANEL_HOME_CONTENT.cta` se inspecciona
 - **THEN** `cta.href` equals `"/contacto"`
 - **AND** `cta.label` equals `"SOLICITAR ASESORÍA TÉCNICA"`
 - **AND** `cta.variant` equals `"primary"`
 
-#### Scenario: Each stat label is uppercase
-- **WHEN** `PANEL_HOME_CONTENT.stats` is inspected
-- **THEN** each element's `label` matches the regex `/^[A-ZÁÉÍÓÚÑ0-9\s+]+$/` (uppercase letters, digits, spaces and the plus sign only)
+#### Scenario: Cada stat label es uppercase
+- **WHEN** `PANEL_HOME_CONTENT.stats` se inspecciona
+- **THEN** cada elemento's `label` coincide con la regex `/^[A-ZÁÉÍÓÚÑ0-9\s+]+$/` (mayúsculas, dígitos, espacios y el signo más solamente)
 
 ### Requirement: PanelHome integrates into the home page after the HeroBanner
-The `apps/web/src/pages/index.astro` SHALL render `<HeroBanner {...HERO_BANNER_CONTENT} />` followed by `<PanelHome {...PANEL_HOME_CONTENT} />` inside its `<Layout>` slot. The PanelHome SHALL NOT replace the HeroBanner; both render on the home page.
+El `apps/web/src/pages/index.astro` SHALL render `<HeroBanner {...HERO_BANNER_CONTENT} />` seguido de `<PanelHome {...PANEL_HOME_CONTENT} />` dentro de su `<Layout>` slot. El PanelHome SHALL NOT reemplazar al HeroBanner; ambos renderizan en la página home.
 
 #### Scenario: Home page renders both HeroBanner and PanelHome
-- **WHEN** a visitor loads `/` (the home page)
-- **THEN** the rendered HTML contains the HeroBanner `<section>` (with the hero headline, subtitle and CTAs)
-- **AND** the rendered HTML contains the PanelHome `<section>` (with the panel headline, description, CTA and 4 stats)
+- **WHEN** un visitante carga `/` (la página home)
+- **THEN** el HTML renderizado contiene el HeroBanner `<section>` (con el headline, subtitle y CTAs)
+- **AND** el HTML renderizado contiene el PanelHome `<section>` (con el headline, descripción, CTA y 4 stats)
 
 #### Scenario: PanelHome renders after the HeroBanner in the DOM
-- **WHEN** the home page renders
-- **THEN** the rendered HTML keeps the order: `<header>` (site-header), then the SearchForm `<div role="search">`, then the HeroBanner `<section>`, then the PanelHome `<section>`
-- **AND** no retired top contact bar precedes the header
-- **AND** the count of `<header>` elements in the document is still exactly one (no new landmark is introduced)
+- **WHEN** la página home se renderiza
+- **THEN** el HTML renderizado mantiene el orden: `<header>` (site-header), luego el SearchForm `<div role="search">`, luego el HeroBanner `<section>`, luego el PanelHome `<section>`
+- **AND** no bar de contacto anterior precede al header
+- **AND** el count de `<header>` elementos en el documento sigue siendo exactamente uno (no se introduce nuevo landmark)
 
 ### Requirement: PanelHome reduces its inner padding on desktop
-The `panel-home` left half (`<div>` carrying `bg-primary`) SHALL use reduced inner padding on desktop: `lg:p-12` (48px) instead of the larger `lg:p-16` (64px) used previously, so the panel reads tighter on large screens. The mobile/tablet padding (`p-8 md:p-12`) is unchanged. The right half SHALL keep `p-8 md:p-12` (already 48px at desktop).
+El `panel-home` izquierda (`<div>` que lleva `bg-primary`) SHALL usar relleno interior reducido en desktop: `lg:p-12` (48px) en lugar del `lg:p-16` (64px) usado anteriormente, para que el panel lea más apretado en pantallas grandes. El padding móvil/tablet (`p-8 md:p-12`) se mantiene sin cambios para la mitad izquierda. La mitad derecha SHALL usar un padding responsivo que mantenga los valores de estadística contenidos en viewports estrechos (ej. `p-4 md:p-8 lg:p-12`) en lugar del `p-8 md:p-12` fijo anterior.
 
 #### Scenario: Left half uses reduced desktop padding lg:p-12
-- **WHEN** the PanelHome renders the left (bg-primary) half
-- **THEN** the left half `<div>` carries `lg:p-12`
-- **AND** the left half `<div>` does NOT carry `lg:p-16`
+- **WHEN** el PanelHome renderiza la izquierda (`bg-primary`)
+- **THEN** la mitad izquierda `<div>` lleva `lg:p-12`
+- **AND** la mitad izquierda `<div>` no lleva `lg:p-16`
 
-### Requirement: PanelHome renders with a static elevation shadow on its main grid
-The `panel-home` main grid element (`<div class="grid grid-cols-1 lg:grid-cols-2">`, the element that wraps the teal + white halves) SHALL apply a static `box-shadow` with the value `0 10px 30px rgba(22, 32, 46, 0.3)` (the same elevation used by the compact scroll header shell), visible at all times regardless of scroll position. The shadow value SHALL resolve from the global CSS token `--shadow-scroll-shell` (promoted to `globals.css` `@theme`), which the `.header-scroll-shell` rule SHALL also consume. This is a documented exception to the flat-design rule that otherwise forbids `shadow*` on base components in their static state.
-
-> **Note (post-apply):** The shadow lives on the inner grid (not the outermost `<section>`) so it hugs the visible teal+white card. Putting it on the full-width `<section>` would cast a shadow across the entire viewport (incorrect visual). Putting it on the `.container` wrapper would also be incorrect because the card occupies only the container's interior. The main grid is the element that exactly bounds the visible panel.
-
-#### Scenario: Main grid carries the static elevation shadow
-- **WHEN** the PanelHome renders
-- **THEN** the main `grid grid-cols-1 lg:grid-cols-2` element computes a `box-shadow` equal to `0 10px 30px rgba(22, 32, 46, 0.3)` (not `none`)
-- **AND** the `box-shadow` is present regardless of scroll position (no `data-scrolled` dependency)
-
-#### Scenario: Shadow token is global and reused by the header shell
-- **WHEN** `globals.css` `@theme` is inspected
-- **THEN** it declares a token `--shadow-scroll-shell: 0 10px 30px rgba(22, 32, 46, 0.3)`
-- **AND** `header-scroll.css` `.header-scroll-shell` consumes `var(--shadow-scroll-shell)` (no local duplicate definition)
-
-#### Scenario: Flat-design exception is documented
-- **WHEN** `docs/design/style-guide/README.md` is inspected
-- **THEN** the flat-design section notes that `PanelHome` (specifically its main grid element) is the documented exception that applies `--shadow-scroll-shell` as elevation over the overlapping HeroBanner
+#### Scenario: Right half uses responsive padding
+- **WHEN** el PanelHome renderiza la mitad derecha (`bg-white`)
+- **THEN** sus celdas de estadística declaran un padding base menor que el aplicado en `md:`/`lg:`
+- **AND** el padding en `lg:` se mantiene en `p-12` para conservar la densidad desktop
 
 ### Requirement: PanelHome animates the four stat numbers from 0 to their value on first visibility
-The `panel-home` SHALL animate each stat value from `0` to its target numeric value when the user scrolls down and the panel first enters the viewport, using an `IntersectionObserver` that fires the animation exactly once (it SHALL NOT replay on subsequent re-entries). During the animation the numeric portion counts up while the `+` suffix SHALL remain visible at all times (e.g. `0+`, `1+`, … `40+`). The target numeric value SHALL come from the `numericValue: number` field of `PanelStat` (values `40`, `30000`, `5`, `9`), while the formatted display (`value`, e.g. `30.000+`) remains the SSR/no-JS fallback. The animation SHALL respect `prefers-reduced-motion: reduce` by skipping the count-up and showing the final value immediately.
+El `panel-home` SHALL animar cada valor de estadística de `0` hasta su valor objetivo cuando el usuario hace scroll hacia abajo y el panel entra por primera vez en el viewport, usando un `IntersectionObserver` que dispara la animación exactamente una vez (SHALL NOT re-play on subsequent re-entries). Durante la animación el valor numérico cuenta mientras el sufijo `+` SHALL permanecer visible en todo momento (ej. `0+`, `1+`, … `40+`). El valor objetivo SHALL venir del campo `numericValue: number` de `PanelStat` (valores `40`, `30000`, `5`, `9`), mientras que el formato de exhibición (`value`, ej. `30.000+`) SHÁ permanecer el fallback SSR/no-JS. La animación SHALL respetar `prefers-reduced-motion: reduce` al omitir el count-up y mostrar el valor final inmediatamente.
 
 #### Scenario: Stat cells expose a numeric target via data attributes
-- **WHEN** the PanelHome renders
-- **THEN** each stat value `<p>` carries a `data-stat-value` attribute and a `data-target` attribute equal to its `numericValue` (`40`, `30000`, `5`, `9`)
-- **AND** the rendered visible text of each stat value is the `value` string (`40+`, `30.000+`, `5+`, `9+`) as a no-JS fallback
+- **WHEN** el PanelHome se renderiza
+- **THEN** cada párrafo de valor `<p>` lleva un `data-stat-value` attribute y un `data-target` attribute igual a su `numericValue` (`40`, `30000`, `5`, `9`)
+- **AND** el texto visible de cada párrafo de valor es el string `value` (`40+`, `30.000+`, `5+`, `9+`) como fallback SSR/no-JS
 
 #### Scenario: Numbers count up from 0 to target once when scrolled into view
-- **WHEN** the page is scrolled down so the PanelHome enters the viewport
-- **THEN** each stat number animates from `0` up to its `data-target` value
-- **AND** the `+` suffix is present throughout the animation
-- **AND** the animation does NOT replay if the panel leaves and re-enters the viewport
+- **WHEN** la página se hace scroll hacia abajo para que el PanelHome entre en el viewport
+- **THEN** cada número estadístico anima desde `0` hasta su valor `data-target`
+- **AND** el sufijo `+` está presente durante toda la animación
+- **AND** la animación no re-replay si el panel sale y reingresa el viewport
 
 #### Scenario: Reduced motion shows final value without animation
-- **WHEN** the environment reports `prefers-reduced-motion: reduce`
-- **THEN** the stat values render as their final `value` strings (`40+`, `30.000+`, `5+`, `9+`) with no count-up animation
+- **WHEN** el entorno informa `prefers-reduced-motion: reduce`
+- **THEN** los valores de estadística se renderizan como sus cadenas de valor final (`40+`, `30.000+`, `5+`, `9+`) sin animación de count-up
 
 #### Scenario: numericValue is part of the PanelStat contract
-- **WHEN** `PanelStat` / `PANEL_HOME_CONTENT` is inspected
-- **THEN** every `stats` element has a `numericValue` number equal to the integer target of its `value` (`40`, `30000`, `5`, `9` respectively)
+- **WHEN** `PanelStat` / `PANEL_HOME_CONTENT` se inspecciona
+- **THEN** cada elemento `stats` tiene un `numericValue` número igual al target entero de su `value` (`40`, `30000`, `5`, `9` respectivamente)
 
-### Requirement: PanelHome adorns the stats grid with a plus-shaped divider cross via gap-px
-The `panel-home` right-half stats grid SHALL render a decorative `+` (plus) sign that divides the 2×2 stats layout into four quadrants: a vertical 1px line at the horizontal centre (between the two columns) and a horizontal 1px line at the vertical centre (between the two rows), both in the primary colour (`--color-primary`, `#41B3C4`).
+### Requirement: PanelHome adornos la grid de estadísticas con un divisor en forma de más signo (+) mediante gap-px
+El `panel-home` right-half stats grid SHALL renderizar un signo decorativo `+` (más) que divide el layout 2×2 de estadísticas en cuatro cuadrantes: una línea vertical 1px en el centro horizontal (entre las dos columnas) y una línea horizontal 1px en el centro vertical (entre las dos filas), ambas en el color primario (`--color-primary`, `#41B3C4`).
 
-The divider SHALL reach the actual top, bottom, left and right edges of the white half of the panel. Because the wrapper carries `background-color: var(--color-primary)` and the cells carry `bg-white`, with the grid configured as `grid-cols-2 grid-rows-2 gap-px h-full w-full`, the 1px gap between cells exposes the primary colour as the divider lines.
+El divisor SHALL alcanzar los bordes reales superior, inferior, izquierdo y derecho de la mitad blanca del panel. Dado que el wrapper lleva `background-color: var(--color-primary)` y las cells llevan `bg-white`, con el grid configurado como `grid-cols-2 grid-rows-2 gap-px h-full w-full`, la brecha 1px entre cells expone el color primario como las líneas del divisor.
 
-The wrapper SHALL be a `relative` element that stretches to the full height of the white half (`flex-1` inside a `flex flex-col` `bg-white` parent that is itself stretched by `align-items: stretch` on the main `lg:grid-cols-2` grid). Padding SHALL live on the cells, not on the wrapper, so nothing limits the divider lines from reaching the actual edges of the white half.
+El wrapper SHALL ser un elemento `relative` que se estire a la altura completa de la mitad blanca (`flex-1` dentro de un `flex flex-col` `bg-white` padre que se estira mediante `align-items: stretch` en el main `lg:grid-cols-2` grid). El padding SHALL vivir en las cells, no en el wrapper, para que nada limite las líneas del divisor desde alcanzar los bordes reales de la mitad blanca.
 
-Because the divider is rendered via CSS Grid gaps (not as separate DOM elements), no `aria-hidden` attribute is needed: assistive technologies do not read grid gaps and the four stat `<p>` elements remain unmodified in text and accessible order.
+Dado que el divisor se renderiza mediante CSS Grid gaps (no como elementos DOM separados), no se necesita `aria-hidden` atributo: las tecnologías asistenciales no lean gaps grid y los cuatro `<p>` de valores estadísticos permanecen sin modificar en texto y orden accesible.
 
 #### Scenario: Stats grid container is relative and stretches to the white half height
-- **WHEN** the PanelHome renders the right half
-- **THEN** the 2×2 stats grid is wrapped in a `relative` container (`stats-grid-wrap`)
-- **AND** that container stretches to the full height of the white half (via `flex-1` + `flex flex-col` chain anchored to the main grid's `align-items: stretch`)
-- **AND** the grid uses `grid-cols-2 grid-rows-2 gap-px h-full w-full` so the cells tile the wrapper edge-to-edge
+- **WHEN** el PanelHome renderiza la mitad derecha
+- **THEN** la grid 2×2 de estadísticas está envuelta en un container `relative` (`stats-grid-wrap`)
+- **AND** ese container se estira a la altura completa de la mitad blanca (mediante `flex-1` + `flex flex-col` cadena anclada al main `lg:grid-cols-2` grid)
+- **AND** el grid usa `grid-cols-2 grid-rows-2 gap-px h-full w-full` para que las cells llenen el wrapper de borde a borde
 
 #### Scenario: Divider colour resolves from the primary token
-- **WHEN** the divider is inspected
-- **THEN** the wrapper's `background-color` resolves from `--color-primary` (`rgb(65, 179, 196)`)
-- **AND** the cells' `background-color` resolves to white (`rgb(255, 255, 255)`)
-- **AND** the 1px gap exposes the primary colour as the divider lines
-- **AND** no raw hex literal appears in the component source for the divider colour
+- **WHEN** el divisor se inspecciona
+- **THEN** el background-color del wrapper se resuelve de `--color-primary` (`rgb(65, 179, 196)`)
+- **AND** el background-color de las cells se resuelve a blanco (`rgb(255, 255, 255)`)
+- **AND** la brecha 1px expone el color primario como las líneas del divisor
+- **AND** ningún literal hexadecimal aparece en el source del componente para el color del divisor
 
 #### Scenario: Divider lines reach the actual edges of the white half
-- **WHEN** the rendered panel is measured
-- **THEN** the leftmost cell starts at the wrapper's left edge (X ≈ 0, within 1px)
-- **AND** the rightmost cell ends at the wrapper's right edge (within 1px)
-- **AND** the topmost cell starts at the wrapper's top edge (Y ≈ 0, within 1px)
-- **AND** the bottommost cell ends at the wrapper's bottom edge (within 1px)
-- **AND** both the horizontal and vertical divider lines therefore span the full width and height of the white half
+- **WHEN** el panel renderizado se mide
+- **THEN** la cell más izquierda comienza en el borde izquierdo del wrapper (X ≈ 0, dentro de 1px)
+- **AND** la cell más derecha termina en el borde derecho del wrapper (dentro de 1px)
+- **AND** la cell más arriba comienza en el borde superior del wrapper (Y ≈ 0, dentro de 1px)
+- **AND** la cell más abajo termina en el borde inferior del wrapper (dentro de 1px)
+- **AND** tanto la línea horizontal como la vertical del divisor, por lo tanto, se extiende el ancho y altura completos de la mitad blanca
 
-#### Scenario: Divider does not impact accessibility
-- **WHEN** the rendered DOM is inspected by assistive technologies
-- **THEN** the four stat `<p>` values and labels remain unmodified in text and accessible order
-- **AND** because the divider is rendered via CSS Grid gaps (no separate DOM elements), no `aria-hidden` attribute is required: gaps are not exposed to the accessibility tree
+#### Scenario: Divider no impacta accesibilidad
+- **WHEN** el DOM renderizado se inspecciona con tecnologías asistenciales
+- **THEN** los cuatro valores `<p>` estadísticos y labels permanecen sin modificar en texto y orden accesible
+- **AND** dado que el divisor se renderiza mediante CSS Grid gaps (no como elementos DOM separados), no se requiere atributo `aria-hidden`: gaps no están expuestos al árbol de accesibilidad
 
 ### Requirement: PanelHome elevates 8px above the HeroBanner via uniform negative margin-top
-The PanelHome `<section>` SHALL carry a uniform `-mt-2` (−8px at every breakpoint) so the elevated card (`.panel-home-elevated`) overlaps the HeroBanner bottom edge by 8px at all breakpoints; on desktop (≥1024px) this places the card 16px closer to the top than the previous +8px positive offset (client decision, desktop-only change; mobile/tablet unchanged at −8px). The `z-10` overlap stacking SHALL be preserved. (ADDED in `ui-chrome-polish`.)
+El PanelHome `<section>` SHALL llevar un uniforme `-mt-2` (−8px en todos los breakpoints) de modo que la carta elevada (`.panel-home-elevated`) se superpone al borde inferior del HeroBanner por 8px en todos los breakpoints; en desktop (≥1024px) esto coloca la carta 16px más cerca del borde superior que el anterior offset positivo +8px (decisión del cliente, solo cambio desktop; móvil/tablet sin cambios a −8px). El stacking `z-10` SHALL preservarse.
 
 #### Scenario: SC-005 — panel card is 16px higher on desktop
-- **WHEN** the home page renders the PanelHome section
-- **THEN** the `<section data-panel-home>` carries `relative -mt-2 z-10`
-- **AND** the section does NOT carry a positive `lg:mt-2` offset nor a redundant `md:-mt-2`
-- **AND** on desktop (≥1024px) the card sits 8px above the hero bottom edge — 16px closer to the top than before
-- **AND** on mobile/tablet the offset stays −8px (unchanged)
+- **WHEN** la página home renderiza la sección PanelHome
+- **THEN** el `<section data-panel-home>` lleva `relative -mt-2 z-10`
+- **AND** la sección no lleva un positive `lg:mt-2` offset ni un `md:-mt-2` redundante
+- **AND** en desktop (≥1024px) la carta se sitúa 8px arriba del borde inferior del hero — 16px más cerca de la parte superior que antes
+- **AND** en móvil/tablet el offset se mantiene −8px (sin cambios)

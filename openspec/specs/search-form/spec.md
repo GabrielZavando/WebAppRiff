@@ -313,20 +313,8 @@ The global SearchForm SHALL be rendered on Inicio (`/`), Productos (`/productos`
 - **WHEN** a visitor loads `/contacto`
 - **THEN** no `role="search"` landmark is present
 
-#### Scenario: Search hidden on Marcas
-- **WHEN** a visitor loads `/marcas`
-- **THEN** no `role="search"` landmark is present
 
-### Requirement: Servicios and Marcas pages exist with the Layout shell
-The routes `/servicios` and `/marcas` SHALL each return HTTP 200 (no 404) and render inside the global `Layout.astro` (which provides Header, Footer, SiteCredits and the global floating contact actions), containing a `<main>` placeholder for future content. `/servicios` SHALL opt into the global search with the navy (`bg-secondary`) background; `/marcas` SHALL opt out of the global search (`showSearch={false}`).
-
-#### Scenario: Servicios page renders with navy search
-- **WHEN** a visitor loads `/servicios`
-- **THEN** the response status is 200
-- **AND** a `role="search"` landmark is present
-- **AND** the search wrapper carries `bg-secondary`
-
-#### Scenario: Marcas page renders without search
-- **WHEN** a visitor loads `/marcas`
-- **THEN** the response status is 200
-- **AND** no `role="search"` landmark is present
+#### Scenario: Desborde en viewport móvil
+- **WHEN** se carga cualquier página con buscador en el viewport `320×568`
+- **THEN** `document.documentElement.scrollWidth` no supera `document.documentElement.clientWidth + 1`
+- **AND** el `boundingBox` del `<form>` del buscador queda dentro del ancho del viewport

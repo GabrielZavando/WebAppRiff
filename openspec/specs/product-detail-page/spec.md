@@ -251,3 +251,12 @@ The rich-text long description rendered with `set:html` SHALL stay inside the co
 - **WHEN** the long description contains Quill lists, headings, or blockquotes
 - **THEN** their margins and paddings stay within the description container's width
 
+### Requirement: Título largo contenido en su columna
+
+El `<h1>` del detalle de producto en `/productos/{slug}` SHALL permanecer contenido dentro de su columna de información en los viewports `320×568` y `375×667`. El título SHALL aplicar `break-words` y usar una escala tipográfica responsiva (`text-3xl md:text-5xl` o equivalente) en lugar de un tamaño fijo `text-5xl`.
+
+#### Scenario: Título largo contenido en su columna
+- **WHEN** el producto tiene un `titulo` largo sin espacios (por ejemplo "ElectromagnéticoIndustrialCompacto") y la página se renderiza en el viewport `320×568`
+- **THEN** el `<h1>` no desborda el ancho de su columna de información
+- **AND** el texto queda visible completo dentro del viewport
+

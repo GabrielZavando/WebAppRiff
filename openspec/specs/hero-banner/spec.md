@@ -32,107 +32,121 @@ The `hero-banner` SHALL render `subtitle` as an `<h2>` directly subordinate to t
 - **AND** the `<p>` carries a class constraining its max width (e.g. `max-w-2xl`)
 
 ### Requirement: HeroBanner renders two CTA buttons with primary and secondary variants
-The `hero-banner` SHALL render one `<a>` per element of the `ctas` prop, where the element with `variant: 'primary'` carries the `bg-primary` background token (resolving to `#41B3C4`) and the element with `variant: 'secondary'` carries a white border with no fill. Ambos CTAs SHALL apply la heading font via `font-heading` (Montserrat) con peso `font-semibold` (600), `text-xs` size y `uppercase tracking-wide` per la escala tipográfica canónica. Los CTAs SHALL NOT apply `rounded` (flat design con radio 0). The obsolete utilities `bg-brand-teal` and references to `--color-brand-teal` SHALL NOT appear in any CTA.
+The `hero-banner` SHALL render one `<a>` per element of the `ctas` prop, where the element with `variant: 'primary'` carries the `bg-primary` background token (resolving to `#41B3C4`) and the element with `variant: 'secondary'` carries a white border with no fill. Ambos CTAs SHALL aplicar la heading font via `font-heading` (Montserrat) con peso `font-semibold` (600), `text-xs` size y `uppercase tracking-wide` per la escala tipográfica canónica. Los CTAs SHALL NOT aplicar `rounded` (flat design con radio 0). Los obsolete utilities `bg-brand-teal` y referencias a `--color-brand-teal` SHALL NOT aparecer en ningún CTA.
 
 #### Scenario: Primary CTA uses bg-primary
 - **WHEN** the HeroBanner renders a primary-variant CTA
-- **THEN** the `<a>` element carries `bg-primary` (resolving to `#41B3C4`)
-- **AND** its class string contains `font-heading` and `font-semibold`
-- **AND** its class string does NOT contain `rounded` (nor `rounded-*`)
-- **AND** its class string does NOT contain `bg-brand-teal`
+- **THEN** the `<a>` element lleva `bg-primary` (resolviendo a `#41B3C4`)
+- **AND** su string de clase contiene `font-heading` y `font-semibold`
+- **AND** su string de clase no contiene `rounded` (ni `rounded-*`)
+- **AND** su string de clase no contiene `bg-brand-teal`
 
 #### Scenario: Secondary CTA keeps white border
 - **WHEN** the HeroBanner renders a secondary-variant CTA
-- **THEN** the `<a>` element has a white border (`border-2 border-white`) with no fill
-- **AND** the CTA is keyboard focusable
-- **AND** its class string does NOT contain `rounded` (nor `rounded-*`)
+- **THEN** el `<a>` elemento tiene un borde blanco (`border-2 border-white`) sin relleno
+- **AND** el CTA es keyboard focusable
+- **AND** su string de clase no contiene `rounded` (ni `rounded-*`)
 
 #### Scenario: CTA container stacks on mobile and rows on sm+
 - **WHEN** the HeroBanner renders
-- **THEN** the CTA container carries `flex-col sm:flex-row`
+- **THEN** el contenedor de CTAs lleva `flex-col sm:flex-row`
 
 ### Requirement: HeroBanner layout is responsive across viewports
-The `hero-banner` SHALL scale its typography and spacing based on the viewport: smaller on mobile (< 768px) and larger on desktop (>= 768px), with the CTA container switching between stacked and inline layouts at the `sm` breakpoint. The content wrapper inside the section SHALL use asymmetric responsive vertical padding: a reduced top padding on mobile/tablet (`pt-4` mobile, `md:pt-8`) so the title, subtitle and CTAs sit higher and remain visible in the initial viewport, a larger desktop top padding (`lg:pt-24`) that lowers the content block within the full-height banner per the client's final review, and a preserved bottom padding (`pb-16` mobile, `md:pb-24`, `lg:pb-32`) that maintains spacing before the overlapping PanelHome.
+El `hero-banner` SHALL escalar su tipografía y espaciado según el viewport: más pequeño en móvil (< 768px) y más grande en escritorio (>= 768px), con el contenedor de CTAs conmutando entre disposiciones apiladas y en línea en el breakpoint `sm`. El wrappers de contenido dentro de la sección SHALL usar padding vertical assimétrico: un relleno superior reducido en móvil/tablet (`pt-4` móvil, `md:pt-8`) para que el título, subtítulo y CTAs se sitúen más alto y permanezcan visibles en el viewport inicial, un mayor relleno superior en desktop (`lg:pt-24`) que baja el bloque de contenido dentro del banner de altura completa según la revisión final del cliente, y un relleno inferior preservado (`pb-16` móvil, `md:pb-24`, `lg:pb-32`) que mantiene el espaciado antes del PanelHome que se superpone.
 
 #### Scenario: Mobile uses small typography and stacked CTAs
-- **WHEN** the HeroBanner renders on a viewport < 768px
-- **THEN** the `<h1>` carries a class constraining its size to `text-5xl` (or the equivalent base size at mobile)
-- **AND** the CTA container uses `flex-col` layout so each CTA occupies a full row
+- **WHEN** el HeroBanner se renderiza en un viewport < 768px
+- ****** THEN** el `<h1>` lleva una clase que restringe su tamaño a un tamaño base móvil menor que `text-5xl` (ej. `text-3xl` o `text-4xl`)
+- **AND** el contenedor de CTAs usa `flex-col` layout para que cada CTA ocupe una fila completa
 
 #### Scenario: Desktop uses large typography and inline CTAs
-- **WHEN** the HeroBanner renders on a viewport >= 768px
-- **THEN** the `<h1>` carries a responsive class scaling up to `md:text-7xl`
-- **AND** the CTA container uses `sm:flex-row` layout so the CTAs sit side by side
+- **WHEN** el HeroBanner se renderiza en un viewport >= 768px
+- **THEN** el `<h1>` lleva una clase responsive que escala hasta `md:text-7xl`
+- **AND** el contenedor de CTAs usa `sm:flex-row` layout para que los CTAs queden lado a lado
 
 #### Scenario: Section content box uses asymmetric vertical padding with reduced top
-- **WHEN** the HeroBanner renders
-- **THEN** the content wrapper inside the section carries `pt-4` (reduced top padding on mobile)
-- **AND** the wrapper carries `md:pt-8` and `lg:pt-24` (reduced top on mobile/tablet, larger top on desktop lowering the content)
-- **AND** the wrapper carries `pb-16` (bottom padding on mobile)
-- **AND** the wrapper carries `md:pb-24` and `lg:pb-32` (scaling bottom padding up on larger viewports)
-- **AND** the wrapper does NOT carry a symmetric `py-*` utility (padding is split into `pt-*`/`pb-*`)
+- **WHEN** el HeroBanner se renderiza
+- **THEN** el wrappers de contenido dentro de la sección lleva `pt-4` (relleno superior reducido en móvil)
+- **AND** el wrappers lleva `md:pt-8` y `lg:pt-24` (relleno superior reducido en móvil/tablet, mayor top en desktop bajando el contenido)
+- **AND** el wrappers lleva `pb-16` (relleno inferior en móvil)
+- **AND** el wrappers lleva `md:pb-24` y `lg:pb-32` (escalando el padding inferior hacia arriba en viewports más grandes)
+- **AND** el wrappers no lleva un utilidad symmetric `py-*` (el padding se divide en `pt-*`/`pb-*`)
 
 ### Requirement: HeroBanner has no built-in background image or overlay
-The `hero-banner` SHALL NOT render a `<picture>`, overlay `div` or any image import. Where the home needs a background, the application shell (capability `home-hero-shell`) provides it.
+El `hero-banner` SHALL NOT render un `<picture>`, overlay `div` o cualquier imagen import. Donde el home necesita un fondo, la aplicación shell (capability `home-hero-shell`) lo proporciona.
 
 #### Scenario: No picture element rendered
-- **WHEN** the HeroBanner renders
-- **THEN** the rendered HTML does NOT contain a `<picture>` tag
-- **AND** does NOT contain `bg-secondary/60` nor `bg-secondary/80` in any class
+- **WHEN** el HeroBanner se renderiza
+- **THEN** el HTML renderizado no contiene una etiqueta `<picture>`
+- **AND** no contiene `bg-secondary/60` ni `bg-secondary/80` en ninguna clase
 
 ### Requirement: HeroBanner is keyboard and screen-reader accessible
-The `hero-banner` SHALL use semantic HTML so it is operable with the keyboard and consumable by screen readers: single `<h1>` for the page, `<h2>` subordinate, and focusable CTAs in DOM order. Background imagery and its decorative overlay are handled by the application shell (`home-hero-shell`), not by this component.
+El `hero-banner` SHALL usar HTML semántico para ser operable con el teclado y consumible por lectores de pantalla: un solo `<h1>` para la página, `<h2>` subordinado, y CTAs focusables en el orden del DOM. El fondo imagery y su overlay decorativo están a cargo de la aplicación shell (`home-hero-shell`), no por este componente.
 
 #### Scenario: Exactly one h1 on the page
-- **WHEN** the home page renders with the HeroBanner
-- **THEN** the document contains exactly one `<h1>` element (the hero headline)
-- **AND** the hero's subtitle is rendered as `<h2>` (not as another `<h1>`)
+- **WHEN** la página home se renderiza con el HeroBanner
+- **THEN** el documento contiene exactamente un elemento `<h1>` (el headline del hero)
+- **AND** el subtítulo del hero se renderiza como `<h2>` (no como otro `<h1>`)
 
 #### Scenario: CTAs are keyboard-focusable anchors
-- **WHEN** the HeroBanner renders
-- **THEN** each CTA is an `<a href="...">` element (focusable by default)
-- **AND** Tab navigation moves through the CTAs in DOM order
-- **AND** the CTAs do not carry `tabindex="-1"` or `aria-hidden="true"`
+- **WHEN** el HeroBanner se renderiza
+- **THEN** cada CTA es un elemento `<a href="...">` (focusable por defecto)
+- **AND** la navegación Tab pasa por los CTAs en el orden del DOM
+- **AND** los CTAs no llevan `tabindex="-1"` ni `aria-hidden="true"`
 
 #### Scenario: No background imagery inside the hero component
-- **WHEN** the HeroBanner renders
-- **THEN** the component renders no `<picture>`, no `<img>`, and no overlay `<div>`
-- **AND** no `aria-hidden` overlay element is introduced by the hero section
+- **WHEN** el HeroBanner se renderiza
+- **THEN** el componente no renderiza `<picture>`, no `<img>`, y no overlay `<div>`
+- **AND** no se introduce elemento `aria-hidden` overlay por la sección hero
 
 ### Requirement: HeroBanner content is configured via a hardcoded constant
-The `hero-banner` content SHALL come from the `HERO_BANNER_CONTENT` constant in `lib/config/hero-banner.ts`, exported as `Readonly<HeroBannerProps>`, with exactly two CTAs (one primary and one secondary).
+El contenido del `hero-banner` SHALL venir del constante `HERO_BANNER_CONTENT` en `lib/config/hero-banner.ts`, exportado como `Readonly<HeroBannerProps>`, con exactamente dos CTAs (uno primary y uno secundario).
 
-#### Scenario: HERO_BANNER_CONTENT exposes the full set of props
-- **WHEN** `HERO_BANNER_CONTENT` is imported
-- **THEN** it has the shape `{ headline: string; highlightedWord: string; subtitle: string; description: string; ctas: readonly HeroCta[] }`
-- **AND** `headline` and `highlightedWord` are non-empty strings
-- **AND** `headline` contains `highlightedWord` as a substring OR `highlightedWord` is empty (edge case handled by `splitHeadline`)
+#### Scenario: HERO_BANNER_CONTENT exposa el conjunto completo de props
+- **WHEN** `HERO_BANNER_CONTENT` se importa
+- **THEN** tiene la forma `{ headline: string; highlightedWord: string; subtitle: string; description: string; ctas: readonly HeroCta[] }`
+- **AND** `headline` y `highlightedWord` son cadenas no vacías
+- **AND** `headline` contiene `highlightedWord` como substring O `highlightedWord` está vacío (caso borde manejado por `splitHeadline`)
 
-#### Scenario: HERO_BANNER_CONTENT.ctas has exactly two CTAs (primary + secondary)
-- **WHEN** `HERO_BANNER_CONTENT.ctas` is inspected
-- **THEN** it has length `2`
-- **AND** the first element has `variant: "primary"` (rendered as `VER SERVICIOS` with `href: "/servicios"`)
-- **AND** the second element has `variant: "secondary"` (rendered as `ESCRÍBENOS` with `href: "/contacto"`)
+#### Scenario: HERO_BANNER_CONTENT.ctas tiene exactamente dos CTAs (primary + secondary)
+- **WHEN** `HERO_BANNER_CONTENT.ctas` se inspecciona
+- **THEN** tiene longitud `2`
+- **AND** el primer elemento tiene `variant: "primary"` (renderizado como `VER SERVICIOS` con `href: "/servicios"`)
+- **AND** el segundo elemento tiene `variant: "secondary"` (renderizado como `ESCRÍBENOS` con `href: "/contacto"`)
 
-#### Scenario: splitHeadline splits the headline on the first occurrence of the highlighted word
-- **WHEN** `splitHeadline("Innovación que Fluye", "Fluye")` is called
-- **THEN** it returns `["Innovación que ", ""]` so the before-part goes plain and the highlighted word is wrapped, with no trailing text since "Fluye" appears at the end
+#### Scenario: splitHeadline splitta el headline en la primera ocurrencia de la palabra destacada
+- **WHEN** `splitHeadline("Innovación que Fluye", "Fluye")` se llama
+- **THEN** devuelve `["Innovación que ", ""]` de modo que la parte antes va plain y la palabra destacada se envuelve, sin texto sobrante ya que "Fluye" aparece al final
 
-#### Scenario: splitHeadline returns the original headline when the highlighted word is absent
-- **WHEN** `splitHeadline("Bienvenido", "Fluye")` is called
-- **THEN** it returns `["Bienvenido", ""]` so the component renders the plain headline with no highlighted span
+#### Scenario: splitHeadline devuelve el headline original cuando la palabra destacada está ausente
+- **WHEN** `splitHeadline("Bienvenido", "Fluye")` se llama
+- **THEN** devuelve `["Bienvenido", ""]` de modo que el componente renderiza el headline plain sin span destacado
 
-#### Scenario: splitHeadline highlights only the first occurrence when the word appears multiple times
-- **WHEN** `splitHeadline("Fluye y vuelve a Fluye", "Fluye")` is called
-- **THEN** it returns `["", " y vuelve a Fluye"]` so only the first "Fluye" is rendered in the highlighted span
+#### Scenario: splitHeadline destaca solo la primera ocurrencia cuando la palabra aparece múltiples veces
+- **WHEN** `splitHeadline("Fluye y vuelve a Fluye", "Fluye")` se llama
+- **THEN** devuelve `["", " y vuelve a Fluye"]` de modo que solo la primera "Fluye" se renderiza en el span destacado
+
+### Requirement: HeroBanner headline never produces horizontal overflow
+El `<h1>` del hero SHALL permanecer contenido dentro del ancho del viewport en todos los anchos soportados, con un tamaño de fuente computado que no supere el ancho disponible para el texto configurado (`"Innovación que Fluye"` + palabra destacada). El tamaño computado del `<h1>` SHALL escalar de forma monótona al aumentar el viewport, de menor a mayor.
+
+#### Scenario: Tamaño computado escala con el viewport
+- **WHEN** se mide el `font-size` computado del `<h1>` del home en los viewports `320×568`, `375×667`, `768×1024` y `1280×800`
+- **THEN** el valor en `320×568` es estrictamente menor que el valor en `375×667`
+- **AND** el valor en `375×667` es menor o igual que el valor en `768×1024`
+- **AND** el valor en `768×1024` es menor o igual que el valor en `1280×800`
+
+#### Scenario: Sin scroll horizontal en la home móvil
+- **WHEN** se carga `/` en el viewport `320×568`
+- **THEN** `document.documentElement.scrollWidth` no supera `document.documentElement.clientWidth + 1`
+- **AND** el `<h1>` del hero no es el elemento que provoca el desborde
 
 ### Requirement: HeroBanner integrates into the home page replacing the placeholder content
-The home page SHALL render `<HeroBanner {...HERO_BANNER_CONTENT} />` inside its hero shell Layout (see `home-hero-shell`), replacing any pre-existing placeholder `<h1>` or `<p>` from the bootstrap phase.
+La home page SHALL render `<HeroBanner {...HERO_BANNER_CONTENT} />` dentro de su shell Layout (ver `home-hero-shell`), reemplazando cualquier `<h1>` o `<p>` placeholder preexistente de la fase de bootstrap.
 
-#### Scenario: Home page renders the HeroBanner with headers above
-- **WHEN** a visitor loads `/` (the home page)
-- **THEN** the rendered HTML contains a `<section>` (the hero) wrapping the configured headline, subtitle and CTAs
-- **AND** the DOM order is: hero shell (with `bg-secondary/80` overlay), `<header>` (from site-header), SearchForm `<div role="search">`, then the hero `<h1>` block
-- **AND** no retired top contact bar precedes the header
-- **AND** exactly one `<header>` element exists in the document
-- **AND** the legacy placeholder text "Proyecto en desarrollo — Fase A: Bootstrap completado" is NOT present
+#### Scenario: Home page renders the HeroBanner con headers arriba
+- **WHEN** un visitante carga `/` (la página home)
+- **THEN** el HTML renderizado contiene un `<section>` (el hero) envueltos el headline configurado, subtítulo y CTAs
+- **AND** el orden DOM es: hero shell (con overlay `bg-secondary/80`), `<header>` (del site-header), SearchForm `<div role="search">`, luego el bloque `<h1>` del hero
+- **AND** no bar de contacto anterior precede al header
+- **AND** existe exactamente un elemento `<header>` en el documento
+- **AND** el texto placeholder legado "Proyecto en desarrollo — Fase A: Bootstrap completado" no está presente

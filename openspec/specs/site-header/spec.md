@@ -150,6 +150,28 @@ The site-header SHALL meet accessibility requirements and ensure a single `<head
 ### Requirement: Navigation configuration is hardcoded
 The navigation items SHALL come from the hardcoded `NAVIGATION_ITEMS` constant (5 items: Inicio, Productos, Servicios, Marcas, Contacto), and the CTA SHALL come from `getCtaConfig()` with graceful fallback to defaults.
 
+### Requirement: Desktop nav visible from xl breakpoint and compact in lg→xl
+El menú de escritorio SHALL ser visible desde `xl` (1280px). En el rango `lg` (1024px) a menos de 1280px, el header SHALL mantener el acceso a la navegación mediante el menú hamburguesa con overlay a pantalla completa, y los elementos del nav de escritorio (íconos de navegación, CTA y logo) SHALL estar dimensionados de modo que, cuando el nav de escritorio se renderiza, el conjunto completo quepa dentro del ancho del viewport sin scroll horizontal.
+
+#### Scenario: Menú de escritorio visible desde 1280px
+- **WHEN** el header se renderiza en un viewport `>= 1280px`
+- **THEN** el `<nav aria-label="Navegación principal">` es visible y el botón hamburguesa está oculto
+
+#### Scenario: Menú móvil por debajo de 1280px
+- **WHEN** el header se renderiza en un viewport de `1024px` a `1279px`
+- **THEN** el `<nav aria-label="Navegación principal">` de escritorio está oculto
+- **AND** el botón hamburguesa está visible y abre el overlay de navegación
+
+#### Scenario: Sin desborde del header en el rango 1024–1279px
+- **WHEN** el header se renderiza en los viewports `1024×768` y `1204×800`
+- **THEN** el ancho del `<header>` no supera el ancho del viewport
+- **AND** ningún hijo directo del header (logo, navegación, CTA) extiende su `boundingBox` más allá del borde derecho del viewport
+
+#### Scenario: Compactación activa en el rango lg→xl
+- **WHEN** se inspecciona el source de `Header.astro`
+- **THEN** el nav y/o sus ítems declaran utilidades de compactación con breakpoint `lg:` (o menor) que difieren de las aplicadas en `xl:`
+- **AND** el logo NO declara un ancho máximo distinto en `lg:` que en `xl:`
+
 #### Scenario: CTA config with env vars absent
 - **WHEN** `CTA_LABEL` and `CTA_HREF` environment variables are not set
 - **THEN** `getCtaConfig()` returns `{ label: 'SOLICITAR COTIZACIÓN', href: '/cotizacion' }`
