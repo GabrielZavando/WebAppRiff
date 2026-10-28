@@ -107,6 +107,25 @@ describe('ProductCard', () => {
     expect(cotizar).not.toContain('bg-accent');
   });
 
+  it('keeps the CTA row bounded and wrappable so it never widens the card (responsive-web-design-fixes)', async () => {
+    const html = await render();
+
+    const row = html.match(/<div[^>]*mt-auto[^>]*>/)?.[0] ?? '';
+    expect(row).toContain('flex-wrap');
+
+    for (const href of ['/cotizacion?producto=flujometro-universal', '/productos/flujometro-universal']) {
+      const escapedHref = href.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const matches = [
+        ...html.matchAll(new RegExp(`<a[^>]*href="${escapedHref}"[\\s\\S]*?</a>`, 'g')),
+      ].map((match) => match[0]);
+      // The CTA (not the image link) carries the bounded width.
+      const cta = matches.find((match) => match.includes('max-w-[200px]'));
+      expect(cta, `no bounded CTA found for ${href}`).toBeDefined();
+      expect(cta).toContain('min-w-');
+      expect(cta).toContain('basis-auto');
+    }
+  });
+
   it('renders descripcionBreve as plain text (HTML stripped by the mapper)', async () => {
     const html = await render(makeProduct({ descripcionBreve: '<p>Bold <strong>text</strong> &amp; más</p>' }));
     expect(html).toContain('Bold text');

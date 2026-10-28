@@ -33,9 +33,11 @@ const { eyebrow, headline, description, cta, stats } = Astro.props;
       `background-color: var(--color-primary)` (scoped class) so the 1px gap
       exposes the primary colour as edge-to-edge divider lines that reach
       the actual top and bottom of the white half (TERNION). Each cell
-      carries `bg-white p-8 md:p-12 flex flex-col justify-center` and
-      renders a <p> value (navy bold) and <p> label (uppercase gray) — NO
-      headings.
+        carries `bg-white p-8 md:p-12 flex flex-col justify-center` and
+        renders a <p> value (navy bold) and <p> label (uppercase gray) — NO
+        headings. The cell padding is responsive (`p-4 md:p-8 lg:p-12`) and the
+        value scales down on narrow viewports so long values such as `30.000+`
+        never leave their cell (responsive-web-design-fixes).
 
   Accessibility (see design.md § Decision 6):
     - The panel headline is a <h2>, NOT a <h1> (the home page has exactly one
@@ -92,15 +94,15 @@ const { eyebrow, headline, description, cta, stats } = Astro.props;
           <div class="grid grid-cols-2 grid-rows-2 gap-px h-full w-full">
             {
               stats.map((stat) => (
-                <div class="bg-white p-8 md:p-12 flex flex-col justify-center">
+                <div class="bg-white p-4 md:p-8 lg:p-12 flex flex-col justify-center min-w-0">
                   <p
-                    class="text-3xl md:text-4xl font-heading font-bold text-secondary"
+                    class="text-2xl sm:text-3xl md:text-4xl font-heading font-bold text-secondary break-words"
                     data-stat-value=""
                     data-target={stat.numericValue}
                   >
                     {stat.value}
                   </p>
-                  <p class="mt-2 text-xs md:text-sm uppercase tracking-wide text-text-2">
+                  <p class="mt-2 text-xs md:text-sm uppercase tracking-wide text-text-2 break-words">
                     {stat.label}
                   </p>
                 </div>

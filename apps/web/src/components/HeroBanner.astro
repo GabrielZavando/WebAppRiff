@@ -41,10 +41,10 @@ const shouldRenderHighlight = highlightedWord !== '' && before !== headline;
      client's final review. Bottom padding (pb-16 / md:pb-24 / lg:pb-32) is
      preserved to keep spacing before the overlapping PanelHome. -->
 <div class="relative container mx-auto pt-4 pb-16 md:pt-8 md:pb-24 lg:pt-24 lg:pb-32">
-    <h1 class="text-5xl md:text-7xl font-heading font-bold uppercase text-white">
+    <h1 class="text-4xl sm:text-5xl md:text-7xl font-heading font-bold uppercase text-white break-words">
       {before}{shouldRenderHighlight && <span class="text-primary">{highlightedWord}</span>}{after}
     </h1>
-    <h2 class="mt-4 text-xl md:text-2xl font-heading font-semibold text-white/90 max-w-3xl">
+    <h2 class="mt-4 text-xl md:text-2xl font-heading font-semibold text-white/90 max-w-3xl break-words">
       {subtitle}
     </h2>
     <p class="mt-6 text-base text-white/80 max-w-2xl">

@@ -59,16 +59,16 @@ const { product, class: className = '' } = Astro.props;
 
     <p class="text-sm text-text-2 line-clamp-3">{product.descripcionBreve}</p>
 
-    <div class="mt-auto flex gap-2 pt-2">
+    <div class="mt-auto flex flex-wrap gap-2 pt-2">
       <a
         href={product.cotizarHref}
-        class="inline-flex flex-1 items-center justify-center gap-1 bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary-dark"
+        class="inline-flex flex-1 basis-auto min-w-[6.5rem] max-w-[200px] items-center justify-center gap-1 bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary-dark"
       >
         Cotizar
       </a>
       <a
         href={product.detalleHref}
-        class="inline-flex flex-1 items-center justify-center gap-1 border border-secondary px-3 py-2 text-sm font-semibold text-secondary hover:bg-secondary hover:text-white"
+        class="inline-flex flex-1 basis-auto min-w-[6.5rem] max-w-[200px] items-center justify-center gap-1 border border-secondary px-3 py-2 text-sm font-semibold text-secondary hover:bg-secondary hover:text-white"
       >
         Ver detalles
       </a>

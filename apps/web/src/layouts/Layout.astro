@@ -78,7 +78,7 @@ const searchFormProps: SearchFormProps = {
 ---
 
 <!DOCTYPE html>
-<html lang="es-CL">
+<html lang="es-CL" style="overflow-x:hidden">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -100,7 +100,7 @@ const searchFormProps: SearchFormProps = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
   </head>
-  <body class:list={['min-h-screen flex flex-col bg-surface-muted', hero && 'overflow-x-hidden']}>
+  <body class:list={['min-h-screen flex flex-col bg-surface-muted overflow-x-hidden']}>
     {
       hero && (
         <>

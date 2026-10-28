@@ -30,7 +30,7 @@ if (!product) {
 {
   !model ? (
     <Layout title="Producto no encontrado">
-      <main class="flex flex-1 flex-col items-center justify-center px-4 py-16 text-center">
+      <main class="flex flex-1 flex-col items-center justify-center px-4 py-16 text-center overflow-x-hidden">
         <h1 class="mb-4 font-heading text-3xl font-bold text-secondary">Producto no encontrado</h1>
         <p class="mb-8 text-text-2">
           El producto que buscas no existe o ya no está disponible.
@@ -45,7 +45,7 @@ if (!product) {
     </Layout>
   ) : (
     <Layout title={`${model.titulo} — Riff`} description={model.descripcionBreve}>
-      <main class="flex-grow">
+      <main class="flex-grow overflow-x-hidden">
         {/* Hero + info */}
         <section class="bg-surface-muted py-16 px-4 md:px-8">
           <div class="mx-auto grid max-w-7xl grid-cols-1 gap-12 md:grid-cols-2">
@@ -70,7 +70,7 @@ if (!product) {
 
               <ProductSpecifications atributos={model.atributos} class="mb-8" />
 
-              <div class="flex flex-col gap-4 sm:flex-row">
+              <div class="flex flex-col lg:flex-row gap-4">
                 <a
                   href={model.cotizarHref}
                   class="flex items-center justify-center gap-2 bg-accent px-8 py-4 font-bold uppercase text-white transition-colors hover:bg-accent-dark"

@@ -85,6 +85,10 @@ const sidebarFilters = {
   </script>
 
   <style is:global>
+    /* List view (`?view=list`): the cards keep the ProductCard markup and switch
+       to a row layout. The image is bounded by a percentage of the card (never a
+       fixed 192px) so it adapts to the available width, and the CTA row wraps
+       inside the card instead of widening it (responsive-web-design-fixes). */
     #catalog-grid.catalog-list-mode {
       display: flex;
       flex-direction: column;
@@ -94,13 +98,20 @@ const sidebarFilters = {
       flex-direction: row;
     }
     #catalog-grid.catalog-list-mode .catalog-card > a:first-child {
-      width: 12rem;
-      aspect-ratio: auto;
+      width: 40%;
+      max-width: 12rem;
+      aspect-ratio: 4 / 3;
       flex-shrink: 0;
       height: auto;
     }
     #catalog-grid.catalog-list-mode .catalog-card > div {
       flex: 1;
+      min-width: 0;
+    }
+    @media (min-width: 640px) {
+      #catalog-grid.catalog-list-mode .catalog-card > a:first-child {
+        width: 25%;
+      }
     }
   </style>
 </Layout>

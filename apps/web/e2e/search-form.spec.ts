@@ -62,6 +62,44 @@ test.describe('SearchForm (global search bar)', () => {
     expect(inputBox!.y).toBeLessThan(buttonBox!.y);
   });
 
+  test('compacts into a single row on short viewports (height <= 400px) (responsive-web-design-fixes)', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 568, height: 320 });
+    await page.goto('/');
+
+    const search = page.getByRole('search', { name: 'Buscar productos' });
+    const selectBox = await search.getByRole('combobox').boundingBox();
+    const inputBox = await search.getByRole('searchbox').boundingBox();
+    const buttonBox = await search.getByRole('button', { name: 'BUSCAR' }).boundingBox();
+    expect(selectBox).toBeTruthy();
+    expect(inputBox).toBeTruthy();
+    expect(buttonBox).toBeTruthy();
+
+    // The three controls share the same row (top within +/- 4px tolerance).
+    const tops = [selectBox!.y, inputBox!.y, buttonBox!.y].map((y) => Math.round(y));
+    expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(4);
+
+    // The search bar occupies at most a quarter of the viewport height.
+    const searchBox = await search.boundingBox();
+    expect(searchBox).toBeTruthy();
+    expect(searchBox!.height).toBeLessThanOrEqual(320 * 0.25);
+  });
+
+  test('keeps the approved composition on landscape desktop viewports (responsive-web-design-fixes)', async ({
+    page,
+  }) => {
+    // 1440x900 is landscape but not short: the compaction must NOT apply.
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+
+    const search = page.getByRole('search', { name: 'Buscar productos' });
+    const searchBox = await search.boundingBox();
+    expect(searchBox).toBeTruthy();
+    // py-4 (32px) + a 44px control row.
+    expect(searchBox!.height).toBeGreaterThan(70);
+  });
+
   test('exposes "Todas las categorías" as the first selectable category option', async ({
     page,
   }) => {
