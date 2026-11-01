@@ -41,7 +41,9 @@ test.describe('SearchForm (global search bar)', () => {
     expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(4);
   });
 
-  test('stacks the three controls full-width on mobile (< 768px)', async ({ page }) => {
+  test('keeps the select on its own row and input + button together on mobile (< 640px)', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
 
@@ -50,16 +52,25 @@ test.describe('SearchForm (global search bar)', () => {
 
     const selectBox = await search.getByRole('combobox').boundingBox();
     const inputBox = await search.getByRole('searchbox').boundingBox();
-    const buttonBox = await search.getByRole('button', { name: 'BUSCAR' }).boundingBox();
+    const button = search.getByRole('button', { name: 'BUSCAR' });
+    const buttonBox = await button.boundingBox();
 
-    // Each control fills the form width (within 8px tolerance for padding).
+    // The select spans the full form width on its own first row.
+    expect(selectBox).toBeTruthy();
+    expect(inputBox).toBeTruthy();
+    expect(buttonBox).toBeTruthy();
     expect(Math.abs(selectBox!.width - formWidth)).toBeLessThanOrEqual(8);
-    expect(Math.abs(inputBox!.width - formWidth)).toBeLessThanOrEqual(8);
-    expect(Math.abs(buttonBox!.width - formWidth)).toBeLessThanOrEqual(8);
-
-    // The three sit on different rows: each starts strictly below the previous.
     expect(selectBox!.y).toBeLessThan(inputBox!.y);
-    expect(inputBox!.y).toBeLessThan(buttonBox!.y);
+
+    // Input and button share the second row, attached with no horizontal gap.
+    expect(Math.abs(inputBox!.y - buttonBox!.y)).toBeLessThanOrEqual(4);
+    const inputRight = inputBox!.x + inputBox!.width;
+    expect(Math.abs(inputRight - buttonBox!.x)).toBeLessThanOrEqual(2);
+
+    // The icon-only button keeps its name and does not stretch to full width.
+    expect(buttonBox!.width).toBeLessThan(formWidth / 2);
+    await expect(button).toHaveAccessibleName('BUSCAR');
+    await expect(button.locator('span')).toBeHidden();
   });
 
   test('compacts into a single row on short viewports (height <= 400px) (responsive-web-design-fixes)', async ({
@@ -170,9 +181,9 @@ test.describe('SearchForm (global search bar)', () => {
     const search = page.getByRole('search', { name: 'Buscar productos' });
     const form = search.locator('form');
     const formClass = await form.getAttribute('class') ?? '';
-    expect(formClass).toContain('gap-3');
-    expect(formClass).toContain('md:gap-px');
-    expect(formClass).not.toContain('md:gap-3');
+    expect(formClass).toContain('gap-y-3');
+    expect(formClass).toContain('sm:gap-px');
+    expect(formClass).not.toContain('sm:gap-3');
 
     // Visual assertion: on desktop, the 1px gap means the right edge of the
     // select and the left edge of the input differ by ≤ 2px (1px gap + 1px
@@ -201,7 +212,8 @@ test.describe('SearchForm (global search bar)', () => {
     expect(buttonClass).toContain('items-center');
     expect(buttonClass).toContain('justify-center');
     expect(buttonClass).toContain('gap-2');
-    expect(buttonClass).toContain('px-8');
+    expect(buttonClass).toContain('px-4');
+    expect(buttonClass).toContain('sm:px-8');
     expect(buttonClass).not.toContain('px-6');
   });
 

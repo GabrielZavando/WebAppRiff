@@ -35,11 +35,14 @@ describe('Layout — hero shell (home full-viewport background)', () => {
     const html = await renderHeroLayout();
     // The hero shell wraps the whole document body; locate the <body class> area.
     expect(html).toContain('min-h-screen');
-    // Horizontal clip only: `overflow-x-hidden` keeps the full-bleed picture
-    // from creating a horizontal scrollbar without disabling vertical page
-    // scrolling. `overflow-hidden` (both axes) would clip the content below
-    // the fold (PanelHome) — explicitly forbidden by home-hero-shell spec.
-    expect(html).toContain('overflow-x-hidden');
+    // Horizontal clip only: `overflow-x: clip` keeps the full-bleed picture
+    // from creating a horizontal scrollbar without turning <html>/<body> into
+    // scrolling ancestors (which breaks position: sticky in some browsers).
+    // `overflow-hidden` (both axes) would clip the content below the fold
+    // (PanelHome) — explicitly forbidden by home-hero-shell spec.
+    expect(html).toContain('overflow-x:clip');
+    expect(html).toContain('overflow-x-clip');
+    expect(html).not.toContain('overflow-x-hidden');
     expect(html).not.toContain('overflow-hidden');
   });
 

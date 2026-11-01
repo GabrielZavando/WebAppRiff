@@ -10,7 +10,8 @@
  *    its starting background (transparent on the hero, navy gradient elsewhere)
  *    to solid secondary without an abrupt gradient pop.
  *  - SearchForm: a simple `background-color` transition (white → secondary).
- *  - Logo: `max-width`/`height` transition (240px → ~199px desktop, 160px → 150px mobile).
+ *  - Logo: fixed size at every scroll position (it does not participate in the
+ *    compact state).
  *  - Sticky shell: a drop-shadow (`--shadow-4`) appears in the compact state and
  *    is removed at the top.
  *  - `prefers-reduced-motion`: transitions disabled.
@@ -52,30 +53,6 @@ body[data-scrolled='true'] .site-search {
   background-color: var(--color-secondary);
 }
 
-/* Logo: shrink on scroll — 160px → 150px on mobile (caps by width).
- * Desktop (≥640px) caps by HEIGHT instead: minimum 100px tall with automatic
- * width (ticket LOGO-SIZE). The asset is 1080×542, so 100px tall renders as
- * ~199px wide (aspect ratio preserved); a bare `max-width` cap rendered only
- * ~80px tall and weakened brand presence. We do not add `min-height` on top of
- * a `max-width` cap — that would distort the image. */
-.site-logo {
-  transition:
-    max-width 300ms ease-in-out,
-    height 300ms ease-in-out;
-}
-
-body[data-scrolled='true'] .site-logo {
-  max-width: 150px;
-}
-
-@media (min-width: 640px) {
-  body[data-scrolled='true'] .site-logo {
-    max-width: none;
-    height: 100px;
-    width: auto;
-  }
-}
-
 /* Sticky shell: a drop-shadow gives the fixed Header+Search group elevation and
  * separation from page content. Only present in the compact state; removed at
  * the top (scrollTop === 0) so the page reads as flat when not scrolled.
@@ -95,7 +72,6 @@ body[data-scrolled='true'] .header-scroll-shell {
 @media (prefers-reduced-motion: reduce) {
   .site-header::after,
   .site-search,
-  .site-logo,
   .header-scroll-shell {
     transition: none;
   }

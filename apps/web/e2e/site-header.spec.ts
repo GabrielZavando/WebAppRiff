@@ -116,6 +116,37 @@ test.describe('Site header (main navigation)', () => {
     expect(bodyOverflowAfter).toBe('');
   });
 
+  test('keeps the hamburger working after client-side navigation', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/');
+
+    await page.evaluate(() => {
+      document.documentElement.dataset.testPageLoad = 'false';
+      document.addEventListener(
+        'astro:page-load',
+        () => {
+          document.documentElement.dataset.testPageLoad = 'true';
+        },
+        { once: true },
+      );
+    });
+
+    await page.getByRole('link', { name: 'VER SERVICIOS' }).click();
+    await expect(page).toHaveURL(/\/servicios$/);
+    await page.waitForFunction(
+      () => document.documentElement.dataset.testPageLoad === 'true',
+    );
+
+    const banner = page.getByRole('banner');
+    const toggle = banner.getByRole('button', { name: 'Abrir menú' });
+    await expect(toggle).toBeVisible();
+    await toggle.click();
+
+    await expect(banner).toHaveAttribute('data-menu-open', 'true');
+    await expect(banner.getByRole('button', { name: 'Cerrar menú' })).toBeVisible();
+    await expect(page.locator('#mobile-nav')).toBeVisible();
+  });
+
   test('serves the /cotizacion CTA destination page', async ({ page }) => {
     await page.goto('/cotizacion');
 

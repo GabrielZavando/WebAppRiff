@@ -22,20 +22,19 @@ const logoAltText = logoAlt ?? 'Riff';
 
 <!-- Main site header: logo (2x with overflow), right-aligned desktop nav with
      CTA as the last item, and a fullscreen mobile overlay with slide animation.
-     `pb-4 lg:pb-2` is more compact than the previous `pb-10 lg:pb-4`: mobile
-     keeps 80px (h-16) + 16px (pb-4) = 96px vs ~80px logo at the 160px cap (full
-     containment); desktop relaxes to 96px (lg:h-20) + 8px (lg:pb-2) = 104px vs
-     ~121px logo at the 240px cap — a smaller visual overflow of the 2× logo on
-     desktop, explicitly accepted by the client (SC-001). -->
+     Mobile distributes the vertical padding as `py-2` (8px top + 8px bottom)
+     over an h-16 inner bar = 80px, lifting the logo off the top edge. Desktop
+     keeps `lg:pt-0 lg:pb-2` over lg:h-20 (80 + 8 = 88px), preserving the
+     accepted 2× logo overflow (SC-001). -->
 <header
   data-menu-open="false"
   class:list={[
     'site-header',
     'text-white',
-    'pb-4 lg:pb-2',
+    'py-2 lg:pt-0 lg:pb-2',
     // Short viewports (e.g. 568x320 landscape) collapse the vertical rhythm so
     // the sticky group (header + search) fits the viewport-height budget.
-    '[@media(max-height:400px)]:pb-0',
+    '[@media(max-height:400px)]:py-0',
     transparent ? 'bg-transparent' : 'bg-secondary',
   ]}
 >
@@ -48,11 +47,11 @@ const logoAltText = logoAlt ?? 'Riff';
            on mobile, 240px cap from the sm breakpoint upward. `w-full` lets it
            fill available width up to the cap while the `width`/`height` attrs
            (330×166) preserve the aspect ratio for CLS. The wrapper is
-           `h-20 lg:h-24 overflow-visible`. `max-h-full` caps the logo to the
+           `h-16 lg:h-20 overflow-visible`. `max-h-full` caps the logo to the
            header height on small screens so it can never grow the header;
-           dropped at `sm:max-h-none` (≥640px) so the desktop compact state can
-           keep the logo at its 100px-tall contract (LOGO-SIZE) across the whole
-           ≥640px range — the header may then visually overflow (2× pattern). -->
+           dropped at `sm:max-h-none` (≥640px) so the 2× logo keeps its
+           proportional desktop size — the header may then visually overflow
+           (accepted 2× pattern). -->
       <Image
         src={logoImage}
         alt={logoAltText}
@@ -105,7 +104,7 @@ const logoAltText = logoAlt ?? 'Riff';
       aria-controls="mobile-nav"
       aria-expanded="false"
       aria-label="Abrir menú"
-      class="fixed top-6 right-6 z-50 xl:hidden p-2 transition-colors duration-200"
+      class="fixed top-5 right-6 z-50 xl:hidden p-2 transition-colors duration-200 lg:top-6"
     >
       <Icon name="lucide:menu" class="h-6 w-6" />
       <Icon name="lucide:x" class="h-6 w-6 hidden" />
@@ -177,22 +176,40 @@ const logoAltText = logoAlt ?? 'Riff';
   // - aria-expanded/aria-label on the toggle button (accessibility)
   // - data-menu-open on the header element (drives CSS: panel slide, button color)
   // - body scroll lock (prevents scroll-through on fullscreen overlay)
-  document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const isOpen = button.getAttribute('aria-expanded') === 'true';
-      const newState = !isOpen;
+  (() => {
+    const INIT_FLAG = '__riffMobileMenuInitialized';
 
-      button.setAttribute('aria-expanded', String(newState));
-      button.setAttribute('aria-label', newState ? 'Cerrar menú' : 'Abrir menú');
+    function initMobileMenu() {
+      document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
+        if (button.dataset.menuInitialized === 'true') {
+          return;
+        }
+        button.dataset.menuInitialized = 'true';
 
-      const header = button.closest('header');
-      if (header) {
-        header.setAttribute('data-menu-open', String(newState));
-        document.body.style.overflow = newState ? 'hidden' : '';
-      }
+        button.addEventListener('click', () => {
+          const isOpen = button.getAttribute('aria-expanded') === 'true';
+          const newState = !isOpen;
 
-      // Swap hamburger <-> X icon
-      button.querySelectorAll('svg').forEach((icon) => icon.classList.toggle('hidden'));
-    });
-  });
+          button.setAttribute('aria-expanded', String(newState));
+          button.setAttribute('aria-label', newState ? 'Cerrar menú' : 'Abrir menú');
+
+          const header = button.closest('header');
+          if (header) {
+            header.setAttribute('data-menu-open', String(newState));
+            document.body.style.overflow = newState ? 'hidden' : '';
+          }
+
+          // Swap hamburger <-> X icon
+          button.querySelectorAll('svg').forEach((icon) => icon.classList.toggle('hidden'));
+        });
+      });
+    }
+
+    if (!window[INIT_FLAG]) {
+      window[INIT_FLAG] = true;
+      document.addEventListener('astro:page-load', initMobileMenu);
+    }
+
+    initMobileMenu();
+  })();
 </script>

@@ -505,6 +505,12 @@
       "review_by": "2027-01-01T00:00:00Z"
     },
     {
+      "id": "re2js",
+      "reason": "Pre-existing: high vulnerability in re2js (transitive via @firebase/firestore). Patch 2.9.1 available; remediation tracked in V1/Q2 upgrade",
+      "revokedAt": null,
+      "review_by": "2027-01-01T00:00:00Z"
+    },
+    {
       "id": "serialize-javascript",
       "reason": "Pre-existing: high vulnerability in serialize-javascript (remediate via V1/Q2 upgrade)",
       "revokedAt": null,
