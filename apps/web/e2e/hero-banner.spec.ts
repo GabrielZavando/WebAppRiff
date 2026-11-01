@@ -86,12 +86,14 @@ test.describe('HeroBanner (home hero section)', () => {
     expect(styles.bg).not.toBe('rgb(65, 179, 196)');
   });
 
-  test('stacks CTAs vertically and full-width on mobile (< 768px) (5.7)', async ({
+  test('stacks CTAs at 50% width and left-aligned on mobile (< 640px) (5.7)', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     const ctaContainer = page.locator(`${HERO_SECTION_SELECTOR} div.flex-col`);
     await expect(ctaContainer).toBeVisible();
+    const containerBox = await ctaContainer.boundingBox();
+    expect(containerBox).toBeTruthy();
 
     const firstCta = page.getByRole('link', { name: 'VER SERVICIOS' });
     const secondCta = page.getByRole('link', { name: 'ESCRÍBENOS' });
@@ -99,14 +101,17 @@ test.describe('HeroBanner (home hero section)', () => {
     const secondBox = await secondCta.boundingBox();
     expect(firstBox).toBeTruthy();
     expect(secondBox).toBeTruthy();
-    // Strictly stacked: first sits above second.
+
+    // Each CTA occupies exactly half of the CTA container (±1px).
+    expect(Math.abs(firstBox!.width - containerBox!.width / 2)).toBeLessThanOrEqual(1);
+    expect(Math.abs(secondBox!.width - containerBox!.width / 2)).toBeLessThanOrEqual(1);
+    // Both share the container's left edge and are strictly stacked.
+    expect(Math.abs(firstBox!.x - containerBox!.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(secondBox!.x - containerBox!.x)).toBeLessThanOrEqual(1);
     expect(firstBox!.y).toBeLessThan(secondBox!.y);
-    // On mobile both occupy (approximately) the container width: the
-    // difference in width is within 8px tolerance.
-    expect(Math.abs(firstBox!.width - secondBox!.width)).toBeLessThanOrEqual(8);
   });
 
-  test('lays out CTAs horizontally side-by-side on desktop (>= 768px) (5.8)', async ({
+  test('lays out CTAs horizontally side-by-side on desktop (>= 640px) (5.8)', async ({
     page,
   }) => {
     const firstCta = page.getByRole('link', { name: 'VER SERVICIOS' });

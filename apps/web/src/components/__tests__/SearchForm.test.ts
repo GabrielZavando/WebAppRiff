@@ -59,6 +59,18 @@ function getInput(html: string): string {
   return match[0];
 }
 
+function getSelectWrapper(html: string): string {
+  const selectIndex = html.indexOf(getSelect(html));
+  const divsBefore = [...html.slice(0, selectIndex).matchAll(/<div[^>]*>/g)];
+  return divsBefore[divsBefore.length - 1]?.[0] ?? '';
+}
+
+function getInputWrapper(html: string): string {
+  const inputIndex = html.indexOf(getInput(html));
+  const divsBefore = [...html.slice(0, inputIndex).matchAll(/<div[^>]*>/g)];
+  return divsBefore[divsBefore.length - 1]?.[0] ?? '';
+}
+
 function getButton(html: string): string {
   const match = html.match(/<button[^>]*type="submit"[\s\S]*?<\/button>/);
   if (!match) throw new Error('Submit button not found in rendered HTML');
@@ -191,15 +203,25 @@ describe('SearchForm — submit button', () => {
     expect(button).toContain('BUSCAR');
   });
 
-  it('uses flex layout for icon+text alignment with wider padding', async () => {
+  it('uses flex layout for icon+text alignment with compact mobile and wider sm padding', async () => {
     const html = await render();
     const button = getButton(html);
     expect(button).toContain('flex');
     expect(button).toContain('items-center');
     expect(button).toContain('justify-center');
     expect(button).toContain('gap-2');
-    expect(button).toContain('px-8');
+    expect(button).toContain('px-4');
+    expect(button).toContain('sm:px-8');
     expect(button).not.toContain('px-6');
+  });
+
+  it('shows only the icon on mobile while exposing the BUSCAR accessible name', async () => {
+    const html = await render();
+    const button = getButton(html);
+    expect(button).toContain('aria-label="BUSCAR"');
+    expect(button).toMatch(/<span class="hidden sm:inline">BUSCAR<\/span>/);
+    expect(button).toContain('shrink-0');
+    expect(button).not.toContain('w-full');
   });
 });
 
@@ -255,13 +277,15 @@ describe('SearchForm — component max-width & centering', () => {
   });
 });
 
-describe('SearchForm — desktop gap (1px between controls)', () => {
-  it('uses gap-3 for mobile and md:gap-px for desktop (replacing md:gap-3)', async () => {
+describe('SearchForm — responsive horizontal gap', () => {
+  it('uses a 12px row gap on mobile and a 1px gap from sm (no horizontal mobile gap)', async () => {
     const html = await render();
     const form = getForm(html);
-    expect(form).toContain('gap-3');
-    expect(form).toContain('md:gap-px');
-    expect(form).not.toContain('md:gap-3');
+    expect(form).toContain('gap-y-3');
+    expect(form).toContain('sm:gap-px');
+    expect(form).not.toContain('gap-3');
+    expect(form).not.toContain('gap-x-3');
+    expect(form).not.toContain('sm:gap-3');
   });
 });
 
@@ -287,18 +311,24 @@ describe('SearchForm — form attributes', () => {
 });
 
 describe('SearchForm — responsive layout classes', () => {
-  it('uses flex-col layout for mobile stacking (and md:flex-row for desktop)', async () => {
+  it('uses a two-column grid on mobile and a single flex row from sm', async () => {
     const html = await render();
     const form = getForm(html);
-    expect(form).toContain('flex');
-    expect(form).toContain('flex-col');
-    expect(form).toContain('md:flex-row');
+    expect(form).toContain('grid');
+    expect(form).toContain('grid-cols-[minmax(0,1fr)_auto]');
+    expect(form).toContain('sm:flex');
+    expect(form).toContain('sm:flex-row');
+    expect(form).not.toContain('flex-col');
+    expect(form).not.toContain('md:flex-row');
   });
 
-  it('makes the controls full-width on mobile and the input expandable on desktop', async () => {
+  it('puts the select on its own row and keeps input + button together', async () => {
     const html = await render();
-    expect(html).toContain('w-full');
-    expect(html).toContain('md:flex-1');
+    expect(getSelectWrapper(html)).toContain('col-span-2');
+    expect(getInputWrapper(html)).toContain('min-w-0');
+    expect(getInputWrapper(html)).toContain('sm:flex-1');
+    expect(getButton(html)).toContain('shrink-0');
+    expect(getButton(html)).not.toContain('w-full');
   });
 });
 
@@ -475,11 +505,11 @@ describe('SearchForm — hide category select (search-bar-pages-scope)', () => {
     expect(getButton(html)).toContain('BUSCAR');
   });
 
-  it('the search input expands to fill width (md:flex-1) when select is hidden', async () => {
+  it('the search input expands to fill width (sm:flex-1) when select is hidden', async () => {
     const html = await renderWithoutSelect();
-    // `md:flex-1` lives on the input's wrapper <div> (the select wrapper uses
-    // `md:w-56`), so it uniquely identifies the expandable input container.
-    expect(html).toContain('md:flex-1');
+    // `sm:flex-1` lives on the input's wrapper <div> (the select wrapper uses
+    // `sm:w-56`), so it uniquely identifies the expandable input container.
+    expect(html).toContain('sm:flex-1');
   });
 
   it('still renders the select by default (showCategorySelect true)', async () => {

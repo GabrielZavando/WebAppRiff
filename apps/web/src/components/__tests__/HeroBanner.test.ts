@@ -160,7 +160,22 @@ describe('HeroBanner — CTAs', () => {
     expect(ctasContainerMatch).not.toBeNull();
     const containerClass = ctasContainerMatch![0];
     expect(containerClass).toContain('flex-col');
+    expect(containerClass).toContain('items-start');
+    expect(containerClass).toContain('gap-3');
     expect(containerClass).toContain('sm:flex-row');
+  });
+
+  it('makes each CTA half-width and left-aligned on mobile, restoring auto width from sm', async () => {
+    const html = await render();
+    const aMatches = html.match(/<a\s[^>]*>[\s\S]*?<\/a>/g) ?? [];
+    expect(aMatches).toHaveLength(2);
+    for (const cta of aMatches) {
+      expect(cta).toContain('w-1/2');
+      expect(cta).toContain('sm:w-auto');
+      expect(cta).toContain('px-4');
+      expect(cta).toContain('sm:px-8');
+      expect(cta).not.toContain('w-full');
+    }
   });
 });
 

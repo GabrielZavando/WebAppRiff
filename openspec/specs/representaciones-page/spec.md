@@ -283,35 +283,6 @@ La página SHALL ser mobile-first: las tarjetas de marca SHALL apilar panel de w
 - **THEN** la grilla de distribuidores es de una columna en mobile y `lg:grid-cols-2`
 - **AND** la grilla de pillars es de una columna en mobile y `lg:grid-cols-4`
 
-### Requirement: Brand and distributor logos link to the manufacturer site when a url is configured
-
-Cuando el dato de una marca o distribuidor define `url`, su logo SHALL envolverse en un `<a href={url} target="_blank" rel="noopener noreferrer">` (el `<Image>`/`<img>` queda dentro del enlace, dentro del contenedor `data-brand-logo`, sin alterar el layout de la tarjeta). Cuando el dato no define `url`, el logo SHALL renderizarse sin enlace (SHALL NOT envolverse en un `<a>`). El mapeo SHALL ser: Apator Powogaz → `https://www.apator.com/en`; RIFF Flow Metering → `https://riffmeters.com/`; Nitto Seiko → `https://global.nittoseiko.com/`; GL Sanitaria → sin `url` (sin `<a>`); ILMAP → `https://ilmap.com/es/`; PIUSI → `https://www.piusi.com/es/`; SENSUS → `https://www.sensus-international.com/en`. El enlace envuelve exclusivamente el logo; el chip, el `<h3>`, la categoría y la descripción de la tarjeta SHALL NOT enlazarse.
-
-#### Scenario: Brand logos with url render as external links
-
-- **WHEN** la sección de marcas se renderiza
-- **THEN** los logos de Apator Powogaz, RIFF Flow Metering, Nitto Seiko e ILMAP están envueltos en un `<a>` con `target="_blank"` y `rel="noopener noreferrer"`
-- **AND** sus `href` son exactamente `https://www.apator.com/en`, `https://riffmeters.com/`, `https://global.nittoseiko.com/` e `https://ilmap.com/es/` respectivamente
-
-#### Scenario: Distributor logos with url render as external links
-
-- **WHEN** la sección de distribuidores autorizados se renderiza
-- **THEN** los logos de PIUSI y SENSUS están envueltos en un `<a>` con `target="_blank"` y `rel="noopener noreferrer"`
-- **AND** sus `href` son exactamente `https://www.piusi.com/es/` y `https://www.sensus-international.com/en`
-
-#### Scenario: GL Flow logo renders without a link
-
-- **WHEN** la tarjeta de GL Sanitaria se renderiza
-- **THEN** el logo (`data-brand-logo`) no está envuelto en ningún `<a>`
-- **AND** el `<img>` del logo se renderiza igual que en las tarjetas enlazadas (mismo `alt`, `loading="lazy"` y pipeline de `astro:assets`)
-
-#### Scenario: The link wraps only the logo and preserves the card layout
-
-- **WHEN** se inspeccionan `RepresentacionBrandCard.astro` y `DistribuidorCard.astro`
-- **THEN** el `<a>` (cuando existe) vive dentro del contenedor `data-brand-logo` y envuelve únicamente el `<Image>`
-- **AND** el chip, el `<h3>`, la categoría y la descripción no quedan dentro del enlace
-- **AND** la estructura externa de la tarjeta (panel de marca en mobile, fila desde `md`, panel izquierdo de ancho fijo en la tarjeta de marca) no cambia
-
 ### Requirement: Long description containment (prevention of horizontal overflow)
 
 La descripción larga renderizada con `set:html` SHALL permanecer contenida dentro del contenido columna en cada ancho de viewport y MUST NOT crear desborde horizontal en la página. El contenedor SHALL limitar su ancho a la grid (`max-w-full`, `min-w-0`) y envolver tokens inrotos (`break-words` / `overflow-wrap`). Los márgenes y paddings por defecto de Quill (`p`, `ul`, `ol`, `li`, `blockquote`, headings) MUST NOT introducir anchuras fijas.

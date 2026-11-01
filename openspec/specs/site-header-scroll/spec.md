@@ -91,3 +91,8 @@ The site SHALL keep exactly one `<header>` landmark per page and SHALL keep the 
 ### Requirement: Compact state re-applies to the current body across client-side navigations
 The compact scroll state SHALL apply its `data-scrolled` attribute to the **current** `document.body` on every update (initial load, scroll event, and Astro's `astro:page-load` lifecycle event), resolving the target element lazily at update time instead of capturing it once at init. The header color change (Requirement "Header and Search background transitions to secondary on scroll"), the logo shrink/grow (Requirement "Logo shrinks on scroll") and the shell drop-shadow SHALL therefore keep working on `/` and `/servicios` after the `<body>` swap performed by View Transitions. (ADDED in `header-scroll-restore`).
 
+#### Scenario: Compact state survives client-side navigation
+- **WHEN** the user navigates to `/servicios` via View Transitions and then scrolls
+- **THEN** `data-scrolled` is applied to the current `document.body`
+- **AND** the header and search background color change keeps working on the destination page
+

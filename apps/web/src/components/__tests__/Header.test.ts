@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import Header from '@/components/Header.astro';
 import { NAVIGATION_ITEMS } from '@/lib/config/navigation';
@@ -53,10 +54,11 @@ describe('Header', () => {
     expect(html).toContain('w-full');
     expect(html).toContain('max-w-[160px]');
     expect(html).toContain('sm:max-w-[240px]');
-    // Wrapper height is responsive (shorter h-20 on mobile/tablet, h-24 on
-    // desktop) and the logo is height-capped so it cannot grow the header.
-    expect(html).toContain('h-20');
-    expect(html).toContain('lg:h-24');
+    // Wrapper height is responsive (h-16 on mobile/tablet, h-20 on desktop)
+    // and the logo is height-capped so it cannot grow the header.
+    expect(html).toContain('h-16');
+    expect(html).toContain('lg:h-20');
+    expect(html).not.toContain('lg:h-24');
     expect(html).toContain('max-h-full');
     // The height cap is lifted from sm (640px) upward so the desktop compact
     // state can hold the logo at its 100px-tall contract (LOGO-SIZE), instead
@@ -214,6 +216,8 @@ describe('Header', () => {
     expect(toggleAttrs).toContain('xl:hidden');
     expect(toggleAttrs).toContain('fixed');
     expect(toggleAttrs).toContain('z-50');
+    expect(toggleAttrs).toContain('top-5');
+    expect(toggleAttrs).toContain('lg:top-6');
     expect(html).toContain('aria-expanded="false"');
     expect(html).toContain('aria-controls="mobile-nav"');
     expect(html).toContain('aria-label="Abrir menú"');
@@ -245,9 +249,9 @@ describe('Header', () => {
     const headerTag = html.match(/<header[^>]*>/)?.[0] ?? '';
     const innerTag = html.match(/<div[^>]*site-header__inner[^>]*>/)?.[0] ?? '';
 
-    // Short viewports (e.g. 568x320 landscape) reduce the vertical padding and
-    // the inner bar height so the sticky group fits the viewport-height budget.
-    expect(headerTag).toContain('[@media(max-height:400px)]:pb-0');
+    // Short viewports (e.g. 568x320 landscape) collapse the vertical padding
+    // and the inner bar height so the sticky group fits the viewport-height budget.
+    expect(headerTag).toContain('[@media(max-height:400px)]:py-0');
     expect(innerTag).toContain('[@media(max-height:400px):h-12]');
   });
 
@@ -390,17 +394,56 @@ describe('Header', () => {
       expect(logoImg).toContain('site-logo');
     });
 
-    it('contains the full logo height via responsive padding-bottom (SC-001)', async () => {
+    it('distributes the vertical padding without pb-4 and keeps the logo box height', async () => {
       const html = await render();
       const headerTag = html.match(/<header[^>]*>/)?.[0] ?? '';
-      // The header box must include the 2× logo (200px mobile / 300px desktop
-      // cap) — the padding-bottom makes the box at least as tall as the logo.
-      // Desktop relaxes to lg:pb-4 (client decision in ui-chrome-polish): the
-      // slight 2× logo overflow on desktop is accepted (SC-001).
+      const innerTag = html.match(/<div[^>]*site-header__inner[^>]*>/)?.[0] ?? '';
+
+      // Mobile: py-2 (8px top + 8px bottom) over an h-16 inner bar = 80px.
+      // Desktop: lg:pt-0 + lg:pb-2 over lg:h-20 preserves the accepted 2× overflow.
       expect(headerTag).toContain('site-header');
-      expect(headerTag).toContain('pb-4');
+      expect(headerTag).toContain('py-2');
+      expect(headerTag).toContain('lg:pt-0');
       expect(headerTag).toContain('lg:pb-2');
-      expect(headerTag).not.toContain('lg:pb-12');
+      expect(headerTag).not.toContain('pb-4');
+      expect(headerTag).not.toContain('pb-10');
+      expect(innerTag).toContain('h-16');
+      expect(innerTag).toContain('lg:h-20');
+    });
+
+    it('aligns the logo left and centers it vertically', async () => {
+      const html = await render();
+      const innerTag = html.match(/<div[^>]*site-header__inner[^>]*>/)?.[0] ?? '';
+      const logoLink = html.match(/<a href="\/" aria-label="Ir al inicio"[^>]*>/)?.[0] ?? '';
+
+      expect(innerTag).toContain('justify-between');
+      expect(innerTag).toContain('items-center');
+      expect(logoLink).not.toContain('mx-auto');
+      expect(logoLink).not.toContain('justify-center');
+      expect(logoLink).toContain('overflow-visible');
+    });
+  });
+
+  describe('header-scroll.css keeps the logo size fixed', () => {
+    const css = readFileSync(
+      new URL('../../styles/header-scroll.css', import.meta.url),
+      'utf8',
+    );
+
+    it('does not shrink the logo or transition .site-logo on scroll', () => {
+      expect(css).not.toContain('.site-logo');
+      expect(css).not.toMatch(/max-width:\s*150px/);
+      expect(css).not.toMatch(/height:\s*100px/);
+    });
+
+    it('keeps the compact background, shell shadow and reduced-motion rules', () => {
+      expect(css).toContain("body[data-scrolled='true'] .site-search");
+      expect(css).toContain('header-scroll-shell');
+      const reducedMotionBlock =
+        css.match(/@media \(prefers-reduced-motion: reduce\) \{[\s\S]*?\}/)?.[0] ?? '';
+      expect(reducedMotionBlock).toContain('.site-search');
+      expect(reducedMotionBlock).toContain('.header-scroll-shell');
+      expect(reducedMotionBlock).not.toContain('.site-logo');
     });
   });
 

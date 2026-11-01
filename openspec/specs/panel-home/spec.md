@@ -175,19 +175,6 @@ El `apps/web/src/pages/index.astro` SHALL render `<HeroBanner {...HERO_BANNER_CO
 - **AND** no bar de contacto anterior precede al header
 - **AND** el count de `<header>` elementos en el documento sigue siendo exactamente uno (no se introduce nuevo landmark)
 
-### Requirement: PanelHome reduces its inner padding on desktop
-El `panel-home` izquierda (`<div>` que lleva `bg-primary`) SHALL usar relleno interior reducido en desktop: `lg:p-12` (48px) en lugar del `lg:p-16` (64px) usado anteriormente, para que el panel lea más apretado en pantallas grandes. El padding móvil/tablet (`p-8 md:p-12`) se mantiene sin cambios para la mitad izquierda. La mitad derecha SHALL usar un padding responsivo que mantenga los valores de estadística contenidos en viewports estrechos (ej. `p-4 md:p-8 lg:p-12`) en lugar del `p-8 md:p-12` fijo anterior.
-
-#### Scenario: Left half uses reduced desktop padding lg:p-12
-- **WHEN** el PanelHome renderiza la izquierda (`bg-primary`)
-- **THEN** la mitad izquierda `<div>` lleva `lg:p-12`
-- **AND** la mitad izquierda `<div>` no lleva `lg:p-16`
-
-#### Scenario: Right half uses responsive padding
-- **WHEN** el PanelHome renderiza la mitad derecha (`bg-white`)
-- **THEN** sus celdas de estadística declaran un padding base menor que el aplicado en `md:`/`lg:`
-- **AND** el padding en `lg:` se mantiene en `p-12` para conservar la densidad desktop
-
 ### Requirement: PanelHome animates the four stat numbers from 0 to their value on first visibility
 El `panel-home` SHALL animar cada valor de estadística de `0` hasta su valor objetivo cuando el usuario hace scroll hacia abajo y el panel entra por primera vez en el viewport, usando un `IntersectionObserver` que dispara la animación exactamente una vez (SHALL NOT re-play on subsequent re-entries). Durante la animación el valor numérico cuenta mientras el sufijo `+` SHALL permanecer visible en todo momento (ej. `0+`, `1+`, … `40+`). El valor objetivo SHALL venir del campo `numericValue: number` de `PanelStat` (valores `40`, `30000`, `5`, `9`), mientras que el formato de exhibición (`value`, ej. `30.000+`) SHÁ permanecer el fallback SSR/no-JS. La animación SHALL respetar `prefers-reduced-motion: reduce` al omitir el count-up y mostrar el valor final inmediatamente.
 

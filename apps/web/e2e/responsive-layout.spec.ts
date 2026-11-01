@@ -43,9 +43,9 @@ const PAGES = [
  * Asserts that the document does not overflow horizontally.
  *
  * Both `documentElement.scrollWidth` and `body.scrollWidth` are inspected and
- * the larger one is used: the home page applies `overflow-x: hidden` on the
- * body (hero shell), which clips the visual overflow but keeps reporting the
- * overflowing content width on `body.scrollWidth`.
+ * the larger one is used: the home page applies `overflow-x: clip` on the
+ * document (hero shell), which clips the visual overflow but keeps reporting
+ * the overflowing content width on `body.scrollWidth`.
  */
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   const metrics = await page.evaluate(() => ({
@@ -130,6 +130,33 @@ test.describe('Responsive layout (viewport matrix)', () => {
       nav.getByRole('link', { name: 'SOLICITAR COTIZACIÓN', exact: true }),
     ).toBeVisible();
     await expectWithinViewport(page, 'nav[aria-label="Navegación principal"]');
+  });
+
+  test('the mobile header and search adopt the distributed-padding two-row layout', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/');
+
+    const banner = page.getByRole('banner');
+    await expect(banner).toHaveCSS('padding-top', '8px');
+    await expect(banner).toHaveCSS('padding-bottom', '8px');
+    const bannerBox = await banner.boundingBox();
+    expect(bannerBox).not.toBeNull();
+    expect(bannerBox!.height).toBeLessThanOrEqual(80 + OVERFLOW_TOLERANCE);
+
+    const search = page.getByRole('search', { name: 'Buscar productos' });
+    const selectBox = await search.getByRole('combobox').boundingBox();
+    const inputBox = await search.getByRole('searchbox').boundingBox();
+    const buttonBox = await search.getByRole('button', { name: 'BUSCAR' }).boundingBox();
+    expect(selectBox).not.toBeNull();
+    expect(inputBox).not.toBeNull();
+    expect(buttonBox).not.toBeNull();
+
+    // Select on its own row; input + button together with no horizontal gap.
+    expect(selectBox!.y).toBeLessThan(inputBox!.y);
+    expect(Math.abs(inputBox!.y - buttonBox!.y)).toBeLessThanOrEqual(4);
+    expect(Math.abs(inputBox!.x + inputBox!.width - buttonBox!.x)).toBeLessThanOrEqual(2);
   });
 
   test('the sticky group respects the viewport-height budget on short viewports', async ({

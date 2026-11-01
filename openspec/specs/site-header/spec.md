@@ -150,6 +150,12 @@ The site-header SHALL meet accessibility requirements and ensure a single `<head
 ### Requirement: Navigation configuration is hardcoded
 The navigation items SHALL come from the hardcoded `NAVIGATION_ITEMS` constant (5 items: Inicio, Productos, Servicios, Marcas, Contacto), and the CTA SHALL come from `getCtaConfig()` with graceful fallback to defaults.
 
+#### Scenario: Navigation items and CTA come from hardcoded config
+- **WHEN** the navigation configuration used by `Header.astro` is inspected
+- **THEN** the nav items come from `NAVIGATION_ITEMS`
+- **AND** each item declares both `label` and `href`
+- **AND** the CTA comes from `getCtaConfig()` and falls back to defaults when environment variables are missing
+
 ### Requirement: Desktop nav visible from xl breakpoint and compact in lg→xl
 El menú de escritorio SHALL ser visible desde `xl` (1280px). En el rango `lg` (1024px) a menos de 1280px, el header SHALL mantener el acceso a la navegación mediante el menú hamburguesa con overlay a pantalla completa, y los elementos del nav de escritorio (íconos de navegación, CTA y logo) SHALL estar dimensionados de modo que, cuando el nav de escritorio se renderiza, el conjunto completo quepa dentro del ancho del viewport sin scroll horizontal.
 
