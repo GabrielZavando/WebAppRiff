@@ -33,32 +33,60 @@ The search-form SHALL render a `<input type="search">` with `name="q"`, the conf
 - **AND** the input does NOT carry `rounded` (nor any `rounded-*` variant)
 
 ### Requirement: SearchForm renders the submit button
-The search-form SHALL render a `<button type="submit">` labelled with the configured submit text using the `--color-primary` (`#41B3C4`) token via the Tailwind utility `bg-primary` (with a hover state derived from `--color-primary-dark` `#2E9AAD`). The button SHALL use `flex items-center justify-center gap-2` so the search icon and text label are vertically centered with 0.5rem (8px) spacing between them. The button SHALL apply a wider horizontal padding of `px-8` (up from `px-6`) on all breakpoints so the icon + text breathe without shrinking. The button SHALL apply la heading font via `font-heading` (Montserrat) con peso `font-semibold` (600), `text-xs` size y `uppercase tracking-wide` per la escala tipográfica canónica. The button SHALL NOT apply `rounded` (flat design con radio 0). The obsolete utility `bg-brand-orange` and references to `--color-brand-orange` SHALL NOT appear. The previous requirement specifying `--color-accent` (`#F26A21`) via `bg-accent` and `px-6` padding is superseded by this change.
 
-#### Scenario: Submit button uses primary token and flat square corners
-- **WHEN** the search-form renders
-- **THEN** the `<button type="submit">` carries the `bg-primary` class (resolving to `#41B3C4`)
-- **AND** its `class` attribute contains `font-heading` and `font-semibold`
-- **AND** its `class` attribute does NOT contain `bg-accent`
-- **AND** its `class` attribute does NOT contain `bg-brand-orange`
-- **AND** its `class` attribute does NOT contain `rounded` (nor any `rounded-*` variant)
-- **AND** the label text is the configured `submitLabel`
+The search-form SHALL render a `<button type="submit">` using the `--color-primary` (`#41B3C4`) token via the Tailwind utility `bg-primary` (with a hover state derived from `--color-primary-dark` `#2E9AAD`). The button SHALL have two responsive presentations:
+
+- **Mobile (`< 640px`)**: the button SHALL display only the `lucide:search` icon, with no visible text, and SHALL expose the accessible name `BUSCAR` via `aria-label="BUSCAR"`. The icon SHALL remain decorative (`aria-hidden="true"`). The button SHALL use compact horizontal padding and SHALL NOT stretch to the full form width.
+- **From `sm` (≥ 640px)**: the button SHALL display the icon together with the configured `submitLabel` text, using `flex items-center justify-center gap-2` and `px-8`, with the heading font via `font-heading`, `font-semibold` weight, `text-xs` size and `uppercase tracking-wide`.
+
+The button SHALL NOT apply `rounded` (flat design con radio 0). The obsolete utility `bg-brand-orange` and references to `--color-brand-orange` SHALL NOT appear. The previous contract that required visible text and `px-8` at every breakpoint is superseded for mobile.
 
 #### Scenario: Submit button hover resolves to primary-dark token
+
 - **WHEN** the submit button is hovered
 - **THEN** its background color resolves from `--color-primary-dark` (`#2E9AAD`)
 - **AND** its class contains `hover:bg-primary-dark`
 
 #### Scenario: Button uses flex layout for icon + text alignment
-- **WHEN** the search-form renders
-- **THEN** the `<button type="submit">` carries `flex items-center justify-center gap-2`
-- **AND** the icon and the `BUSCAR` text label are vertically centered within the button
-- **AND** the spacing between the icon and the text is 0.5rem (Tailwind `gap-2`)
+
+- **WHEN** el search-form se renderiza en un viewport `>= 640px`
+- **THEN** el `<button type="submit">` lleva `flex items-center justify-center gap-2`
+- **AND** el ícono y el texto `BUSCAR` quedan centrados verticalmente
+- **AND** el espacio entre ícono y texto es 0.5rem (`gap-2`)
 
 #### Scenario: Button uses wider horizontal padding (px-8)
+
+- **WHEN** el search-form se renderiza en un viewport `>= 640px`
+- **THEN** el `<button type="submit">` lleva `px-8` (no `px-6`)
+- **AND** en móvil usa padding horizontal compacto (`px-4`)
+
+#### Scenario: Mobile button shows only the search icon
+
+- **WHEN** el search-form se renderiza en un viewport `< 640px`
+- **THEN** el `<button type="submit">` contiene el ícono `lucide:search`
+- **AND** no muestra texto visible de `config.submitLabel`
+- **AND** el `<button>` lleva `aria-label="BUSCAR"`
+- **AND** el ícono lleva `aria-hidden="true"`
+
+#### Scenario: Mobile button accessible name is BUSCAR
+
+- **WHEN** un lector de pantalla enfoca el botón de búsqueda en un viewport `< 640px`
+- **THEN** el nombre accesible del botón es `BUSCAR`
+
+#### Scenario: From sm the button restores icon and visible text
+
+- **WHEN** el search-form se renderiza en un viewport `>= 640px`
+- **THEN** el `<button type="submit">` muestra el ícono y el texto `config.submitLabel`
+- **AND** su clase contiene `flex items-center justify-center gap-2` y `px-8`
+- **AND** su clase contiene `font-heading`, `font-semibold`, `text-xs`, `uppercase` y `tracking-wide`
+
+#### Scenario: Submit button uses primary token and flat square corners
+
 - **WHEN** the search-form renders
-- **THEN** the `<button type="submit">` carries `px-8` (not `px-6`)
-- **AND** this gives the button a slightly wider presentation on all breakpoints
+- **THEN** the `<button type="submit">` carries the `bg-primary` class (resolving to `#41B3C4`)
+- **AND** its `class` attribute contains `hover:bg-primary-dark`
+- **AND** its `class` attribute does NOT contain `bg-accent`
+- **AND** its `class` attribute does NOT contain `rounded` (nor any `rounded-*` variant)
 
 ### Requirement: SearchForm supports a transparent mode
 SearchForm SHALL accept an optional boolean prop `transparent` (default `false`). The outer `role="search"` wrapper SHALL render exactly two rest states: `bg-transparent` when `transparent` is `true` (hero pages), and solid `bg-secondary` (var(--color-secondary)) otherwise — a uniform color in every page that renders the search bar (reference: Inicio's compact state). The white wrapper (`bg-white border-b border-border`) and the header gradient (`bg-linear-to-r from-secondary to-secondary-light`) SHALL NOT be rendered in any state. The select and input fields keep their white background for legibility, and the submit button keeps `bg-primary`. The `secondaryBg` prop SHALL NOT exist (plumbing removed in `ui-chrome-polish`). (MODIFIED in `ui-chrome-polish`.)
@@ -147,19 +175,56 @@ The `buildSearchHref(query, categoriaId, action)` function SHALL return the cano
 - **THEN** it returns `/catalogo?q=foo&categoriaId=bar`
 
 ### Requirement: SearchForm layout is responsive
-The search-form SHALL render the three controls (select, input, button) inline on desktop viewports (>= 768px) and stacked vertically full-width on mobile viewports (< 768px).
+
+El search-form SHALL organizar sus controles con enfoque mobile-first:
+
+- **Below `sm` (< 640px)**: el `<select>` SHALL ocupar una fila completa y el `<input>` y el `<button>` SHALL compartir una segunda fila, con el botón pegado al costado derecho del input y sin separación horizontal entre ellos. El formulario SHALL usar una grilla de dos columnas (`grid-cols-[minmax(0,1fr)_auto]`), el select SHALL abarcar ambas columnas (`col-span-2`), el contenedor del input SHALL declarar `min-w-0` y el botón SHALL declarar `shrink-0`.
+- **From `sm` (≥ 640px)**: los tres controles SHALL volver a una sola fila horizontal, con el input expandiéndose para ocupar el espacio disponible.
+- **Short viewports (height <= 400px)**: los tres controles SHALL mantenerse en una sola fila con padding vertical reducido, preservando el presupuesto de altura del grupo sticky.
+
+El layout móvil SHALL permanecer contenido dentro del ancho del viewport sin scroll horizontal.
 
 #### Scenario: Desktop single row (>= 768px)
-- **WHEN** the SearchForm renders on a viewport >= 768px
-- **THEN** the `<form>` uses flex-row layout
-- **AND** the `<select>`, `<input>` and `<button>` share one horizontal row
-- **AND** the input stretches to fill available space
+
+- **WHEN** el SearchForm se renderiza en un viewport `>= 640px`
+- **THEN** el `<form>` usa `flex-row`
+- **AND** el `<select>`, el `<input>` y el `<button>` comparten una fila horizontal
+- **AND** el input se expande para llenar el espacio disponible
 
 #### Scenario: Mobile stacked layout (< 768px)
-- **WHEN** the SearchForm renders on a viewport < 768px
-- **THEN** the `<form>` uses flex-col layout
-- **AND** the `<select>`, `<input>` and `<button>` each take the full width of their container
-- **AND** each control sits on its own row
+
+- **WHEN** el SearchForm se renderiza en un viewport `< 640px`
+- **THEN** el `<select>` ocupa su propia fila
+- **AND** el `<input>` y el `<button>` comparten una segunda fila
+- **AND** no hay separación horizontal entre input y botón
+
+#### Scenario: Mobile keeps select on its own row and input + button together
+
+- **WHEN** el SearchForm se renderiza en un viewport de 375×667
+- **THEN** el `<form>` usa una grilla de dos columnas
+- **AND** el `<select>` ocupa la fila superior completa
+- **AND** el `<input>` y el `<button>` comparten la fila inferior
+- **AND** la separación horizontal entre el borde derecho del input y el borde izquierdo del botón es de 0px (tolerancia de 1px por borde)
+- **AND** existe una separación vertical de 12px entre la fila del select y la fila del input/botón
+
+#### Scenario: From sm the three controls share one row
+
+- **WHEN** el SearchForm se renderiza en un viewport `>= 640px`
+- **THEN** el `<form>` usa `flex-row`
+- **AND** el `<select>`, el `<input>` y el `<button>` comparten una sola fila horizontal
+- **AND** el input se expande para llenar el espacio disponible
+
+#### Scenario: Short viewports keep a single compact row
+
+- **WHEN** el SearchForm se renderiza en un viewport de 568×320
+- **THEN** los tres controles comparten una sola fila
+- **AND** el padding vertical del contenedor interno es menor que en portrait
+
+#### Scenario: No horizontal overflow at 320px
+
+- **WHEN** se carga cualquier página con buscador en un viewport de 320×568
+- **THEN** `document.documentElement.scrollWidth` no supera `document.documentElement.clientWidth + 1`
+- **AND** el `boundingBox` del `<form>` queda dentro del ancho del viewport
 
 ### Requirement: SearchForm is keyboard accessible with native semantics
 The search-form SHALL be operable with the keyboard using native HTML form semantics: Tab cycles through controls, Enter submits from the input, and the form submits without JavaScript.
@@ -227,18 +292,26 @@ The SearchForm SHALL render below `<Header />` and above the page slot inside `L
 - **THEN** no `role="search"` landmark is rendered
 
 ### Requirement: Submit button renders a search icon before the label
-The submit button SHALL render a `lucide:search` icon (via `astro-icon` `<Icon>`) positioned before the visible submit label text. The icon SHALL carry `aria-hidden="true"` because the button's accessible name is the visible text label. The icon SHALL use a 16px size (`h-4 w-4`).
+
+The submit button SHALL render a `lucide:search` icon (via `astro-icon` `<Icon>`) positioned before the submit label text in the DOM. The icon SHALL carry `aria-hidden="true"` and SHALL use a 16px size (`h-4 w-4`). On mobile (`< 640px`) the label text SHALL remain in the DOM but hidden from visual rendering, and the accessible name SHALL be provided by `aria-label="BUSCAR"`. From `sm` upward the label text SHALL be visible and the icon SHALL precede it.
 
 #### Scenario: Search icon present before text label
+
 - **WHEN** the search-form renders
 - **THEN** the `<button type="submit">` contains an `<Icon>` element with `name="lucide:search"`
 - **AND** the `<Icon>` carries `aria-hidden="true"`
-- **AND** the `<Icon>` precedes the visible `{config.submitLabel}` text content within the button
-- **AND** the button's accessible name remains exactly `config.submitLabel` (e.g. "BUSCAR")
+- **AND** the `<Icon>` precedes the submit label text within the button
 
 #### Scenario: Icon size is 16px
+
 - **WHEN** the search icon renders inside the button
 - **THEN** the `<Icon>` carries class `h-4` and `w-4` (16px × 16px)
+
+#### Scenario: Mobile label is visually hidden but accessible name remains BUSCAR
+
+- **WHEN** el search-form se renderiza en un viewport `< 640px`
+- **THEN** el texto `config.submitLabel` no es visible
+- **AND** el botón conserva el nombre accesible `BUSCAR`
 
 ### Requirement: SearchForm inner container is constrained to 760px and centered with mobile horizontal padding
 The SearchForm SHALL constrain its form content area to a maximum width of 760px and center it horizontally. The inner container div (direct parent of `<form>`) SHALL carry `max-w-[760px]` and `mx-auto` and SHALL NOT carry the `container` utility (which applies `max-w-7xl` = 1280px with horizontal padding). On mobile viewports, the inner container SHALL carry `px-4` horizontal padding so the form does not touch the screen edges; this padding SHALL be removed from the `md` breakpoint (>= 768px) upward via `md:px-0` so the 760px box uses its full width on desktop. The inner container SHALL NOT carry `px-6` or `px-8` (only `px-4` on mobile is allowed). The outer `role="search"` wrapper SHALL retain full viewport width with its background and border.
@@ -253,18 +326,39 @@ The SearchForm SHALL constrain its form content area to a maximum width of 760px
 - **AND** that div does NOT contain `px-6` or `px-8` (only px-4 on mobile is allowed)
 
 ### Requirement: Desktop controls separated by 1px horizontal gap
-When the three controls (select, input, button) render on the same horizontal row (viewport ≥ 768px, `md:flex-row`), they SHALL be separated by exactly 1px. The `<form>` element SHALL use `md:gap-px` (Tailwind `gap: 1px`) on the desktop breakpoint, while retaining `gap-3` (12px) on mobile for vertical stacking separation.
+
+When the three controls (select, input, button) render on the same horizontal row (`>= 640px`, `sm:flex-row`), they SHALL be separated by exactly 1px via `sm:gap-px`. Below `sm`, the select SHALL be separated from the input/button row by a 12px vertical gap (`gap-y-3`), while the input and button SHALL be adjacent with no horizontal gap between them.
 
 #### Scenario: Desktop uses 1px gap between controls
-- **WHEN** the SearchForm renders on a viewport ≥ 768px
-- **THEN** the `<form>` carries the class `md:gap-px`
-- **AND** the `<form>` does NOT carry `md:gap-3` (12px is replaced by 1px on desktop)
-- **AND** on mobile the `<form>` still carries `gap-3` (12px vertical separation)
+
+- **WHEN** el SearchForm se renderiza en un viewport `>= 640px`
+- **THEN** el `<form>` lleva `sm:gap-px`
+- **AND** el `<form>` no lleva `sm:gap-3`
+- **AND** en móvil el select se separa de la fila input/botón con `gap-y-3`
 
 #### Scenario: Bounding boxes differ by ≤ 2px on desktop
-- **WHEN** the SearchForm renders at 1280×720 viewport
-- **THEN** the right edge of the `<select>` and the left edge of the `<input>` differ by ≤ 2px (1px gap + border tolerance)
-- **AND** the right edge of the `<input>` and the left edge of the `<button>` differ by ≤ 2px
+
+- **WHEN** el SearchForm se renderiza en un viewport de 1280×720
+- **THEN** el borde derecho del `<select>` y el borde izquierdo del `<input>` difieren en ≤ 2px
+- **AND** el borde derecho del `<input>` y el borde izquierdo del `<button>` difieren en ≤ 2px
+
+#### Scenario: From sm the controls use a 1px gap
+
+- **WHEN** el SearchForm se renderiza en un viewport `>= 640px`
+- **THEN** el `<form>` lleva `sm:gap-px`
+- **AND** el `<form>` no lleva `sm:gap-3`
+
+#### Scenario: Mobile separates select from the input/button row
+
+- **WHEN** el SearchForm se renderiza en un viewport `< 640px`
+- **THEN** el `<form>` lleva `gap-y-3`
+- **AND** el input y el botón no tienen gap horizontal entre ellos
+
+#### Scenario: Bounding boxes differ by ≤ 2px from sm upward
+
+- **WHEN** el SearchForm se renderiza en un viewport de 1280×720
+- **THEN** el borde derecho del `<select>` y el borde izquierdo del `<input>` difieren en ≤ 2px
+- **AND** el borde derecho del `<input>` y el borde izquierdo del `<button>` difieren en ≤ 2px
 
 ### Requirement: SearchForm category select visibility is configurable
 SearchForm SHALL accept an optional boolean prop `showCategorySelect` (default `true`). When `false`, the entire category `<select name="categoriaId">` block (including its wrapper `<div>` and `<label>`) SHALL NOT be rendered. The search `<input type="search">` and the submit `<button>` SHALL remain rendered; the input SHALL retain its `md:flex-1` expansion so it fills the space formerly occupied by the select.

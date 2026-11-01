@@ -17,22 +17,6 @@ The site SHALL keep the Header and SearchForm fixed at the top of the viewport (
 - **WHEN** the page is at `scrollTop === 0`
 - **THEN** the Header and SearchForm render in their normal document flow position (no compact/sticky visual offset beyond their natural layout)
 
-### Requirement: Logo shrinks on scroll
-The site SHALL reduce the Header logo when the compact scroll state is active, from its rest maximum width (240px at ≥640px, 160px below 640px), acotado en desktop (≥640px) a un alto renderizado mínimo de 100px con ancho automático que preserve el aspect ratio del asset PNG (1080×542, ratio ≈1.99:1), y a 150px de ancho en mobile (<640px).
-
-#### Scenario: Logo shrinks on desktop with a 100px minimum height
-- **WHEN** the compact scroll state is active and the viewport is at least 640px wide
-- **THEN** the logo image renders with a computed height of at least 100px
-- **AND** its width adapts automatically preserving the ≈1.99:1 aspect ratio of `logo-web.png` (≈199px wide at 100px tall)
-
-#### Scenario: Logo shrinks on mobile (unchanged)
-- **WHEN** the compact scroll state is active and the viewport is narrower than 640px
-- **THEN** the logo image computes a `max-width` of 150px
-
-#### Scenario: Logo restored at the top
-- **WHEN** the page returns to `scrollTop === 0`
-- **THEN** the logo image computes its original `max-width` (160px below 640px, 240px at 640px and above)
-
 ### Requirement: Header and Search background transitions to secondary on scroll
 The site SHALL render the Header and SearchForm with a solid `--color-secondary` (#1F2D40) background when the compact scroll state is active, replacing their default background (transparent on the home hero, navy gradient on other pages for the Header; white on other pages for the SearchForm).
 
@@ -57,23 +41,28 @@ The site SHALL apply a box-shadow to the sticky Header+Search group when the com
 - **THEN** the sticky wrapper computes `box-shadow: none`
 
 ### Requirement: Scroll state reverts fully at the top
-The site SHALL revert every visual change produced by the compact scroll state when `scrollTop === 0`, returning Header, SearchForm and logo to their original appearance with the same animation.
+
+The site SHALL revert every visual change produced by the compact scroll state when `scrollTop === 0`, returning the Header background and the SearchForm background to their original appearance with the same animation. The logo size does not participate in the compact state because it stays fixed at every scroll position.
 
 #### Scenario: Full revert on return to top
+
 - **WHEN** the user scrolls back to `scrollTop === 0` after the compact state was active
 - **THEN** the `data-scrolled` attribute on `document.body` is `"false"` (or absent)
-- **AND** the logo size, the Header background and the SearchForm background all return to their original values
+- **AND** the Header background and the SearchForm background return to their original values
 
 ### Requirement: Compact scroll state animates smoothly and respects reduced motion
-The site SHALL animate the background and logo-size transitions of the compact scroll state over 300ms with an `ease-in-out` timing function, and SHALL disable these transitions when the user prefers reduced motion (`prefers-reduced-motion: reduce`).
+
+The site SHALL animate the background transitions of the compact scroll state over 300ms with an `ease-in-out` timing function, and SHALL disable these transitions when the user prefers reduced motion (`prefers-reduced-motion: reduce`). The logo SHALL NOT declare scroll-driven size transitions because its size is fixed.
 
 #### Scenario: Smooth transition on activation
+
 - **WHEN** the compact state activates or deactivates
-- **THEN** the background-color and logo max-width transitions each run with a duration of 300ms and `ease-in-out` timing
+- **THEN** the Header and SearchForm background transitions each run with a duration of 300ms and `ease-in-out` timing
 
 #### Scenario: Reduced motion disables animation
+
 - **WHEN** the active environment reports `prefers-reduced-motion: reduce`
-- **THEN** the background and logo-size changes apply without a transitional animation (transitions set to none)
+- **THEN** the background changes apply without a transitional animation (transitions set to none)
 
 ### Requirement: Scroll state preserves single-header landmark and mobile menu
 The site SHALL keep exactly one `<header>` landmark per page and SHALL keep the mobile navigation menu fully functional above the compact header (toggle `z-50`, overlay `z-40`), with no regression to accessibility or the single-landmark rule.
@@ -89,10 +78,49 @@ The site SHALL keep exactly one `<header>` landmark per page and SHALL keep the 
 - **AND** clicking the toggle still toggles `data-menu-open` and the overlay visibility
 
 ### Requirement: Compact state re-applies to the current body across client-side navigations
-The compact scroll state SHALL apply its `data-scrolled` attribute to the **current** `document.body` on every update (initial load, scroll event, and Astro's `astro:page-load` lifecycle event), resolving the target element lazily at update time instead of capturing it once at init. The header color change (Requirement "Header and Search background transitions to secondary on scroll"), the logo shrink/grow (Requirement "Logo shrinks on scroll") and the shell drop-shadow SHALL therefore keep working on `/` and `/servicios` after the `<body>` swap performed by View Transitions. (ADDED in `header-scroll-restore`).
+
+The compact scroll state SHALL apply its `data-scrolled` attribute to the **current** `document.body` on every update (initial load, scroll event, and Astro's `astro:page-load` lifecycle event), resolving the target element lazily at update time instead of capturing it once at init. The header color change (Requirement "Header and Search background transitions to secondary on scroll") and the shell drop-shadow SHALL therefore keep working on `/` and `/servicios` after the `<body>` swap performed by View Transitions. (ADDED in `header-scroll-restore`.)
 
 #### Scenario: Compact state survives client-side navigation
-- **WHEN** the user navigates to `/servicios` via View Transitions and then scrolls
-- **THEN** `data-scrolled` is applied to the current `document.body`
-- **AND** the header and search background color change keeps working on the destination page
 
+- **WHEN** el usuario navega a `/servicios` mediante View Transitions y luego hace scroll
+- **THEN** el `data-scrolled` attribute se aplica al `document.body` vigente
+- **AND** el cambio de fondo del Header y del SearchForm sigue funcionando en la página destino
+
+### Requirement: Logo size stays fixed on scroll
+
+The site SHALL NOT change the Header logo's rendered size when the compact scroll state is active. The logo's `max-width` and rendered height SHALL remain equal to their rest values at every scroll position and on every viewport: `max-w-[160px]` below 640px and `sm:max-w-[240px]` from 640px up. The compact state SHALL continue to affect only the Header/SearchForm background and the sticky shell drop-shadow.
+
+#### Scenario: Mobile logo stays fixed on scroll
+
+- **WHEN** el usuario hace scroll hacia abajo en un viewport de 375×667
+- **THEN** el logo mantiene su `max-width` de 160px
+- **AND** su alto renderizado no cambia respecto del estado en el top
+
+#### Scenario: Desktop logo stays fixed on scroll
+
+- **WHEN** el usuario hace scroll hacia abajo en un viewport de 1280×720
+- **THEN** el logo mantiene su `max-width` de 240px
+- **AND** su alto renderizado no cambia respecto del estado en el top
+
+#### Scenario: Fixed size also at the top after scrolling back
+
+- **WHEN** el usuario vuelve a `scrollTop === 0` después de hacer scroll
+- **THEN** el logo conserva exactamente las mismas dimensiones que tenía antes de scrollear
+
+### Requirement: Sticky group is not broken by horizontal clipping
+
+The document SHALL clip horizontal overflow with `overflow-x: clip` on `<html>` and `<body>` (or an equivalent that does not create a scroll container) and SHALL NOT use `overflow-x: hidden` on those elements. A `hidden` value on a horizontal axis computes `overflow-y` to `auto`, turning the element into a scrolling ancestor; that breaks the `position: sticky` behavior of the Header + SearchForm wrapper in some browsers. The sticky wrapper SHALL remain pinned at the top of the viewport after scrolling on both mobile and desktop.
+
+#### Scenario: No horizontal overflow ancestor traps the sticky wrapper
+
+- **WHEN** the page renders at any viewport
+- **THEN** the computed `overflow-x` of `<html>` and `<body>` is `clip`
+- **AND** neither element computes `overflow-x: hidden`
+- **AND** the sticky wrapper (`header-scroll-shell`) keeps `position: sticky` with `top: 0`
+
+#### Scenario: Sticky group stays pinned after scroll
+
+- **WHEN** the user scrolls down on a viewport of 375×667 or 1280×720
+- **THEN** the top edge of the `header-scroll-shell` remains at `0` relative to the viewport (tolerance 2px)
+- **AND** the Header and SearchForm stay fully visible while scrolling
