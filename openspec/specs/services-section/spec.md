@@ -61,6 +61,7 @@ The `services-section` SHALL render a header block centered horizontally (`text-
 #### Scenario: Header does NOT render a teal underline bar
 - **WHEN** the ServicesSection renders
 - **THEN** the header does NOT contain a `<div>` carrying both a short horizontal bar utility (e.g. `h-1` and `w-16`) and the teal `bg-primary` background token (the SolutionSection underline signature)
+
 ### Requirement: ServicesSection renders a responsive 2x2 grid of service cards (mobile-first)
 The `services-section` SHALL render a grid of `services` cards sized responsively mobile-first: 1 column on mobile (`< 640px`) and 2 columns from the `sm` breakpoint (`>= 640px`). The grid container SHALL carry the Tailwind utility classes `grid-cols-1 sm:grid-cols-2` and a consistent gap utility. The grid SHALL render exactly N `<article>` cards, where N equals the length of the `services` prop.
 
@@ -83,27 +84,55 @@ The `services-section` SHALL render a grid of `services` cards sized responsivel
 - **WHEN** the ServicesSection renders with `services` of length 4
 - **THEN** the card grid contains exactly 4 `<article>` elements
 - **AND** each `<article>` contains the image, title, description and CTA elements described in the per-card requirements
-### Requirement: Each ServicesSection card is a horizontal layout (image left, content right) with mobile fallback
-Each card SHALL be an `<article>` carrying the flex layout utilities: `flex flex-col` by default (mobile — image stacks above content, full width) and `sm:flex-row` at `>= 640px` (image `w-2/5` on the left, content `flex-1` on the right — the mockup layout). The card SHALL have a `bg-secondary` background, a 1px `border` with the `border-secondary-light` token, and an `overflow-hidden` to clip the image cleanly. The card SHALL NOT apply any `shadow*` utility in its static state (flat design — shadows are reserved for floating layers per the style guide).
+
+### Requirement: Each ServicesSection card uses a vertical layout with image, title, description and CTA
+
+Each card SHALL be an `<article>` carrying the flex layout utilities `flex flex-col` at every breakpoint: the image stacks above the content, and the content flows vertically in the order image → title → description → CTA. The card SHALL NOT declare `sm:flex-row` nor any other horizontal orientation variant. The card image SHALL span the full width of the card (`w-full`) and SHALL NOT declare `sm:w-2/5`, while keeping the 5:4 aspect ratio (`aspect-[5/4]`) at every breakpoint. The card SHALL have a `bg-secondary` background, a 1px `border` with the `border-secondary-light` token, and an `overflow-hidden` to clip the image cleanly. The card SHALL NOT apply any `shadow*` utility in its static state (flat design — shadows are reserved for floating layers per the style guide).
+
+#### Scenario: Card is a vertical flex column at every breakpoint
+
+- **WHEN** the ServicesSection renders a card
+- **THEN** the `<article>` carries the `flex` utility
+- **AND** the `<article>` carries `flex-col`
+- **AND** the `<article>` does NOT carry `sm:flex-row` (ni `md:flex-row` u otra variante horizontal)
+
+#### Scenario: Card image spans the full card width and keeps the 5:4 ratio
+
+- **WHEN** the ServicesSection renders a card
+- **THEN** the card image element carries `w-full`
+- **AND** the card image element carries `aspect-[5/4]`
+- **AND** the card image element does NOT carry `sm:w-2/5`
+
+#### Scenario: Card content keeps the order image, title, description and CTA
+
+- **WHEN** the ServicesSection renders a card
+- **THEN** dentro del `<article>` el orden del DOM es: imagen, `<h4>` del título, `<p>` de la descripción y CTA `<a>`
+- **AND** el título queda por debajo de la imagen
+- **AND** la descripción queda por debajo del título
+- **AND** el CTA queda por debajo de la descripción
 
 #### Scenario: Card uses bg-secondary and border-secondary-light tokens
+
 - **WHEN** the ServicesSection renders a card
 - **THEN** the `<article>` carries a class expressing the navy background token `bg-secondary`
 - **AND** the `<article>` carries a class expressing a 1px border with the secondary-light token (e.g. `border border-secondary-light`)
 
-#### Scenario: Card layout is flex column on mobile, flex row from sm
-- **WHEN** the ServicesSection renders a card
-- **THEN** the `<article>` carries the `flex` utility
-- **AND** the `<article>` carries `flex-col` as the mobile default
-- **AND** the `<article>` carries `sm:flex-row` for the horizontal layout at `>= 640px`
-
 #### Scenario: Card does NOT apply a shadow utility
+
 - **WHEN** the ServicesSection renders a card
 - **THEN** the `<article>` opening tag does NOT carry any `shadow-*` utility class (no `shadow-1`, `shadow-2`, `shadow-3`, `shadow-4`, `shadow-5`)
 
 #### Scenario: Card clips overflowing content
+
 - **WHEN** the ServicesSection renders a card
 - **THEN** the `<article>` carries the `overflow-hidden` utility so the image's square corners meet the flat card edge cleanly
+
+#### Scenario: Vertical cards render correctly at the sm breakpoint
+
+- **WHEN** la home se carga en el viewport `640×800`
+- **THEN** cada tarjeta de "Servicios especializados" muestra la imagen a todo el ancho de la tarjeta, con el título, la descripción y el CTA apilados verticalmente debajo
+- **AND** la tarjeta conserva la proporción 5:4 de su imagen
+- **AND** el texto de cada tarjeta no desborda su tarjeta ni provoca scroll horizontal
 
 ### Requirement: Each ServicesSection card image is full-color, lazy-loaded, with a descriptive alt
 Each card SHALL contain an `<Image>` rendered by `astro:assets` (or a `<Picture>`) carrying: `loading="lazy"` (the section is below the initial fold); a non-empty descriptive `alt` attribute matching the service's `imageAlt` prop value (NOT the card title); and responsive `widths`/`sizes` attributes generated by `astro:assets`. The image SHALL NOT use raw `<img src="...">` with a static path. (POST-APPLY UPDATE: the images SHALL be rendered in full color — the `grayscale` CSS filter is NOT applied, per client request the service photos display in their original colors.)

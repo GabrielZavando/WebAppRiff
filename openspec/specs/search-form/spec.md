@@ -21,25 +21,26 @@ The search-form SHALL render a `<select>` populated from the `categories` prop, 
 - **AND** the class string does NOT contain literal `#41B3C4`
 
 ### Requirement: SearchForm renders a labelled search input
-The search-form SHALL render a `<input type="search">` with `name="q"`, the configured placeholder, and a visually associated `<label>`. The input border SHALL use the `--color-border` token via `border-border`; el texto del control SHALL usar el token `text-text-2` (#5C6675). The input SHALL NOT apply `rounded` (flat design con radio 0). The default placeholder SHALL be "¿Qué productos estás buscando?" (changed from "¿Qué solución está buscando?").
+
+The search-form SHALL render a `<input type="search">` with `name="q"`, the configured placeholder, and a visually associated `<label>`. The input border SHALL use the `--color-border` token via `border-border`; el texto del control SHALL usar el token `text-text-2` (#5C6675). The input SHALL NOT apply `rounded` (flat design con radio 0). The default placeholder SHALL be "¿Qué estás buscando?" (changed from "¿Qué productos estás buscando?").
 
 #### Scenario: Input rendered with placeholder
 - **WHEN** the SearchForm renders with default config
 - **THEN** an `<input type="search">` is rendered with `name="q"`
-- **AND** its `placeholder` attribute equals "¿Qué productos estás buscando?" (default, changed from "¿Qué solución está buscando?")
+- **AND** its `placeholder` attribute equals "¿Qué estás buscando?" (default, changed from "¿Qué productos estás buscando?")
 - **AND** a `<label>` element is rendered with `for` pointing to the input's `id`
 - **AND** the label text is non-empty (e.g., "Buscar productos")
 - **AND** the input carries `border-border` and `text-text-2` (not `text-gray-700`)
 - **AND** the input does NOT carry `rounded` (nor any `rounded-*` variant)
 
-### Requirement: SearchForm renders the submit button
+### Requirement: SearchForm renders an icon-only submit button
 
-The search-form SHALL render a `<button type="submit">` using the `--color-primary` (`#41B3C4`) token via the Tailwind utility `bg-primary` (with a hover state derived from `--color-primary-dark` `#2E9AAD`). The button SHALL have two responsive presentations:
+The search-form SHALL render a `<button type="submit">` using the `--color-primary` (`#41B3C4`) token via the Tailwind utility `bg-primary` (with a hover state derived from `--color-primary-dark` `#2E9AAD`). The button SHALL display only the `lucide:search` icon at every breakpoint, with no visible text, and SHALL expose the accessible name `BUSCAR` via `aria-label="BUSCAR"`. The icon SHALL remain decorative (`aria-hidden="true"`).
 
-- **Mobile (`< 640px`)**: the button SHALL display only the `lucide:search` icon, with no visible text, and SHALL expose the accessible name `BUSCAR` via `aria-label="BUSCAR"`. The icon SHALL remain decorative (`aria-hidden="true"`). The button SHALL use compact horizontal padding and SHALL NOT stretch to the full form width.
-- **From `sm` (≥ 640px)**: the button SHALL display the icon together with the configured `submitLabel` text, using `flex items-center justify-center gap-2` and `px-8`, with the heading font via `font-heading`, `font-semibold` weight, `text-xs` size and `uppercase tracking-wide`.
+- **Mobile (`< 640px`)**: the button SHALL use compact horizontal padding (`px-4`) and SHALL NOT stretch to the full form width.
+- **From `sm` (≥ 640px)**: the button SHALL keep the compact horizontal padding (`px-4`), SHALL NOT restore the wide `px-8`, and SHALL be constrained to a maximum width of 60px (`sm:max-w-[60px]`), so the row of controls does not lose width to the label.
 
-The button SHALL NOT apply `rounded` (flat design con radio 0). The obsolete utility `bg-brand-orange` and references to `--color-brand-orange` SHALL NOT appear. The previous contract that required visible text and `px-8` at every breakpoint is superseded for mobile.
+The button SHALL NOT apply `rounded` (flat design con radio 0). The obsolete utility `bg-brand-orange` and references to `--color-brand-orange` SHALL NOT appear. The previous contract that required visible text and `px-8` from `sm` upward is superseded.
 
 #### Scenario: Submit button hover resolves to primary-dark token
 
@@ -47,38 +48,37 @@ The button SHALL NOT apply `rounded` (flat design con radio 0). The obsolete uti
 - **THEN** its background color resolves from `--color-primary-dark` (`#2E9AAD`)
 - **AND** its class contains `hover:bg-primary-dark`
 
-#### Scenario: Button uses flex layout for icon + text alignment
+#### Scenario: Button uses flex layout for the icon alignment
 
-- **WHEN** el search-form se renderiza en un viewport `>= 640px`
+- **WHEN** el search-form se renderiza
 - **THEN** el `<button type="submit">` lleva `flex items-center justify-center gap-2`
-- **AND** el ícono y el texto `BUSCAR` quedan centrados verticalmente
-- **AND** el espacio entre ícono y texto es 0.5rem (`gap-2`)
+- **AND** el ícono queda centrado verticalmente
 
-#### Scenario: Button uses wider horizontal padding (px-8)
+#### Scenario: Button uses compact horizontal padding at every breakpoint
 
 - **WHEN** el search-form se renderiza en un viewport `>= 640px`
-- **THEN** el `<button type="submit">` lleva `px-8` (no `px-6`)
-- **AND** en móvil usa padding horizontal compacto (`px-4`)
+- **THEN** el `<button type="submit">` lleva `px-4` (no `px-8` ni `px-6`)
+- **AND** en móvil mantiene `px-4`
 
-#### Scenario: Mobile button shows only the search icon
+#### Scenario: Button shows only the search icon at every breakpoint
 
-- **WHEN** el search-form se renderiza en un viewport `< 640px`
+- **WHEN** el search-form se renderiza en cualquier viewport
 - **THEN** el `<button type="submit">` contiene el ícono `lucide:search`
 - **AND** no muestra texto visible de `config.submitLabel`
 - **AND** el `<button>` lleva `aria-label="BUSCAR"`
 - **AND** el ícono lleva `aria-hidden="true"`
 
-#### Scenario: Mobile button accessible name is BUSCAR
+#### Scenario: Button accessible name is BUSCAR
 
-- **WHEN** un lector de pantalla enfoca el botón de búsqueda en un viewport `< 640px`
+- **WHEN** un lector de pantalla enfoca el botón de búsqueda
 - **THEN** el nombre accesible del botón es `BUSCAR`
 
-#### Scenario: From sm the button restores icon and visible text
+#### Scenario: From sm the button is capped at 60px wide
 
 - **WHEN** el search-form se renderiza en un viewport `>= 640px`
-- **THEN** el `<button type="submit">` muestra el ícono y el texto `config.submitLabel`
-- **AND** su clase contiene `flex items-center justify-center gap-2` y `px-8`
-- **AND** su clase contiene `font-heading`, `font-semibold`, `text-xs`, `uppercase` y `tracking-wide`
+- **THEN** el `<button type="submit">` lleva `sm:max-w-[60px]`
+- **AND** su ancho renderizado es de como máximo 60px (±1px)
+- **AND** el ícono de 16px permanece visible dentro del botón
 
 #### Scenario: Submit button uses primary token and flat square corners
 
@@ -179,8 +179,8 @@ The `buildSearchHref(query, categoriaId, action)` function SHALL return the cano
 El search-form SHALL organizar sus controles con enfoque mobile-first:
 
 - **Below `sm` (< 640px)**: el `<select>` SHALL ocupar una fila completa y el `<input>` y el `<button>` SHALL compartir una segunda fila, con el botón pegado al costado derecho del input y sin separación horizontal entre ellos. El formulario SHALL usar una grilla de dos columnas (`grid-cols-[minmax(0,1fr)_auto]`), el select SHALL abarcar ambas columnas (`col-span-2`), el contenedor del input SHALL declarar `min-w-0` y el botón SHALL declarar `shrink-0`.
-- **From `sm` (≥ 640px)**: los tres controles SHALL volver a una sola fila horizontal. El contenedor del `<select>` SHALL reservar un ancho fijo suficiente para mostrar completo el texto de su opción más larga y SHALL declarar `sm:shrink-0` para que no se comprima; el contenedor del `<input>` SHALL declarar `sm:flex-1 min-w-0` y ocupar todo el espacio restante.
-- **Short viewports (height <= 400px)**: los tres controles SHALL mantenerse en una sola fila con padding vertical reducido, preservando el presupuesto de altura del grupo sticky. El ancho compacto de 176px del select SHALL aplicar solo por debajo de `sm` (< 640px), donde además SHALL declarar `shrink-0` para que el input no lo comprima; desde `sm` el select conserva `sm:w-64` (256px) aunque la altura sea <= 400px, para no truncar "Todas las categorías".
+- **From `sm` (≥ 640px)**: los tres controles SHALL volver a una sola fila horizontal. El contenedor del `<select>` y el contenedor del `<input>` SHALL repartirse el espacio restante de forma equitativa, declarando ambos `sm:flex-1` y `min-w-0` (base de crecimiento 0%, de modo que cada uno ocupe la mitad del espacio libre); el `<button>` SHALL conservar `shrink-0` y SHALL ocupar como máximo 60px (`sm:max-w-[60px]`). El `<select>` SHALL NOT conservar el ancho fijo `sm:w-64` ni `sm:shrink-0`, que quedan supersedidos por el reparto equitativo.
+- **Short viewports (height <= 400px)**: los tres controles SHALL mantenerse en una sola fila con padding vertical reducido, preservando el presupuesto de altura del grupo sticky. El ancho compacto de 176px del select SHALL aplicar solo por debajo de `sm` (< 640px), donde además SHALL declarar `shrink-0` para que el input no lo comprima; desde `sm` el select se reparte el espacio con el input, sin ancho fijo.
 
 El layout móvil SHALL permanecer contenido dentro del ancho del viewport sin scroll horizontal. En `sm` el texto del select NO SHALL truncarse ni quedar oculto por el ancho asignado.
 
@@ -217,11 +217,12 @@ El layout móvil SHALL permanecer contenido dentro del ancho del viewport sin sc
 #### Scenario: Select keeps its full label and input takes the remaining width at sm
 
 - **WHEN** el SearchForm se renderiza en el viewport `640×800`
-- **THEN** el contenedor del `<select>` declara `sm:w-64` y `sm:shrink-0`
-- **AND** el ancho renderizado del `<select>` es de al menos 256px menos el borde (±1px)
-- **AND** el texto "Todas las categorías" se muestra completo, sin truncarse
+- **THEN** el contenedor del `<select>` declara `sm:flex-1` y `min-w-0`
 - **AND** el contenedor del `<input>` declara `sm:flex-1` y `min-w-0`
-- **AND** el `<input>` ocupa el espacio restante de la fila
+- **AND** el contenedor del `<select>` NO declara `sm:w-64` ni `sm:shrink-0`
+- **AND** la diferencia entre el ancho renderizado del `<select>` y el del `<input>` es de ≤ 2px (reparto equitativo)
+- **AND** el ancho renderizado del `<select>` es de al menos 256px menos el borde (±1px), de modo que "Todas las categorías" se muestre completo, sin truncarse
+- **AND** el ancho renderizado del `<button>` es de como máximo 60px (±1px)
 - **AND** los tres controles permanecen dentro del ancho del viewport
 
 #### Scenario: Short viewports keep a single compact row
@@ -267,6 +268,7 @@ The search-form SHALL be operable with the keyboard using native HTML form seman
 - **AND** the submit button relies on its visible text (no extra aria-label needed)
 
 ### Requirement: SearchForm categories are configured via a hardcoded constant
+
 The category list rendered by `SearchForm` SHALL be derived at build time from the public endpoint `GET /api/v1/categories?activa=true` via the `getSearchFormCategories()` function in `lib/api/categories.ts`. The form action, submit label, input placeholder and field names SHALL continue to come from `getSearchFormConfig()` (overridable via environment variables with sensible defaults). The first option SHALL always be `{ id: "", label: "Todas las categorías" }`. The remaining options SHALL be mapped from active categories as `{ id, label: nombre }`, ordered by `orden` ascending and then by `nombre` ascending. If the API is unreachable at build time, `getSearchFormCategories()` SHALL fall back to returning only the default option so the static build never fails. The `SearchForm.astro` component SHALL remain a dumb presentational component that receives `categories` via props; the fetch SHALL NOT occur in the component frontmatter (it lives in `lib/api/categories.ts`).
 
 #### Scenario: Categories are sourced from the backend at build time
@@ -290,11 +292,11 @@ The category list rendered by `SearchForm` SHALL be derived at build time from t
 
 #### Scenario: SEARCH_FORM_CONFIG falls back to defaults when env vars are missing
 - **WHEN** `getSearchFormConfig()` is called without `SEARCH_RESULTS_PATH`, `SEARCH_SUBMIT_LABEL`, `SEARCH_PLACEHOLDER` set
-- **THEN** it returns `{ action: "/productos", submitLabel: "BUSCAR", inputPlaceholder: "¿Qué productos estás buscando?", inputName: "q", selectName: "categoriaId" }`
+- **THEN** it returns `{ action: "/productos", submitLabel: "BUSCAR", inputPlaceholder: "¿Qué estás buscando?", inputName: "q", selectName: "categoriaId" }`
 
 #### Scenario: SEARCH_FORM_CONFIG honours env vars when present
 - **WHEN** `getSearchFormConfig()` is called with `SEARCH_RESULTS_PATH="/catalogo"` and `SEARCH_SUBMIT_LABEL="IR"` set
-- **THEN** it returns `{ action: "/catalogo", submitLabel: "IR", inputPlaceholder: "¿Qué productos estás buscando?", inputName: "q", selectName: "categoriaId" }`
+- **THEN** it returns `{ action: "/catalogo", submitLabel: "IR", inputPlaceholder: "¿Qué estás buscando?", inputName: "q", selectName: "categoriaId" }`
 
 ### Requirement: SearchForm integrates into the global layout
 The SearchForm SHALL render below `<Header />` and above the page slot inside `Layout.astro`, wrapped in a `role="search"` landmark. Its visibility SHALL be controlled by the Layout prop `showSearch` (default `true`); pages that must not show the search pass `showSearch={false}` (e.g. Contacto, Marcas, Nosotros, Cotización). The search background SHALL be controlled solely by the `transparent` prop (hero pages): transparent on the hero, solid `bg-secondary` elsewhere — the Layout prop `searchSecondary` SHALL NOT exist (removed in `ui-chrome-polish`). The category `<select>` visibility SHALL be controlled by the Layout prop `searchShowCategorySelect` (default `true`); the Productos page passes `false` to hide it. The single-`<header>` landmark invariant SHALL be preserved. (MODIFIED in `ui-chrome-remove-top-header-phone-fab` — the retired top bar is no longer part of the layout order.)
@@ -314,9 +316,9 @@ The SearchForm SHALL render below `<Header />` and above the page slot inside `L
 - **WHEN** a page uses `Layout.astro` with `showSearch={false}`
 - **THEN** no `role="search"` landmark is rendered
 
-### Requirement: Submit button renders a search icon before the label
+### Requirement: Search button renders a search icon before the hidden label
 
-The submit button SHALL render a `lucide:search` icon (via `astro-icon` `<Icon>`) positioned before the submit label text in the DOM. The icon SHALL carry `aria-hidden="true"` and SHALL use a 16px size (`h-4 w-4`). On mobile (`< 640px`) the label text SHALL remain in the DOM but hidden from visual rendering, and the accessible name SHALL be provided by `aria-label="BUSCAR"`. From `sm` upward the label text SHALL be visible and the icon SHALL precede it.
+The submit button SHALL render a `lucide:search` icon (via `astro-icon` `<Icon>`) positioned before the submit label text in the DOM. The icon SHALL carry `aria-hidden="true"` and SHALL use a 16px size (`h-4 w-4`). The submit label text SHALL remain in the DOM but SHALL be visually hidden at every breakpoint (`hidden` utility, without any `sm:` variant that re-shows it), and the accessible name SHALL be provided by `aria-label="BUSCAR"`.
 
 #### Scenario: Search icon present before text label
 
@@ -330,10 +332,11 @@ The submit button SHALL render a `lucide:search` icon (via `astro-icon` `<Icon>`
 - **WHEN** the search icon renders inside the button
 - **THEN** the `<Icon>` carries class `h-4` and `w-4` (16px × 16px)
 
-#### Scenario: Mobile label is visually hidden but accessible name remains BUSCAR
+#### Scenario: Label text is visually hidden at every breakpoint
 
-- **WHEN** el search-form se renderiza en un viewport `< 640px`
+- **WHEN** el search-form se renderiza en cualquier viewport
 - **THEN** el texto `config.submitLabel` no es visible
+- **AND** el `<span>` que lo contiene lleva la utility `hidden` y NO lleva ninguna variante `sm:` que lo vuelva a mostrar
 - **AND** el botón conserva el nombre accesible `BUSCAR`
 
 ### Requirement: SearchForm inner container is constrained to 760px and centered with mobile horizontal padding

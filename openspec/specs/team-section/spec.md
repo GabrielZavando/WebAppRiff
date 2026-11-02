@@ -3,6 +3,7 @@
 ## Purpose
 Sección de equipo (Nosotros): header con título y subtítulo, tarjetas de miembros en grid responsive con foto, overlay de nombre y rol, hover que revela la foto en color con zoom 3d y respeto a reduced motion.
 ## Requirements
+
 ### Requirement: Section header renders title and subtitle
 
 The `NosotrosTeamSection` component SHALL render a centered section header composed of a main title (`<h2>`) and a subtitle paragraph (not a heading). The title SHALL read "Liderazgo & Experiencia" and SHALL use the `font-heading` family with bold weight and the `text-secondary` color token. The subtitle SHALL render the section's descriptive copy using `font-body` and the `text-text-2` color token. The header SHALL NOT contain any interactive elements.
@@ -191,3 +192,31 @@ The component SHALL use only the project's design tokens: `bg-surface-muted` for
 - **THEN** el elemento `<section>` de la sección de equipo lleva `bg-surface-muted`
 - **AND** el elemento `<section>` no lleva `bg-bg` como fondo de sección
 
+### Requirement: Team member overlay text uses a reduced font size from sm
+
+The text overlaid on the member photo SHALL use a reduced font size from the `sm` breakpoint (`>= 640px`) upward, so that the overlay occupies less space over the photograph. The member name SHALL render as `text-xl` in the base breakpoint (`< 640px`) and as `text-lg` from `sm` upward. The member role SHALL render as `text-xs` in the base breakpoint and as `text-[0.625rem]` from `sm` upward. The color, family and weight tokens of both elements SHALL remain unchanged (`text-white`, `text-primary`, `font-heading`, `font-bold` / `font-semibold`, `uppercase`, `tracking-wider`).
+
+#### Scenario: Name font size is reduced from sm upward
+
+- **WHEN** la home se carga en un viewport `>= 640px`
+- **THEN** el nombre del miembro superpuesto sobre la foto se renderiza con `sm:text-lg`
+- **AND** el nombre no se renderiza con `text-xl` a partir de `sm`
+
+#### Scenario: Role font size is reduced from sm upward
+
+- **WHEN** la home se carga en un viewport `>= 640px`
+- **THEN** el cargo superpuesto sobre la foto se renderiza con `sm:text-[0.625rem]`
+- **AND** el cargo mantiene `uppercase`, `tracking-wider`, `font-heading` y `text-primary`
+
+#### Scenario: Base breakpoint keeps the current typography
+
+- **WHEN** la home se carga en un viewport `< 640px`
+- **THEN** el nombre del miembro se renderiza con `text-xl`
+- **AND** el cargo del miembro se renderiza con `text-xs`
+
+#### Scenario: Overlay text remains legible and inside the card
+
+- **WHEN** la home se carga en un viewport `>= 640px`
+- **THEN** el nombre y el cargo permanecen legibles sobre el degradado de la tarjeta
+- **AND** el texto superpuesto no desborda la tarjeta
+- **AND** la página no provoca scroll horizontal
