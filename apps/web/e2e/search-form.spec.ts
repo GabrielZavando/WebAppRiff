@@ -73,6 +73,61 @@ test.describe('SearchForm (global search bar)', () => {
     await expect(button.locator('span')).toBeHidden();
   });
 
+  test('keeps a 256px select and a flexible input on the 640x800 tablet viewport', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 640, height: 800 });
+    await page.goto('/');
+
+    const search = page.getByRole('search', { name: 'Buscar productos' });
+    const select = search.getByRole('combobox');
+    const selectBox = await select.boundingBox();
+    const inputBox = await search.getByRole('searchbox').boundingBox();
+    const buttonBox = await search.getByRole('button', { name: 'BUSCAR' }).boundingBox();
+    expect(selectBox).toBeTruthy();
+    expect(inputBox).toBeTruthy();
+    expect(buttonBox).toBeTruthy();
+
+    // sm:w-64 keeps the select from collapsing below 256px.
+    expect(selectBox!.width).toBeGreaterThanOrEqual(255);
+    // "Todas las categorías" must not be truncated inside the select.
+    const selectOverflow = await select.evaluate((el) => el.scrollWidth - el.clientWidth);
+    expect(selectOverflow).toBeLessThanOrEqual(1);
+    // The input takes the remaining space between the select and the button.
+    expect(inputBox!.width).toBeGreaterThan(0);
+    const inputRight = inputBox!.x + inputBox!.width;
+    expect(Math.abs(inputRight - buttonBox!.x)).toBeLessThanOrEqual(2);
+    // All three controls stay on the same row without horizontal scroll.
+    const tops = [selectBox!.y, inputBox!.y, buttonBox!.y].map((y) => Math.round(y));
+    expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(4);
+  });
+
+  test('keeps the full select label on a large phone in landscape (640x375)', async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 375 });
+    await page.goto('/');
+
+    const search = page.getByRole('search', { name: 'Buscar productos' });
+    const select = search.getByRole('combobox');
+    const selectBox = await select.boundingBox();
+    const inputBox = await search.getByRole('searchbox').boundingBox();
+    const buttonBox = await search.getByRole('button', { name: 'BUSCAR' }).boundingBox();
+    expect(selectBox).toBeTruthy();
+    expect(inputBox).toBeTruthy();
+    expect(buttonBox).toBeTruthy();
+
+    // The 176px compact width only applies below sm: at 640px the select keeps
+    // sm:w-64 so "Todas las categorías" is never truncated.
+    expect(selectBox!.width).toBeGreaterThanOrEqual(255);
+    const selectOverflow = await select.evaluate((el) => el.scrollWidth - el.clientWidth);
+    expect(selectOverflow).toBeLessThanOrEqual(1);
+
+    // The compact height keeps the three controls on a single row.
+    const tops = [selectBox!.y, inputBox!.y, buttonBox!.y].map((y) => Math.round(y));
+    expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(4);
+    const searchBox = await search.boundingBox();
+    expect(searchBox!.height).toBeLessThanOrEqual(375 * 0.25);
+  });
+
   test('compacts into a single row on short viewports (height <= 400px) (responsive-web-design-fixes)', async ({
     page,
   }) => {
@@ -95,6 +150,13 @@ test.describe('SearchForm (global search bar)', () => {
     const searchBox = await search.boundingBox();
     expect(searchBox).toBeTruthy();
     expect(searchBox!.height).toBeLessThanOrEqual(320 * 0.25);
+
+    // The compact select keeps its 176px width: the flexible input must not
+    // squeeze it below the width that fits "Todas las categorías".
+    expect(selectBox!.width).toBeGreaterThanOrEqual(170);
+
+    const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(documentWidth).toBeLessThanOrEqual(568);
   });
 
   test('keeps the approved composition on landscape desktop viewports (responsive-web-design-fixes)', async ({

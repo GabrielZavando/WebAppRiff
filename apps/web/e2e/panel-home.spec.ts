@@ -194,11 +194,11 @@ test.describe('PanelHome (home about/trust panel)', () => {
 
     const panel = page.locator(PANEL_SECTION_SELECTOR);
     const rightHalf = panel.locator('div.bg-white');
-    const statsGrid = rightHalf.locator('div.grid-cols-2');
-    await expect(statsGrid).toBeVisible();
+    const statsGrid = rightHalf.locator('[data-stats-row]');
+    await expect(statsGrid).toHaveCount(2);
 
     // All 4 stat values are visible and don't overflow
-    const statValues = statsGrid.locator('p.text-secondary');
+    const statValues = rightHalf.locator('p.text-secondary');
     await expect(statValues).toHaveCount(4);
     for (let i = 0; i < 4; i++) {
       await expect(statValues.nth(i)).toBeVisible();
@@ -481,76 +481,80 @@ test.describe('PanelHome (home about/trust panel)', () => {
     await expect(stat).toHaveText('40+');
   });
 
-  test('decorative cross divider: 2x2 grid with 1px primary gap spanning edge-to-edge of the white half (6.3)', async ({
+  test('stats frame and dividers are real 1px primary borders (6.3)', async ({
     page,
   }) => {
     const wrap = page.locator(PANEL_SECTION_SELECTOR).locator('.stats-grid-wrap');
-    const grid = wrap.locator('div.grid').first();
-    const cells = grid.locator('> div');
-    await expect(cells).toHaveCount(4);
+    const grid = wrap.locator('> div.grid').first();
+    await expect(grid).toBeVisible();
 
-    // The wrapper exposes the primary colour through the 1px gap so the
-    // divider lines reach edge-to-edge of the white half.
-    const wrapBg = await wrap.evaluate(
-      (el) => window.getComputedStyle(el).backgroundColor,
-    );
-    expect(wrapBg).toBe('rgb(65, 179, 196)'); // --color-primary
-
-    // The grid uses a 1px gap (both axes).
-    const gap = await grid.evaluate((el) => {
+    // Outer frame: 1px primary on all four sides, no duplicate 2px strokes.
+    const frame = await grid.evaluate((el) => {
       const cs = window.getComputedStyle(el);
-      return { col: cs.columnGap, row: cs.rowGap };
+      return {
+        top: cs.borderTopWidth,
+        right: cs.borderRightWidth,
+        bottom: cs.borderBottomWidth,
+        left: cs.borderLeftWidth,
+        color: cs.borderTopColor,
+        colGap: cs.columnGap,
+        rowGap: cs.rowGap,
+      };
     });
-    expect(gap.col).toBe('1px');
-    expect(gap.row).toBe('1px');
+    for (const width of [frame.top, frame.right, frame.bottom, frame.left]) {
+      expect(parseFloat(width)).toBe(1);
+    }
+    expect(frame.color).toBe('rgb(65, 179, 196)');
+    // `gap: normal` computes to normal (0) when no gap utilities are present.
+    expect(['normal', '0px']).toContain(frame.colGap);
+    expect(['normal', '0px']).toContain(frame.rowGap);
 
-    // Every cell is opaque white so only the gap shows the primary colour.
+    const rows = grid.locator('[data-stats-row]');
+    await expect(rows).toHaveCount(2);
+    for (let r = 0; r < 2; r++) {
+      const row = rows.nth(r);
+      await expect(row.locator('> div')).toHaveCount(2);
+      const rowGap = await row.evaluate((el) => {
+        const cs = window.getComputedStyle(el);
+        return { col: cs.columnGap, row: cs.rowGap };
+      });
+      expect(['normal', '0px']).toContain(rowGap.col);
+      expect(['normal', '0px']).toContain(rowGap.row);
+    }
+
+    // Each row draws its 1px bottom divider (the outer frame supplies the
+    // bottom edge of the second row instead).
+    const rowDividers = await rows.evaluateAll((els) =>
+      els.map((el) => {
+        const cs = getComputedStyle(el);
+        return { bottom: cs.borderBottomWidth, color: cs.borderBottomColor };
+      }),
+    );
+    expect(parseFloat(rowDividers[0]!.bottom)).toBe(1);
+    expect(rowDividers[0]!.color).toBe('rgb(65, 179, 196)');
+    expect(parseFloat(rowDividers[1]!.bottom)).toBe(0);
+
+    // Inside each row, the left cell draws the 1px vertical divider.
+    const cells = rows.locator('> div');
+    const verticalDividers = await cells.evaluateAll((els) =>
+      els.map((el) => {
+        const cs = getComputedStyle(el);
+        return { right: cs.borderRightWidth, color: cs.borderRightColor };
+      }),
+    );
+    expect(verticalDividers[0]!.right).toBe('1px');
+    expect(verticalDividers[0]!.color).toBe('rgb(65, 179, 196)');
+    expect(verticalDividers[1]!.right).toBe('0px');
+    expect(verticalDividers[2]!.right).toBe('1px');
+    expect(verticalDividers[3]!.right).toBe('0px');
+
+    // Every cell is opaque white.
     for (let i = 0; i < 4; i++) {
       const cellBg = await cells.nth(i).evaluate(
         (el) => window.getComputedStyle(el).backgroundColor,
       );
       expect(cellBg).toBe('rgb(255, 255, 255)');
     }
-
-    // The four cells + gaps tile the wrapper: each row spans the wrapper
-    // height, each column spans the wrapper width (within sub-pixel tolerance).
-    const wrapBox = await wrap.boundingBox();
-    const boxes = await Promise.all(
-      (await cells.all()).map((c) => c.boundingBox()),
-    );
-    expect(wrapBox).toBeTruthy();
-    for (const b of boxes) {
-      expect(b).toBeTruthy();
-    }
-    // Two cells share the wrapper's width (cols 0,2 and 1,3 pair-wise) and
-    // each is roughly half the wrapper width minus the gap.
-    const expectedCol = (wrapBox!.width - 1) / 2;
-    const expectedRow = (wrapBox!.height - 1) / 2;
-    for (const b of boxes) {
-      expect(Math.abs(b!.width - expectedCol)).toBeLessThanOrEqual(1);
-      expect(Math.abs(b!.height - expectedRow)).toBeLessThanOrEqual(1);
-    }
-    // The vertical divider (gap between cols 0,1 and 2,3) spans the full
-    // height: cell 0 starts at the wrapper top and cell 2 ends at the bottom.
-    // Coordinates are absolute (viewport-relative), so subtract the wrapper
-    // origin to compare against the wrapper's own box.
-    const relY = (b: { x: number; y: number }) => ({
-      x: b.x - wrapBox!.x,
-      y: b.y - wrapBox!.y,
-    });
-    const cell0 = relY(boxes[0]!);
-    const cell1 = relY(boxes[1]!);
-    const cell2 = relY(boxes[2]!);
-    expect(cell0.y).toBeLessThanOrEqual(1);
-    expect(cell2.y + boxes[2]!.height).toBeGreaterThanOrEqual(
-      wrapBox!.height - 1,
-    );
-    // The horizontal divider (gap between rows 0,1 and 2,3) spans the full
-    // width: cell 0 starts at the wrapper left and cell 1 ends at the right.
-    expect(cell0.x).toBeLessThanOrEqual(1);
-    expect(cell1.x + boxes[1]!.width).toBeGreaterThanOrEqual(
-      wrapBox!.width - 1,
-    );
   });
 
   test('prefers-reduced-motion: counters do NOT animate (stay at SSR final value) (6.4)', async ({

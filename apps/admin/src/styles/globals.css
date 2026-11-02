@@ -83,9 +83,15 @@
   --shadow-4: 0 8px 20px rgba(22, 32, 46, .12);
   --shadow-5: 0 12px 28px rgba(22, 32, 46, .14);
 
-  /* Elevation reused by the compact header shell AND the PanelHome component
-     (documented flat-design exception — see style guide). */
-  --shadow-scroll-shell: 0 10px 30px rgba(22, 32, 46, 0.3);
+  /* ── Breakpoints (px — invariables al tamaño de fuente del navegador) ──
+       Tailwind v4 resuelve `sm:` a través de --breakpoint-sm. Por defecto
+       usa 40rem, que con root font-size ≠ 16px se desplaza (ej. 18px → 720px).
+       Los declaramos en px para que `sm` sea siempre 640px CSS. */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
 }
 
 @layer base {

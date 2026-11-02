@@ -69,7 +69,7 @@ export function getCardCta(card: string): string {
 
 /** Extracts the bottom CTA `<div class="...text-center...">` wrapper after the grid. */
 export function getBottomWrapper(html: string): string {
-  const grid = html.match(/class="[^"]*grid-cols-1[^"]*md:grid-cols-2[^"]*"/);
+  const grid = html.match(/class="[^"]*grid-cols-1[^"]*sm:grid-cols-2[^"]*"/);
   if (!grid) throw new Error('card grid not found');
   const afterGrid = html.slice(html.indexOf(grid[0]));
   const wrappers =

@@ -279,26 +279,34 @@ describe('PanelHome — elevation, counter hooks & divider (tasks 3-4)', () => {
     expect(statValueCount).toBe(expected.length);
   });
 
-  it('the stats grid is wrapped in a stats-grid-wrap container with a bg-white 2x2 grid using gap-px (TERNION divider)', async () => {
+  it('the stats half uses a bordered 2x2 container split into two divided rows', async () => {
     const html = await render();
-    // The wrapper exposes the primary colour through the 1px gap so the
-    // divider lines reach edge-to-edge of the white half of the panel.
-    // We assert the wrapper class is present and a scoped CSS rule maps it
-    // to var(--color-primary); the actual `bg-primary` Tailwind utility is
-    // intentionally NOT used on the wrapper so pre-existing E2E locators
-    // like `div.bg-primary` continue to match only the left teal half.
-    const wrapMatch = html.match(
-      /<div[^>]*class="[^"]*relative[^"]*stats-grid-wrap[^"]*"[^>]*>/,
+
+    const wrapOpen = html.match(
+      /<div[^>]*class="[^"]*relative[^"]*stats-grid-wrap[^"]*flex-1[^"]*"[^>]*>/,
     );
-    expect(wrapMatch).not.toBeNull();
+    expect(wrapOpen).not.toBeNull();
+    // The wrapper no longer paints the primary colour through a gap; the
+    // dividers are real 1px borders so they stay sharp at any zoom.
+    expect(wrapOpen![0]).not.toContain('bg-primary');
+
     const gridMatch = html.match(
-      /<div[^>]*class="[^"]*grid grid-cols-2 grid-rows-2 gap-px[^"]*"[^>]*>/,
+      /<div[^>]*class="[^"]*grid grid-rows-2 h-full w-full border border-primary divide-y divide-primary[^"]*"[^>]*>/,
     );
     expect(gridMatch).not.toBeNull();
+    expect(html).not.toContain('gap-px');
+
+    const rowMatches =
+      html.match(
+        /<div[^>]*class="[^"]*grid grid-cols-2 divide-x divide-primary[^"]*"[^>]*>/g,
+      ) ?? [];
+    expect(rowMatches).toHaveLength(2);
+    for (const row of rowMatches) {
+      expect(row).toContain('data-stats-row');
+    }
+
     // The white half carries no padding of its own (cells do) and is a
-    // flex column so the stats-grid-wrap can stretch to its full height.
-    // We assert the half-level wrapper matches these constraints and the
-    // wrapper itself uses `flex-1` so it fills the white half vertically.
+    // flex column so the stats container can stretch to its full height.
     const rightHalfOpen = html.indexOf('bg-white flex flex-col');
     expect(rightHalfOpen).toBeGreaterThanOrEqual(0);
     const rightHalfTagEnd = html.indexOf('>', rightHalfOpen);
@@ -306,13 +314,9 @@ describe('PanelHome — elevation, counter hooks & divider (tasks 3-4)', () => {
     expect(rightHalfOuter).not.toContain('p-8');
     expect(rightHalfOuter).not.toContain('p-12');
     expect(rightHalfOuter).toContain('flex flex-col');
-    const wrapOpen = html.match(
-      /<div[^>]*class="[^"]*relative[^"]*stats-grid-wrap[^"]*flex-1[^"]*"[^>]*>/,
-    );
-    expect(wrapOpen).not.toBeNull();
-    // Each cell carries the padding that used to live on the wrapper. The
-    // padding is responsive so the stat values stay inside their cell on
-    // narrow viewports (responsive-web-design-fixes).
+
+    // Each cell keeps the responsive padding so values stay inside their cell
+    // on narrow viewports.
     const cellMatches =
       html.match(
         /<div[^>]*class="[^"]*bg-white p-4 md:p-8 lg:p-12[^"]*"[^>]*>/g,

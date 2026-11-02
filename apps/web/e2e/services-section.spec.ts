@@ -85,7 +85,7 @@ test.describe('ServicesSection (home specialized services)', () => {
     await expect(desc).toBeVisible();
   });
 
-  test('grid shows 2 columns on desktop >= 768px', async ({ page }) => {
+  test('grid shows 2 columns on desktop >= 640px', async ({ page }) => {
     const cards = page.locator(`${SECTION_SELECTOR} article`);
     await expect(cards).toHaveCount(4);
 
@@ -102,7 +102,7 @@ test.describe('ServicesSection (home specialized services)', () => {
     expect(Math.abs(boxes[2]!.y - boxes[3]!.y)).toBeLessThan(2);
   });
 
-  test('grid shows 1 column on mobile < 768px', async ({ page }) => {
+  test('grid shows 1 column on mobile < 640px', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.reload();
 
@@ -118,6 +118,27 @@ test.describe('ServicesSection (home specialized services)', () => {
     for (let i = 1; i < boxes.length; i++) {
       expect(boxes[i]!.y).toBeGreaterThan(boxes[i - 1]!.y);
     }
+  });
+
+  test('grid shows exactly 2 columns at the 640px sm breakpoint', async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 800 });
+    await page.reload();
+
+    const cards = page.locator(`${SECTION_SELECTOR} article`);
+    await expect(cards).toHaveCount(4);
+    const boxes = await cards.evaluateAll((els) =>
+      els.map((el) => {
+        const r = el.getBoundingClientRect();
+        return { x: r.x, y: r.y };
+      }),
+    );
+    // 2 columns x 2 rows: cards 0/1 share a row, cards 2/3 share the next.
+    expect(boxes[0]!.y).toBeLessThan(boxes[2]!.y);
+    expect(Math.abs(boxes[0]!.y - boxes[1]!.y)).toBeLessThan(2);
+    expect(Math.abs(boxes[2]!.y - boxes[3]!.y)).toBeLessThan(2);
+    // No horizontal overflow at the breakpoint.
+    const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(documentWidth).toBeLessThanOrEqual(640);
   });
 
   test('each card has horizontal layout, full-color lazy image, h4 title, description and solid CTA', async ({

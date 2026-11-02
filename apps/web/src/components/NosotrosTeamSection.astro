@@ -17,7 +17,7 @@ const { headline, subtitle, members } = Astro.props;
       centered header: <h2> (headline) + <p> (subtitle). Exactly ONE <h2> on
       the home below HeroBanner's <h1> — member names are <span>s, NOT
       headings (design.md § Decision 3).
-    - `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3` stacks on mobile and
+    - `grid grid-cols-1 sm:grid-cols-3` stacks on mobile and
       splits into 3 columns on desktop (mockup NosotrosSection.png).
     - Each card is an <article class="relative overflow-hidden group"> whose
       height comes from `aspect-[380/502]` (matches the client photos).
@@ -75,7 +75,7 @@ const { headline, subtitle, members } = Astro.props;
     </div>
 
     <div
-      class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+      class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3"
     >
       {
         members.map((member, index) => (

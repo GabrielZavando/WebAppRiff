@@ -330,6 +330,29 @@ describe('SearchForm — responsive layout classes', () => {
     expect(getButton(html)).toContain('shrink-0');
     expect(getButton(html)).not.toContain('w-full');
   });
+
+  it('gives the select a stable 256px width from sm and lets the input take the rest', async () => {
+    const html = await render();
+    const selectWrapper = getSelectWrapper(html);
+    expect(selectWrapper).toContain('sm:w-64');
+    expect(selectWrapper).toContain('sm:shrink-0');
+    expect(selectWrapper).toContain('min-w-0');
+
+    const inputWrapper = getInputWrapper(html);
+    expect(inputWrapper).toContain('sm:flex-1');
+    expect(inputWrapper).toContain('min-w-0');
+  });
+
+  it('scopes the compact select width to short mobile viewports (< 640px)', async () => {
+    const html = await render();
+    const selectWrapper = getSelectWrapper(html);
+
+    // The 176px compact width must not override sm:w-64 on a 640x375 landscape
+    // phone, where the full "Todas las categorías" label has to stay visible.
+    expect(selectWrapper).toContain('max-sm:[@media(max-height:400px)]:w-44');
+    expect(selectWrapper).toContain('max-sm:[@media(max-height:400px)]:shrink-0');
+    expect(selectWrapper).not.toMatch(/(?<!max-sm:)\[@media\(max-height:400px\)\]:w-44/);
+  });
 });
 
 describe('SearchForm — token-based border & focus (task 8.21)', () => {

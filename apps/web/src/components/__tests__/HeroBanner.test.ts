@@ -145,11 +145,16 @@ describe('HeroBanner — CTAs', () => {
     expect(primary).toContain('text-white');
   });
 
-  it('the secondary CTA carries border-white and NOT bg-primary', async () => {
+  it('the secondary CTA is a solid white button with secondary text and a white 2px border', async () => {
     const html = await render();
     const aMatches = html.match(/<a\s[^>]*>[\s\S]*?<\/a>/g) ?? [];
     const secondary = aMatches[1]!;
+    expect(secondary).toContain('bg-white');
+    expect(secondary).toContain('text-secondary');
+    expect(secondary).toContain('border-2');
     expect(secondary).toContain('border-white');
+    expect(secondary).toContain('hover:bg-secondary');
+    expect(secondary).toContain('hover:text-white');
     expect(secondary).not.toContain('bg-primary');
   });
 
@@ -245,6 +250,9 @@ describe('HeroBanner — responsive typography & padding', () => {
     expect(html).toContain('pb-16');
     expect(html).toContain('md:pb-24');
     expect(html).toContain('lg:pb-32');
+    // Tablet keeps the content clear of the fixed contact FABs.
+    expect(html).toContain('sm:pr-24');
+    expect(html).toContain('sm:pb-32');
     // The symmetric py-* utility is retired in favour of the asymmetric split.
     expect(html).not.toContain('py-16');
     expect(html).not.toContain('md:py-24');

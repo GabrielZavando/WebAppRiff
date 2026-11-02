@@ -28,7 +28,7 @@ const { headline, description, services, cta } = Astro.props;
     - Centered header (Decision 4): `text-center` wrapper holding the <h3>
       headline and the description <p>. NO eyebrow and NO teal underline —
       that is the SolutionSection signature, deliberately not reused here.
-    - Card grid `grid-cols-1 md:grid-cols-2` (Decision 7): 1 column on
+    - Card grid `grid-cols-1 sm:grid-cols-2` (Decision 7): 1 column on
       mobile, 2 columns at >= 768px.
     - Each card is `flex flex-col sm:flex-row` (mobile-first, Decision 7):
       image stacks on top of content on mobile; from >= 640px the card is
@@ -65,8 +65,8 @@ const { headline, description, services, cta } = Astro.props;
       </p>
     </div>
 
-    <!-- Responsive card grid: 1 col mobile, 2 cols md+ -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Responsive card grid: 1 col mobile, 2 cols from sm (640px) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
       {
         services.map((service) => (
           <article class="flex flex-col sm:flex-row bg-secondary border border-secondary-light overflow-hidden">

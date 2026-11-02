@@ -66,7 +66,7 @@ test.describe('HeroBanner (home hero section)', () => {
     expect(bg).toBe('rgb(65, 179, 196)');
   });
 
-  test('ESCRÍBENOS links to /contacto with white border and no teal bg (5.6)', async ({
+  test('ESCRÍBENOS is a solid white CTA with navy text and a 2px white border (5.6)', async ({
     page,
   }) => {
     const cta = page.getByRole('link', { name: 'ESCRÍBENOS' });
@@ -75,15 +75,26 @@ test.describe('HeroBanner (home hero section)', () => {
       const cs = window.getComputedStyle(el);
       return {
         bg: cs.backgroundColor,
+        color: cs.color,
         borderColor: cs.borderTopColor,
         borderWidth: cs.borderTopWidth,
       };
     });
+    // Solid white fill + navy text for legibility over the hero photo.
+    expect(styles.bg).toBe('rgb(255, 255, 255)');
+    expect(styles.color).toBe('rgb(31, 45, 64)');
     // The `border-2 border-white` produces a 2px white border on all sides.
     expect(styles.borderColor).toBe('rgb(255, 255, 255)');
     expect(parseFloat(styles.borderWidth)).toBeGreaterThanOrEqual(2);
-    // No teal fill on the secondary CTA.
-    expect(styles.bg).not.toBe('rgb(65, 179, 196)');
+
+    // Hover inverts to navy fill + white text.
+    await cta.hover();
+    await expect
+      .poll(async () => cta.evaluate((el) => getComputedStyle(el).backgroundColor))
+      .toBe('rgb(31, 45, 64)');
+    await expect
+      .poll(async () => cta.evaluate((el) => getComputedStyle(el).color))
+      .toBe('rgb(255, 255, 255)');
   });
 
   test('stacks CTAs at 50% width and left-aligned on mobile (< 640px) (5.7)', async ({
@@ -124,6 +135,56 @@ test.describe('HeroBanner (home hero section)', () => {
     expect(Math.abs(firstBox!.y - secondBox!.y)).toBeLessThanOrEqual(4);
     // Primary on the left of secondary.
     expect(firstBox!.x).toBeLessThan(secondBox!.x);
+  });
+
+  test('hero content stays clear of the fixed contact FABs at 640x800 and 640x360', async ({
+    page,
+  }) => {
+    for (const viewport of [
+      { width: 640, height: 800 },
+      { width: 640, height: 360 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto('/');
+
+      const hero = page.locator(HERO_SECTION_SELECTOR);
+      const h1 = hero.locator('h1');
+      const subtitle = hero.locator('h2');
+      const description = hero.locator('p').first();
+      const ctas = hero.locator('a');
+      await expect(h1).toBeVisible();
+      await expect(subtitle).toBeVisible();
+      await expect(description).toBeVisible();
+      await expect(ctas).toHaveCount(2);
+
+      const fabs = page.locator('.whatsapp-fab, .phone-fab');
+      await expect(fabs).toHaveCount(2);
+      const fabBoxes = (await Promise.all([
+        page.locator('.whatsapp-fab').boundingBox(),
+        page.locator('.phone-fab').boundingBox(),
+      ])).filter((box): box is NonNullable<typeof box> => box !== null);
+      expect(fabBoxes.length).toBe(2);
+
+      const contentBoxes = (await Promise.all([
+        h1.boundingBox(),
+        subtitle.boundingBox(),
+        description.boundingBox(),
+        ctas.nth(0).boundingBox(),
+        ctas.nth(1).boundingBox(),
+      ])).filter((box): box is NonNullable<typeof box> => box !== null);
+      expect(contentBoxes.length).toBe(5);
+
+      for (const content of contentBoxes) {
+        for (const fab of fabBoxes) {
+          const overlaps =
+            content.x < fab.x + fab.width &&
+            content.x + content.width > fab.x &&
+            content.y < fab.y + fab.height &&
+            content.y + content.height > fab.y;
+          expect(overlaps, `hero content overlaps a FAB at ${viewport.width}x${viewport.height}`).toBe(false);
+        }
+      }
+    }
   });
 
   test('h1 font-size scales responsively between mobile and desktop (5.9)', async ({
