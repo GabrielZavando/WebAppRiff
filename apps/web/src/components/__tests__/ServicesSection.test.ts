@@ -148,6 +148,16 @@ describe('ServicesSection — card layout (horizontal, mobile-first)', () => {
 });
 
 describe('ServicesSection — card image (full color, lazy, alt)', () => {
+  it('each card image keeps the 5:4 aspect ratio at every breakpoint', async () => {
+    const html = await render();
+    forEachCard(html, (card) => {
+      const img = card.match(/<img[^>]*>/);
+      if (!img) throw new Error('card image not found');
+      expect(img[0]).toContain('aspect-[5/4]');
+      expect(img[0]).not.toContain('aspect-square');
+    });
+  });
+
   it('each card image is rendered full-color (no grayscale filter)', async () => {
     const html = await render();
     forEachCard(html, (card) => {
