@@ -255,6 +255,53 @@ test.describe('Responsive layout (viewport matrix)', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test('the team overlay text uses the reduced font size from sm', async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 800 });
+    await page.goto('/');
+
+    const card = page
+      .locator('section:has-text("Liderazgo & Experiencia") article')
+      .first();
+    const name = card.locator('span', { hasText: 'Ruby Barrientos' });
+    const role = card.locator('span', { hasText: 'Directora' });
+    await expect(name).toBeVisible();
+    await expect(role).toBeVisible();
+
+    // From sm the overlay text shrinks: name text-lg (18px), role 0.625rem (10px).
+    const nameSize = await name.evaluate((el) => window.getComputedStyle(el).fontSize);
+    expect(nameSize).toBe('18px');
+    const roleSize = await role.evaluate((el) => window.getComputedStyle(el).fontSize);
+    expect(roleSize).toBe('10px');
+
+    // The overlay text stays inside the card.
+    const cardBox = await card.boundingBox();
+    const nameBox = await name.boundingBox();
+    expect(cardBox).not.toBeNull();
+    expect(nameBox).not.toBeNull();
+    expect(nameBox!.x).toBeGreaterThanOrEqual(cardBox!.x - 1);
+    expect(nameBox!.x + nameBox!.width).toBeLessThanOrEqual(
+      cardBox!.x + cardBox!.width + 1,
+    );
+  });
+
+  test('the team overlay text keeps the base typography below sm', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/');
+
+    const card = page
+      .locator('section:has-text("Liderazgo & Experiencia") article')
+      .first();
+    const name = card.locator('span', { hasText: 'Ruby Barrientos' });
+    const role = card.locator('span', { hasText: 'Directora' });
+    await expect(name).toBeVisible();
+
+    // Below sm the overlay keeps text-xl (20px) and text-xs (12px).
+    const nameSize = await name.evaluate((el) => window.getComputedStyle(el).fontSize);
+    expect(nameSize).toBe('20px');
+    const roleSize = await role.evaluate((el) => window.getComputedStyle(el).fontSize);
+    expect(roleSize).toBe('12px');
+  });
+
   test('the Representations headlines stay inside the viewport', async ({ page }) => {
     for (const viewport of [
       { width: 320, height: 568 },

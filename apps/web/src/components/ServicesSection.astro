@@ -30,9 +30,11 @@ const { headline, description, services, cta } = Astro.props;
       that is the SolutionSection signature, deliberately not reused here.
     - Card grid `grid-cols-1 sm:grid-cols-2` (Decision 7): 1 column on
       mobile, 2 columns at >= 768px.
-    - Each card is `flex flex-col sm:flex-row` (mobile-first, Decision 7):
-      image stacks on top of content on mobile; from >= 640px the card is
-      horizontal (image `w-2/5` left, content `flex-1` right).
+    - Each card is `flex flex-col` at EVERY breakpoint (Decision 7): the image
+      stacks on top of the content and the card keeps the vertical order
+      image → title → description → CTA. The horizontal variant (image `w-2/5`
+      on the left) was removed in `home-sm-breakpoint-tweaks`: it squeezed the
+      description in the 640–768px range.
     - Images render in FULL COLOR — the `grayscale` filter was removed per
       the client's POST-APPLY UPDATE request (design.md § Decision 8
       superseded); only lazy-loading remains (Decision 13).
@@ -69,14 +71,14 @@ const { headline, description, services, cta } = Astro.props;
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
       {
         services.map((service) => (
-          <article class="flex flex-col sm:flex-row bg-secondary border border-secondary-light overflow-hidden">
+          <article class="flex flex-col bg-secondary border border-secondary-light overflow-hidden">
             <Image
               src={service.image}
               alt={service.imageAlt}
               widths={[400, 800]}
               sizes="(max-width: 768px) 100vw, 50vw"
               loading="lazy"
-              class="w-full sm:w-2/5 aspect-[5/4] object-cover"
+              class="w-full aspect-[5/4] object-cover"
             />
             <div class="flex-1 p-5 flex flex-col justify-between">
               <div>

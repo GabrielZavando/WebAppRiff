@@ -47,7 +47,10 @@ const { headline, subtitle, members } = Astro.props;
       margin) keeps the grid flow untouched and applies at `lg` only.
     - Name: white Montserrat bold <span>; role: uppercase Montserrat
       semibold in the primary teal token, rendered directly from the shared
-      roster. POST-APPLY: the long bio is NOT rendered in this overlay at any
+      roster. The overlay text shrinks from `sm` (>= 640px) so it covers less
+      of the photo: the name uses `text-xl sm:text-lg` and the role uses
+      `text-xs sm:text-[0.625rem]`; the base breakpoint keeps the previous
+      sizes. POST-APPLY: the long bio is NOT rendered in this overlay at any
       breakpoint — the card shows only Name and Role. The bio remains
       available on the Nosotros page (`NosotrosTeamGrid.astro`).
     - `eyebrow` is part of the props contract but NOT rendered — the mockup
@@ -97,11 +100,11 @@ const { headline, subtitle, members } = Astro.props;
             <div
               class="absolute inset-0 z-10 flex flex-col justify-end p-6"
             >
-              <span class="font-heading text-xl font-bold text-white">
+              <span class="font-heading text-xl sm:text-lg font-bold text-white">
                 {member.name}
               </span>
               <span
-                class="mt-1 font-heading text-xs font-semibold uppercase tracking-wider text-primary"
+                class="mt-1 font-heading text-xs sm:text-[0.625rem] font-semibold uppercase tracking-wider text-primary"
               >
                 {member.role}
               </span>

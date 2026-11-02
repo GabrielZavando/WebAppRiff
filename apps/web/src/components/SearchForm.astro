@@ -62,7 +62,12 @@ function isSelected(categoryId: string): boolean {
        breathing room on mobile so the form doesn't touch the screen edges;
        removed at `md` (md:px-0) so the 760px box uses its full width on desktop.
        On short viewports (height <= 400px, e.g. 568x320 landscape) the vertical
-       padding is reduced so the sticky group fits the viewport-height budget. -->
+       padding is reduced so the sticky group fits the viewport-height budget.
+       Row layout (mobile-first): below `sm` the form is a two-column grid
+       (select on its own row, input + button below); from `sm` it is a single
+       flex row where the select and the input share the free width evenly
+       (`sm:flex-1` on both) and the icon-only button stays capped at 60px
+       (`sm:max-w-[60px]`). -->
   <div class="max-w-[760px] mx-auto py-4 px-4 md:px-0 [@media(max-height:400px)]:py-2">
     <form
       method="get"
@@ -72,7 +77,7 @@ function isSelected(categoryId: string): boolean {
     >
       {
         showCategorySelect && (
-          <div class="col-span-2 w-full sm:w-64 sm:shrink-0 min-w-0 max-sm:[@media(max-height:400px)]:w-44 max-sm:[@media(max-height:400px)]:shrink-0">
+          <div class="col-span-2 w-full sm:flex-1 min-w-0 max-sm:[@media(max-height:400px)]:w-44 max-sm:[@media(max-height:400px)]:shrink-0">
             <label for={selectId} class="sr-only">Filtrar por categoría</label>
             <select
               id={selectId}
@@ -104,14 +109,16 @@ function isSelected(categoryId: string): boolean {
       <button
         type="submit"
         aria-label="BUSCAR"
-        class="flex shrink-0 items-center justify-center gap-2 h-11 px-4 sm:px-8 font-heading font-semibold uppercase text-xs tracking-wide whitespace-nowrap bg-primary hover:bg-primary-dark text-white transition-colors [@media(max-height:400px)]:h-9 [@media(max-height:400px)]:px-4"
+        class="flex shrink-0 items-center justify-center gap-2 h-11 px-4 sm:max-w-[60px] font-heading font-semibold uppercase text-xs tracking-wide whitespace-nowrap bg-primary hover:bg-primary-dark text-white transition-colors [@media(max-height:400px)]:h-9 [@media(max-height:400px)]:px-4"
       >
         <!-- Search icon (decorative: aria-hidden, accessible name is provided by
-             aria-label="BUSCAR" on mobile and by the visible label from sm upward).
-             Mobile shows the icon only; from sm the label is restored with the
-             original 8px gap and wider horizontal padding. -->
+             aria-label="BUSCAR" at every breakpoint). The button is icon-only:
+             the label text stays in the DOM (preserving the icon → label order)
+             but is hidden at every breakpoint. From sm the button is capped at
+             60px (sm:max-w-[60px]) so the freed width goes to the select and
+             the input, which split the remaining space evenly (sm:flex-1). -->
         <Icon name="lucide:search" class="h-4 w-4" aria-hidden="true" />
-        <span class="hidden sm:inline">{config.submitLabel}</span>
+        <span class="hidden">{config.submitLabel}</span>
       </button>
     </form>
   </div>

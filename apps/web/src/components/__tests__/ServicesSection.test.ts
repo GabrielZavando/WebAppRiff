@@ -119,7 +119,7 @@ describe('ServicesSection — card grid (2x2 mobile-first)', () => {
   });
 });
 
-describe('ServicesSection — card layout (horizontal, mobile-first)', () => {
+describe('ServicesSection — card layout (vertical, all breakpoints)', () => {
   it('each card carries bg-secondary, border-secondary-light, overflow-hidden', async () => {
     const html = await render();
     forEachCard(html, (card) => {
@@ -130,12 +130,27 @@ describe('ServicesSection — card layout (horizontal, mobile-first)', () => {
     });
   });
 
-  it('each card carries flex flex-col sm:flex-row', async () => {
+  it('each card is a vertical flex column (no horizontal variant from sm)', async () => {
     const html = await render();
     forEachCard(html, (card) => {
       expect(card).toContain('flex');
       expect(card).toContain('flex-col');
-      expect(card).toContain('sm:flex-row');
+      expect(card).not.toContain('sm:flex-row');
+      expect(card).not.toContain('md:flex-row');
+    });
+  });
+
+  it('each card keeps the DOM order image, title, description and CTA', async () => {
+    const html = await render();
+    forEachCard(html, (card) => {
+      const imageIndex = card.indexOf('<img');
+      const titleIndex = card.indexOf('<h4');
+      const descriptionIndex = card.indexOf('<p');
+      const ctaIndex = card.indexOf('<a ');
+      expect(imageIndex).toBeGreaterThan(-1);
+      expect(titleIndex).toBeGreaterThan(imageIndex);
+      expect(descriptionIndex).toBeGreaterThan(titleIndex);
+      expect(ctaIndex).toBeGreaterThan(descriptionIndex);
     });
   });
 
@@ -155,6 +170,16 @@ describe('ServicesSection — card image (full color, lazy, alt)', () => {
       if (!img) throw new Error('card image not found');
       expect(img[0]).toContain('aspect-[5/4]');
       expect(img[0]).not.toContain('aspect-square');
+    });
+  });
+
+  it('each card image spans the full card width (no sm:w-2/5)', async () => {
+    const html = await render();
+    forEachCard(html, (card) => {
+      const img = card.match(/<img[^>]*>/);
+      if (!img) throw new Error('card image not found');
+      expect(img[0]).toContain('w-full');
+      expect(img[0]).not.toContain('sm:w-2/5');
     });
   });
 

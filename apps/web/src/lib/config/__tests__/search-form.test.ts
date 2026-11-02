@@ -24,7 +24,7 @@ describe('getSearchFormConfig', () => {
     expect(config).toEqual({
       action: '/productos',
       submitLabel: 'BUSCAR',
-      inputPlaceholder: '¿Qué productos estás buscando?',
+      inputPlaceholder: '¿Qué estás buscando?',
       inputName: 'q',
       selectName: 'categoriaId',
     });
@@ -37,7 +37,7 @@ describe('getSearchFormConfig', () => {
     expect(config.action).toBe('/catalogo');
     // Other defaults are kept intact
     expect(config.submitLabel).toBe('BUSCAR');
-    expect(config.inputPlaceholder).toBe('¿Qué productos estás buscando?');
+    expect(config.inputPlaceholder).toBe('¿Qué estás buscando?');
     expect(config.inputName).toBe('q');
     expect(config.selectName).toBe('categoriaId');
   });

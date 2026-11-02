@@ -73,7 +73,7 @@ test.describe('SearchForm (global search bar)', () => {
     await expect(button.locator('span')).toBeHidden();
   });
 
-  test('keeps a 256px select and a flexible input on the 640x800 tablet viewport', async ({
+  test('keeps an even select/input split and a 60px icon-only button on the 640x800 tablet viewport', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 640, height: 800 });
@@ -83,14 +83,18 @@ test.describe('SearchForm (global search bar)', () => {
     const select = search.getByRole('combobox');
     const selectBox = await select.boundingBox();
     const inputBox = await search.getByRole('searchbox').boundingBox();
-    const buttonBox = await search.getByRole('button', { name: 'BUSCAR' }).boundingBox();
+    const button = search.getByRole('button', { name: 'BUSCAR' });
+    const buttonBox = await button.boundingBox();
     expect(selectBox).toBeTruthy();
     expect(inputBox).toBeTruthy();
     expect(buttonBox).toBeTruthy();
 
-    // sm:w-64 keeps the select from collapsing below 256px.
-    expect(selectBox!.width).toBeGreaterThanOrEqual(255);
+    // The icon-only button is capped at 60px (max-w-[60px]).
+    expect(buttonBox!.width).toBeLessThanOrEqual(61);
+    // The select and the input split the remaining width evenly.
+    expect(Math.abs(selectBox!.width - inputBox!.width)).toBeLessThanOrEqual(2);
     // "Todas las categorías" must not be truncated inside the select.
+    expect(selectBox!.width).toBeGreaterThanOrEqual(255);
     const selectOverflow = await select.evaluate((el) => el.scrollWidth - el.clientWidth);
     expect(selectOverflow).toBeLessThanOrEqual(1);
     // The input takes the remaining space between the select and the button.
@@ -115,8 +119,9 @@ test.describe('SearchForm (global search bar)', () => {
     expect(inputBox).toBeTruthy();
     expect(buttonBox).toBeTruthy();
 
-    // The 176px compact width only applies below sm: at 640px the select keeps
-    // sm:w-64 so "Todas las categorías" is never truncated.
+    // The 176px compact width only applies below sm: at 640px the select
+    // shares the row with the input, so "Todas las categorías" is never
+    // truncated.
     expect(selectBox!.width).toBeGreaterThanOrEqual(255);
     const selectOverflow = await select.evaluate((el) => el.scrollWidth - el.clientWidth);
     expect(selectOverflow).toBeLessThanOrEqual(1);
@@ -192,7 +197,7 @@ test.describe('SearchForm (global search bar)', () => {
     await page.goto('/');
 
     const input = page.getByRole('search', { name: 'Buscar productos' }).getByRole('searchbox');
-    await expect(input).toHaveAttribute('placeholder', '¿Qué productos estás buscando?');
+    await expect(input).toHaveAttribute('placeholder', '¿Qué estás buscando?');
   });
 
   test('uses the primary background (#41B3C4) on the BUSCAR button', async ({ page }) => {
@@ -262,7 +267,7 @@ test.describe('SearchForm (global search bar)', () => {
     expect(Math.abs(inputRight - buttonBox!.x)).toBeLessThanOrEqual(2);
   });
 
-  test('uses flex layout and wider padding on the BUSCAR button', async ({ page }) => {
+  test('uses flex layout with a compact icon-only button on the BUSCAR button', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
 
@@ -275,16 +280,25 @@ test.describe('SearchForm (global search bar)', () => {
     expect(buttonClass).toContain('justify-center');
     expect(buttonClass).toContain('gap-2');
     expect(buttonClass).toContain('px-4');
-    expect(buttonClass).toContain('sm:px-8');
+    expect(buttonClass).toContain('sm:max-w-[60px]');
+    expect(buttonClass).not.toContain('sm:px-8');
     expect(buttonClass).not.toContain('px-6');
+
+    // The "BUSCAR" text stays in the DOM but is hidden at every breakpoint.
+    await expect(button.locator('span')).toBeHidden();
+    await expect(button).toHaveAccessibleName('BUSCAR');
+
+    // The icon-only button never exceeds 60px wide.
+    const buttonBox = await button.boundingBox();
+    expect(buttonBox!.width).toBeLessThanOrEqual(61);
   });
 
-  test('uses the updated product-focused placeholder in the search input', async ({ page }) => {
+  test('uses the updated placeholder in the search input', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
 
     const input = page.getByRole('search', { name: 'Buscar productos' }).getByRole('searchbox');
-    await expect(input).toHaveAttribute('placeholder', '¿Qué productos estás buscando?');
+    await expect(input).toHaveAttribute('placeholder', '¿Qué estás buscando?');
   });
 
   test('navigates to /productos?q=...&categoriaId=... when both fields are filled', async ({
