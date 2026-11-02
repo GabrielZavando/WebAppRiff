@@ -102,7 +102,7 @@ describe('NosotrosTeamSection — header (h2 + subtitle)', () => {
   });
 });
 
-describe('NosotrosTeamSection — member cards (photo, overlay, name, role, description)', () => {
+describe('NosotrosTeamSection — member cards (photo, overlay, name, role)', () => {
   it('renders only the header with NO member cards when the members array is empty', async () => {
     const html = await render({ ...baseProps, members: [] });
     expect(getMemberCards(html)).toHaveLength(0);
@@ -130,25 +130,25 @@ describe('NosotrosTeamSection — member cards (photo, overlay, name, role, desc
     }
   });
 
-  it('renders the full description inside the overlay with the required typography', async () => {
+  it('does NOT render the description inside the overlay — only name and role (POST-APPLY)', async () => {
     const html = await render();
     for (const member of baseProps.members) {
-      const descriptionMatch = html.match(
-        new RegExp(
-          `<p[^>]*class="[^"]*"[^>]*>${escaped(member.description)}</p>`,
-        ),
-      );
-      if (!descriptionMatch) {
-        throw new Error(`description paragraph not found for ${member.name}`);
-      }
-      const paragraph = descriptionMatch[0];
-      expect(paragraph).toContain('font-body');
-      expect(paragraph).toContain('text-xs');
-      expect(paragraph).toContain('leading-relaxed');
-      expect(paragraph).toContain('text-white/90');
-      expect(paragraph).not.toContain('line-clamp');
-      expect(paragraph).not.toContain('truncate');
-      expect(paragraph).not.toContain('overflow-hidden');
+      expect(html).not.toContain(escaped(member.description));
+    }
+    const cards = getMemberCards(html);
+    for (const card of cards) {
+      expect(card).not.toContain('leading-relaxed');
+      expect(card).not.toContain('text-white/90');
+    }
+  });
+
+  it('renders exactly one name and one role per card, and no extra paragraph', async () => {
+    const html = await render();
+    const cards = getMemberCards(html);
+    expect(cards).toHaveLength(3);
+    for (const card of cards) {
+      const paragraphs = card.match(/<p[^>]*>/g) ?? [];
+      expect(paragraphs).toHaveLength(0);
     }
   });
 

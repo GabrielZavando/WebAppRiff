@@ -124,6 +124,15 @@ describe('HeroBanner — subtitle and description', () => {
     expect(p).toContain('text-white/80');
     expect(p).toContain('max-w-2xl');
   });
+
+  it('hides the description on mobile and restores it from sm (hidden sm:block)', async () => {
+    const html = await render();
+    const pMatch = html.match(/<p[^>]*>[\s\S]*?<\/p>/);
+    if (!pMatch) throw new Error('p not found');
+    const p = pMatch[0];
+    expect(p).toContain('hidden');
+    expect(p).toContain('sm:block');
+  });
 });
 
 describe('HeroBanner — CTAs', () => {
@@ -230,13 +239,24 @@ describe('HeroBanner — responsive typography & padding', () => {
     expect(h1Match[0]).toContain('uppercase');
   });
 
-  it('the <h1> has responsive text size (text-5xl base + md:text-7xl)', async () => {
+  it('the <h1> has responsive text size (text-3xl base + sm:text-4xl + md:text-6xl)', async () => {
     const html = await render();
     const clean = html.replace(/<!--[\s\S]*?-->/g, '');
     const h1Match = clean.match(/<h1[^>]*>/);
     if (!h1Match) throw new Error('h1 not found');
-    expect(h1Match[0]).toContain('text-5xl');
-    expect(h1Match[0]).toContain('md:text-7xl');
+    expect(h1Match[0]).toContain('text-3xl');
+    expect(h1Match[0]).toContain('sm:text-4xl');
+    expect(h1Match[0]).toContain('md:text-6xl');
+  });
+
+  it('the <h2> subtitle has a reduced responsive text size (text-base base + md:text-lg + lg:text-xl)', async () => {
+    const html = await render();
+    const clean = html.replace(/<!--[\s\S]*?-->/g, '');
+    const h2Match = clean.match(/<h2[^>]*>/);
+    if (!h2Match) throw new Error('h2 not found');
+    expect(h2Match[0]).toContain('text-base');
+    expect(h2Match[0]).toContain('md:text-lg');
+    expect(h2Match[0]).toContain('lg:text-xl');
   });
 
   it('the content wrapper has asymmetric vertical padding with reduced top on mobile/tablet and larger top on desktop (pt-4 / md:pt-8 / lg:pt-24)', async () => {

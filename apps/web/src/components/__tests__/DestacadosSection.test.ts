@@ -201,12 +201,13 @@ describe('DestacadosSection — card image (lazy, alt, remote URL)', () => {
     });
   });
 
-  it('each card image keeps the square aspect mat with object-contain', async () => {
+  it('each card image keeps the 5:4 aspect mat with object-contain', async () => {
     const html = await render();
     forEachCard(html, (card) => {
       const img = card.match(/<img[^>]*>/);
       if (!img) throw new Error('card image not found');
-      expect(img[0]).toContain('aspect-square');
+      expect(img[0]).toContain('aspect-[5/4]');
+      expect(img[0]).not.toContain('aspect-square');
       expect(img[0]).toContain('object-contain');
     });
   });
