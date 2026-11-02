@@ -197,40 +197,50 @@ El `panel-home` SHALL animar cada valor de estadística de `0` hasta su valor ob
 - **WHEN** `PanelStat` / `PANEL_HOME_CONTENT` se inspecciona
 - **THEN** cada elemento `stats` tiene un `numericValue` número igual al target entero de su `value` (`40`, `30000`, `5`, `9` respectivamente)
 
-### Requirement: PanelHome adornos la grid de estadísticas con un divisor en forma de más signo (+) mediante gap-px
-El `panel-home` right-half stats grid SHALL renderizar un signo decorativo `+` (más) que divide el layout 2×2 de estadísticas en cuatro cuadrantes: una línea vertical 1px en el centro horizontal (entre las dos columnas) y una línea horizontal 1px en el centro vertical (entre las dos filas), ambas en el color primario (`--color-primary`, `#41B3C4`).
+### Requirement: PanelHome renders the 2x2 stats grid with deterministic 1px dividers and a single outer border
 
-El divisor SHALL alcanzar los bordes reales superior, inferior, izquierdo y derecho de la mitad blanca del panel. Dado que el wrapper lleva `background-color: var(--color-primary)` y las cells llevan `bg-white`, con el grid configurado como `grid-cols-2 grid-rows-2 gap-px h-full w-full`, la brecha 1px entre cells expone el color primario como las líneas del divisor.
+El `panel-home` right-half stats grid SHALL renderizar un marco rectangular de 1px en el color primario (`--color-primary`, `#41B3C4`) alrededor de las cuatro celdas y dos divisores interiores de 1px (uno vertical entre columnas y uno horizontal entre filas), de modo que el resultado sea un signo `+` estable, sin bordes duplicados ni líneas de distinto grosor.
 
-El wrapper SHALL ser un elemento `relative` que se estire a la altura completa de la mitad blanca (`flex-1` dentro de un `flex flex-col` `bg-white` padre que se estira mediante `align-items: stretch` en el main `lg:grid-cols-2` grid). El padding SHALL vivir en las cells, no en el wrapper, para que nada limite las líneas del divisor desde alcanzar los bordes reales de la mitad blanca.
+La estructura SHALL ser: un wrapper `relative stats-grid-wrap flex-1` que se estira a la altura completa de la mitad blanca; dentro, un contenedor `grid grid-rows-2 h-full w-full border border-primary divide-y divide-primary`; dentro de cada fila, un `grid grid-cols-2 divide-x divide-primary` con dos celdas. Cada celda SHALL conservar `bg-white p-4 md:p-8 lg:p-12 flex flex-col justify-center min-w-0`. El componente SHALL NOT usar `gap-px` ni `grid-rows-2` con fondo primario para dibujar los divisores.
 
-Dado que el divisor se renderiza mediante CSS Grid gaps (no como elementos DOM separados), no se necesita `aria-hidden` atributo: las tecnologías asistenciales no lean gaps grid y los cuatro `<p>` de valores estadísticos permanecen sin modificar en texto y orden accesible.
+El padding SHALL vivir en las cells, no en el wrapper, para que los divisores alcancen los bordes reales de la mitad blanca. Los divisores son bordes CSS (no elementos DOM separados), por lo que no requieren `aria-hidden` y no alteran el texto ni el orden accesible de los cuatro valores y sus labels.
 
-#### Scenario: Stats grid container is relative and stretches to the white half height
+#### Scenario: Stats grid uses deterministic borders instead of gap-px
+
 - **WHEN** el PanelHome renderiza la mitad derecha
-- **THEN** la grid 2×2 de estadísticas está envuelta en un container `relative` (`stats-grid-wrap`)
-- **AND** ese container se estira a la altura completa de la mitad blanca (mediante `flex-1` + `flex flex-col` cadena anclada al main `lg:grid-cols-2` grid)
-- **AND** el grid usa `grid-cols-2 grid-rows-2 gap-px h-full w-full` para que las cells llenen el wrapper de borde a borde
+- **THEN** la grid 2×2 está envuelta en un container `relative` (`stats-grid-wrap`) que se estira a la altura completa de la mitad blanca
+- **AND** el contenedor de la grid declara `grid grid-rows-2 h-full w-full border border-primary divide-y divide-primary`
+- **AND** cada fila declara `grid grid-cols-2 divide-x divide-primary`
+- **AND** el componente no declara `gap-px` ni `grid-cols-2 grid-rows-2` con fondo primario como mecanismo de divisor
+
+#### Scenario: Internal dividers are exactly 1px and never overlap
+
+- **WHEN** el panel renderizado se inspecciona en el viewport `640×800`
+- **THEN** el borde exterior computado del marco es de 1px en el color primario
+- **AND** el divisor vertical computado entre las dos columnas es de 1px
+- **AND** el divisor horizontal computado entre las dos filas es de 1px
+- **AND** ningún par de celdas adyacentes comparte un borde duplicado de 2px
 
 #### Scenario: Divider colour resolves from the primary token
-- **WHEN** el divisor se inspecciona
-- **THEN** el background-color del wrapper se resuelve de `--color-primary` (`rgb(65, 179, 196)`)
+
+- **WHEN** los bordes y divisores se inspeccionan
+- **THEN** su color computado se resuelve de `--color-primary` (`rgb(65, 179, 196)`)
 - **AND** el background-color de las cells se resuelve a blanco (`rgb(255, 255, 255)`)
-- **AND** la brecha 1px expone el color primario como las líneas del divisor
 - **AND** ningún literal hexadecimal aparece en el source del componente para el color del divisor
 
 #### Scenario: Divider lines reach the actual edges of the white half
+
 - **WHEN** el panel renderizado se mide
-- **THEN** la cell más izquierda comienza en el borde izquierdo del wrapper (X ≈ 0, dentro de 1px)
-- **AND** la cell más derecha termina en el borde derecho del wrapper (dentro de 1px)
-- **AND** la cell más arriba comienza en el borde superior del wrapper (Y ≈ 0, dentro de 1px)
-- **AND** la cell más abajo termina en el borde inferior del wrapper (dentro de 1px)
-- **AND** tanto la línea horizontal como la vertical del divisor, por lo tanto, se extiende el ancho y altura completos de la mitad blanca
+- **THEN** la cell más izquierda comienza en el borde izquierdo del marco (dentro de 1px)
+- **AND** la cell más derecha termina en el borde derecho del marco (dentro de 1px)
+- **AND** la cell más arriba comienza en el borde superior del marco (dentro de 1px)
+- **AND** la cell más abajo termina en el borde inferior del marco (dentro de 1px)
 
 #### Scenario: Divider no impacta accesibilidad
+
 - **WHEN** el DOM renderizado se inspecciona con tecnologías asistenciales
-- **THEN** los cuatro valores `<p>` estadísticos y labels permanecen sin modificar en texto y orden accesible
-- **AND** dado que el divisor se renderiza mediante CSS Grid gaps (no como elementos DOM separados), no se requiere atributo `aria-hidden`: gaps no están expuestos al árbol de accesibilidad
+- **THEN** los cuatro valores `<p>` estadísticos y sus labels permanecen sin modificar en texto y orden accesible
+- **AND** los divisores son bordes CSS sin elementos DOM adicionales ni atributos ARIA
 
 ### Requirement: PanelHome elevates 8px above the HeroBanner via uniform negative margin-top
 El PanelHome `<section>` SHALL llevar un uniforme `-mt-2` (−8px en todos los breakpoints) de modo que la carta elevada (`.panel-home-elevated`) se superpone al borde inferior del HeroBanner por 8px en todos los breakpoints; en desktop (≥1024px) esto coloca la carta 16px más cerca del borde superior que el anterior offset positivo +8px (decisión del cliente, solo cambio desktop; móvil/tablet sin cambios a −8px). El stacking `z-10` SHALL preservarse.

@@ -61,21 +61,28 @@ The `services-section` SHALL render a header block centered horizontally (`text-
 #### Scenario: Header does NOT render a teal underline bar
 - **WHEN** the ServicesSection renders
 - **THEN** the header does NOT contain a `<div>` carrying both a short horizontal bar utility (e.g. `h-1` and `w-16`) and the teal `bg-primary` background token (the SolutionSection underline signature)
-
 ### Requirement: ServicesSection renders a responsive 2x2 grid of service cards (mobile-first)
-The `services-section` SHALL render a grid of `services` cards sized responsively mobile-first: 1 column on mobile (`< 768px`) and 2 columns at the `md` breakpoint (`>= 768px`). The grid container SHALL carry the Tailwind utility classes `grid-cols-1 md:grid-cols-2` and a consistent gap utility. The grid SHALL render exactly N `<article>` cards, where N equals the length of the `services` prop.
+The `services-section` SHALL render a grid of `services` cards sized responsively mobile-first: 1 column on mobile (`< 640px`) and 2 columns from the `sm` breakpoint (`>= 640px`). The grid container SHALL carry the Tailwind utility classes `grid-cols-1 sm:grid-cols-2` and a consistent gap utility. The grid SHALL render exactly N `<article>` cards, where N equals the length of the `services` prop.
 
 #### Scenario: Card grid uses responsive column classes (mobile-first)
+
 - **WHEN** the ServicesSection renders with 4 services
 - **THEN** the rendered card grid container carries `grid-cols-1` (mobile default)
-- **AND** the rendered card grid container carries `md:grid-cols-2` (two columns at the `md` breakpoint)
-- **AND** the rendered card grid container does NOT carry `sm:grid-cols-2` or `lg:grid-cols-4` (those belong to the SolutionSection layout, not this one)
+- **AND** the rendered card grid container carries `sm:grid-cols-2` (two columns from the `sm` breakpoint)
+- **AND** the rendered card grid container does NOT carry `md:grid-cols-2` as its first two-column breakpoint
+
+#### Scenario: Grid shows two columns at 640px
+
+- **WHEN** la home se carga en el viewport `640×800`
+- **THEN** la grilla de "Servicios especializados" muestra exactamente 2 columnas
+- **AND** las tarjetas quedan contenidas dentro del ancho del viewport sin scroll horizontal
+- **AND** el texto de cada tarjeta no desborda su tarjeta
 
 #### Scenario: Grid renders exactly N cards matching the services prop length
+
 - **WHEN** the ServicesSection renders with `services` of length 4
 - **THEN** the card grid contains exactly 4 `<article>` elements
 - **AND** each `<article>` contains the image, title, description and CTA elements described in the per-card requirements
-
 ### Requirement: Each ServicesSection card is a horizontal layout (image left, content right) with mobile fallback
 Each card SHALL be an `<article>` carrying the flex layout utilities: `flex flex-col` by default (mobile — image stacks above content, full width) and `sm:flex-row` at `>= 640px` (image `w-2/5` on the left, content `flex-1` on the right — the mockup layout). The card SHALL have a `bg-secondary` background, a 1px `border` with the `border-secondary-light` token, and an `overflow-hidden` to clip the image cleanly. The card SHALL NOT apply any `shadow*` utility in its static state (flat design — shadows are reserved for floating layers per the style guide).
 
