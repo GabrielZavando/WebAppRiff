@@ -264,6 +264,31 @@ describe('NosotrosTeamSection — gradient overlay and hover interaction (POST-A
   });
 });
 
+describe('NosotrosTeamSection — overlay typography (reduced font size from sm)', () => {
+  it('the member name uses text-xl in the base breakpoint and sm:text-lg from sm', async () => {
+    const html = await render();
+    const nameMatches = html.match(/<span[^>]*text-white[^>]*>[\s\S]*?<\/span>/g) ?? [];
+    expect(nameMatches).toHaveLength(3);
+    for (const span of nameMatches) {
+      expect(span).toContain('text-xl');
+      expect(span).toContain('sm:text-lg');
+      expect(span).toContain('font-heading');
+    }
+  });
+
+  it('the member role uses text-xs in the base breakpoint and sm:text-[0.625rem] from sm', async () => {
+    const html = await render();
+    const roleMatches = html.match(/<span[^>]*text-primary[^>]*>[\s\S]*?<\/span>/g) ?? [];
+    expect(roleMatches).toHaveLength(3);
+    for (const span of roleMatches) {
+      expect(span).toContain('text-xs');
+      expect(span).toContain('sm:text-[0.625rem]');
+      expect(span).toContain('uppercase');
+      expect(span).toContain('tracking-wider');
+    }
+  });
+});
+
 describe('NosotrosTeamSection — center card lowered on desktop (POST-APPLY FIX #2)', () => {
   it('the second card (index 1) carries lg:translate-y-8; first and third do not', async () => {
     const cards = getMemberCards(await render());

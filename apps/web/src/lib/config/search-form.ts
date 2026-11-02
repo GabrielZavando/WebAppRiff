@@ -12,7 +12,7 @@ import type { SearchFormConfig } from '@/lib/types/search-form';
 export const SEARCH_FORM_DEFAULTS: Readonly<SearchFormConfig> = {
   action: '/productos',
   submitLabel: 'BUSCAR',
-  inputPlaceholder: '¿Qué productos estás buscando?',
+  inputPlaceholder: '¿Qué estás buscando?',
   inputName: 'q',
   selectName: 'categoriaId',
 };

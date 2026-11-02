@@ -141,7 +141,7 @@ test.describe('ServicesSection (home specialized services)', () => {
     expect(documentWidth).toBeLessThanOrEqual(640);
   });
 
-  test('each card has horizontal layout, full-color lazy image, h4 title, description and solid CTA', async ({
+  test('each card has a vertical layout, full-color lazy image, h4 title, description and solid CTA', async ({
     page,
   }) => {
     const section = page.locator(SECTION_SELECTOR);
@@ -192,6 +192,44 @@ test.describe('ServicesSection (home specialized services)', () => {
     expect(linkCls).toContain('px-6');
     expect(linkCls).toContain('py-3');
     await expect(link).toHaveCSS('border-radius', '0px');
+  });
+
+  test('each card stacks image, title, description and CTA vertically at 640x800', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 640, height: 800 });
+    await page.reload();
+
+    const firstCard = page.locator(`${SECTION_SELECTOR} article`).first();
+    const img = firstCard.locator('img').first();
+    const title = firstCard.locator('h4').first();
+    const description = firstCard.locator('p').first();
+    const cta = firstCard.getByRole('link', { name: /Ver detalles/ }).first();
+
+    const cardBox = await firstCard.boundingBox();
+    const imgBox = await img.boundingBox();
+    const titleBox = await title.boundingBox();
+    const descBox = await description.boundingBox();
+    const ctaBox = await cta.boundingBox();
+    expect(cardBox).toBeTruthy();
+    expect(imgBox).toBeTruthy();
+    expect(titleBox).toBeTruthy();
+    expect(descBox).toBeTruthy();
+    expect(ctaBox).toBeTruthy();
+
+    // Vertical order: image → title → description → CTA.
+    expect(imgBox!.y).toBeLessThan(titleBox!.y);
+    expect(titleBox!.y).toBeLessThan(descBox!.y);
+    expect(descBox!.y).toBeLessThan(ctaBox!.y);
+
+    // The image spans the full card width and keeps the 5:4 ratio.
+    expect(Math.abs(imgBox!.width - cardBox!.width)).toBeLessThanOrEqual(3);
+    expect(imgBox!.width / imgBox!.height).toBeGreaterThan(1.2);
+    expect(imgBox!.width / imgBox!.height).toBeLessThan(1.3);
+
+    // No horizontal overflow at the breakpoint.
+    const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(documentWidth).toBeLessThanOrEqual(640);
   });
 
   test('renders the centered bottom CTA "Ver todos los servicios" linking to /servicios', async ({

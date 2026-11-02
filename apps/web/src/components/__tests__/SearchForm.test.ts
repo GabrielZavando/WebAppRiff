@@ -167,7 +167,7 @@ describe('SearchForm — search input', () => {
     const input = getInput(html);
     expect(input).toContain('type="search"');
     expect(input).toContain('name="q"');
-    expect(input).toContain('placeholder="¿Qué productos estás buscando?"');
+    expect(input).toContain('placeholder="¿Qué estás buscando?"');
   });
 
   it('has a <label for="<input-id>"> with non-empty text', async () => {
@@ -203,7 +203,7 @@ describe('SearchForm — submit button', () => {
     expect(button).toContain('BUSCAR');
   });
 
-  it('uses flex layout for icon+text alignment with compact mobile and wider sm padding', async () => {
+  it('uses flex layout for the icon alignment with compact padding at every breakpoint', async () => {
     const html = await render();
     const button = getButton(html);
     expect(button).toContain('flex');
@@ -211,15 +211,24 @@ describe('SearchForm — submit button', () => {
     expect(button).toContain('justify-center');
     expect(button).toContain('gap-2');
     expect(button).toContain('px-4');
-    expect(button).toContain('sm:px-8');
+    expect(button).not.toContain('sm:px-8');
     expect(button).not.toContain('px-6');
   });
 
-  it('shows only the icon on mobile while exposing the BUSCAR accessible name', async () => {
+  it('caps the icon-only button at 60px wide from sm', async () => {
+    const html = await render();
+    const button = getButton(html);
+    expect(button).toContain('sm:max-w-[60px]');
+  });
+
+  it('shows only the icon at every breakpoint while exposing the BUSCAR accessible name', async () => {
     const html = await render();
     const button = getButton(html);
     expect(button).toContain('aria-label="BUSCAR"');
-    expect(button).toMatch(/<span class="hidden sm:inline">BUSCAR<\/span>/);
+    // The label stays in the DOM (order contract) but is hidden at every
+    // breakpoint: no `sm:` variant may re-show it.
+    expect(button).toMatch(/<span class="hidden">BUSCAR<\/span>/);
+    expect(button).not.toContain('sm:inline');
     expect(button).toContain('shrink-0');
     expect(button).not.toContain('w-full');
   });
@@ -331,12 +340,15 @@ describe('SearchForm — responsive layout classes', () => {
     expect(getButton(html)).not.toContain('w-full');
   });
 
-  it('gives the select a stable 256px width from sm and lets the input take the rest', async () => {
+  it('splits the remaining width evenly between the select and the input from sm', async () => {
     const html = await render();
     const selectWrapper = getSelectWrapper(html);
-    expect(selectWrapper).toContain('sm:w-64');
-    expect(selectWrapper).toContain('sm:shrink-0');
+    // Equitable split: both containers grow from a zero basis (`flex-1`) and
+    // may shrink below their content width (`min-w-0`).
+    expect(selectWrapper).toContain('sm:flex-1');
     expect(selectWrapper).toContain('min-w-0');
+    expect(selectWrapper).not.toContain('sm:w-64');
+    expect(selectWrapper).not.toContain('sm:shrink-0');
 
     const inputWrapper = getInputWrapper(html);
     expect(inputWrapper).toContain('sm:flex-1');
