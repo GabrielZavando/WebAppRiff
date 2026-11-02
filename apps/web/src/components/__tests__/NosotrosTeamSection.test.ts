@@ -54,11 +54,13 @@ describe('NosotrosTeamSection — structure & outermost section', () => {
     expect(section).not.toContain('bg-bg');
   });
 
-  it('the <section> contains the responsive grid: grid-cols-1 md:grid-cols-2 lg:grid-cols-3', async () => {
+  it('the <section> contains the responsive grid: grid-cols-1 sm:grid-cols-3', async () => {
     const html = await render();
     expect(html).toMatch(
-      /class="[^"]*\bgrid-cols-1\b[^"]*\bmd:grid-cols-2\b[^"]*\blg:grid-cols-3\b[^"]*"/,
+      /class="[^"]*\bgrid-cols-1\b[^"]*\bsm:grid-cols-3\b[^"]*"/,
     );
+    // sm is the first multi-column breakpoint; the old md step is gone.
+    expect(html).not.toContain('md:grid-cols-2');
   });
 
   it('renders exactly 3 member cards (the featured roster)', async () => {

@@ -72,7 +72,7 @@ function isSelected(categoryId: string): boolean {
     >
       {
         showCategorySelect && (
-          <div class="col-span-2 w-full sm:w-56 min-w-0 [@media(max-height:400px)]:w-44">
+          <div class="col-span-2 w-full sm:w-64 sm:shrink-0 min-w-0 max-sm:[@media(max-height:400px)]:w-44 max-sm:[@media(max-height:400px)]:shrink-0">
             <label for={selectId} class="sr-only">Filtrar por categoría</label>
             <select
               id={selectId}

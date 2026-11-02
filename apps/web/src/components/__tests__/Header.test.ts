@@ -49,22 +49,26 @@ describe('Header', () => {
     expect(html).not.toContain('logo-web.webp');
     expect(html).toContain('width="330"');
     expect(html).toContain('height="166"');
-    // Responsive caps preserve the previous rendered heights: 160px on
-    // mobile, 240px from the sm breakpoint upward.
+    // Responsive caps: 160px on mobile, 240px from sm upward. From sm the
+    // logo height stays capped by the 96px inner bar (sm:h-24), and only the
+    // lg breakpoint lifts the cap for the accepted desktop 2× overflow.
     expect(html).toContain('w-full');
     expect(html).toContain('max-w-[160px]');
     expect(html).toContain('sm:max-w-[240px]');
-    // Wrapper height is responsive (h-16 on mobile/tablet, h-20 on desktop)
-    // and the logo is height-capped so it cannot grow the header.
+    expect(html).toContain('max-h-full');
+    expect(html).toContain('lg:max-h-none');
+    expect(html).not.toContain('sm:max-h-none');
+    // Wrapper height is responsive (h-16 mobile, sm:h-24 tablet, lg:h-20
+    // desktop) and the logo is height-capped so it cannot grow the header.
     expect(html).toContain('h-16');
+    expect(html).toContain('sm:h-24');
     expect(html).toContain('lg:h-20');
     expect(html).not.toContain('lg:h-24');
-    expect(html).toContain('max-h-full');
-    // The height cap is lifted from sm (640px) upward so the desktop compact
-    // state can hold the logo at its 100px-tall contract (LOGO-SIZE), instead
-    // of only at lg (1024px) as before.
-    expect(html).toContain('sm:max-h-none');
-    expect(html).not.toContain('lg:max-h-none');
+    // From sm the link is a flex container that centers the logo vertically;
+    // lg:block restores the accepted top-aligned desktop overflow.
+    expect(html).toContain('sm:flex');
+    expect(html).toContain('sm:items-center');
+    expect(html).toContain('lg:block');
     // The <a> wrapper constrains height with overflow-visible so the
     // oversized logo may visually overflow without growing the header container.
     expect(html).toContain('overflow-visible');
@@ -217,7 +221,10 @@ describe('Header', () => {
     expect(toggleAttrs).toContain('fixed');
     expect(toggleAttrs).toContain('z-50');
     expect(toggleAttrs).toContain('top-5');
+    expect(toggleAttrs).toContain('sm:top-9');
     expect(toggleAttrs).toContain('lg:top-6');
+    expect(toggleAttrs).toContain('max-sm:[@media(max-height:400px)]:top-1');
+    expect(toggleAttrs).not.toMatch(/(?<!max-sm:)\[@media\(max-height:400px\)\]:top-1/);
     expect(html).toContain('aria-expanded="false"');
     expect(html).toContain('aria-controls="mobile-nav"');
     expect(html).toContain('aria-label="Abrir menú"');
@@ -244,15 +251,25 @@ describe('Header', () => {
     expect(html).not.toContain('xl:max-w-');
   });
 
-  it('compacts the header vertical rhythm on short viewports (height <= 400px)', async () => {
+  it('compacts the header vertical rhythm on short mobile viewports (< 640px, height <= 400px)', async () => {
     const html = await render();
     const headerTag = html.match(/<header[^>]*>/)?.[0] ?? '';
     const innerTag = html.match(/<div[^>]*site-header__inner[^>]*>/)?.[0] ?? '';
+    const logoLinkTag = html.match(/<a href="\/" aria-label="Ir al inicio"[^>]*>/)?.[0] ?? '';
 
-    // Short viewports (e.g. 568x320 landscape) collapse the vertical padding
-    // and the inner bar height so the sticky group fits the viewport-height budget.
-    expect(headerTag).toContain('[@media(max-height:400px)]:py-0');
-    expect(innerTag).toContain('[@media(max-height:400px):h-12]');
+    // Short viewports below sm (e.g. 568x320 landscape) collapse the vertical
+    // padding and the inner bar height so the sticky group fits the
+    // viewport-height budget. The compact rules are scoped with `max-sm:` so a
+    // 640x375 landscape phone keeps the tablet header (sm:h-24) and its logo.
+    expect(headerTag).toContain('max-sm:[@media(max-height:400px)]:py-0');
+    expect(innerTag).toContain('max-sm:[@media(max-height:400px)]:h-12');
+    expect(logoLinkTag).toContain('max-sm:[@media(max-height:400px)]:h-12');
+    expect(logoLinkTag).toContain('max-sm:[@media(max-height:400px)]:max-w-[100px]');
+    expect(innerTag).not.toContain('[@media(max-height:400px):h-12]');
+    // The compact media query must never appear unscoped (an unscoped variant
+    // would override the sm tablet header at 640x375).
+    expect(headerTag).not.toMatch(/(?<!max-sm:)\[@media\(max-height:400px\)\]:py-0/);
+    expect(innerTag).not.toMatch(/(?<!max-sm:)\[@media\(max-height:400px\)\]:h-12/);
   });
 
   it('renders the header with data-menu-open state attribute for CSS-driven overlay', async () => {
@@ -408,6 +425,7 @@ describe('Header', () => {
       expect(headerTag).not.toContain('pb-4');
       expect(headerTag).not.toContain('pb-10');
       expect(innerTag).toContain('h-16');
+      expect(innerTag).toContain('sm:h-24');
       expect(innerTag).toContain('lg:h-20');
     });
 
@@ -421,6 +439,8 @@ describe('Header', () => {
       expect(logoLink).not.toContain('mx-auto');
       expect(logoLink).not.toContain('justify-center');
       expect(logoLink).toContain('overflow-visible');
+      expect(logoLink).toContain('sm:flex');
+      expect(logoLink).toContain('sm:items-center');
     });
   });
 

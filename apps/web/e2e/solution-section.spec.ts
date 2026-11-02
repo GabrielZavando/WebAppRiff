@@ -126,6 +126,25 @@ test.describe('SolutionSection (home portfolio grid)', () => {
     expect(Math.abs(boxes[2]!.y - boxes[3]!.y)).toBeLessThan(2);
   });
 
+  test('grid shows exactly 2 columns at the 640px sm breakpoint (5.3b)', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 640, height: 800 });
+    await page.reload();
+
+    const cards = page.locator(`${SECTION_SELECTOR} article`);
+    await expect(cards).toHaveCount(4);
+    const boxes = await cards.evaluateAll((els) =>
+      els.map((el) => {
+        const r = el.getBoundingClientRect();
+        return { x: r.x, y: r.y };
+      }),
+    );
+    expect(boxes[0]!.y).toBeLessThan(boxes[2]!.y);
+    expect(Math.abs(boxes[0]!.y - boxes[1]!.y)).toBeLessThan(2);
+    expect(Math.abs(boxes[2]!.y - boxes[3]!.y)).toBeLessThan(2);
+  });
+
   test('grid shows 1 column on mobile < 640px (5.4)', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.reload();
@@ -398,6 +417,34 @@ test.describe('DestacadosSection (home featured products grid)', () => {
       expect(boxes[i]!.x).toBeGreaterThan(boxes[i - 1]!.x);
     }
     expect(boxes[4]!.y).toBeGreaterThan(boxes[0]!.y);
+  });
+
+  test('tablet grid shows exactly 2 columns at 640x800 (6.1)', async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 800 });
+    await page.reload();
+
+    const section = page.locator(FEATURED_SELECTOR);
+    await expect(section).toBeVisible();
+    const cards = section.locator('article');
+    await expect(cards).toHaveCount(FEATURED_COUNT);
+
+    const boxes = await cards.evaluateAll((els) =>
+      els.map((el) => {
+        const r = el.getBoundingClientRect();
+        return { x: r.x, y: r.y };
+      }),
+    );
+    // 2 columns: each pair shares a row and the next pair starts lower.
+    for (let i = 0; i + 1 < boxes.length; i += 2) {
+      expect(Math.abs(boxes[i]!.y - boxes[i + 1]!.y)).toBeLessThan(2);
+      expect(boxes[i + 1]!.x).toBeGreaterThan(boxes[i]!.x);
+    }
+    for (let i = 2; i < boxes.length; i += 2) {
+      expect(boxes[i]!.y).toBeGreaterThan(boxes[i - 2]!.y);
+    }
+
+    const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(documentWidth).toBeLessThanOrEqual(640);
   });
 
   test('first card renders the lazy remote galeria image (6.1)', async ({

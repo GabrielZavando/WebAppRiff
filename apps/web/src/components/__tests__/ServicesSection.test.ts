@@ -92,24 +92,24 @@ describe('ServicesSection — header (centered, no eyebrow, no underline)', () =
 });
 
 describe('ServicesSection — card grid (2x2 mobile-first)', () => {
-  it('renders a card grid with grid-cols-1 md:grid-cols-2 and a gap utility', async () => {
+  it('renders a card grid with grid-cols-1 sm:grid-cols-2 and a gap utility', async () => {
     const html = await render();
     const gridMatch = html.match(
-      /class="[^"]*grid-cols-1[^"]*md:grid-cols-2[^"]*"/,
+      /class="[^"]*grid-cols-1[^"]*sm:grid-cols-2[^"]*"/,
     );
     if (!gridMatch) throw new Error('card grid not found');
     expect(gridMatch[0]).toContain('grid-cols-1');
-    expect(gridMatch[0]).toContain('md:grid-cols-2');
+    expect(gridMatch[0]).toContain('sm:grid-cols-2');
     expect(gridMatch[0]).toMatch(/gap-\d+/);
   });
 
-  it('the card grid does NOT carry sm:grid-cols-2 or lg:grid-cols-4 (SolutionSection layout)', async () => {
+  it('the card grid does NOT carry md:grid-cols-2 or lg:grid-cols-4 (SolutionSection layout)', async () => {
     const html = await render();
     const gridMatch = html.match(
-      /class="[^"]*grid-cols-1[^"]*md:grid-cols-2[^"]*"/,
+      /class="[^"]*grid-cols-1[^"]*sm:grid-cols-2[^"]*"/,
     );
     if (!gridMatch) throw new Error('card grid not found');
-    expect(gridMatch[0]).not.toContain('sm:grid-cols-2');
+    expect(gridMatch[0]).not.toContain('md:grid-cols-2');
     expect(gridMatch[0]).not.toContain('lg:grid-cols-4');
   });
 

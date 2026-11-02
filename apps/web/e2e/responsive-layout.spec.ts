@@ -24,6 +24,8 @@ const VIEWPORTS = [
   { width: 320, height: 568 },
   { width: 375, height: 667 },
   { width: 568, height: 320 },
+  { width: 640, height: 360 },
+  { width: 640, height: 800 },
   { width: 768, height: 1024 },
   { width: 1024, height: 768 },
   { width: 1204, height: 800 },
@@ -179,6 +181,27 @@ test.describe('Responsive layout (viewport matrix)', () => {
     expect(searchBox!.height).toBeLessThanOrEqual(320 * 0.25);
   });
 
+  test('the large phone landscape keeps the tablet header inside the sticky budget', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 640, height: 375 });
+    await page.goto('/');
+
+    // Below sm the compact h-12 header applies; at 640px the tablet header
+    // (112px) must survive and still leave the sticky group under 50%.
+    const banner = page.getByRole('banner');
+    const headerBox = await banner.boundingBox();
+    expect(headerBox).not.toBeNull();
+    expect(headerBox!.height).toBeGreaterThanOrEqual(110);
+
+    const shell = page.locator('.header-scroll-shell');
+    const shellBox = await shell.boundingBox();
+    expect(shellBox).not.toBeNull();
+    expect(shellBox!.height).toBeLessThanOrEqual(375 * 0.5);
+
+    await expectNoHorizontalOverflow(page);
+  });
+
   test('the home hero headline and the panel stat cells stay inside the viewport', async ({
     page,
   }) => {
@@ -199,6 +222,37 @@ test.describe('Responsive layout (viewport matrix)', () => {
       await expectNoTextOverflow(page, statValue);
       await expectWithinViewport(page, statValue);
     }
+  });
+
+  test('the team grid shows 3 columns at 640x800 without horizontal overflow', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 640, height: 800 });
+    await page.goto('/');
+
+    const grid = page
+      .locator('section:has-text("Liderazgo & Experiencia") div[class*="sm:grid-cols-3"]')
+      .first();
+    await expect(grid).toBeVisible();
+
+    const cards = grid.locator('article');
+    await expect(cards).toHaveCount(3);
+    const boxes = await cards.evaluateAll((els) =>
+      els.map((el) => {
+        const r = el.getBoundingClientRect();
+        return { x: r.x, y: r.y, width: r.width };
+      }),
+    );
+    // 3 columns in a single row at the sm breakpoint.
+    for (let i = 1; i < boxes.length; i++) {
+      expect(Math.abs(boxes[i]!.y - boxes[0]!.y)).toBeLessThan(2);
+      expect(boxes[i]!.x).toBeGreaterThan(boxes[i - 1]!.x);
+    }
+    for (const box of boxes) {
+      expect(box.x).toBeGreaterThanOrEqual(-OVERFLOW_TOLERANCE);
+      expect(box.x + box.width).toBeLessThanOrEqual(640 + OVERFLOW_TOLERANCE);
+    }
+    await expectNoHorizontalOverflow(page);
   });
 
   test('the Representations headlines stay inside the viewport', async ({ page }) => {

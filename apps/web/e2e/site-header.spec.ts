@@ -147,6 +147,71 @@ test.describe('Site header (main navigation)', () => {
     await expect(page.locator('#mobile-nav')).toBeVisible();
   });
 
+  test('keeps the logo larger than the mobile cap with 8px of air at 640x800', async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 800 });
+    await page.goto('/');
+
+    const banner = page.getByRole('banner');
+    const headerBox = await banner.boundingBox();
+    const logo = banner.getByRole('link', { name: 'Ir al inicio' }).locator('img');
+    const logoBox = await logo.boundingBox();
+    expect(headerBox).toBeTruthy();
+    expect(logoBox).toBeTruthy();
+
+    // The tablet bar renders the logo wider than the 160px mobile cap.
+    expect(logoBox!.width).toBeGreaterThan(160);
+
+    // The 8px vertical padding of the header keeps clearance above and below.
+    expect(logoBox!.y - headerBox!.y).toBeGreaterThanOrEqual(8);
+    const bottomAir = headerBox!.y + headerBox!.height - (logoBox!.y + logoBox!.height);
+    expect(bottomAir).toBeGreaterThanOrEqual(8);
+
+    // No horizontal overflow at the sm breakpoint.
+    const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(documentWidth).toBeLessThanOrEqual(640);
+    expect(headerBox!.width).toBeLessThanOrEqual(640);
+  });
+
+  test('keeps the tablet header on a large phone in landscape (640x375)', async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 375 });
+    await page.goto('/');
+
+    const banner = page.getByRole('banner');
+    const headerBox = await banner.boundingBox();
+    const logo = banner.getByRole('link', { name: 'Ir al inicio' }).locator('img');
+    const logoBox = await logo.boundingBox();
+    expect(headerBox).toBeTruthy();
+    expect(logoBox).toBeTruthy();
+
+    // The compact max-height:400px rules only apply below sm, so the 112px
+    // tablet header (py-2 + sm:h-24) must survive on a 640px-wide landscape.
+    expect(headerBox!.height).toBeGreaterThanOrEqual(110);
+    expect(headerBox!.height).toBeLessThanOrEqual(114);
+    expect(logoBox!.width).toBeGreaterThan(160);
+    expect(logoBox!.y - headerBox!.y).toBeGreaterThanOrEqual(8);
+    const bottomAir = headerBox!.y + headerBox!.height - (logoBox!.y + logoBox!.height);
+    expect(bottomAir).toBeGreaterThanOrEqual(8);
+
+    const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(documentWidth).toBeLessThanOrEqual(640);
+  });
+
+  test('keeps the compact header on a small phone in landscape (568x320)', async ({ page }) => {
+    await page.setViewportSize({ width: 568, height: 320 });
+    await page.goto('/');
+
+    const banner = page.getByRole('banner');
+    const headerBox = await banner.boundingBox();
+    const logo = banner.getByRole('link', { name: 'Ir al inicio' }).locator('img');
+    const logoBox = await logo.boundingBox();
+    expect(headerBox).toBeTruthy();
+    expect(logoBox).toBeTruthy();
+
+    // Below sm the short-viewport compaction still collapses the header.
+    expect(headerBox!.height).toBeLessThanOrEqual(48);
+    expect(logoBox!.width).toBeLessThanOrEqual(100);
+  });
+
   test('serves the /cotizacion CTA destination page', async ({ page }) => {
     await page.goto('/cotizacion');
 
