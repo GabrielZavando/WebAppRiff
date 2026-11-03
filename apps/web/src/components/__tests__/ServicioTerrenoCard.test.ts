@@ -11,11 +11,10 @@ const third = services[2]!;
 
 async function render(
   props: Partial<ServicioTerreno> = {},
-  imagePosition: 'left' | 'right' = 'left',
 ): Promise<string> {
   const container = await AstroContainer.create();
   return container.renderToString(ServicioTerrenoCard, {
-    props: { ...first, imagePosition, ...props },
+    props: { ...first, ...props },
   });
 }
 
@@ -73,25 +72,53 @@ describe('ServicioTerrenoCard — index, sector, title and description', () => {
 });
 
 describe('ServicioTerrenoCard — layout', () => {
-  it('uses a 12-column grid from md', async () => {
+  it('renders a single vertical column from md without a 12-column grid', async () => {
     const html = stripComments(await render());
-    expect(html).toContain('md:grid-cols-12');
+    const article = html.match(/<article[^>]*>/);
+    expect(article).not.toBeNull();
+    expect(article![0]).toContain('flex flex-col');
+    expect(article![0]).not.toContain('md:grid-cols-12');
+    expect(html).not.toContain('md:col-span-');
   });
 
-  it('puts the image first on md when imagePosition is left', async () => {
-    const html = stripComments(await render({}, 'left'));
+  it('orders header, image and body top-to-bottom from md', async () => {
+    const html = stripComments(await render());
+    const header = html.match(/<div[^>]*data-service-header[^>]*>/);
     const image = html.match(/<div[^>]*data-service-image[^>]*>/);
     const content = html.match(/<div[^>]*data-service-content[^>]*>/);
-    expect(image![0]).toContain('md:order-1');
-    expect(content![0]).toContain('md:order-2');
-  });
-
-  it('puts the image last on md when imagePosition is right', async () => {
-    const html = stripComments(await render({}, 'right'));
-    const image = html.match(/<div[^>]*data-service-image[^>]*>/);
-    const content = html.match(/<div[^>]*data-service-content[^>]*>/);
+    expect(header).not.toBeNull();
+    expect(image).not.toBeNull();
+    expect(content).not.toBeNull();
+    expect(header![0]).toContain('order-2');
+    expect(header![0]).toContain('md:order-1');
+    expect(image![0]).toContain('order-1');
     expect(image![0]).toContain('md:order-2');
-    expect(content![0]).toContain('md:order-1');
+    expect(content![0]).toContain('order-3');
+    expect(content![0]).toContain('md:order-3');
+  });
+
+  it('renders a full-width 16:9 image without distortion', async () => {
+    const html = stripComments(await render());
+    const image = html.match(/<div[^>]*data-service-image[^>]*>/);
+    const img = html.match(/<img[^>]*>/);
+    expect(image).not.toBeNull();
+    expect(img).not.toBeNull();
+    expect(image![0]).toContain('w-full');
+    expect(image![0]).toContain('md:aspect-video');
+    expect(img![0]).toContain('object-cover');
+    expect(img![0]).toContain('h-full');
+    expect(img![0]).toContain('w-full');
+  });
+
+  it('places the CTA after the description with space reserved for the FABs', async () => {
+    const html = stripComments(await render());
+    const cta = html.match(/<div[^>]*data-service-cta[^>]*>/);
+    expect(cta).not.toBeNull();
+    expect(cta![0]).toContain('md:pr-24');
+    const descriptionIndex = html.indexOf('data-service-description');
+    const ctaIndex = html.indexOf('data-service-cta');
+    expect(descriptionIndex).toBeGreaterThan(-1);
+    expect(ctaIndex).toBeGreaterThan(descriptionIndex);
   });
 });
 

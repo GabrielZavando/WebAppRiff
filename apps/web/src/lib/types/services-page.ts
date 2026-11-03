@@ -43,7 +43,7 @@ export interface ServicioSpec {
 }
 
 /**
- * One row of the "Nuestras Soluciones — Portafolio Técnico" section.
+ * One row of the "Nuestros Productos — Portafolio Técnico" section.
  *
  * `icon` is a full Iconify name restricted to the Lucide set (e.g.
  * `lucide:gauge`). `id` is the scroll anchor of the row.
@@ -141,12 +141,6 @@ export interface ServicioTerreno {
   readonly ctaLabel: string;
   /** CTA destination; `/contacto` for this page. */
   readonly ctaHref: string;
-}
-
-/** Props accepted by `ServicioTerrenoCard.astro`. */
-export interface ServicioTerrenoCardProps extends ServicioTerreno {
-  /** Image side in the desktop grid: `left` or `right`. */
-  readonly imagePosition: 'left' | 'right';
 }
 
 /** Props accepted by `ServiciosTerrenoSection.astro`. */

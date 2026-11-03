@@ -74,7 +74,8 @@ describe('Servicios page — hero', () => {
 describe('Servicios page — sections', () => {
   it('renders exactly two section h2 headings', async () => {
     const clean = stripComments(await render());
-    expect(clean).toContain('Nuestras Soluciones — Portafolio Técnico');
+    expect(clean).toContain('Nuestros Productos — Portafolio Técnico');
+    expect(clean).not.toContain('Nuestras Soluciones — Portafolio Técnico');
     expect(clean).toContain('Servicios Especializados en Terreno');
     const h2Count = (clean.match(/<h2/g) ?? []).length;
     expect(h2Count).toBe(2);

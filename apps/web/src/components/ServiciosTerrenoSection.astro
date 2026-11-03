@@ -9,10 +9,10 @@ const { eyebrow, headline, intro, services } = Astro.props;
 ---
 
 <!--
-  Section 2 of /servicios (design.md D2/D3/D7): four alternating service rows
-  with images from @/assets/img/ and a single body variant per card.
-  Background: bg-primary-100 with top/bottom borders. All content comes from
-  props; the image side alternates from the render index (even = left).
+  Section 2 of /servicios (design.md D2/D3/D7 and D4 post-apply): four vertical
+  service cards with images from @/assets/img/ and a single body variant per
+  card. Background: bg-primary-100 with top/bottom borders. All content comes
+  from props; the card owns the md+ column order.
 -->
 <section
   data-section="field-services"
@@ -27,11 +27,8 @@ const { eyebrow, headline, intro, services } = Astro.props;
     />
     <div class="flex flex-col gap-12">
       {
-        services.map((service, i) => (
-          <ServicioTerrenoCard
-            {...service}
-            imagePosition={i % 2 === 0 ? 'left' : 'right'}
-          />
+        services.map((service) => (
+          <ServicioTerrenoCard {...service} />
         ))
       }
     </div>

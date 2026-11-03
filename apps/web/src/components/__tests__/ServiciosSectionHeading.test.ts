@@ -5,7 +5,7 @@ import type { ServiciosSectionHeadingProps } from '@/lib/types/services-page';
 
 const BASE_PROPS: ServiciosSectionHeadingProps = {
   eyebrow: 'LÍNEA DE EQUIPAMIENTO & TECNOLOGÍA',
-  headline: 'Nuestras Soluciones — Portafolio Técnico',
+  headline: 'Nuestros Productos — Portafolio Técnico',
   intro:
     'Suministro especializado, instrumentación y tecnologías certificadas para redes de agua, plantas industriales y minería.',
   markerTone: 'primary',
@@ -37,7 +37,7 @@ describe('ServiciosSectionHeading — content', () => {
   it('renders the headline as an h2', async () => {
     const html = stripComments(await render());
     expect(html).toMatch(
-      /<h2[^>]*>Nuestras Soluciones — Portafolio Técnico<\/h2>/,
+      /<h2[^>]*>Nuestros Productos — Portafolio Técnico<\/h2>/,
     );
   });
 
