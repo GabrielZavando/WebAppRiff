@@ -37,7 +37,7 @@ import osmosisImg from '@/assets/img/osmosis-inversa.jpg';
  */
 export const SERVICIOS_PAGE_HERO: Readonly<ServicesHeroProps> = {
   headline:
-    'Portafolio industrial de soluciones & Servicios Industriales',
+    'Portafolio industrial de Productos & Servicios Industriales',
   highlightedWord: 'Servicios Industriales',
   subtitle:
     'Soluciones técnicas integrales para la instalación, mantenimiento y optimización de sistemas de medición y tratamiento de fluidos. Respaldo por décadas de ingeniería y ejecución en terreno.',

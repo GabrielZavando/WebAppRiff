@@ -58,12 +58,12 @@ describe('Header', () => {
     expect(html).toContain('max-h-full');
     expect(html).toContain('lg:max-h-none');
     expect(html).not.toContain('sm:max-h-none');
-    // Wrapper height is responsive (h-16 mobile, sm:h-24 tablet, lg:h-20
+    // Wrapper height is responsive (h-16 mobile, sm:h-24 tablet, lg:h-24
     // desktop) and the logo is height-capped so it cannot grow the header.
     expect(html).toContain('h-16');
     expect(html).toContain('sm:h-24');
-    expect(html).toContain('lg:h-20');
-    expect(html).not.toContain('lg:h-24');
+    expect(html).toContain('lg:h-24');
+    expect(html).not.toContain('lg:h-20');
     // From sm the link is a flex container that centers the logo vertically;
     // lg:block restores the accepted top-aligned desktop overflow.
     expect(html).toContain('sm:flex');
@@ -416,17 +416,17 @@ describe('Header', () => {
       const headerTag = html.match(/<header[^>]*>/)?.[0] ?? '';
       const innerTag = html.match(/<div[^>]*site-header__inner[^>]*>/)?.[0] ?? '';
 
-      // Mobile: py-2 (8px top + 8px bottom) over an h-16 inner bar = 80px.
-      // Desktop: lg:pt-0 + lg:pb-2 over lg:h-20 preserves the accepted 2× overflow.
-      expect(headerTag).toContain('site-header');
-      expect(headerTag).toContain('py-2');
-      expect(headerTag).toContain('lg:pt-0');
-      expect(headerTag).toContain('lg:pb-2');
-      expect(headerTag).not.toContain('pb-4');
-      expect(headerTag).not.toContain('pb-10');
+    // Mobile: py-2 (8px top + 8px bottom) over an h-16 inner bar = 80px.
+    // Desktop: lg:pt-2 + lg:pb-4 over lg:h-24 gives the logo more vertical
+    // breathing room so it does not clash with the search bar.
+    expect(headerTag).toContain('site-header');
+    expect(headerTag).toContain('py-2');
+    expect(headerTag).toContain('lg:pt-2');
+    expect(headerTag).toContain('lg:pb-4');
+    expect(headerTag).not.toContain('pb-10');
       expect(innerTag).toContain('h-16');
       expect(innerTag).toContain('sm:h-24');
-      expect(innerTag).toContain('lg:h-20');
+      expect(innerTag).toContain('lg:h-24');
     });
 
     it('aligns the logo left and centers it vertically', async () => {

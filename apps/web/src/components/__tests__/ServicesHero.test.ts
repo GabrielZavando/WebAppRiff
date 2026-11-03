@@ -4,7 +4,7 @@ import ServicesHero from '@/components/ServicesHero.astro';
 import type { ServicesHeroProps } from '@/lib/types/services-page';
 
 const baseProps: ServicesHeroProps = {
-  headline: 'Portafolio industrial de soluciones & Servicios Industriales',
+  headline: 'Portafolio industrial de Productos & Servicios Industriales',
   highlightedWord: 'Servicios Industriales',
   subtitle:
     'Soluciones técnicas integrales para la instalación, mantenimiento y optimización de sistemas de medición y tratamiento de fluidos.',
@@ -41,7 +41,7 @@ describe('ServicesHero — headline & highlight', () => {
   it('renders the full headline text', async () => {
     const html = await render();
     expect(stripTags(html)).toContain(
-      'Portafolio industrial de soluciones &amp; Servicios Industriales',
+      'Portafolio industrial de Productos &amp; Servicios Industriales',
     );
   });
 
@@ -57,7 +57,7 @@ describe('ServicesHero — headline & highlight', () => {
     // Strip the component's own HTML comment (which mentions tokens verbatim).
     expect(stripComments(html)).not.toContain('text-primary');
     expect(stripTags(html)).toContain(
-      'Portafolio industrial de soluciones &amp; Servicios Industriales',
+      'Portafolio industrial de Productos &amp; Servicios Industriales',
     );
   });
 

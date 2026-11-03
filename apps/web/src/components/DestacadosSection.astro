@@ -23,8 +23,8 @@ const { headline, ctaText, ctaHref, products } = Astro.props;
     - Header row `flex flex-col sm:flex-row justify-between items-start
       sm:items-center`: left holds the <h3> headline, right holds the accent
       CTA; on mobile the CTA stacks below the headline.
-    - Card grid `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` (gap-6 md:gap-8):
-      mobile 1 col, tablet >= 640px 2 cols, desktop >= 1024px 4 cols. With
+    - Card grid `grid-cols-1 sm:grid-cols-2 lg:grid-cols-2` (gap-6 md:gap-8):
+      mobile 1 col, tablet >= 640px 2 cols, desktop >= 1024px 2 cols. With
       5..8 cards CSS Grid auto-placement flows them into the second row.
     - Card layout: white `<article>` (`bg-white shadow-2 hover:shadow-4
       transition-shadow`) with an image mat (`p-4`, `aspect-square
@@ -60,7 +60,7 @@ const { headline, ctaText, ctaHref, products } = Astro.props;
     </div>
 
     <!-- Responsive card grid: 1 / 2 / 4 columns, second row auto-flows -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 md:gap-8">
       {
         products.map((product) => (
           <article class="bg-white shadow-2 hover:shadow-4 transition-shadow">

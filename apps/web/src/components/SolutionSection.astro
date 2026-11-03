@@ -23,8 +23,8 @@ const { eyebrow, headline, description, solutions } = Astro.props;
       in globals.css).
     - Header grid `grid-cols-1 lg:grid-cols-2` (Decision 2): left half holds
       eyebrow + <h3> headline + teal underline; right half holds description.
-    - Card grid `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` (Decision 3):
-      mobile 1 col, tablet >= 640px 2 cols, desktop >= 1024px 4 cols.
+    - Card grid `grid-cols-1 sm:grid-cols-2 lg:grid-cols-2` (Decision 3):
+      mobile 1 col, tablet >= 640px 2 cols, desktop >= 1024px 2 cols.
 
   Semantics & accessibility (see design.md § Decisions 6, 7, 8, 9):
     - The section headline is a <h3>, NOT <h1>/<h2>: the home has exactly one
@@ -55,7 +55,7 @@ const { eyebrow, headline, description, solutions } = Astro.props;
     </div>
 
     <!-- Responsive card grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 md:gap-8">
       {
         solutions.map((solution) => (
           <article class="relative bg-white shadow-1 hover:shadow-3 transition-shadow">

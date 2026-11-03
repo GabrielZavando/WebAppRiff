@@ -120,15 +120,15 @@ describe('SolutionSection — header (tasks 2.4, 2.5, 2.6, 2.7, 2.8)', () => {
 });
 
 describe('SolutionSection — card grid (tasks 2.9, 2.10)', () => {
-  it('renders a card grid with grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 (task 2.9)', async () => {
+  it('renders a card grid with grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 (task 2.9)', async () => {
     const html = await render();
     const gridMatch = html.match(
-      /class="[^"]*grid-cols-1[^"]*sm:grid-cols-2[^"]*lg:grid-cols-4[^"]*"/,
+      /class="[^"]*grid-cols-1[^"]*sm:grid-cols-2[^"]*lg:grid-cols-2[^"]*"/,
     );
     if (!gridMatch) throw new Error('card grid not found');
     expect(gridMatch[0]).toContain('grid-cols-1');
     expect(gridMatch[0]).toContain('sm:grid-cols-2');
-    expect(gridMatch[0]).toContain('lg:grid-cols-4');
+    expect(gridMatch[0]).toContain('lg:grid-cols-2');
   });
 
   it('renders exactly 4 <article> cards (task 2.10)', async () => {
