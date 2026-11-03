@@ -1,7 +1,7 @@
 # lg-breakpoint-layout Specification
 
 ## Purpose
-TBD: ajustes de layout en el breakpoint `lg:` (1024px) a lo largo del sitio público, cubriendo header, buscador, panel de inicio, sección de productos destacados, pilares de Nosotros, servicios en terreno y representaciones.
+Ajustes de layout en el breakpoint `lg:` (1024px) a lo largo del sitio público, cubriendo header, buscador, panel de inicio, sección de productos destacados, pilares de Nosotros, servicios en terreno y representaciones.
 
 ## Requirements
 

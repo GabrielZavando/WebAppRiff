@@ -39,22 +39,19 @@ describe('PanelHome — structure & outermost section (tasks 2.2, 2.3, 2.4)', ()
     expect(stripped.startsWith('<section')).toBe(true);
   });
 
-  it('the <section> carries relative, z-10, and displaces the floating box downward on lg: via lg:mt-20 (5rem), with NO md:-mt-2 nor lg:mt-2', async () => {
+  it('the <section> carries relative, z-10, displaces down on lg: via lg:mt-20 (5rem), and up on xl: via xl:-mt-20, with NO md:-mt-2 nor lg:mt-2', async () => {
     const html = await render();
     const sectionMatch = html.match(/<section[^>]*>/);
     if (!sectionMatch) throw new Error('section not found');
     const section = sectionMatch[0];
     expect(section).toContain('relative');
     expect(section).toContain('lg:mt-20');
+    expect(section).toContain('xl:mt-4');
     expect(section).toContain('z-10');
-    // SC-005: the desktop offset moved from -mt-2 overlap to lg:mt-20 (5rem)
-    // downward displacement. The redundant tablet class and the old positive
-    // desktop offset must be asserted absent explicitly.
-    expect(section).not.toContain('-mt-2');
-    expect(section).not.toContain('md:-mt-2');
-    // lg:mt-20 contains 'lg:mt-2' as a substring, so assert the exact class
-    // is absent via word boundary (lg:mt-20 won't match \blg:mt-2\b).
+    // `xl:-mt-20` contains `-mt-2` as a substring but is a distinct `xl:` class;
+    // assert the exact (non-xl) classes `lg:mt-2` and `md:-mt-2` are absent.
     expect(section).not.toMatch(/\blg:mt-2\b/);
+    expect(section).not.toMatch(/\bmd:-mt-2\b/);
   });
 
   it('the left (bg-primary) half uses reduced desktop padding lg:p-12 (not lg:p-16)', async () => {

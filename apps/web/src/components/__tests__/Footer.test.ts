@@ -293,13 +293,13 @@ describe('Footer — bottom bar (copyright + location + scroll-to-top)', () => {
     expect(html).toMatch(/<svg[^>]*aria-hidden="true"[^>]*>/);
   });
 
-  it('renders the scroll-to-top button before the location text in the DOM', async () => {
+  it('renders the scroll-to-top button after the location text in the DOM (xl:)', async () => {
     const html = await render();
     const buttonIndex = html.indexOf('data-scroll-top');
     const locationIndex = html.indexOf(FOOTER_LOCATION);
     expect(buttonIndex).toBeGreaterThan(-1);
     expect(locationIndex).toBeGreaterThan(-1);
-    expect(buttonIndex).toBeLessThan(locationIndex);
+    expect(buttonIndex).toBeGreaterThan(locationIndex);
   });
 
   it('reserves the floating-button column with sm:pr-24 on the bottom bar', async () => {
