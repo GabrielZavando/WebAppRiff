@@ -41,7 +41,10 @@ describe('DestacadosSection — grid invariants across 0..8 cards', () => {
       expect(gridMatch[0]).toContain('lg:grid-cols-2');
       expect(gridMatch[0]).toContain('gap-6 md:gap-8');
       // Only ONE grid element and no conditional row/grid classes.
-      expect(countOccurrences(html, 'grid-cols-')).toBe(3);
+      // `xl:grid-cols-4` is a responsive column class (not a conditional row
+      // class), so it adds one more `grid-cols-` token (change
+      // `xl-breakpoint-layout-fixes`).
+      expect(countOccurrences(html, 'grid-cols-')).toBe(4);
       expect(countOccurrences(html, 'lg:col-span-')).toBe(0);
       expect(countOccurrences(html, 'md:row-start-')).toBe(0);
     },

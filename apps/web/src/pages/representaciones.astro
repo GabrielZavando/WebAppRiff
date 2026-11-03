@@ -51,7 +51,7 @@ const {
             </h2>
           </div>
         </div>
-        <div class="flex flex-col gap-4">
+        <div class="grid grid-cols-1 xl:grid-cols-1 gap-8">
           {
             brandsSection.brands.map((brand) => (
               <RepresentacionBrandCard {...brand} />
@@ -109,7 +109,7 @@ const {
           </p>
         </div>
         <div
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6"
         >
           {
             valuePropsSection.valueProps.map((pillar) => (

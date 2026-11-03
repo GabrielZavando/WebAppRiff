@@ -68,7 +68,7 @@ const { headline, description, services, cta } = Astro.props;
     </div>
 
     <!-- Responsive card grid: 1 col mobile, 2 cols from sm (640px) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
       {
         services.map((service) => (
           <article class="flex flex-col bg-secondary border border-secondary-light overflow-hidden">

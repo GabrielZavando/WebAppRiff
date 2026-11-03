@@ -60,7 +60,7 @@ const { headline, ctaText, ctaHref, products } = Astro.props;
     </div>
 
     <!-- Responsive card grid: 1 / 2 / 4 columns, second row auto-flows -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 md:gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8">
       {
         products.map((product) => (
           <article class="bg-white shadow-2 hover:shadow-4 transition-shadow">
