@@ -117,15 +117,15 @@ describe('DestacadosSection — header row (headline + accent CTA)', () => {
 });
 
 describe('DestacadosSection — card grid (1/2/4 mobile-first)', () => {
-  it('renders a card grid with grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 and a gap utility', async () => {
+  it('renders a card grid with grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 and a gap utility', async () => {
     const html = await render();
     const gridMatch = html.match(
-      /class="[^"]*grid-cols-1[^"]*sm:grid-cols-2[^"]*lg:grid-cols-4[^"]*"/,
+      /class="[^"]*grid-cols-1[^"]*sm:grid-cols-2[^"]*lg:grid-cols-2[^"]*"/,
     );
     if (!gridMatch) throw new Error('card grid not found');
     expect(gridMatch[0]).toContain('grid-cols-1');
     expect(gridMatch[0]).toContain('sm:grid-cols-2');
-    expect(gridMatch[0]).toContain('lg:grid-cols-4');
+    expect(gridMatch[0]).toContain('lg:grid-cols-2');
     expect(gridMatch[0]).toMatch(/gap-\d+/);
   });
 

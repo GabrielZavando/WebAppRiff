@@ -108,10 +108,10 @@ describe('NosotrosValueProp — four industry sectors (SC-204)', () => {
 });
 
 describe('NosotrosValueProp — responsive grids (SC-211)', () => {
-  it('declares the pillars grid collapsing 1 → 2 → 4 columns', async () => {
+  it('declares the pillars grid collapsing 1 → 2 → 2 columns on lg:', async () => {
     const html = await render();
     expect(html).toMatch(
-      /class="[^"]*\bgrid-cols-1\b[^"]*\bmd:grid-cols-2\b[^"]*\blg:grid-cols-4\b[^"]*"/,
+      /class="[^"]*\bgrid-cols-1\b[^"]*\bmd:grid-cols-2\b[^"]*\blg:grid-cols-2\b[^"]*"/,
     );
   });
 
@@ -119,7 +119,7 @@ describe('NosotrosValueProp — responsive grids (SC-211)', () => {
     const html = await render();
     const grids =
       html.match(
-        /class="[^"]*\bgrid-cols-1\b[^"]*\bmd:grid-cols-2\b[^"]*\blg:grid-cols-4\b[^"]*"/g,
+        /class="[^"]*\bgrid-cols-1\b[^"]*\bmd:grid-cols-2\b[^"]*\blg:grid-cols-2\b[^"]*"/g,
       ) ?? [];
     expect(grids.length).toBeGreaterThanOrEqual(2);
   });

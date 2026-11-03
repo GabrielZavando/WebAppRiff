@@ -20,34 +20,34 @@ const { items, activePath, cta, logoAlt, transparent = false } = Astro.props;
 const logoAltText = logoAlt ?? 'Riff';
 ---
 
-<!-- Main site header: logo (2x with overflow), right-aligned desktop nav with
-     CTA as the last item, and a fullscreen mobile overlay with slide animation.
-     Mobile distributes the vertical padding as `py-2` (8px top + 8px bottom)
-     over an h-16 inner bar = 80px, lifting the logo off the top edge. Desktop
-     keeps `lg:pt-0 lg:pb-2` over lg:h-20 (80 + 8 = 88px), preserving the
-     accepted 2× logo overflow (SC-001). -->
+     <!-- Main site header: logo (2x with overflow), right-aligned desktop nav with
+          CTA as the last item, and a fullscreen mobile overlay with slide animation.
+          Mobile distributes the vertical padding as `py-2` (8px top + 8px bottom)
+          over an h-16 inner bar = 80px, lifting the logo off the top edge. Desktop
+          keeps `lg:pt-2 lg:pb-4` over lg:h-24 (96px), preserving the accepted
+          2× logo overflow (SC-001). -->
 <header
   data-menu-open="false"
   class:list={[
     'site-header',
     'text-white',
-    'py-2 lg:pt-0 lg:pb-2',
+    'py-2 lg:pt-2 lg:pb-4',
     // Short viewports (e.g. 568x320 landscape) collapse the vertical rhythm so
     // the sticky group (header + search) fits the viewport-height budget.
     'max-sm:[@media(max-height:400px)]:py-0',
     transparent ? 'bg-transparent' : 'bg-secondary',
   ]}
 >
-  <div class="site-header__inner container mx-auto px-4 h-16 sm:h-24 lg:h-20 flex items-center justify-between gap-4 max-sm:[@media(max-height:400px)]:h-12">
+  <div class="site-header__inner container mx-auto px-4 h-16 sm:h-24 lg:h-24 flex items-center justify-between gap-4 max-sm:[@media(max-height:400px)]:h-12">
     <!-- Logo: rendered at 2x (330x166), overflow-visible so the header
          container (h-24) does not grow -- the logo may visually extend
          beyond the header height without displacing sibling elements. -->
-     <a href="/" aria-label="Ir al inicio" class="shrink-0 h-16 sm:h-24 lg:h-20 sm:flex sm:items-center lg:block overflow-visible max-sm:[@media(max-height:400px)]:h-12 max-sm:[@media(max-height:400px)]:max-w-[100px]">
+     <a href="/" aria-label="Ir al inicio" class="shrink-0 h-16 sm:h-24 lg:h-24 sm:flex sm:items-center lg:block overflow-visible max-sm:[@media(max-height:400px)]:h-12 max-sm:[@media(max-height:400px)]:max-w-[100px]">
       <!-- Logo: responsive max-width so it scales proportionally — 160px cap
            on mobile, 240px cap from the sm breakpoint upward. `w-full` lets it
            fill available width up to the cap while the `width`/`height` attrs
            (330×166) preserve the aspect ratio for CLS. The wrapper is
-           `h-16 lg:h-20 overflow-visible`. `max-h-full` caps the logo to the
+            `h-16 lg:h-24 overflow-visible`. `max-h-full` caps the logo to the
            header height so it can never grow the header; from `sm` the logo
            fills the 96px tablet bar (191px wide, still above the 160px mobile
            cap) and `lg:max-h-none` restores the accepted 2× desktop overflow.

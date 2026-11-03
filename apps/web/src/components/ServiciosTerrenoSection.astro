@@ -25,7 +25,7 @@ const { eyebrow, headline, intro, services } = Astro.props;
       intro={intro}
       markerTone="accent"
     />
-    <div class="flex flex-col gap-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
       {
         services.map((service) => (
           <ServicioTerrenoCard {...service} />

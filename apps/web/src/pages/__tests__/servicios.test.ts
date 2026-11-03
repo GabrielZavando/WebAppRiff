@@ -45,7 +45,7 @@ describe('Servicios page — hero', () => {
     const clean = stripComments(await render());
     const text = clean.replace(/<[^>]+>/g, '');
     expect(text).toContain(
-      'Portafolio industrial de soluciones &amp; Servicios Industriales',
+      'Portafolio industrial de Productos &amp; Servicios Industriales',
     );
     expect(clean).toMatch(
       /<span class="text-primary">Servicios Industriales<\/span>/,

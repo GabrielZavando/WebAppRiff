@@ -50,7 +50,7 @@ const statRows = [stats.slice(0, 2), stats.slice(2, 4)];
     - The eyebrow is a <span> (decorative, uppercase), NOT a heading.
     - The stat values/labels are <p> elements, NOT headings.
 -->
-<section class="relative -mt-2 z-10" data-panel-home>
+<section class="relative lg:mt-20 z-10" data-panel-home>
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 lg:grid-cols-2 panel-home-elevated" data-panel-card>
       <!--
@@ -102,7 +102,7 @@ const statRows = [stats.slice(0, 2), stats.slice(2, 4)];
                   {row.map((stat) => (
                     <div class="bg-white p-4 md:p-8 lg:p-12 flex flex-col justify-center min-w-0">
                       <p
-                        class="text-2xl sm:text-3xl md:text-4xl font-heading font-bold text-secondary break-words"
+                        class="text-2xl sm:text-3xl md:text-4xl lg:text-3xl font-heading font-bold text-secondary break-words"
                         data-stat-value=""
                         data-target={stat.numericValue}
                       >

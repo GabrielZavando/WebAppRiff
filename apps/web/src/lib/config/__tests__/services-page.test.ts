@@ -153,7 +153,7 @@ describe('SERVICIOS_FIELD_SECTION', () => {
 describe('SERVICIOS_PAGE_HERO', () => {
   it('headline is the industrial portfolio title and highlights "Servicios Industriales"', () => {
     expect(SERVICIOS_PAGE_HERO.headline).toBe(
-      'Portafolio industrial de soluciones & Servicios Industriales',
+      'Portafolio industrial de Productos & Servicios Industriales',
     );
     expect(SERVICIOS_PAGE_HERO.highlightedWord).toBe('Servicios Industriales');
     expect(SERVICIOS_PAGE_HERO.subtitle.length).toBeGreaterThan(0);
