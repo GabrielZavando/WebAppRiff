@@ -534,3 +534,51 @@ test.describe('Search visibility & variant per page (search-bar-pages-scope)', (
     await expect(search.getByRole('combobox')).toBeVisible();
   });
 });
+
+test.describe('SearchForm — md breakpoint width', () => {
+  for (const viewport of [
+    { width: 768, height: 1024 },
+    { width: 1024, height: 768 },
+    { width: 1204, height: 800 },
+  ]) {
+    test(`uses 90% of the viewport width and stays centered at ${viewport.width}x${viewport.height}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(viewport);
+      await page.goto('/');
+
+      const search = page.getByRole('search', { name: 'Buscar productos' });
+      const container = search.locator('form').locator('xpath=..');
+      const containerBox = await container.boundingBox();
+      expect(containerBox).toBeTruthy();
+
+      const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
+      const expectedWidth = clientWidth * 0.9;
+      expect(Math.abs(containerBox!.width - expectedWidth)).toBeLessThanOrEqual(1);
+
+      const leftGap = containerBox!.x;
+      const rightGap = clientWidth - (containerBox!.x + containerBox!.width);
+      expect(Math.abs(leftGap - rightGap)).toBeLessThanOrEqual(1);
+
+      const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+      expect(documentWidth).toBeLessThanOrEqual(clientWidth + 1);
+    });
+  }
+
+  test('restores the 760px cap from xl (1280x800)', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('/');
+
+    const search = page.getByRole('search', { name: 'Buscar productos' });
+    const container = search.locator('form').locator('xpath=..');
+    const containerBox = await container.boundingBox();
+    expect(containerBox).toBeTruthy();
+    expect(containerBox!.width).toBeLessThanOrEqual(761);
+    expect(containerBox!.width).toBeGreaterThanOrEqual(759);
+
+    const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
+    const leftGap = containerBox!.x;
+    const rightGap = clientWidth - (containerBox!.x + containerBox!.width);
+    expect(Math.abs(leftGap - rightGap)).toBeLessThanOrEqual(1);
+  });
+});

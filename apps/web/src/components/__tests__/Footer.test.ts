@@ -292,6 +292,24 @@ describe('Footer — bottom bar (copyright + location + scroll-to-top)', () => {
     const html = await render();
     expect(html).toMatch(/<svg[^>]*aria-hidden="true"[^>]*>/);
   });
+
+  it('renders the scroll-to-top button before the location text in the DOM', async () => {
+    const html = await render();
+    const buttonIndex = html.indexOf('data-scroll-top');
+    const locationIndex = html.indexOf(FOOTER_LOCATION);
+    expect(buttonIndex).toBeGreaterThan(-1);
+    expect(locationIndex).toBeGreaterThan(-1);
+    expect(buttonIndex).toBeLessThan(locationIndex);
+  });
+
+  it('reserves the floating-button column with sm:pr-24 on the bottom bar', async () => {
+    const html = await render();
+    const bottomBar = html.match(/<div[^>]*class="[^"]*py-6[^"]*sm:flex-row[^"]*"[^>]*>/)?.[0] ?? '';
+    expect(bottomBar).toContain('sm:pr-24');
+    expect(bottomBar).toContain('flex-col');
+    expect(bottomBar).toContain('items-center');
+    expect(bottomBar).toContain('sm:flex-row');
+  });
 });
 
 describe('Footer — scroll-to-top binding (delegated, design D2)', () => {

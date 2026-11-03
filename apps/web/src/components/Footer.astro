@@ -47,6 +47,8 @@ const logoAltText = logoAlt || 'Riff';
        square teal scroll-to-top <button> wired by the persistent
        document-level delegation in `lib/scroll/createScrollTopButton.ts`
        (design.md § Decision 6, D2 — survives View Transitions body swaps).
+       The button renders immediately before the location text and the bar
+       reserves `sm:pr-24` so the floating WhatsApp/phone CTAs never cover it.
     - Strict flat design: no `rounded*`, no `shadow*` (static chrome never
       floats).
 
@@ -144,10 +146,9 @@ const logoAltText = logoAlt || 'Riff';
 
   <div class="border-t border-white/10" aria-hidden="true"></div>
 
-  <div class="container flex flex-col items-center justify-between gap-4 py-6 sm:flex-row">
+  <div class="container flex flex-col items-center justify-between gap-4 py-6 sm:flex-row sm:pr-24">
     <span class="font-body text-xs uppercase tracking-wide text-muted">{FOOTER_COPYRIGHT}</span>
     <div class="flex items-center gap-4">
-      <span class="font-body text-xs uppercase tracking-wide text-muted">{FOOTER_LOCATION}</span>
       <button
         type="button"
         data-scroll-top
@@ -156,6 +157,7 @@ const logoAltText = logoAlt || 'Riff';
       >
         <Icon name="lucide:arrow-up" class="h-4 w-4" aria-hidden="true" />
       </button>
+      <span class="font-body text-xs uppercase tracking-wide text-muted">{FOOTER_LOCATION}</span>
     </div>
   </div>
 </footer>

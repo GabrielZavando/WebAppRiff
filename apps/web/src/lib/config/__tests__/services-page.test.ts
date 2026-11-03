@@ -71,6 +71,9 @@ describe('SERVICIOS_PORTFOLIO_SECTION', () => {
       'LÍNEA DE EQUIPAMIENTO & TECNOLOGÍA',
     );
     expect(SERVICIOS_PORTFOLIO_SECTION.headline).toBe(
+      'Nuestros Productos — Portafolio Técnico',
+    );
+    expect(SERVICIOS_PORTFOLIO_SECTION.headline).not.toBe(
       'Nuestras Soluciones — Portafolio Técnico',
     );
     expect(SERVICIOS_PORTFOLIO_SECTION.intro).toMatch(

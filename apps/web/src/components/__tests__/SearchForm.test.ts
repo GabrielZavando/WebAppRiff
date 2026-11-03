@@ -277,12 +277,17 @@ describe('SearchForm — component max-width & centering', () => {
     expect(containerDiv).toContain('mx-auto');
     expect(containerDiv).not.toContain('container');
     // Mobile gets horizontal breathing room (px-4) removed at md (md:px-0) so
-    // the 860px box uses its full width on desktop. Only px-4 is allowed;
+    // the box uses its full width on desktop. Only px-4 is allowed;
     // px-6/px-8 would eat into the desktop width and are forbidden.
     expect(containerDiv).toContain('px-4');
     expect(containerDiv).toContain('md:px-0');
     expect(containerDiv).not.toContain('px-6');
     expect(containerDiv).not.toContain('px-8');
+    // Tablet (md to < xl) uses 90% of the viewport with no 760px cap; from xl
+    // the approved 760px maximum is restored.
+    expect(containerDiv).toContain('md:w-[90%]');
+    expect(containerDiv).toContain('md:max-w-none');
+    expect(containerDiv).toContain('xl:max-w-[760px]');
   });
 });
 

@@ -44,7 +44,7 @@ export const SERVICIOS_PAGE_HERO: Readonly<ServicesHeroProps> = {
 };
 
 /**
- * Section 1: "Nuestras Soluciones — Portafolio Técnico".
+ * Section 1: "Nuestros Productos — Portafolio Técnico".
  *
  * Four technical rows in the reference order. `id` is the scroll anchor; `icon`
  * is a Lucide name consumed by `astro-icon`. The specs panel admits two to four
@@ -53,7 +53,7 @@ export const SERVICIOS_PAGE_HERO: Readonly<ServicesHeroProps> = {
 export const SERVICIOS_PORTFOLIO_SECTION: Readonly<ServiciosPortafolioSectionProps> =
   {
     eyebrow: 'LÍNEA DE EQUIPAMIENTO & TECNOLOGÍA',
-    headline: 'Nuestras Soluciones — Portafolio Técnico',
+    headline: 'Nuestros Productos — Portafolio Técnico',
     intro:
       'Suministro especializado, instrumentación y tecnologías certificadas para redes de agua, plantas industriales y minería.',
     solutions: [
