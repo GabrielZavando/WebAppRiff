@@ -67,13 +67,13 @@ La grid de sectores de `NosotrosValueProp.astro` (sección bajo "Presencia Sóli
 - **THEN** el contenedor de la grid de sectores lleva `xl:grid-cols-4`
 - **AND** en `lg:` se mantiene `lg:grid-cols-2`
 
-### Requirement: Servicios — Portafolio de Productos en 4 columnas en xl:
-La sección 1 de `servicios.astro` (`ServiciosPortafolioSection.astro`, "Nuestros Productos — Portafolio Técnico") SHALL presentar sus 4 tarjetas de solución en 4 columnas en el breakpoint `xl:`. Actualmente las tarjetas se apilan verticalmente dentro de un contenedor con bordes (`divide-y`); en `xl:` SHALL convertirse en grid `grid-cols-1 xl:grid-cols-4`.
+### Requirement: Servicios — Portafolio de Productos en xl:
+La sección 1 de `servicios.astro` (`ServiciosPortafolioSection.astro`, "Nuestros Productos — Portafolio Técnico") SHALL presentar sus 4 tarjetas de solución en una lista vertical apilada con divisores horizontales (`divide-y`) en el breakpoint `xl:`, manteniendo el mismo layout que en `lg:` y breakpoints menores (no se aplica grid de 4 columnas en `xl:`). Cada tarjeta conserva su `id` de ancla y `scroll-mt-*`.
 
-#### Scenario: Grid de portafolio de productos en 4 columnas en xl
-- **WHEN** `ServiciosPortafolioSection.astro` se renderiza con 4 soluciones
-- **THEN** el contenedor que envuelve las tarjetas lleva `xl:grid-cols-4`
-- **AND** en `xl:` las 4 tarjetas quedan en una sola fila
+#### Scenario: Lista de portafolio de productos en xl
+- **WHEN** `ServiciosPortafolioSection.astro` se renderiza con 4 soluciones en `xl:` (>= 1280px)
+- **THEN** el contenedor que envuelve las tarjetas usa `divide-y` y NO `xl:grid-cols-4`
+- **AND** las tarjetas se apilan verticalmente igual que en `lg:`
 - **AND** cada `SolucionPortafolioCard` conserva su `id` de ancla y `scroll-mt-*`
 
 ### Requirement: Servicios — Servicios Especializados en 4 columnas en xl:
@@ -85,13 +85,13 @@ La sección 2 de `servicios.astro` (`ServiciosTerrenoSection.astro`, "Servicios 
 - **AND** en `lg:` se mantiene `lg:grid-cols-2`
 - **AND** en `xl:` las 4 tarjetas quedan en una sola fila
 
-### Requirement: Representaciones — marcas exclusivas en 3 columnas en xl:
-La sección "Marcas de Representación Exclusiva" de `representaciones.astro` SHALL mostrar sus 5 tarjetas de marca en 3 columnas en el breakpoint `xl:` mediante `xl:grid-cols-3`. Actualmente las tarjetas se apilan en una columna (`flex flex-col`); en `xl:` SHALL convertirse en grid de 3 columnas.
+### Requirement: Representaciones — marcas exclusivas en 1 columna en xl:
+La sección "Marcas de Representación Exclusiva" de `representaciones.astro` SHALL mostrar sus 5 tarjetas de marca en **1 sola columna** (`xl:grid-cols-1`, equivalente a layout vertical `flex-col`) en el breakpoint `xl:`. Actualmente las tarjetas se apilan en una columna (`flex flex-col`); en `xl:` se mantienen en una columna.
 
-#### Scenario: Grid de marcas de representación en 3 columnas en xl
-- **WHEN** `representaciones.astro` renderiza la sección de marcas con 5 tarjetas
-- **THEN** el contenedor que envuelve las tarjetas de marca lleva `xl:grid-cols-3`
-- **AND** en `xl:` las tarjetas se distribuyen en 3 columnas (2 en la primera fila, 3 en la segunda, o 3 + 2)
+#### Scenario: Grid de marcas de representación en 1 columna en xl
+- **WHEN** `representaciones.astro` renderiza la sección de marcas con 5 tarjetas en `xl:` (>= 1280px)
+- **THEN** el contenedor que envuelve las tarjetas de marca lleva `xl:grid-cols-1` (o conserva `flex-col`)
+- **AND** en `xl:` las 5 tarjetas quedan apiladas en una sola columna
 - **AND** cada `RepresentacionBrandCard` conserva su layout interno (`md:flex-row`, panel de logo a la izquierda)
 
 ### Requirement: Representaciones — pilares "¿Por qué adquirir..." en 4 columnas en xl:
