@@ -1,0 +1,11 @@
+# Immutable cache for the content-hashed assets Astro emits under /_astro/.
+#
+# Scoped to this directory on purpose: the static files published in the
+# document root (logo_riff.png, og-image.png) are not content-hashed and must
+# not be cached forever.
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|mjs|js|woff2|woff|ttf|eot|svg|png|jpe?g|webp|avif)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>

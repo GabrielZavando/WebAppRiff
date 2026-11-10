@@ -1,0 +1,40 @@
+# LiteSpeed/cPanel contract for the public Astro site.
+#
+# Mirror of apps/web/nginx.conf for the shared hosting, where nginx is not
+# available and `.htaccess` is the source of truth for the header and cache
+# contract. The immutable cache of the content-hashed assets lives in
+# _astro/.htaccess, which scopes the rule to that directory only.
+#
+# Deliberately absent:
+# - the `Options` directive: it is the usual cause of a 500 when the hosting
+#   forbids it through AllowOverride (the error log reports it);
+# - `Header ... env=` with `SetEnvIf`: the cache scope is resolved by directory
+#   and by file extension instead.
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https: data:; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'"
+</IfModule>
+
+# Canonical HTTPS: 301 from HTTP to HTTPS. The redirect lives in the
+# repository because a redirect configured in the cPanel panel would be lost
+# every time this file is deployed over the hosting account.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # The ACME challenge path stays on HTTP so certificate renewal keeps working.
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# Every prerendered route is an HTML document that must never be cached.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+# Unknown routes serve the Astro-generated 404 document.
+ErrorDocument 404 /404.html
