@@ -25,7 +25,8 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/assets",
-              { "glob": "logo_riff.png", "input": "src/favicon", "output": "/" }
+              { "glob": "logo_riff.png", "input": "src/favicon", "output": "/" },
+              { "glob": ".htaccess", "input": "src", "output": "/" }
             ],
             "styles": ["src/styles/globals.css"]
           },
