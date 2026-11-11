@@ -4,7 +4,7 @@
 # Todos los targets delegan en scripts npm de la raíz (package.json),
 # salvo `openspec-validate` que ejecuta la CLI de OpenSpec (Fission-AI).
 
-.PHONY: help install lint typecheck test build audit smoke test-ci openspec-validate commitlint ci docker-build docker-build-backend verify-htaccess
+.PHONY: help install lint typecheck test build audit smoke test-ci test-workflow openspec-validate commitlint ci docker-build docker-build-backend verify-htaccess
 
 help:
 	@echo ""
@@ -12,15 +12,16 @@ help:
 	@echo "  install            Instalar dependencias (npm ci)"
 	@echo "  lint               Lint por workspace (npm run lint --workspaces)"
 	@echo "  typecheck          Typecheck por workspace"
-	@echo "  test               Tests por workspace (npm run test --workspaces)"
+	@echo "            test               Tests por workspace (npm run test --workspaces)"
 	@echo "            test-ci            Gate de tests explícito (backend con cobertura 90% + web/admin/html-sanitize)"
+	@echo "            test-workflow      Contrato del workflow de despliegue del sitio público (spec web-ftp-deployment)"
 	@echo "            build              Build por workspace"
 	@echo "            verify-htaccess    Verifica el contrato LiteSpeed (.htaccess) contra el output de build de web/admin"
 	@echo "  audit              Auditoría de dependencias bloqueante (scripts/audit.mjs)"
 	@echo "  smoke              Smoke tests por workspace"
 	@echo "  openspec-validate  Validar specs/changes de OpenSpec (--all --strict)"
 	@echo "  commitlint         Validar commits Git"
-	@echo "            ci                 CI gate: openspec-validate + lint + typecheck + build + verify-htaccess + test-ci + audit"
+	@echo "            ci                 CI gate: openspec-validate + lint + typecheck + build + verify-htaccess + test-workflow + test-ci + audit"
 	@echo "  docker-build       Builds Docker de admin y web con args de prueba (sin push)"
 	@echo "  docker-build-backend  Build Docker del backend (sin push; tag de prueba)"
 	@echo "  help               Esta ayuda"
@@ -56,6 +57,13 @@ test-ci:
 	npm run test --workspace=apps/admin
 	npm run test --workspace=packages/html-sanitize
 
+# Contrato del workflow de publicación del sitio público (change
+# build-web-on-github-actions). Verifica triggers, permisos, concurrencia,
+# modo de ejecución, ausencia de escrituras en el job de solo lectura y el
+# acotado/guardas de la limpieza de HTML.
+test-workflow:
+	npm run test:workflow
+
 openspec-validate:
 	npx openspec validate --all --strict
 
@@ -69,7 +77,7 @@ verify-htaccess:
 commitlint:
 	npx -p @commitlint/cli -p @commitlint/config-conventional commitlint --from HEAD~1 --to HEAD --verbose
 
-ci: openspec-validate lint typecheck build verify-htaccess test-ci audit
+ci: openspec-validate lint typecheck build verify-htaccess test-workflow test-ci audit
 	@echo ""
 	@echo "✅ CI del proyecto completado"
 

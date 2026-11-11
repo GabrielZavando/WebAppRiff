@@ -14,6 +14,7 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "pretest": "node scripts/build-html-sanitize.mjs",
     "test": "npm run test --workspaces",
+    "test:workflow": "vitest run scripts/__tests__/deploy-web-staging-workflow.test.mjs",
     "build": "npm run build --workspaces",
     "dev:backend": "npm run start:dev --workspace=apps/backend",
     "dev:web": "npm run dev --workspace=apps/web",
