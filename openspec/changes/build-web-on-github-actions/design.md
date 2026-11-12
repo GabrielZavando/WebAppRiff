@@ -94,13 +94,26 @@ El workflow valida explícitamente que `SITE_URL`, `NESTJS_API_URL` y `PUBLIC_AP
 
 Configuración de la sesión:
 
-- `set ftp:ssl-allow no` + `set ftp:ssl-force yes` (TLS obligatorio en el canal de control),
+- `set ftp:ssl-allow yes` (FTPES explícito sobre el puerto 21; `ftp:ssl-allow no` desactivaría TLS y contradice a `ftp:ssl-force`, lo que produjo un `530 Login authentication failed` en la primera ejecución),
+- `set ftp:ssl-force yes` (TLS obligatorio en el canal de control),
 - `set ftp:ssl-protect-data yes` (cifrado del canal de datos),
 - `set ftp:port 21`,
 - `set ftp:passive-mode yes`,
-- `set net:max-retries 3` y `set net:timeout 30` para que un fallo de red no deje el job colgado.
+- `set net:max-retries 3`, `set net:timeout 30`, `set net:idle 30`, `set cmd:fail-exit yes` y `set glob:dot 1`.
 
-La contraseña se inyecta en el proceso mediante el mecanismo de credenciales de `lftp` (`user`/`pass` leídos de variables de entorno-expanded), sin interpolarla en un comando impreso: el workflow usa `lftp` con un fichero de comandos generado en el runner y nunca hace `echo` del valor.
+La contraseña se inyecta mediante la variable de entorno `LFTP_PASSWORD` y `lftp --env-password`, nunca interpolada en un comando impreso ni escrita en un `.netrc`; el workflow nunca hace `echo` del valor.
+
+### D13 — `FTP_HOST` es el nombre del certificado del servidor FTP, no el dominio del sitio
+
+`FTP_HOST` debe ser el nombre que cubre el certificado TLS del servidor FTP (en staging: `larioja.tecnoinver.cl`), no el dominio del sitio publicado (`staging.somosriff.cl`). Si no coinciden, el handshake TLS falla y lftp devuelve `530 Login authentication failed` — exactamente lo ocurrido en la primera ejecución con TLS mal configurado.
+
+Cómo comprobarlo antes de definir el secret:
+
+```
+openssl s_client -starttls ftp -connect larioja.tecnoinver.cl:21 -servername larioja.tecnoinver.cl
+```
+
+y revisar el `subject` / `issuer` y las SAN del certificado devuelto. El nombre usado en `-servername` debe coincidir con el valor de `FTP_HOST`.
 
 ### D5 — Dotfiles: `set glob:dot 1` y subida explícita del `.htaccess`
 

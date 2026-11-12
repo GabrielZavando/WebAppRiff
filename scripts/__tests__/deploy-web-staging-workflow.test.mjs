@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const workflowPath = resolve(repoRoot, '.github/workflows/deploy-web-staging.yml');
 const listScriptPath = resolve(repoRoot, 'scripts/deploy/list-remote.sh');
+const uploadScriptPath = resolve(repoRoot, 'scripts/deploy/upload-web.sh');
 
 const read = (filePath) => readFileSync(filePath, 'utf8');
 
@@ -105,28 +106,52 @@ describe('deploy-web-staging workflow contract', () => {
     expect(job).not.toMatch(/\bdelete\b/);
   });
 
-  it('runs the listing only in listar mode', () => {
+  it('ejecuta ftp-access-check en cualquier modo', () => {
     const job = jobBlock(read(workflowPath), 'ftp-access-check');
-    expect(job).toMatch(/inputs\.mode\s*==\s*'listar'/);
+    expect(job).not.toMatch(/inputs\.mode/);
   });
 
-  it('fails in red when desplegar mode is selected before publication exists', () => {
-    const job = jobBlock(read(workflowPath), 'ftp-access-check');
-    expect(job).toMatch(/inputs\.mode\s*==\s*'desplegar'/);
-    expect(job).toMatch(/::error::/);
-    expect(job).toMatch(/exit 1/);
+  it('ejecuta el job de publicación solo en modo desplegar', () => {
+    const publish = jobBlock(read(workflowPath), 'publish');
+    expect(publish).not.toBeNull();
+    expect(publish).toMatch(/needs:\s*ftp-access-check/);
+    expect(publish).toMatch(/environment:\s*staging/);
+    expect(publish).toMatch(/permissions:\s*\n\s+contents:\s*read/);
+    expect(publish).toMatch(/if:\s*\$\{\{\s*inputs\.mode\s*==\s*'desplegar'\s*\}\}/);
   });
 
-  it('passes the FTP secrets to the listing step as environment variables', () => {
+  it('pasa los secretos FTP al paso de listado como variables de entorno', () => {
     const job = jobBlock(read(workflowPath), 'ftp-access-check');
     expect(job).toMatch(/FTP_HOST:\s*\$\{\{\s*secrets\.FTP_HOST\s*\}\}/);
     expect(job).toMatch(/FTP_USER:\s*\$\{\{\s*secrets\.FTP_USER\s*\}\}/);
     expect(job).toMatch(/FTP_PASSWORD:\s*\$\{\{\s*secrets\.FTP_PASSWORD\s*\}\}/);
   });
 
-  it('usa FTPES explícito (ftp:// con ssl-force), nunca ftps://', () => {
-    const content = read(workflowPath);
-    expect(content).not.toMatch(/ftps:\/\//);
+  it('el job de publicación construye sin Docker', () => {
+    const publish = jobBlock(read(workflowPath), 'publish');
+    expect(publish).toMatch(/npm ci/);
+    expect(publish).toMatch(/npm run build --workspace=@riff\/web/);
+    expect(publish).toMatch(/SITE_URL:\s*\$\{\{\s*vars\.SITE_URL\s*\}\}/);
+    expect(publish).toMatch(/NESTJS_API_URL:\s*\$\{\{\s*vars\.NESTJS_API_URL\s*\}\}/);
+    expect(publish).toMatch(/PUBLIC_API_URL:\s*\$\{\{\s*vars\.PUBLIC_API_URL\s*\}\}/);
+    expect(publish).toMatch(/REQUIRE_API:\s*'true'/);
+  });
+
+  it('verifica .htaccess antes de invocar a lftp', () => {
+    const publish = jobBlock(read(workflowPath), 'publish');
+    const verifyIdx = publish.indexOf('verify:htaccess');
+    const lftpIdx = publish.indexOf('lftp');
+    expect(verifyIdx).not.toBe(-1);
+    expect(lftpIdx).not.toBe(-1);
+    expect(verifyIdx).toBeLessThan(lftpIdx);
+  });
+
+  it('ejecuta smoke y curl -I después de subir', () => {
+    const publish = jobBlock(read(workflowPath), 'publish');
+    expect(publish).toMatch(/SMOKE_WEB_URL/);
+    expect(publish).toMatch(/npm run smoke:web/);
+    expect(publish).toMatch(/curl -I/);
+    expect(publish).toMatch(/_astro\//);
   });
 });
 
@@ -220,6 +245,99 @@ describe('list-remote script contract', () => {
         [
           '-c',
           'set ftp:ssl-allow yes; set ftp:ssl-force yes; set ftp:ssl-protect-data yes; set net:max-retries 3; set net:timeout 30; set net:idle 30; set cmd:fail-exit yes',
+        ],
+        { stdio: 'ignore' }
+      );
+    }
+  );
+});
+
+describe('upload-web script contract', () => {
+  it('declara el script de subida', () => {
+    expect(() => read(uploadScriptPath)).not.toThrow();
+  });
+
+  it('falla rápido nombrando el secret faltante', () => {
+    const script = read(uploadScriptPath);
+    expect(script).toMatch(/FTP_HOST/);
+    expect(script).toMatch(/FTP_USER/);
+    expect(script).toMatch(/FTP_PASSWORD/);
+    expect(script).toMatch(/::error::/);
+    expect(script).toMatch(/exit 1/);
+  });
+
+  it('valida que los secrets no tengan bordes con espacio ni caracteres de control', () => {
+    const script = read(uploadScriptPath);
+    expect(script).toContain('*[![:print:][:space:]]*');
+    expect(script).toContain('[[:space:]]* | *[[:space:]])');
+    expect(script).toMatch(/FTP_HOST/);
+    expect(script).toMatch(/FTP_USER/);
+    expect(script).toMatch(/FTP_PASSWORD/);
+  });
+
+  it('exige ftp:ssl-allow yes y prohíbe ssl-allow no', () => {
+    const script = read(uploadScriptPath);
+    expect(script).toMatch(/set ftp:ssl-allow yes/);
+    expect(script).not.toMatch(/set ftp:ssl-allow no/);
+  });
+
+  it('configura solo variables de lftp existentes y puerto 21', () => {
+    const script = read(uploadScriptPath);
+    expect(script).not.toMatch(/net:max-idle/);
+    expect(script).toMatch(/set net:idle/);
+    expect(script).toMatch(/set net:max-retries/);
+    expect(script).toMatch(/set net:timeout/);
+    expect(script).toMatch(/set ftp:ssl-force yes/);
+    expect(script).toMatch(/set ftp:ssl-protect-data yes/);
+    expect(script).toMatch(/set ftp:passive-mode yes/);
+    expect(script).toMatch(/set ftp:port 21/);
+    expect(script).toMatch(/set glob:dot 1/);
+    expect(script).toMatch(/set cmd:fail-exit yes/);
+  });
+
+  it('no usa .netrc para las credenciales', () => {
+    const script = read(uploadScriptPath);
+    expect(script).not.toMatch(/\.netrc/);
+  });
+
+  it('pasa la contraseña a lftp mediante LFTP_PASSWORD (--env-password)', () => {
+    const script = read(uploadScriptPath);
+    expect(script).toMatch(/export LFTP_PASSWORD/);
+    expect(script).toMatch(/--env-password/);
+  });
+
+  it('nunca imprime el valor de un secret', () => {
+    const script = read(uploadScriptPath);
+    expect(script).not.toMatch(/echo[^\n]*\$FTP_PASSWORD/);
+    expect(script).not.toMatch(/echo[^\n]*\$FTP_USER/);
+    expect(script).not.toMatch(/echo[^\n]*\$FTP_HOST/);
+  });
+
+  it('sube _astro/ primero y el resto después, sin borrar nada en remoto', () => {
+    const script = read(uploadScriptPath);
+    const astroIdx = script.indexOf('_astro');
+    const restIdx = script.indexOf('mirror -R');
+    expect(astroIdx).not.toBe(-1);
+    expect(restIdx).not.toBe(-1);
+    expect(script).not.toMatch(/mirror --delete/);
+    expect(script).not.toMatch(/\bmrm\b/);
+    expect(script).not.toMatch(/--delete-excluded/);
+  });
+
+  it('recibe la ruta del dist como argumento', () => {
+    const script = read(uploadScriptPath);
+    expect(script).toMatch(/\$\{1/);
+    expect(script).toMatch(/\$\{2/);
+  });
+
+  it.skipIf(!commandAvailable('lftp'))(
+    'valida que las variables de lftp existan ejecutando lftp -c set',
+    () => {
+      execFileSync(
+        'lftp',
+        [
+          '-c',
+          'set ftp:ssl-allow yes; set ftp:ssl-force yes; set ftp:ssl-protect-data yes; set ftp:passive-mode yes; set ftp:port 21; set glob:dot 1; set net:max-retries 3; set net:timeout 30; set net:idle 30; set cmd:fail-exit yes',
         ],
         { stdio: 'ignore' }
       );
