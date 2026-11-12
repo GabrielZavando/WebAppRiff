@@ -11,14 +11,6 @@ on:
         options:
           - listar
           - desplegar
-      cleanup:
-        description: 'Limpieza de HTML obsoleto: dry-run (solo lista) o ejecutar (borra)'
-        required: true
-        type: choice
-        default: dry-run
-        options:
-          - dry-run
-          - ejecutar
 
 permissions:
   contents: read
@@ -118,10 +110,3 @@ jobs:
           ASTRO_ASSET="$(find apps/web/dist/_astro -type f -print -quit | sed 's|apps/web/dist/||')"
           curl -I "https://staging.somosriff.cl/"
           curl -I "https://staging.somosriff.cl/${ASTRO_ASSET}"
-      - name: Limpiar HTML obsoleto (acotado, con guardas)
-        env:
-          FTP_HOST: ${{ secrets.FTP_HOST }}
-          FTP_USER: ${{ secrets.FTP_USER }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: |
-          bash scripts/deploy/cleanup-stale-html.sh apps/web/dist "${{ inputs.cleanup }}"
