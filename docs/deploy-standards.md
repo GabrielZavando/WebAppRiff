@@ -66,6 +66,25 @@
 4. Redeploy manual: desde el panel de Coolify (o empujando un commit a `main`).
 5. Promoción manual a producción (redeploy con la misma referencia de build).
 
+### Lane frontend público — GitHub Actions por FTPES (staging)
+
+El sitio público (`apps/web`) se publica en `staging.somosriff.cl` mediante el workflow `.github/workflows/deploy-web-staging.yml` (disparo manual `workflow_dispatch`, modo `listar` por defecto):
+
+1. Merge a `main` (el workflow existe en la rama por defecto; el botón "Run workflow" aparece entonces).
+2. Lanzar el workflow desde la pestaña Actions (modo `listar` por defecto): comprueba el acceso FTPES y lista el directorio remoto sin escribir nada en el hosting.
+3. Cuando se confirma el acceso, lanzar con el modo `desplegar`: build sin Docker (Node 24, `npm ci`, `npm run build --workspace=@riff/web` con `SITE_URL`, `NESTJS_API_URL` y `PUBLIC_API_URL` del Environment `staging`, y `REQUIRE_API=true`), verificación de `.htaccess`, subida por FTPES (`_astro/` primero, luego el resto), smoke del sitio (`npm run smoke:web` con `SMOKE_WEB_URL`) y `curl -I` de la home y de un asset de `_astro/`.
+4. Rollback: volver a lanzar el workflow sobre el último commit con publicación y smoke correctos.
+
+**`FTP_HOST` debe ser el nombre del certificado TLS del servidor FTP, no el dominio del sitio publicado.** En staging: `larioja.tecnoinver.cl`. Comprobarlo antes de definir el secret:
+
+```
+openssl s_client -starttls ftp -connect larioja.tecnoinver.cl:21 -servername larioja.tecnoinver.cl
+```
+
+Revisar el `subject` / `issuer` y las SAN del certificado; el nombre de `-servername` debe coincidir con el valor de `FTP_HOST`. En la primera ejecución, TLS mal configurado (`ftp:ssl-allow no`) produjo `530 Login authentication failed`: usar siempre `ftp:ssl-allow yes` y `ftp:ssl-force yes`.
+
+Las credenciales (`FTP_HOST`, `FTP_USER`, `FTP_PASSWORD`) viven solo en los secrets del GitHub Environment `staging`; nunca en el repositorio ni en los logs.
+
 ## Smoke Tests
 
 - Health check: `GET /health` → 200 (backend)
