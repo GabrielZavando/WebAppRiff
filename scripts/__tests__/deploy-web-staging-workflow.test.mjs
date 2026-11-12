@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,6 +9,15 @@ const workflowPath = resolve(repoRoot, '.github/workflows/deploy-web-staging.yml
 const listScriptPath = resolve(repoRoot, 'scripts/deploy/list-remote.sh');
 
 const read = (filePath) => readFileSync(filePath, 'utf8');
+
+function commandAvailable(cmd) {
+  try {
+    execFileSync('command', ['-v', cmd], { stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 const topLevelSection = (content, key) => {
   const start = content.indexOf(`\n${key}:\n`);
@@ -113,6 +123,11 @@ describe('deploy-web-staging workflow contract', () => {
     expect(job).toMatch(/FTP_USER:\s*\$\{\{\s*secrets\.FTP_USER\s*\}\}/);
     expect(job).toMatch(/FTP_PASSWORD:\s*\$\{\{\s*secrets\.FTP_PASSWORD\s*\}\}/);
   });
+
+  it('usa FTPES explícito (ftp:// con ssl-force), nunca ftps://', () => {
+    const content = read(workflowPath);
+    expect(content).not.toMatch(/ftps:\/\//);
+  });
 });
 
 describe('list-remote script contract', () => {
@@ -129,11 +144,10 @@ describe('list-remote script contract', () => {
     expect(script).toMatch(/exit 1/);
   });
 
-  it('forces TLS, passive mode and port 21', () => {
+  it('forces TLS and passive mode', () => {
     const script = read(listScriptPath);
     expect(script).toMatch(/ftp:ssl-force/);
     expect(script).toMatch(/ftp:ssl-protect-data/);
-    expect(script).toMatch(/ftp:port 21/);
     expect(script).toMatch(/ftp:passive-mode/);
   });
 
@@ -152,4 +166,63 @@ describe('list-remote script contract', () => {
     expect(script).not.toMatch(/\bput\b/);
     expect(script).not.toMatch(/--delete/);
   });
+
+  it('exige ftp:ssl-allow yes y prohíbe ssl-allow no', () => {
+    const script = read(listScriptPath);
+    expect(script).toMatch(/set ftp:ssl-allow yes/);
+    expect(script).not.toMatch(/set ftp:ssl-allow no/);
+  });
+
+  it('usa solo variables de lftp existentes', () => {
+    const script = read(listScriptPath);
+    expect(script).not.toMatch(/net:max-idle/);
+    expect(script).not.toMatch(/ftp:port 21/);
+    expect(script).toMatch(/set net:idle/);
+    expect(script).toMatch(/set net:max-retries/);
+    expect(script).toMatch(/set net:timeout/);
+    expect(script).toMatch(/set ftp:ssl-force yes/);
+    expect(script).toMatch(/set ftp:ssl-protect-data yes/);
+    expect(script).toMatch(/set cmd:fail-exit yes/);
+  });
+
+  it('no usa .netrc para las credenciales', () => {
+    const script = read(listScriptPath);
+    expect(script).not.toMatch(/\.netrc/);
+  });
+
+  it('pasa la contraseña a lftp mediante LFTP_PASSWORD (--env-password)', () => {
+    const script = read(listScriptPath);
+    expect(script).toMatch(/export LFTP_PASSWORD/);
+    expect(script).toMatch(/--env-password/);
+  });
+
+  it('valida que los secrets no tengan bordes con espacio ni caracteres de control', () => {
+    const script = read(listScriptPath);
+    expect(script).toContain('*[![:print:][:space:]]*');
+    expect(script).toContain('[[:space:]]* | *[[:space:]])');
+    expect(script).toMatch(/FTP_HOST/);
+    expect(script).toMatch(/FTP_USER/);
+    expect(script).toMatch(/FTP_PASSWORD/);
+  });
+
+  it('nunca imprime el valor de un secret', () => {
+    const script = read(listScriptPath);
+    expect(script).not.toMatch(/echo[^\n]*\$FTP_PASSWORD/);
+    expect(script).not.toMatch(/echo[^\n]*\$FTP_USER/);
+    expect(script).not.toMatch(/echo[^\n]*\$FTP_HOST/);
+  });
+
+  it.skipIf(!commandAvailable('lftp'))(
+    'valida que las variables de lftp existan ejecutando lftp -c set',
+    () => {
+      execFileSync(
+        'lftp',
+        [
+          '-c',
+          'set ftp:ssl-allow yes; set ftp:ssl-force yes; set ftp:ssl-protect-data yes; set net:max-retries 3; set net:timeout 30; set net:idle 30; set cmd:fail-exit yes',
+        ],
+        { stdio: 'ignore' }
+      );
+    }
+  );
 });
