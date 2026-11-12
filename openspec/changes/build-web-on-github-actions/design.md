@@ -190,6 +190,14 @@ Las specs afectadas se actualizan mediante deltas: `deployment-architecture` (re
 
 Antes de escribir el resto del workflow, la primera tarea de implementación es el job `ftp-access-check` de solo lectura, que es el job del modo `listar` (valor por defecto del input `mode`). Si el firewall del hosting bloquea las IP de los runners de GitHub Actions, el workflow falla en ese job con un mensaje explícito y no se escribe nada; el resultado se comunica antes de continuar con la implementación del job de publicación.
 
+### D14 — Cada paso que lee una variable o un secret la recibe en su propio `env:`
+
+En la primera ejecución real de `mode=desplegar`, el paso "Validar variables de environment de staging" falló con `Falta la variable SITE_URL en el GitHub Environment 'staging'` aunque las variables existían en el environment. Causa: el paso leía `${!var}` (variables de entorno del shell) pero no declaraba un bloque `env:` que mapeara `vars.SITE_URL`, `vars.NESTJS_API_URL` y `vars.PUBLIC_API_URL`; ese mapeo solo existía en el paso de build, que corre después.
+
+Corrección: añadir `env:` con las tres variables (`vars.*`) directamente al paso de validación.
+
+Lección general aplicada al job `publish` y al job `ftp-access-check`: cada paso que referencia una variable (`vars.X`) o un secret (`secrets.X`) en su `run` debe recibirla en su propio `env:` (o heredarla de `env:` a nivel de job). Se evita poner secrets en `env:` a nivel de job para mantener el mínimo alcance; solo se declara lo que cada paso necesita. Un test del contrato (`scripts/__tests__/deploy-web-staging-workflow.test.mjs`) parsea el YAML y verifica, para cada referencia a `vars.X`/`secrets.X`/`for var in` en un `run`, que el paso (o el job) declara la clave en `env:`.
+
 ## Risks / Trade-offs
 
 - [El firewall del hosting bloquea las IP de GitHub Actions] → el job `ftp-access-check` lo detecta antes de cualquier escritura; si falla, hay que abrir el acceso en el hosting (fuera del alcance del repo).

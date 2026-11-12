@@ -46,6 +46,10 @@
 - [x] 5.1 Ejecutar `npm run verify:htaccess --workspace=@riff/web` contra el `dist/` justo antes de la subida, con fallo que aborte el job sin invocar `lftp`
 - [x] 5.2 Comprobar que el build contiene `dist/.htaccess` y `dist/_astro/.htaccess` antes de la publicación
 
+- [x] 5.1.1 Añadir bloque `env:` con `SITE_URL`/`NESTJS_API_URL`/`PUBLIC_API_URL` (`vars.*`) al paso "Validar variables de environment de staging" (causa del `530`-like fallo en la primera ejecución real: leía `${!var}` sin mapeo previo)
+- [x] 5.1.2 Auditar que todo paso del job `publish` y del job `ftp-access-check` que lee una variable o un secret la recibe en su propio `env:` (FTP_HOST/FTP_USER/FTP_PASSWORD en los pasos de subida; SMOKE_WEB_URL en smoke y curl; vars de build en el paso de build)
+- [x] 5.1.3 Añadir test del contrato que parsea el YAML del workflow y comprueba, para cada referencia a `vars.X`/`secrets.X`/`for var in` en un `run`, que el paso (o el job) declara la clave en `env:` (rojo con el bug, verde tras la corrección)
+
 ## 6. Publicación por FTPES
 
 - [x] 6.1 Instalar `lftp` en el runner con `apt-get install -y lftp`, sin añadir dependencias al repositorio
@@ -75,10 +79,11 @@
 
 ## 9. Gates finales y verificación end-to-end
 
-- [ ] 9.1 Ejecutar `npm run test:workflow` y confirmar que el contrato del workflow se cumple (test verde)
+- [x] 9.1 Ejecutar `npm run test:workflow` y confirmar que el contrato del workflow se cumple (test verde)
 - [ ] 9.2 Ejecutar `make lint`, `make typecheck` y `make test` y confirmar que pasan sin cambios en el código de la aplicación
-- [ ] 9.3 Ejecutar `npx openspec validate --all --strict` y confirmar que el change y las specs delta son válidos
+- [x] 9.3 Ejecutar `npx openspec validate --all --strict` y confirmar que el change y las specs delta son válidos
 - [ ] 9.4 Ejecutar `make docker-build` y confirmar que el carril Docker sigue construyéndose (no se han tocado los Dockerfiles, `nginx.conf` ni los `.htaccess`)
 - [ ] 9.5 Lanzar el workflow completo de forma manual y registrar en la entrega el resultado: listado remoto, build, verificación de `.htaccess`, subida y smoke/curl posteriores
 - [ ] 9.6 Comprobar que, con un `dist/` incompleto (sin `404.html` o con menos de 5 documentos HTML), la limpieza aborta sin borrar nada y el log muestra el motivo de la guarda
 - [ ] 9.7 Comprobar en la salida del job la lista de rutas borradas (o la ausencia de borrado por guarda) y que no se ha tocado ninguna carpeta ajena al sitio
+
