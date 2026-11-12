@@ -102,9 +102,6 @@ trap 'rm -rf "$candidate_dirs_file"' EXIT
 echo "/" > "$candidate_dirs_file"
 
 # Los subdirectorios de dist/ que contienen al menos un .html son candidatos.
-# Se excluyen explícitamente las carpetas ajenas al sitio (.well-known/,
-# cgi-bin/ y cualquiera cuyo contenido se desconoce) aunque aparecieran en
-# dist/ por error; nunca deben recorrerse para borrado.
 while IFS= read -r -d '' html_file; do
   rel_path="${html_file#$dist_dir/}"
   dir_part="$(dirname "$rel_path")"
@@ -153,7 +150,6 @@ HOME="$session_dir" lftp -f "$session_dir/lftp-commands" > "$session_dir/lftp-ou
 ###############################################################################
 # 5. Parsear salida y calcular ficheros a borrar
 ###############################################################################
-# Construir el conjunto de rutas HTML locales relativas a la raíz del sitio.
 local_html_set="$(mktemp)"
 trap 'rm -rf "$session_dir" "$candidate_dirs_file" "$remote_html_file" "$local_html_set"' EXIT
 
@@ -168,7 +164,6 @@ while IFS= read -r -d '' html_file; do
   fi
 done < <(find "$dist_dir" -type f -name '*.html' -print0) | sort -u > "$local_html_set"
 
-# Extraer rutas remotas de HTML entre las marcas ===DIR /===END.
 in_block=0
 current_dir=""
 while IFS= read -r line; do
@@ -187,7 +182,6 @@ while IFS= read -r line; do
   fi
 done < "$session_dir/lftp-output" | sort -u > "$remote_html_file"
 
-# Ficheros a borrar = remotos que no están en el conjunto local.
 to_delete_file="$(mktemp)"
 trap 'rm -rf "$session_dir" "$candidate_dirs_file" "$remote_html_file" "$local_html_set" "$to_delete_file"' EXIT
 
