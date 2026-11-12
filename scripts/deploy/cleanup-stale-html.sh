@@ -204,14 +204,14 @@ to_delete_count="$(wc -l < "$to_delete_file" | tr -d ' ')"
 ###############################################################################
 remote_html_count="$(wc -l < "$remote_html_file" | tr -d ' ')"
 
-if [[ "$to_delete_count" -gt 20 ]]; then
+if [[ "$to_delete_count" -gt 100 ]]; then
   {
     echo "### Limpieza de HTML obsoleto — abortada por umbral absoluto"
     echo ""
-    echo "Se iban a borrar ${to_delete_count} documentos HTML (máximo permitido: 20)."
+    echo "Se iban a borrar ${to_delete_count} documentos HTML (máximo permitido: 100)."
     echo "No se ha borrado ningún fichero del hosting."
   } >> "$summary_file"
-  echo "::error::Se iban a borrar ${to_delete_count} documentos HTML (máximo permitido: 20). Limpieza abortada." >&2
+  echo "::error::Se iban a borrar ${to_delete_count} documentos HTML (máximo permitido: 100). Limpieza abortada." >&2
   exit 1
 fi
 

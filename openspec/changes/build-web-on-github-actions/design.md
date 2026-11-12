@@ -144,7 +144,7 @@ En la práctica, el borrado se calcula listando en remoto los `.html` **dentro d
 - el `dist/` no contiene `index.html`;
 - el `dist/` no contiene `404.html`;
 - el `dist/` contiene menos de 5 documentos HTML en total (umbral mínimo razonable: un build con 1-4 HTML indica un build truncado o un catálogo vacío);
-- el número de ficheros a borrar supera 20 (umbral absoluto) o el 30 % de los documentos HTML presentes en el hosting (umbral relativo).
+- el número de ficheros a borrar supera 100 (umbral absoluto) o el 30 % de los documentos HTML presentes en el hosting (umbral relativo).
 
 El motivo se imprime explícitamente en el log y en el resumen del job (`$GITHUB_STEP_SUMMARY`) y el job termina en **rojo**, aunque la subida previa ya se haya completado: una guarda incumplida es un despliegue no validado, y debe quedar visible como fallo en la ejecución, no como un acierto con notas. Los umbrales se declaran como constantes del script de limpieza para que sean ajustables en un único sitio.
 
@@ -209,7 +209,7 @@ Lección general aplicada al job `publish` y al job `ftp-access-check`: cada pas
 - [Acumulación indefinida de assets antiguos en `_astro/`] → aceptada: evita 404 en páginas cacheadas; la limpieza queda para un ciclo posterior.
 - [El borrado de HTML obsoleto depende de comparar listados remoto/local] → se ejecuta al final y solo sobre `.html`; un fallo de esa fase deja HTML antiguo en el hosting, que es un estado degradado pero no roto (la web sigue sirviendo).
 - [La cuenta FTP contiene carpetas ajenas al sitio (`Gabriel2/`, `gabriel2/`) de contenido desconocido] → la limpieza solo recorre la raíz y los directorios presentes en el `dist/` local, excluye `.well-known/` y `cgi-bin/`, y nunca borra nada que no sea `.html`.
-- [Un build truncado provocaría un borrado masivo de páginas válidas] → guardas previas (`index.html`, `404.html`, mínimo de 5 HTML, máximo de 20 ficheros o 30 % de los HTML remotos) que abortan sin borrar nada, con el motivo impreso.
+- [Un build truncado provocaría un borrado masivo de páginas válidas] → guardas previas (`index.html`, `404.html`, mínimo de 5 HTML, máximo de 100 ficheros o 30 % de los HTML remotos) que abortan sin borrar nada, con el motivo impreso.
 - [Un borrado accidental no sería trazable] → la lista completa de rutas a eliminar se registra en el log antes de ejecutar el borrado.
 - [Interrupción de la subida a mitad (caída de red) deja una mezcla de versiones] → la concurrencia sin cancelación evita la interrupción por otra ejecución; ante un fallo de red, el rollback (D10) vuelve a subir el build bueno.
 - [Los secrets no existen todavía en el environment `staging`] → el workflow falla con un mensaje que nombra el secret ausente; el runbook indica cómo crearlos antes del primer uso.
@@ -231,4 +231,4 @@ Lección general aplicada al job `publish` y al job `ftp-access-check`: cada pas
 - ¿El nombre final del workflow (`deploy-web-staging.yml`) y del grupo de concurrencia (`deploy-web-staging`) son los definitivos? → se asume `deploy-web-staging` y se puede renombrar sin coste.
 - ¿La política de retención de HTML obsoleto en el hosting será la de "borrar solo `.html`" a largo plazo, o el hosting acumula rutas y se quiere una revisión periódica? → fuera de alcance en este change.
 - ¿Qué contienen exactamente `Gabriel2/` y `gabriel2/`? → irrelevante para el diseño: el despliegue nunca las recorre ni las modifica; se documenta en el runbook para que el operador lo sepa.
-- ¿El umbral de HTML mínimo (5) y los umbrales de borrado (20 ficheros / 30 %) son los adecuados para el volumen real del sitio? → se ajustan en las constantes del script de limpieza, sin cambiar el modelo.
+- ¿El umbral de HTML mínimo (5) y los umbrales de borrado (100 ficheros / 30 %) son los adecuados para el volumen real del sitio? → se ajustan en las constantes del script de limpieza, sin cambiar el modelo.

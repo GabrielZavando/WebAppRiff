@@ -107,7 +107,7 @@ Antes de borrar nada, el workflow SHALL validar el build y SHALL abortar la limp
 - el `dist/` local no contiene `index.html`;
 - el `dist/` local no contiene `404.html`;
 - el `dist/` local no contiene un número mínimo razonable de documentos HTML (al menos 5 documentos HTML en total);
-- el número de ficheros a borrar supera el umbral absoluto (más de 20 ficheros) o el umbral relativo (más del 30 % de los documentos HTML presentes en el hosting).
+- el número de ficheros a borrar supera el umbral absoluto (más de 100 ficheros) o el umbral relativo (más del 30 % de los documentos HTML presentes en el hosting).
 
 Cuando una guarda se active, el workflow SHALL terminar en estado fallido (rojo) aunque la subida previa ya se haya completado, mostrando el motivo concreto de la guarda que se incumplió en el log y en el resumen del job (job summary), y SHALL NOT borrar ningún fichero. Antes de ejecutar el borrado, el workflow SHALL registrar en el log la lista completa de rutas que va a eliminar, mostrando únicamente rutas relativas y nunca credenciales ni URLs con usuario o contraseña.
 
@@ -118,7 +118,7 @@ Cuando una guarda se active, el workflow SHALL terminar en estado fallido (rojo)
 
 #### Scenario: Un volumen anómalo de borrado aborta la limpieza
 
-- **WHEN** los ficheros a borrar superan 20 ficheros o el 30 % de los documentos HTML remotos
+- **WHEN** los ficheros a borrar superan 100 ficheros o el 30 % de los documentos HTML remotos
 - **THEN** el workflow falla indicando el umbral superado y no borra ningún fichero del hosting
 
 #### Scenario: La lista de borrado queda registrada
