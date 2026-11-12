@@ -18,6 +18,10 @@
 - [x] 2.10 Ejecutar `npx vitest run scripts/__tests__/deploy-web-staging-workflow.test.mjs` y confirmar que los casos fallan por la ausencia del workflow (test rojo)
 - [x] 2.11 Exponer el test como script npm `test:workflow` en el `package.json` raíz y encadenarlo en el `Makefile` (target propio antes de `test-ci` dentro de `ci`), sin modificar ningún otro target
 - [ ] 2.12 Añadir los casos fallidos que exigen el job `publish` con `needs: ftp-access-check` (se implementan junto con la fase de publicación)
+- [x] 2.13 Corregir `scripts/deploy/list-remote.sh`: `ftp:ssl-allow yes` (no `no`), sin `ftp:port 21`, `net:idle` en lugar de `net:max-idle`, validación de secrets (sin bordes con espacio ni caracteres de control, fallando nombrando el secret) y credenciales vía `LFTP_PASSWORD`/`--env-password` en lugar de `.netrc`
+- [x] 2.14 Añadir tests que impidan reintroducir `ssl-allow no` y variables de lftp inexistentes (`net:max-idle`), que prohíban `.netrc`, que exijan `--env-password` y que validen las variables ejecutando `lftp -c set` cuando lftp esté disponible
+- [x] 2.15 Ejecutar `make ci` y `npx openspec validate --all --strict` y confirmar que todo pasa
+
 
 ## 3. Job manual de comprobación de acceso al hosting (primera tarea, solo lectura)
 
