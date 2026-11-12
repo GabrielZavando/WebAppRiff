@@ -84,6 +84,6 @@
 - [x] 9.3 Ejecutar `npx openspec validate --all --strict` y confirmar que el change y las specs delta son válidos
 - [x] 9.4 Ejecutar `make docker-build` y confirmar que el carril Docker sigue construyéndose (no se han tocado los Dockerfiles, `nginx.conf` ni los `.htaccess`)
 - [ ] 9.5 Lanzar el workflow completo de forma manual y registrar en la entrega el resultado: listado remoto, build, verificación de `.htaccess`, subida y smoke/curl posteriores
-- [ ] 9.6 Comprobar que, con un `dist/` incompleto (sin `404.html` o con menos de 5 documentos HTML), la limpieza aborta sin borrar nada y el log muestra el motivo de la guarda
+- [x] 9.6 Comprobar que, con un `dist/` incompleto (sin `404.html` o con menos de 5 documentos HTML), la limpieza aborta sin borrar nada y el log muestra el motivo de la guarda
 - [ ] 9.7 Comprobar en la salida del job la lista de rutas borradas (o la ausencia de borrado por guarda) y que no se ha tocado ninguna carpeta ajena al sitio
 
