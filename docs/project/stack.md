@@ -27,7 +27,7 @@ Arquitectura de despliegue aprobada (change `decide-api-deployment-architecture`
 
 - **Firebase (gestionado)**: Firestore, Firebase Authentication (incl. recuperación de contraseña) y Firebase Storage. No se operan servicios de datos en el VPS.
 - **API NestJS (BFF)**: **Google Cloud Run** — la imagen de `apps/backend/Dockerfile` (multi-stage, Node 24) se publica en Artifact Registry y se despliega con `gcloud run deploy` desde GitHub Actions. Secretos Firebase vía Google Secret Manager. Escala a cero; revisar `min-instances` tras medir cold starts en staging.
-- **Frontends (estáticos)**: sitio Astro y panel Angular como **servicios independientes en VPS con Coolify** (build in-situ desde Git en MVP). Dockerfiles multi-stage creados (`apps/web/Dockerfile`, `apps/admin/Dockerfile`, runtime nginx + healthcheck).
+- **Frontends (estáticos)**: sitio Astro publicado en `staging.somosriff.cl` mediante GitHub Actions por FTPES (build sin Docker en el runner, `workflow_dispatch` manual); panel Angular como servicio independiente en VPS con Coolify (build in-situ desde Git en MVP). Dockerfiles multi-stage creados (`apps/web/Dockerfile`, `apps/admin/Dockerfile`, runtime nginx + healthcheck).
 - **Rebuild del sitio**: el backend buferiza los cambios de catálogo (categorías, subcategorías, productos) en Firestore y un job de **Cloud Scheduler** invoca cada minuto el endpoint interno de flush, que dispara el webhook de Coolify (`CATALOG_REBUILD_WEBHOOK_URL` + `CATALOG_REBUILD_WEBHOOK_TOKEN`, Bearer) bajo ventana de silencio/max-wait con claim transaccional y backoff — un único deploy por ráfaga de ediciones (change `catalog-rebuild-flush-scheduler`).
 - **Runtime**: Node.js 24 (alineado a `engines` del monorepo); TypeScript 5+ strict en los tres stacks.
 

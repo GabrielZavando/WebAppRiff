@@ -63,6 +63,8 @@ Se crea `.github/workflows/deploy-web-staging.yml` con `on: workflow_dispatch` y
 
 **Modo de ejecución.** El workflow declara un input `mode` (`choice`) con las opciones `listar` y `desplegar`, con `listar` por defecto. El job `ftp-access-check` se ejecuta en ambos modos; el job `publish` solo se ejecuta con `mode == 'desplegar'`. Mientras `publish` no esté implementado, elegir `desplegar` termina el job en rojo con un mensaje explícito y no escribe nada.
 
+**Modo de limpieza.** El workflow declara un input `cleanup` (`choice`) con las opciones `dry-run` y `ejecutar`, con `dry-run` por defecto. Solo se ejecuta cuando `mode == 'desplegar'` y, tras la subida y verificación, el paso de limpieza borra HTML obsoleto solo si `cleanup == 'ejecutar'`; con `dry-run` solo lista lo que borraría. Esto permite inspeccionar la lista antes de habilitar un borrado real.
+
 El motivo es factual: según la documentación de GitHub, el botón "Run workflow" solo aparece si el fichero del workflow existe en la rama por defecto, y una vez que el workflow haSeeder ejecutado al menos una vez se puede lanzar contra cualquier rama o tag mediante la API o la CLI (`gh workflow run deploy-web-staging.yml --ref <rama>`). Es decir: mientras el workflow no esté en `main`, no se puede lanzar desde una rama de trabajo, ni por UI ni por CLI. Como la primera versión que se mergea a `main` es la que se usaría para el primer despliegue real, el modo por defecto `listar` garantiza que esa primera ejecución no pueda escribir ni borrar nada en el hosting por un descuido.
 
 Alternativas descartadas:
@@ -161,6 +163,7 @@ Alternativas descartadas:
 
 - **Antes**: `npm run verify:htaccess --workspace=@riff/web` contra el `dist/`. Si falla, no se sube nada.
 - **Después**: `SMOKE_WEB_URL=https://staging.somosriff.cl npm run smoke:web` (que valida home, `/productos`, un detalle de producto y un asset `/_astro/*`) más un `curl -I` explícito a la home y a un asset concreto de `_astro/` (tomado del propio `dist/`), para comprobar también las cabeceras y el `Cache-Control` en el hosting real.
+- **Después (limpieza)**: `scripts/deploy/cleanup-stale-html.sh apps/web/dist ${{ inputs.cleanup }}` ejecuta el borrado acotado de HTML obsoleto **solo** cuando `inputs.cleanup == 'ejecutar'`. El valor por defecto es `dry-run`, que solo lista lo que borraría sin tocar el hosting. La limpieza se ejecuta al final, tras la subida y la verificación post-subida, y nunca borra nada que no sea `.html` dentro del espacio del sitio publicado.
 
 El smoke por sí solo es un no-op si `SMOKE_WEB_URL` no está definido, así que el workflow la define explícitamente en el paso; un `curl -I` adicional no es redundante porque el smoke no valida cabeceras.
 
