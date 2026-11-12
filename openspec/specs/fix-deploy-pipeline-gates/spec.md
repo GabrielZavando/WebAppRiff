@@ -4,52 +4,60 @@
 Corrección de los gates del pipeline de deploy: deploy gated por CI exitoso, build de validación de Astro sin depender de una API viva, webhooks de Coolify autenticados por entorno y smoke del backend antes de los triggers de frontend.
 ## Requirements
 ### Requirement: Deploy SHALL be gated by a successful CI run
-`deploy.yml` SHALL trigger via `workflow_run` on the `CI` workflow with `types: completed` and proceed only when `conclusion == 'success'` for the triggering run/commit. No deploy (Cloud Run or Coolify) SHALL start when CI fails. `workflow_dispatch` remains as an explicit manual exception. PRs SHALL NOT trigger deployment (CI protects PRs).
+
+The deployment of the public site to the staging hosting SHALL be triggered only by `workflow_dispatch`, executed manually by an operator. The publication workflow SHALL NOT be triggered by `workflow_run`, by `repository_dispatch`, nor by any automatic `push` or `pull_request` event; automatic triggering of that workflow is deferred to a later cycle. PRs SHALL NOT trigger deployment (CI protects PRs). No deployment workflow SHALL rely on a hosting platform that is no longer in use (Coolify was removed from the staging services), and any lane that is reintroduced in the future SHALL require a new change that declares its gating explicitly.
 
 #### Scenario: No deploy when CI fails
+
 - **WHEN** a push to `main` has a commit whose `CI` workflow concludes with errors
-- **THEN** `deploy.yml` is not started by `workflow_run`
-- **AND** nothing is deployed to Cloud Run or Coolify
+- **THEN** no deployment is started automatically for any service
 
 #### Scenario: Deploy runs only after CI success
+
 - **WHEN** a push to `main` has a commit whose `CI` workflow concludes with `success`
-- **THEN** `deploy.yml` runs for that same commit
+- **THEN** only the lanes explicitly declared as automatic in their own change may proceed for that same commit, and no service is deployed without such a declaration
 
 #### Scenario: Manual dispatch remains available
-- **WHEN** an operator triggers `workflow_dispatch`
-- **THEN** deployment proceeds (explicit manual exception)
+
+- **WHEN** an operator triggers `workflow_dispatch` on the public site publication workflow
+- **THEN** the publication proceeds (explicit manual exception)
+
+#### Scenario: Automatic triggering is deferred
+
+- **WHEN** the public site publication workflow is reviewed
+- **THEN** it declares no `workflow_run` trigger and no `repository_dispatch` trigger
+
+#### Scenario: No lane depends on removed hosting services
+
+- **WHEN** the deployment workflows of the repository are reviewed
+- **THEN** none of them invokes webhooks or services of a hosting platform that has been removed
 
 ### Requirement: Astro validation build SHALL not depend on a live API
-The `docker-build` job SHALL build the Astro validation image with `--build-arg REQUIRE_API=false` so the runner can compile without a live API. Real Coolify builds keep `REQUIRE_API=true` (external config) so a real deploy fails when the API is down or the catalog is empty.
+
+The `docker-build` job SHALL build the Astro validation image with `--build-arg REQUIRE_API=false` so the runner can compile without a live API. The publication workflow of the public site SHALL build `apps/web` with `REQUIRE_API=true`, using the staging API URL taken from the GitHub Environment `staging`, so that a publication to the hosting fails when the API is down or the catalog is empty. The `docker-build` lane and the publication lane SHALL keep their respective values.
 
 #### Scenario: Validation build compiles without a live API
+
 - **WHEN** `docker-build` builds `riff-web:pr`
 - **THEN** it passes `--build-arg REQUIRE_API=false`
 - **AND** the build does not require a live API to compile
 
 #### Scenario: Real builds keep REQUIRE_API=true
-- **WHEN** Coolify builds Astro for staging or production with its Build Variables
-- **THEN** `REQUIRE_API` is `true` (external to this workflow)
 
-### Requirement: Coolify webhooks SHALL be authenticated per environment
-Frontend deployment SHALL be split into `deploy-frontends-staging` and `deploy-frontends-production`. Each SHALL invoke its webhook with `curl --fail --silent --show-error --request GET "$URL" -H "Authorization: Bearer $COOLIFY_API_TOKEN"`, reading the token from a secret without logging it. Staging SHALL only call staging webhooks; production SHALL only call production webhooks. Missing secrets SHALL yield a clear no-op (exit 0) so main stays green before ops configures them.
-
-#### Scenario: Staging never calls production webhooks
-- **WHEN** the staging lane runs
-- **THEN** only `COOLIFY_WEB_STAGING_WEBHOOK_URL` and `COOLIFY_ADMIN_STAGING_WEBHOOK_URL` are invoked
-
-#### Scenario: Production only via the production lane
-- **WHEN** the production lane runs (tag/director)
-- **THEN** only `COOLIFY_WEB_PRODUCTION_WEBHOOK_URL` and `COOLIFY_ADMIN_PRODUCTION_WEBHOOK_URL` are invoked
-
-#### Scenario: Missing secret yields a no-op
-- **WHEN** a Coolify secret is not set
-- **THEN** the job prints a clear notice and exits 0 without deploying
+- **WHEN** the publication workflow builds the public site for the staging hosting
+- **THEN** `REQUIRE_API` is `true` and the build fails if the staging API is unavailable or returns an empty catalog
 
 ### Requirement: Backend smoke SHALL precede frontend triggers in staging
-In the staging lane, `deploy-frontends-staging` SHALL depend on `deploy-backend-staging` so the backend is deployed and smoke-tested on Cloud Run before the frontends rebuild against it.
+
+Any lane that triggers a frontend rebuild against the staging API SHALL depend on the backend deployment and its smoke test, so the frontend never builds against an API that has not been validated. The manual publication lane of the public site SHALL NOT depend on a backend deployment job, but it SHALL build against the live staging API with `REQUIRE_API=true`, so the publication fails when the API is unreachable or the catalog is empty.
 
 #### Scenario: Frontends trigger after Cloud Run smoke
-- **WHEN** the staging lane runs
-- **THEN** `deploy-backend-staging` (Cloud Run + smoke) completes before `deploy-frontends-staging` starts
+
+- **WHEN** a lane that rebuilds a frontend against the staging API runs
+- **THEN** the backend deployment and its smoke test on Cloud Run complete before that frontend rebuild starts
+
+#### Scenario: The manual public site lane requires a live staging API
+
+- **WHEN** the public site publication workflow is dispatched
+- **THEN** the build consumes the staging API and fails if the API is unavailable or returns an empty catalog
 

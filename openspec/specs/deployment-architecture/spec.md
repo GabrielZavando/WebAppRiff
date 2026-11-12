@@ -5,17 +5,22 @@ Decisión de arquitectura de despliegue: separación explícita de responsabilid
 ## Requirements
 ### Requirement: Deployment responsibilities SHALL be explicitly separated
 
-The deployment architecture SHALL define Firebase as the managed provider for Firestore, Firebase Authentication —including password recovery— and Firebase Storage. The architecture SHALL define the VPS managed by Coolify as the runtime for the Astro public site and Angular administration panel. The architecture SHALL document the selected runtime for the NestJS API before production deployment.
+The deployment architecture SHALL define Firebase as the managed provider for Firestore, Firebase Authentication —including password recovery— and Firebase Storage. The architecture SHALL define the hosting cPanel/LiteSpeed account of `staging.somosriff.cl` as the runtime of the Astro public site, published by GitHub Actions over FTPES, and the Angular administration panel as an independently deployable static service on its own subdomain, whose publication mechanism is out of scope for this change. The architecture SHALL NOT present hosting platforms that have been removed (Coolify was removed from the staging services) as part of the current arrangement. The architecture SHALL document the selected runtime for the NestJS API before production deployment.
 
 #### Scenario: Services are mapped to their runtime
 
 - **WHEN** the deployment architecture is reviewed
-- **THEN** Firestore, Authentication and Storage are identified as Firebase-managed services, Astro and Angular are identified as Coolify/VPS services, and NestJS has an explicit selected runtime or an approved decision deadline
+- **THEN** Firestore, Authentication and Storage are identified as Firebase-managed services, Astro is identified as a static site published to the shared hosting by GitHub Actions over FTPES, Angular is identified as an independently deployable static service on its own subdomain, and NestJS has an explicit selected runtime or an approved decision deadline
 
 #### Scenario: Frontend services are independently deployable
 
 - **WHEN** a frontend release is prepared
 - **THEN** the Astro site and Angular panel can be built and deployed as independent static services without requiring Firebase Admin credentials in their runtime containers
+
+#### Scenario: Removed hosting platforms are not presented as current
+
+- **WHEN** the deployment architecture is reviewed
+- **THEN** no service is attributed to a hosting platform whose staging services have been removed
 
 ### Requirement: The NestJS runtime decision SHALL evaluate Cloud Run and Coolify
 
@@ -52,7 +57,7 @@ The architecture SHALL define separate staging and production configuration for 
 
 ### Requirement: Deployment SHALL include health checks and rollback evidence
 
-Each deployable service SHALL expose or provide an HTTP health check appropriate to its runtime. The deployment process SHALL define staging validation, smoke tests, promotion to production and rollback to a known previous image or release.
+Each deployable service SHALL expose or provide an HTTP health check appropriate to its runtime. The deployment process SHALL define staging validation, smoke tests, promotion to production and rollback to a known previous image or release. For the public site published over FTPES, the rollback SHALL be performed by re-uploading the previous build to the hosting account, and the health checks SHALL be executed again after the rollback.
 
 #### Scenario: Staging validation succeeds
 
@@ -69,45 +74,41 @@ Each deployable service SHALL expose or provide an HTTP health check appropriate
 - **WHEN** the current production release must be reverted
 - **THEN** the previous known-good image or platform revision can be selected and redeployed, and the health checks are executed again
 
+#### Scenario: Public site rollback is requested
+
+- **WHEN** a deployment of the public site to the hosting leaves the site in an incorrect state
+- **THEN** the previous build can be uploaded again to the hosting account and the smoke checks and header verifications are executed again
+
 ### Requirement: Deployment documentation SHALL remain consistent with implementation
 
-The selected architecture, service responsibilities, runtime versions, domains, environment variables, build contexts, deployment commands and rollback procedure SHALL be documented in the project deployment and stack documentation. Documentation SHALL identify the missing frontend Dockerfiles and the replacement strategy for the current deploy workflow.
+The selected architecture, service responsibilities, runtime versions, domains, environment variables, build contexts, deployment commands and rollback procedure SHALL be documented in the project deployment and stack documentation. Documentation SHALL identify the deployment workflow used by each frontend and the replacement strategy for any deploy workflow that no longer applies. Documentation SHALL NOT describe hosting platforms whose services have been removed as part of the current deployment flow.
 
 #### Scenario: Architecture documentation is audited
 
 - **WHEN** `docs/project/stack.md` and `docs/deploy-standards.md` are reviewed
-- **THEN** they describe the same Firebase, Coolify and NestJS runtime arrangement, with no contradictory Node version or provider assumptions
+- **THEN** they describe the same Firebase, Cloud Run and shared hosting arrangement, with no contradictory Node version or provider assumptions and no reference to hosting platforms that have been removed
 
 #### Scenario: Current deploy workflow is reviewed
 
-- **WHEN** `.github/workflows/deploy.yml` is reviewed before implementation
-- **THEN** it is either replaced by the selected Coolify/Cloud Run flow or explicitly marked as obsolete, and it does not claim to provide a working production deployment while its Dockerfile, registry and secret assumptions are unresolved
+- **WHEN** the workflows in `.github/workflows/` are reviewed
+- **THEN** the public site publication workflow is either implemented as the selected GitHub Actions over FTPES flow or explicitly marked as obsolete, and no workflow claims to provide a working deployment while its build, credentials or hosting assumptions are unresolved
 
-### Requirement: Frontend staging deploys SHALL be handled natively by Coolify via its GitHub App, without a GitHub Actions deploy workflow
+### Requirement: Frontend staging deploys SHALL be published by GitHub Actions over FTPES
 
-The repository SHALL NOT contain a custom deploy workflow (`.github/workflows/deploy.yml`) nor tests referencing one. The frontend staging applications (`riff-web-staging`, `riff-admin-staging`) SHALL be deployed by Coolify natively (GitHub App `coolify-github-zavando`) when a PR is merged to `main`, with in-situ builds managed by Coolify. Manual redeploys SHALL be available from the Coolify panel. `ci.yml` SHALL remain the only workflow in `.github/workflows/` (PR protection; it SHALL NOT trigger deploys). `docs/deploy-standards.md` SHALL document this native flow without references to curl, `/api/v1/deploy` webhooks, or a GitHub Actions deploy workflow.
+The public site of staging SHALL be published to the `staging.somosriff.cl` hosting account by a GitHub Actions workflow triggered manually with `workflow_dispatch`, which builds `apps/web` on the runner without Docker and uploads the resulting static output over FTPES. The workflow SHALL read its build variables and its FTP credentials from the GitHub Environment `staging`, SHALL NOT store credentials in the repository, and SHALL verify the site after the upload. The workflow SHALL NOT depend on webhooks or services of hosting platforms that have been removed. The administration panel and the backend deployment SHALL remain unchanged by this model.
 
-#### Scenario: Merge to main deploys via the Coolify GitHub App
+#### Scenario: The public site is published from GitHub Actions
 
-- **GIVEN** the Coolify GitHub App (`coolify-github-zavando`) has access to the repository
-- **WHEN** a PR is merged to `main`
-- **THEN** Coolify receives the push natively and deploys both staging frontend applications (`riff-web-staging`, `riff-admin-staging`) with in-situ builds, without a GitHub Actions workflow
+- **WHEN** an operator dispatches the publication workflow for the public site
+- **THEN** the site is built without Docker and uploaded over FTPES to the staging hosting account by that workflow
 
-#### Scenario: No custom deploy workflow exists
+#### Scenario: The publication does not depend on removed services
 
-- **GIVEN** the final repository state
-- **WHEN** `.github/workflows/` is reviewed
-- **THEN** no `deploy.yml` exists, no tests reference a removed deploy workflow, and `ci.yml` is the only workflow (PR protection only)
+- **WHEN** the public site publication workflow is reviewed
+- **THEN** it invokes no webhook and no service of a hosting platform that has been removed
 
-#### Scenario: Manual redeploy from the Coolify panel
+#### Scenario: The other services are unchanged
 
-- **GIVEN** an operator wants to redeploy a staging application
-- **WHEN** they trigger a redeploy from the Coolify panel (or push a commit to `main`)
-- **THEN** Coolify deploys the application without GitHub Actions
-
-#### Scenario: Documentation reflects the native flow
-
-- **GIVEN** `docs/deploy-standards.md`
-- **WHEN** its deploy pipeline section is reviewed
-- **THEN** it describes the native Coolify GitHub App deploy with no references to curl, `/api/v1/deploy` webhooks, or a GitHub Actions deploy workflow
+- **WHEN** the deployment architecture is reviewed
+- **THEN** the administration panel and the backend deployment on Cloud Run keep their previously specified behaviour, and any change to their publication mechanism is declared in a separate change
 
