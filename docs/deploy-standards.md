@@ -85,6 +85,20 @@ Revisar el `subject` / `issuer` y las SAN del certificado; el nombre de `-server
 
 Las credenciales (`FTP_HOST`, `FTP_USER`, `FTP_PASSWORD`) viven solo en los secrets del GitHub Environment `staging`; nunca en el repositorio ni en los logs.
 
+**Limpieza de HTML obsoleto (acotada y con guardas).** Tras la subida y la verificación post-subida, el workflow puede borrar documentos HTML que ya no existen en el `dist/` local. El borrado está acotado: solo `.html`, solo en la raíz y en directorios presentes en el `dist/` local, y nunca toca `.well-known/`, `cgi-bin/` ni carpetas ajenas como `Gabriel2/` o `gabriel2/`.
+
+El input `cleanup` controla el comportamiento:
+- `dry-run` (por defecto): solo lista lo que borraría, sin tocar el hosting. Usar este valor la primera vez y revisar la lista antes de habilitar el borrado real.
+- `ejecutar`: borra los documentos HTML obsoletos tras pasar las guardas (build con `index.html`, `404.html` y al menos 5 HTML; máximo 20 ficheros o 30 % de los HTML remotos). Si una guarda falla, el job termina en rojo sin borrar nada y el motivo queda en el resumen del job.
+
+Antes de borrar, el workflow registra en el log la lista completa de rutas relativas que eliminará.
+
+### Rollback del sitio público (FTP)
+
+El rollback consiste en volver a lanzar el workflow `.github/workflows/deploy-web-staging.yml` en modo `desplegar` sobre el último commit con publicación y smoke correctos. El workflow reconstruye el build y lo vuelve a subir al hosting; el borrado de HTML obsoleto (si se había ejecutado con `cleanup: ejecutar`) retirará los documentos del despliegue fallido, y los assets antiguos con hash nunca se borran, por lo que las páginas cacheadas siguen resolviendo sus referencias.
+
+Si el problema es de contenido del repositorio, revertir el commit del workflow y volver a publicar el build anterior. Los documentos borrados por una limpieza excesiva no se pueden recuperar desde el hosting; en ese caso, resubir el build bueno. Las carpetas ajenas de la cuenta FTP nunca se ven afectadas por el acotado de la limpieza.
+
 ## Smoke Tests
 
 - Health check: `GET /health` → 200 (backend)

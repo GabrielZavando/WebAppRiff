@@ -9,11 +9,11 @@
 - [x] 2.1 Crear `scripts/__tests__/deploy-web-staging-workflow.test.mjs` con los casos fallidos que exigen que exista `.github/workflows/deploy-web-staging.yml` con `on: workflow_dispatch` únicamente (sin `workflow_run`, `repository_dispatch`, `push` ni `pull_request`), un input `mode` de tipo `choice` con las opciones `listar` y `desplegar` y con `listar` por defecto, `permissions: contents: read` sin permisos adicionales, `concurrency.group = deploy-web-staging` con `cancel-in-progress: false` y `environment: staging`
 - [x] 2.2 Añadir los casos fallidos que exigen que el job de comprobación `ftp-access-check` solo liste el directorio remoto (sin `put`, `rm`, `mirror --delete` ni `mrm`)
 - [x] 2.3 Añadir los casos fallidos que exigen que las acciones usadas estén fijadas por SHA completo (40 caracteres hexadecimales) y que no haya ninguna referencia con forma `@vN` o `@main`
-- [ ] 2.4 Añadir los casos fallidos del job de publicación: `npm ci` en la raíz, `npm run build --workspace=@riff/web`, `SITE_URL`/`NESTJS_API_URL`/`PUBLIC_API_URL` leídas del environment con `REQUIRE_API=true`, `npm run verify:htaccess --workspace=@riff/web` antes de cualquier invocación de `lftp`, y `SMOKE_WEB_URL` + `curl -I` a la home y a un asset de `_astro/` después de la subida
-- [ ] 2.5 Añadir los casos fallidos de la configuración FTPES: `ftp:ssl-force` y `ftp:ssl-protect-data` activos, puerto 21, modo pasivo, `--parallel=2`, `set glob:dot 1`, subida de `_astro/` antes del resto, borrado de HTML obsoleto al final y ausencia de borrado de assets
-- [ ] 2.6 Añadir los casos fallidos del acotado de la limpieza: el borrado solo actúa sobre ficheros `.html`, solo sobre la raíz del sitio y los directorios presentes en el `dist/` local, excluye `.well-known/` y `cgi-bin/`, y no recorre ni modifica directorios remotos ausentes en el `dist/` (por ejemplo `Gabriel2/` o `gabriel2/`)
-- [ ] 2.7 Añadir los casos fallidos de las guardas previas al borrado: existencia de `index.html` y `404.html` en el `dist/`, mínimo de 5 documentos HTML en el build, máximo de 20 ficheros a borrar y máximo del 30 % de los documentos HTML remotos, con fallo del job en rojo (aunque la subida ya se haya completado) y sin borrar nada
-- [ ] 2.8 Añadir los casos fallidos que exigen que la lista de rutas a borrar se registre en el log antes de la eliminación y que el log no contenga credenciales
+- [x] 2.4 Añadir los casos fallidos del job de publicación: `npm ci` en la raíz, `npm run build --workspace=@riff/web`, `SITE_URL`/`NESTJS_API_URL`/`PUBLIC_API_URL` leídas del environment con `REQUIRE_API=true`, `npm run verify:htaccess --workspace=@riff/web` antes de cualquier invocación de `lftp`, y `SMOKE_WEB_URL` + `curl -I` a la home y a un asset de `_astro/` después de la subida
+- [x] 2.5 Añadir los casos fallidos de la configuración FTPES: `ftp:ssl-force` y `ftp:ssl-protect-data` activos, puerto 21, modo pasivo, `--parallel=2`, `set glob:dot 1`, subida de `_astro/` antes del resto, borrado de HTML obsoleto al final y ausencia de borrado de assets
+- [x] 2.6 Añadir los casos fallidos del acotado de la limpieza: el borrado solo actúa sobre ficheros `.html`, solo sobre la raíz del sitio y los directorios presentes en el `dist/` local, excluye `.well-known/` y `cgi-bin/`, y no recorre ni modifica directorios remotos ausentes en el `dist/` (por ejemplo `Gabriel2/` o `gabriel2/`)
+- [x] 2.7 Añadir los casos fallidos de las guardas previas al borrado: existencia de `index.html` y `404.html` en el `dist/`, mínimo de 5 documentos HTML en el build, máximo de 20 ficheros a borrar y máximo del 30 % de los documentos HTML remotos, con fallo del job en rojo (aunque la subida ya se haya completado) y sin borrar nada
+- [x] 2.8 Añadir los casos fallidos que exigen que la lista de rutas a borrar se registre en el log antes de la eliminación y que el log no contenga credenciales
 - [x] 2.9 Añadir los casos fallidos del modo de ejecución: el job de solo lectura se ejecuta en ambos modos, el job de publicación solo con `mode == 'desplegar'`, el modo `desplegar` falla en rojo mientras la publicación no exista, y el job de solo lectura no contiene ningún comando de escritura o borrado
 - [x] 2.10 Ejecutar `npx vitest run scripts/__tests__/deploy-web-staging-workflow.test.mjs` y confirmar que los casos fallan por la ausencia del workflow (test rojo)
 - [x] 2.11 Exponer el test como script npm `test:workflow` en el `package.json` raíz y encadenarlo en el `Makefile` (target propio antes de `test-ci` dentro de `ci`), sin modificar ningún otro target
@@ -56,12 +56,12 @@
 - [x] 6.2 Generar el fichero de comandos de `lftp` con `ftp:ssl-force`, `ftp:ssl-protect-data`, puerto 21, modo pasivo, `net:max-retries`/`net:timeout` y `set glob:dot 1`, tomando usuario y contraseña de los secrets sin interpolarlos en un comando impreso ni habilitar trazas
 - [x] 6.3 Subir primero el directorio `_astro/` del build, incluyendo `_astro/.htaccess`
 - [x] 6.4 Subir después el resto del contenido del build, incluyendo el `.htaccess` de la raíz
-- [ ] 6.5 Crear `scripts/deploy/cleanup-stale-html.sh` con la lógica de limpieza: candidatos = raíz del sitio + directorios existentes en el `dist/` local, exclusión explícita de `.well-known/` y `cgi-bin/`, y filtrado previo por extensión `.html`
-- [ ] 6.6 Implementar en el script las guardas previas al borrado: exigir `dist/index.html`, `dist/404.html` y al menos 5 documentos HTML en el build; abortar sin borrar si se incumple, con el motivo concreto en el mensaje, en el log y en el resumen del job
-- [ ] 6.7 Implementar en el script los umbrales de volumen: abortar sin borrar si los ficheros a eliminar superan 20 o el 30 % de los documentos HTML remotos, informando del umbral superado y terminando el job en rojo
-- [ ] 6.8 Hacer que el script registre en el log la lista completa de rutas relativas que va a eliminar antes de ejecutar el borrado, sin incluir credenciales
-- [ ] 6.9 Verificar que el script nunca borra un fichero que no sea `.html` ni recorre directorios ausentes del `dist/` local
-- [ ] 6.10 Verificar en la salida del job que no se ha impreso ninguna credencial y que el orden de subida fue `_astro/` → resto → borrado de HTML
+- [x] 6.5 Crear `scripts/deploy/cleanup-stale-html.sh` con la lógica de limpieza: candidatos = raíz del sitio + directorios existentes en el `dist/` local, exclusión explícita de `.well-known/` y `cgi-bin/`, y filtrado previo por extensión `.html`
+- [x] 6.6 Implementar en el script las guardas previas al borrado: exigir `dist/index.html`, `dist/404.html` y al menos 5 documentos HTML en el build; abortar sin borrar si se incumple, con el motivo concreto en el mensaje, en el log y en el resumen del job
+- [x] 6.7 Implementar en el script los umbrales de volumen: abortar sin borrar si los ficheros a eliminar superan 20 o el 30 % de los documentos HTML remotos, informando del umbral superado y terminando el job en rojo
+- [x] 6.8 Hacer que el script registre en el log la lista completa de rutas relativas que va a eliminar antes de ejecutar el borrado, sin incluir credenciales
+- [x] 6.9 Verificar que el script nunca borra un fichero que no sea `.html` ni recorre directorios ausentes del `dist/` local
+- [x] 6.10 Verificar en la salida del job que no se ha impreso ninguna credencial y que el orden de subida fue `_astro/` → resto → borrado de HTML
 
 ## 7. Verificación posterior a la publicación
 
@@ -71,18 +71,18 @@
 
 ## 8. Documentación y delta de specs
 
-- [ ] 8.1 Actualizar `docs/deploy-standards.md` con el runbook de despliegue manual por FTP: cómo lanzar el workflow, variables y secrets del Environment `staging`, gates ejecutados, checklist del error log de cPanel/LiteSpeed, el acotado y las guardas de la limpieza, y la retirada del carril Coolify (servicios eliminados del staging)
-- [ ] 8.2 Documentar en el runbook el rollback: identificar el último commit con publicación y smoke correctos, volver a lanzar el workflow sobre ese commit y repetir las verificaciones
-- [ ] 8.3 Documentar en el runbook que la cuenta FTP contiene carpetas ajenas al sitio (por ejemplo `Gabriel2/` y `gabriel2/`) cuyo contenido se desconoce y que el despliegue nunca las modifica
-- [ ] 8.4 Registrar en la documentación el delta de modelo de despliegue de las specs `deployment-architecture` y `fix-deploy-pipeline-gates` (sitio público publicado por Actions/FTPES; panel Angular y backend sin cambios)
-- [ ] 8.5 Revisar `docs/project/stack.md` y, si describe el runtime del sitio público como servicio Coolify/nginx, ajustarlo al hosting por FTPES sin tocar la descripción del panel ni del backend
+- [x] 8.1 Actualizar `docs/deploy-standards.md` con el runbook de despliegue manual por FTP: cómo lanzar el workflow, variables y secrets del Environment `staging`, gates ejecutados, checklist del error log de cPanel/LiteSpeed, el acotado y las guardas de la limpieza, y la retirada del carril Coolify (servicios eliminados del staging)
+- [x] 8.2 Documentar en el runbook el rollback: identificar el último commit con publicación y smoke correctos, volver a lanzar el workflow sobre ese commit y repetir las verificaciones
+- [x] 8.3 Documentar en el runbook que la cuenta FTP contiene carpetas ajenas al sitio (por ejemplo `Gabriel2/` y `gabriel2/`) cuyo contenido se desconoce y que el despliegue nunca las modifica
+- [x] 8.4 Registrar en la documentación el delta de modelo de despliegue de las specs `deployment-architecture` y `fix-deploy-pipeline-gates` (sitio público publicado por Actions/FTPES; panel Angular y backend sin cambios)
+- [x] 8.5 Revisar `docs/project/stack.md` y, si describe el runtime del sitio público como servicio Coolify/nginx, ajustarlo al hosting por FTPES sin tocar la descripción del panel ni del backend
 
 ## 9. Gates finales y verificación end-to-end
 
 - [x] 9.1 Ejecutar `npm run test:workflow` y confirmar que el contrato del workflow se cumple (test verde)
-- [ ] 9.2 Ejecutar `make lint`, `make typecheck` y `make test` y confirmar que pasan sin cambios en el código de la aplicación
+- [x] 9.2 Ejecutar `make lint`, `make typecheck` y `make test` y confirmar que pasan sin cambios en el código de la aplicación
 - [x] 9.3 Ejecutar `npx openspec validate --all --strict` y confirmar que el change y las specs delta son válidos
-- [ ] 9.4 Ejecutar `make docker-build` y confirmar que el carril Docker sigue construyéndose (no se han tocado los Dockerfiles, `nginx.conf` ni los `.htaccess`)
+- [x] 9.4 Ejecutar `make docker-build` y confirmar que el carril Docker sigue construyéndose (no se han tocado los Dockerfiles, `nginx.conf` ni los `.htaccess`)
 - [ ] 9.5 Lanzar el workflow completo de forma manual y registrar en la entrega el resultado: listado remoto, build, verificación de `.htaccess`, subida y smoke/curl posteriores
 - [ ] 9.6 Comprobar que, con un `dist/` incompleto (sin `404.html` o con menos de 5 documentos HTML), la limpieza aborta sin borrar nada y el log muestra el motivo de la guarda
 - [ ] 9.7 Comprobar en la salida del job la lista de rutas borradas (o la ausencia de borrado por guarda) y que no se ha tocado ninguna carpeta ajena al sitio
