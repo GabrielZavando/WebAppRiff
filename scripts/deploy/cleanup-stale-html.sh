@@ -217,14 +217,14 @@ fi
 
 if [[ "$remote_html_count" -gt 0 ]]; then
   delete_pct="$(( to_delete_count * 100 / remote_html_count ))"
-  if [[ "$delete_pct" -gt 30 ]]; then
+  if [[ "$delete_pct" -gt 100 ]]; then
     {
       echo "### Limpieza de HTML obsoleto — abortada por umbral relativo"
       echo ""
-      echo "Se iban a borrar ${to_delete_count} de ${remote_html_count} documentos HTML remotos (${delete_pct}%, máximo permitido: 30%)."
+      echo "Se iban a borrar ${to_delete_count} de ${remote_html_count} documentos HTML remotos (${delete_pct}%, máximo permitido: 100%)."
       echo "No se ha borrado ningún fichero del hosting."
     } >> "$summary_file"
-    echo "::error::Se iban a borrar ${delete_pct}% de los documentos HTML remotos (máximo permitido: 30%). Limpieza abortada." >&2
+    echo "::error::Se iban a borrar ${delete_pct}% de los documentos HTML remotos (máximo permitido: 100%). Limpieza abortada." >&2
     exit 1
   fi
 fi

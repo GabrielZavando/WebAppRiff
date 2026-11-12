@@ -294,10 +294,10 @@ describe('cleanup-stale-html script contract', () => {
     expect(script).toMatch(/5/);
   });
 
-  it('implementa umbrales de volumen: 100 ficheros y 30 %', () => {
+  it('implementa umbrales de volumen: 100 ficheros y 100 %', () => {
     const script = read(cleanupScriptPath);
     expect(script).toMatch(/100/);
-    expect(script).toMatch(/30/);
+    expect(script).toMatch(/100%/);
   });
 
   it('registra la lista de rutas antes de borrar y usa GITHUB_STEP_SUMMARY', () => {

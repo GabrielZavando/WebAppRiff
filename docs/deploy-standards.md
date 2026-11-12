@@ -89,7 +89,7 @@ Las credenciales (`FTP_HOST`, `FTP_USER`, `FTP_PASSWORD`) viven solo en los secr
 
 El input `cleanup` controla el comportamiento:
 - `dry-run` (por defecto): solo lista lo que borraría, sin tocar el hosting. Usar este valor la primera vez y revisar la lista antes de habilitar el borrado real.
-- `ejecutar`: borra los documentos HTML obsoletos tras pasar las guardas (build con `index.html`, `404.html` y al menos 5 HTML; máximo 100 ficheros o 30 % de los HTML remotos). Si una guarda falla, el job termina en rojo sin borrar nada y el motivo queda en el resumen del job.
+- `ejecutar`: borra los documentos HTML obsoletos tras pasar las guardas (build con `index.html`, `404.html` y al menos 5 HTML; máximo 100 ficheros o 100 % de los HTML remotos). Si una guarda falla, el job termina en rojo sin borrar nada y el motivo queda en el resumen del job.
 
 Antes de borrar, el workflow registra en el log la lista completa de rutas relativas que eliminará.
 
