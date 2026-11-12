@@ -57,6 +57,10 @@ jobs:
         with:
           node-version: 24
       - name: Validar variables de environment de staging
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          NESTJS_API_URL: ${{ vars.NESTJS_API_URL }}
+          PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
         run: |
           for var in SITE_URL NESTJS_API_URL PUBLIC_API_URL; do
             if [ -z "${!var}" ]; then

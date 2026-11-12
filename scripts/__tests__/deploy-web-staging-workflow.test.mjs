@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import yaml from 'yaml';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const workflowPath = resolve(repoRoot, '.github/workflows/deploy-web-staging.yml');
@@ -125,6 +126,44 @@ describe('deploy-web-staging workflow contract', () => {
     expect(job).toMatch(/FTP_HOST:\s*\$\{\{\s*secrets\.FTP_HOST\s*\}\}/);
     expect(job).toMatch(/FTP_USER:\s*\$\{\{\s*secrets\.FTP_USER\s*\}\}/);
     expect(job).toMatch(/FTP_PASSWORD:\s*\$\{\{\s*secrets\.FTP_PASSWORD\s*\}\}/);
+  });
+
+  it('cada paso que lee una variable o un secret la recibe en su propio env:', () => {
+    const content = read(workflowPath);
+    const parsed = yaml.parse(content);
+    const jobs = parsed.jobs || {};
+
+    const refsFromRun = (run) => {
+      const refs = new Set();
+      for (const m of run.matchAll(/\$\{\{\s*vars\.([A-Z][A-Z0-9_]*)\s*\}\}/g)) refs.add(m[1]);
+      for (const m of run.matchAll(/\$\{\{\s*secrets\.([A-Z][A-Z0-9_]*)\s*\}\}/g)) refs.add(m[1]);
+      for (const m of run.matchAll(/for var in ([A-Z][A-Z0-9_]*(?: [A-Z][A-Z0-9_]*)*)/g)) {
+        for (const name of m[1].split(/\s+/)) refs.add(name);
+      }
+      return refs;
+    };
+
+    const envKeys = (step, jobEnv = {}) => {
+      const keys = new Set();
+      if (jobEnv) for (const k of Object.keys(jobEnv)) keys.add(k);
+      if (step.env) for (const k of Object.keys(step.env)) keys.add(k);
+      return keys;
+    };
+
+    for (const [jobName, job] of Object.entries(jobs)) {
+      const jobEnv = job.env || {};
+      for (const step of job.steps || []) {
+        if (!step.run) continue;
+        const refs = refsFromRun(step.run);
+        const keys = envKeys(step, jobEnv);
+        for (const ref of refs) {
+          expect(keys).toContain(
+            ref,
+            `el paso '${step.name ?? '(sin nombre)'}' del job '${jobName}' lee '${ref}' pero no lo declara en env:`,
+          );
+        }
+      }
+    }
   });
 
   it('el job de publicación construye sin Docker', () => {
