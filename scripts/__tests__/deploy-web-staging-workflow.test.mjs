@@ -9,6 +9,7 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const workflowPath = resolve(repoRoot, '.github/workflows/deploy-web-staging.yml');
 const listScriptPath = resolve(repoRoot, 'scripts/deploy/list-remote.sh');
 const uploadScriptPath = resolve(repoRoot, 'scripts/deploy/upload-web.sh');
+const ftpCommonPath = resolve(repoRoot, 'scripts/deploy/ftp-common.sh');
 
 const read = (filePath) => readFileSync(filePath, 'utf8');
 
@@ -296,60 +297,64 @@ describe('upload-web script contract', () => {
     expect(() => read(uploadScriptPath)).not.toThrow();
   });
 
+  it('carga la librería FTP compartida', () => {
+    expect(read(uploadScriptPath)).toMatch(/ftp-common\.sh/);
+    expect(read(uploadScriptPath)).toMatch(/ftp_require_secrets/);
+  });
+
   it('falla rápido nombrando el secret faltante', () => {
-    const script = read(uploadScriptPath);
-    expect(script).toMatch(/FTP_HOST/);
-    expect(script).toMatch(/FTP_USER/);
-    expect(script).toMatch(/FTP_PASSWORD/);
-    expect(script).toMatch(/::error::/);
-    expect(script).toMatch(/exit 1/);
+    const library = read(ftpCommonPath);
+    expect(library).toMatch(/FTP_HOST/);
+    expect(library).toMatch(/FTP_USER/);
+    expect(library).toMatch(/FTP_PASSWORD/);
+    expect(library).toMatch(/::error::/);
+    expect(read(uploadScriptPath)).toMatch(/exit 1/);
   });
 
   it('valida que los secrets no tengan bordes con espacio ni caracteres de control', () => {
-    const script = read(uploadScriptPath);
-    expect(script).toContain('*[![:print:][:space:]]*');
-    expect(script).toContain('[[:space:]]* | *[[:space:]])');
-    expect(script).toMatch(/FTP_HOST/);
-    expect(script).toMatch(/FTP_USER/);
-    expect(script).toMatch(/FTP_PASSWORD/);
+    const library = read(ftpCommonPath);
+    expect(library).toContain('*[![:print:][:space:]]*');
+    expect(library).toContain('[[:space:]]* | *[[:space:]])');
+    expect(library).toMatch(/FTP_HOST/);
+    expect(library).toMatch(/FTP_USER/);
+    expect(library).toMatch(/FTP_PASSWORD/);
   });
 
   it('exige ftp:ssl-allow yes y prohíbe ssl-allow no', () => {
-    const script = read(uploadScriptPath);
-    expect(script).toMatch(/set ftp:ssl-allow yes/);
-    expect(script).not.toMatch(/set ftp:ssl-allow no/);
+    const library = read(ftpCommonPath);
+    expect(library).toMatch(/set ftp:ssl-allow yes/);
+    expect(library).not.toMatch(/set ftp:ssl-allow no/);
   });
 
   it('configura solo variables de lftp existentes y puerto 21', () => {
-    const script = read(uploadScriptPath);
-    expect(script).not.toMatch(/net:max-idle/);
-    expect(script).toMatch(/set net:idle/);
-    expect(script).toMatch(/set net:max-retries/);
-    expect(script).toMatch(/set net:timeout/);
-    expect(script).toMatch(/set ftp:ssl-force yes/);
-    expect(script).toMatch(/set ftp:ssl-protect-data yes/);
-    expect(script).toMatch(/set ftp:passive-mode yes/);
-    expect(script).toMatch(/set ftp:port 21/);
-    expect(script).toMatch(/set glob:dot 1/);
-    expect(script).toMatch(/set cmd:fail-exit yes/);
+    const library = read(ftpCommonPath);
+    expect(library).not.toMatch(/net:max-idle/);
+    expect(library).toMatch(/set net:idle/);
+    expect(library).toMatch(/set net:max-retries/);
+    expect(library).toMatch(/set net:timeout/);
+    expect(library).toMatch(/set ftp:ssl-force yes/);
+    expect(library).toMatch(/set ftp:ssl-protect-data yes/);
+    expect(library).toMatch(/set ftp:passive-mode yes/);
+    expect(library).toMatch(/set ftp:port 21/);
+    expect(library).toMatch(/set glob:dot 1/);
+    expect(library).toMatch(/set cmd:fail-exit yes/);
   });
 
   it('no usa .netrc para las credenciales', () => {
-    const script = read(uploadScriptPath);
-    expect(script).not.toMatch(/\.netrc/);
+    expect(read(ftpCommonPath)).not.toMatch(/\.netrc/);
   });
 
   it('pasa la contraseña a lftp mediante LFTP_PASSWORD (--env-password)', () => {
-    const script = read(uploadScriptPath);
-    expect(script).toMatch(/export LFTP_PASSWORD/);
-    expect(script).toMatch(/--env-password/);
+    const library = read(ftpCommonPath);
+    expect(library).toMatch(/export LFTP_PASSWORD/);
+    expect(library).toMatch(/--env-password/);
   });
 
   it('nunca imprime el valor de un secret', () => {
-    const script = read(uploadScriptPath);
-    expect(script).not.toMatch(/echo[^\n]*\$FTP_PASSWORD/);
-    expect(script).not.toMatch(/echo[^\n]*\$FTP_USER/);
-    expect(script).not.toMatch(/echo[^\n]*\$FTP_HOST/);
+    const library = read(ftpCommonPath);
+    expect(library).not.toMatch(/echo[^\n]*\$FTP_PASSWORD/);
+    expect(library).not.toMatch(/echo[^\n]*\$FTP_USER/);
+    expect(library).not.toMatch(/echo[^\n]*\$FTP_HOST/);
   });
 
   it('sube _astro/ primero y el resto después, sin borrar nada en remoto', () => {

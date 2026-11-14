@@ -5,8 +5,11 @@ schema: spec-driven
 # Include constraints an agent cannot infer by reading the code.
 # Keep general project documentation and discoverable codebase facts out.
 context: |
-  Write all OpenSpec artifacts (proposal, design, tasks, specs) in Spanish.
-  Project code stays in English; only OpenSpec artifacts and business docs are in Spanish.
+  Write all OpenSpec artifacts (proposal, design, tasks, specs) and all spec
+  deltas in English. English is the primary language of the AI models and
+  guarantees better precision in validation.
+  Project code stays in English too.
+  Business documentation aimed at the client stays in Spanish.
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.
