@@ -99,6 +99,97 @@ El rollback consiste en volver a lanzar el workflow `.github/workflows/deploy-we
 
 Si el problema es de contenido del repositorio, revertir el commit del workflow y volver a publicar el build anterior. Los documentos borrados por una limpieza excesiva no se pueden recuperar desde el hosting; en ese caso, resubir el build bueno. Las carpetas ajenas de la cuenta FTP nunca se ven afectadas por el acotado de la limpieza.
 
+### Lane panel admin — FTPES manual (staging)
+
+El panel de administración Angular (`apps/admin`) se publica en `admin-staging.somosriff.cl` con el script versionado `scripts/deploy/upload-admin.sh`. Es una **SPA pura** (sin SSR): el build produce `apps/admin/dist/admin/browser/` y el hosting sirve esos ficheros estáticos con el contrato LiteSpeed que ya viaja dentro del build (`.htaccess`, copiado por `angular.json`).
+
+La cuenta FTP del panel es **independiente de la del sitio público**: su raíz es la raíz de documentos de `admin-staging.somosriff.cl`. El script aborta si detecta `_astro/` o `404.html` en la raíz remota, porque esa es la firma del build del sitio público.
+
+#### Requisitos de la máquina del operador
+
+- Node 24 (`npm --version` → 10.9.x) y `lftp` instalado (`apt-get install -y lftp`).
+- Las credenciales FTP llegan por variables de entorno; nunca se escriben en el repositorio ni en los logs.
+
+#### Variables de entorno
+
+| Variable | Dónde vive | Descripción | Ejemplo (staging) |
+|---|---|---|---|
+| `FIREBASE_API_KEY` | Entorno del operador | Firebase web API key del proyecto. Dato público del cliente Firebase | `AIza...` |
+| `FIREBASE_AUTH_DOMAIN` | Entorno del operador | Dominio de Firebase Authentication | `riff-catalogo-staging.firebaseapp.com` |
+| `FIREBASE_PROJECT_ID` | Entorno del operador | Project ID del cliente web | `riff-catalogo-staging` |
+| `FIREBASE_APP_ID` | Entorno del operador | App ID web de Firebase | `1:...:web:...` |
+| `API_BASE_URL` | Entorno del operador | Base del backend. **Contrato: incluir `/api/v1` y esquema `https://`** | `https://riff-api-staging-345601325361.southamerica-west1.run.app/api/v1` |
+| `FTP_HOST` | Entorno del operador | Nombre del servidor FTP (**nombre del certificado TLS**, no el dominio publicado) | `larioja.tecnoinver.cl` |
+| `FTP_USER` / `FTP_PASSWORD` | Entorno del operador | Credenciales de la cuenta FTP del panel | — |
+| `SMOKE_ADMIN_URL` | Entorno del operador | URL pública del panel; obligatoria para publicar | `https://admin-staging.somosriff.cl` |
+
+#### Checklist manual previo (bloqueante)
+
+1. **CORS del backend**: el origen `https://admin-staging.somosriff.cl` está en la allowlist del backend de staging (variable `ANGULAR_ADMIN_URL` del servicio en Cloud Run). Sin esto el panel carga pero **todos los login fallan por CORS**.
+   ```bash
+   curl -sS -I -H "Origin: https://admin-staging.somosriff.cl" \
+     "https://riff-api-staging-345601325361.southamerica-west1.run.app/health" | grep -i access-control-allow-origin
+   ```
+2. **Firebase Auth**: `admin-staging.somosriff.cl` está registrado entre los dominios autorizados del proyecto `riff-catalogo-staging`. Sin esto el login se rechaza.
+3. **LiteSpeed**: el hosting aplica el `.htaccess` (`AllowOverride` permite `mod_rewrite` y `mod_headers`). Comprobar las cabeceras de una ruta profunda:
+   ```bash
+   curl -sS -I "https://admin-staging.somosriff.cl/products" | grep -Ei "HTTP/|x-frame-options|content-security-policy|cache-control"
+   ```
+   Se espera `200`, `X-Frame-Options: DENY` y `Cache-Control: no-cache` (HTML).
+
+#### Ejecución
+
+```bash
+# 1) Modo plan (por defecto): genera el build, pasa los gates, comprueba el
+#    acceso en solo lectura e imprime el plan. NO escribe nada en el hosting.
+FIREBASE_API_KEY=… FIREBASE_AUTH_DOMAIN=… FIREBASE_PROJECT_ID=… \
+FIREBASE_APP_ID=… API_BASE_URL=https://…/api/v1 \
+FTP_HOST=… FTP_USER=… FTP_PASSWORD=… \
+bash scripts/deploy/upload-admin.sh
+
+# 2) Publicación real
+SMOKE_ADMIN_URL="https://admin-staging.somosriff.cl" \
+bash scripts/deploy/upload-admin.sh --publish
+```
+
+El script ejecuta en este orden: validación del entorno → `write-env.mjs --target=prod` → `npm run build --workspace=@riff/admin` → `npm run verify:htaccess --workspace=@riff/admin` → `npm run check:bundle --workspace=@riff/admin` → listado remoto de solo lectura → subida → `smoke:admin` + comprobaciones HTTP de `/`, `/products` y un asset con hash.
+
+#### Orden de subida (y por qué importa)
+
+La subida se divide en cuatro fases, en este orden:
+
+1. **Fase 1 — estáticos inmutables con hash**: `chunk-*.js`, `main-*.js`, `styles-*.css` y `media/`.
+2. **Fase 2 — estáticos sin hash**: `assets/` y `logo_riff.png`.
+3. **Fase 3 — contrato LiteSpeed**: `.htaccess`.
+4. **Fase 4 — bootstrap de la SPA**: `index.html`, **siempre al final**.
+
+`index.html` es el único punto de entrada de la SPA y lleva `Cache-Control: no-cache`. Si se subiera antes que los bundles, un cliente que lo descargara en esa ventana recibiría un documento que referencia chunks inexistentes → pantalla en blanco y 404 en consola. Subiéndolo al final, la única ventana de inconsistencia posible es "un `index.html` viejo con bundles nuevos de más", que es inocuo.
+
+Invertir el orden (subir `index.html` primero) es un error: produce precisamente el estado roto descrito arriba.
+
+#### Los chunks antiguos NO se borran (intencionado)
+
+La publicación es **no destructiva**: el script no borra ningún fichero remoto. Los chunks antiguos con hash se acumulan en el hosting (~25 ficheros por publicación).
+
+Es una decisión **intencional**: borrarlos rompería las sesiones activas de los usuarios que todavía tienen cacheado un `index.html` de una versión anterior, porque ese documento sigue referenciando sus bundles. Un 404 de bundle deja la aplicación en blanco sin necesidad de recargar a mano.
+
+No los borres a mano sin el mismo cuidado. La política de retención a largo plazo está fuera de alcance del carril actual.
+
+#### Rollback
+
+Republicar el build anterior: volver al commit anterior del repositorio y ejecutar el mismo script con las mismas variables. Como la publicación no borra nada, el `index.html` del build fallido se sustituye y los chunks de ambas versiones siguen disponibles.
+
+#### Automatización futura (NO implementada)
+
+La publicación automática por GitHub Actions es un change posterior. La forma que tendría, siguiendo el mismo patrón que el carril del sitio público:
+
+- `.github/workflows/deploy-admin-staging.yml`, disparado **solo** por `workflow_dispatch`, con `environment: staging`, `permissions: contents: read` y `concurrency` (`deploy-admin-staging`, `cancel-in-progress: false`).
+- Un job `ftp-access-check` de solo lectura (listado remoto) y un job `publish` que dependa de él.
+- El job `publish` ejecutaría `bash scripts/deploy/upload-admin.sh --publish` con las variables y secrets tomados del GitHub Environment `staging` (`vars.*` para el build, `secrets.*` para FTP), reusing los gates ya encapsulados en el script.
+- Smoke y `curl -I` posteriores, como en el carril del sitio público.
+
+Mientras tanto, el despliegue es manual.
+
 ## Smoke Tests
 
 - Health check: `GET /health` → 200 (backend)
@@ -353,11 +444,11 @@ documento `catalog_rebuild_state/global` limpio en Firestore.
 | `SOCIAL_INSTAGRAM_URL` | Build de Astro (Coolify Build Variable) | URL pública de la cuenta oficial de Instagram. Inyectada en build time SSG | `https://www.instagram.com/somosriff.cl?igsi=MTU2YXhqaThoNnFydA%3D%3D&utm_source=qr` |
 | `SOCIAL_LINKEDIN_URL` | Build de Astro (Coolify Build Variable) | URL pública del perfil oficial de LinkedIn. Inyectada en build time SSG | `https://www.linkedin.com/company/100252590` |
 | `SOCIAL_X_URL` | Build de Astro (Coolify Build Variable) | URL pública de X (Twitter). Permanecer vacía mientras Riff no entregue cuenta; omite el icono/enlace | `` |
-| `API_BASE_URL` | Build del admin (Coolify Build Variable / build arg Docker) | Base URL del API para el panel; alimenta `apiBaseUrl` del environment generado en build. **Contrato: incluir `/api/v1`**. Reemplaza a la antigua `API_URL` runtime | `https://api.somosriff.cl/api/v1` |
-| `FIREBASE_API_KEY` | Build del admin (Coolify Build Variable / build arg Docker) | Firebase web API key del proyecto correspondiente (staging/prod). Dato público del cliente Firebase | `AIza...` |
-| `FIREBASE_AUTH_DOMAIN` | Build del admin (Coolify Build Variable / build arg Docker) | Dominio de Firebase Auth del proyecto | `<proyecto>.firebaseapp.com` |
-| `FIREBASE_PROJECT_ID` | Build del admin (Coolify Build Variable / build arg Docker) | Project ID de Firebase del cliente web | `riff-catalogo-staging` |
-| `FIREBASE_APP_ID` | Build del admin (Coolify Build Variable / build arg Docker) | App ID web de Firebase | `1:123:web:abc` |
+| `API_BASE_URL` | Build del admin (variables de entorno del script `scripts/deploy/upload-admin.sh` en staging; Coolify Build Variable / build arg Docker en el carril de contenedores) | Base URL del API para el panel; alimenta `apiBaseUrl` del environment generado en build. **Contrato: incluir `/api/v1` y esquema `https://`** (la CSP del panel solo permite conexiones https). Reemplaza a la antigua `API_URL` runtime | `https://api.somosriff.cl/api/v1` |
+| `FIREBASE_API_KEY` | Build del admin (variables de entorno del script `scripts/deploy/upload-admin.sh` en staging; Coolify Build Variable / build arg Docker en el carril de contenedores) | Firebase web API key del proyecto correspondiente (staging/prod). Dato público del cliente Firebase | `AIza...` |
+| `FIREBASE_AUTH_DOMAIN` | Build del admin (variables de entorno del script `scripts/deploy/upload-admin.sh` en staging; Coolify Build Variable / build arg Docker en el carril de contenedores) | Dominio de Firebase Auth del proyecto | `<proyecto>.firebaseapp.com` |
+| `FIREBASE_PROJECT_ID` | Build del admin (variables de entorno del script `scripts/deploy/upload-admin.sh` en staging; Coolify Build Variable / build arg Docker en el carril de contenedores) | Project ID de Firebase del cliente web | `riff-catalogo-staging` |
+| `FIREBASE_APP_ID` | Build del admin (variables de entorno del script `scripts/deploy/upload-admin.sh` en staging; Coolify Build Variable / build arg Docker en el carril de contenedores) | App ID web de Firebase | `1:123:web:abc` |
 | `ASTRO_SITE_URL` | Cloud Run (backend) | Origen del sitio Astro para la allowlist CORS en producción | `https://somosriff.cl` |
 | `ANGULAR_ADMIN_URL` | Cloud Run (backend) | Origen del admin para la allowlist CORS en producción | `https://admin.somosriff.cl` |
 | `GCP_REGION` | GitHub Actions / gcloud | Región de Artifact Registry y Cloud Run — **aprobada: `southamerica-west1`** | `southamerica-west1` |
@@ -378,7 +469,7 @@ documento `catalog_rebuild_state/global` limpio en Firestore.
 | `CATALOG_REBUILD_FLUSH_EXPECTED_SA` | Cloud Run (backend — env, no secreto) | `email` OIDC esperado de la service account del Cloud Scheduler del flush. Verificada junto con `aud` y `email_verified` en cada invocación | `catalog-rebuild-flusher@riff-catalogo-staging.iam.gserviceaccount.com` |
 | `SMOKE_API_URL` | GitHub Actions (post-deploy smoke) | URL base de la API para el smoke test post-deploy (`/health`, products, categories, subcategories). No-op si no está | `https://<run>.run.app` |
 | `SMOKE_WEB_URL` | GitHub Actions (post-deploy smoke) | URL del sitio Astro para `smoke:web`. No-op si no está | `https://staging.somosriff.cl` |
-| `SMOKE_ADMIN_URL` | GitHub Actions (post-deploy smoke) | URL del panel Angular para `smoke:admin`. No-op si no está | `https://admin.somosriff.cl` |
+| `SMOKE_ADMIN_URL` | GitHub Actions (post-deploy smoke) / entorno del operador (`scripts/deploy/upload-admin.sh`) | URL del panel Angular para `smoke:admin`. No-op si no está; **obligatoria** para publicar el panel con `--publish` | `https://admin.somosriff.cl` |
 
 **Variables de producción (aún vacías — el deploy de producción solo desbloquea cuando TODAS existan):**
 

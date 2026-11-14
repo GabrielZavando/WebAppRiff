@@ -15,6 +15,7 @@
     "pretest": "node scripts/build-html-sanitize.mjs",
     "test": "npm run test --workspaces",
     "test:workflow": "vitest run scripts/__tests__/deploy-web-staging-workflow.test.mjs",
+    "test:deploy-admin": "vitest run scripts/__tests__/deploy-admin-contract.test.mjs scripts/__tests__/check-bundle-markers.test.mjs",
     "build": "npm run build --workspaces",
     "dev:backend": "npm run start:dev --workspace=apps/backend",
     "dev:web": "npm run dev --workspace=apps/web",

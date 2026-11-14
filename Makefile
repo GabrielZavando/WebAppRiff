@@ -4,7 +4,7 @@
 # Todos los targets delegan en scripts npm de la raíz (package.json),
 # salvo `openspec-validate` que ejecuta la CLI de OpenSpec (Fission-AI).
 
-.PHONY: help install lint typecheck test build audit smoke test-ci test-workflow openspec-validate commitlint ci docker-build docker-build-backend verify-htaccess
+.PHONY: help install lint typecheck test build audit smoke test-ci test-workflow test-deploy-admin openspec-validate commitlint ci docker-build docker-build-backend verify-htaccess
 
 help:
 	@echo ""
@@ -15,13 +15,14 @@ help:
 	@echo "            test               Tests por workspace (npm run test --workspaces)"
 	@echo "            test-ci            Gate de tests explícito (backend con cobertura 90% + web/admin/html-sanitize)"
 	@echo "            test-workflow      Contrato del workflow de despliegue del sitio público (spec web-ftp-deployment)"
+	@echo "            test-deploy-admin  Contrato del script de despliegue manual del panel admin (spec admin-ftp-deployment)"
 	@echo "            build              Build por workspace"
 	@echo "            verify-htaccess    Verifica el contrato LiteSpeed (.htaccess) contra el output de build de web/admin"
 	@echo "  audit              Auditoría de dependencias bloqueante (scripts/audit.mjs)"
 	@echo "  smoke              Smoke tests por workspace"
 	@echo "  openspec-validate  Validar specs/changes de OpenSpec (--all --strict)"
 	@echo "  commitlint         Validar commits Git"
-	@echo "            ci                 CI gate: openspec-validate + lint + typecheck + build + verify-htaccess + test-workflow + test-ci + audit"
+	@echo "            ci                 CI gate: openspec-validate + lint + typecheck + build + verify-htaccess + test-workflow + test-deploy-admin + test-ci + audit"
 	@echo "  docker-build       Builds Docker de admin y web con args de prueba (sin push)"
 	@echo "  docker-build-backend  Build Docker del backend (sin push; tag de prueba)"
 	@echo "  help               Esta ayuda"
@@ -64,6 +65,13 @@ test-ci:
 test-workflow:
 	npm run test:workflow
 
+# Contrato del script de despliegue manual del panel admin y del checker de
+# marcadores del bundle (change admin-ftp-deployment). Verifica el orden de
+# subida por fases, la ausencia de borrados remotos, la validación del
+# entorno, la guarda de cuenta FTP y el reparto de la lógica FTPES compartida.
+test-deploy-admin:
+	npm run test:deploy-admin
+
 openspec-validate:
 	npx openspec validate --all --strict
 
@@ -77,7 +85,7 @@ verify-htaccess:
 commitlint:
 	npx -p @commitlint/cli -p @commitlint/config-conventional commitlint --from HEAD~1 --to HEAD --verbose
 
-ci: openspec-validate lint typecheck build verify-htaccess test-workflow test-ci audit
+ci: openspec-validate lint typecheck build verify-htaccess test-workflow test-deploy-admin test-ci audit
 	@echo ""
 	@echo "✅ CI del proyecto completado"
 
